@@ -22,24 +22,29 @@
   <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
 
   <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="/assets/css/click.css">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
   <script src="/assets/lib/Language.js"></script>
 
-  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/click.js"></script>
 </head>
 
 <body>
-  <main>
+  <header>
+    <button type="button" onclick="location.href='/'">戻る</button>
+  </header>
 
-    <div id="clicking">
+  <main>
+    <div id="showClick">
+
+    </div>
+
+    <div id="operation">
       <button id="stop">停止</button>
     </div>
   </main>
 
-  <footer>
-    <a href="/">< Return</a>
-  </footer>
 
 </body>
 </html>
