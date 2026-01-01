@@ -1,4 +1,50 @@
 
 html, body {
-  font-size: 9pt;
+  font-size: 18pt;
+}
+
+body {
+  background-color: lightgreen;
+}
+
+header {
+  margin:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  font-size:18pt;
+
+  border:3px solid green;
+  border-radius: 8px;
+  background-color: white;
+}
+
+footer {
+  margin:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  font-size:9pt;
+
+  border:3px solid green;
+  border-radius: 8px;
+
+}
+
+#preference {
+  margin:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:3px solid green;
+  border-radius: 8px;
+}
+
+#clicking {
+  margin:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:3px solid green;
+  border-radius: 8px;
 }

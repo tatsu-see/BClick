@@ -3,8 +3,16 @@
 <head>
 
   <meta charset="utf-8">
-  <meta name="description" content="Sc.Shot is a simple web app to capture screens, preview, download as images/ZIP/Excel, and copy captures to the clipboard.">
-  <meta name="keywords" content="screen capture, screenshot, web app, zip download, excel download, clipboard copy, Sc.Shot">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
 
   <title>B.Click</title>
   <link rel="icon" type="image/png" sizes="16x16"   href="/assets/icons/BClick-16x16.png">
@@ -22,13 +30,77 @@
 </head>
 
 <body>
-  <div id="title">B.Click</div>
-  <div id="preference">
+  <header>
+    <div id="title">B.Click</div>
+  </header>
+  <main>
+    <div id="preference">
+      カウントダウン：
+      <select id="countdown" default="4">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
 
-  </div>
-  <div id="clickling">
+      <br>
 
-  </div>
+      クリック数：
+      <select id="countdown" default="4">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+
+    </div>
+    <div id="clicking">
+      <button id="start">開始</button>
+
+    </div>
+  </main>
+    <footer>
+      Ver. 1 /
+
+      <!--
+      <a href="/manual.html" target="_blank">
+        <span class="lang" data-lang="en">Manual</span>
+        <span class="lang" data-lang="ja">使い方</span>
+      </a> /
+
+      <a href="/terms.html" target="_blank">
+        <span class="lang" data-lang="en">Terms of Service</span>
+        <span class="lang" data-lang="ja">利用規約</span>
+      </a> /
+
+      <a href="/privacy.html" target="_blank">
+        <span class="lang" data-lang="en">Privacy Policy</span>
+        <span class="lang" data-lang="ja">プライバシーポリシー</span>
+      </a> /
+    -->
+
+      <a href="https://tatsu-see.github.io/" target="_blank">
+        <img src="https://tatsu-see.github.io/assets/icons/Tww.ico"
+         alt="Think while walking icon" width="16" height="16" style="transform: translateY(2px)">
+      </a> /
+      
+      <small>&copy; 2025 tatsu. All rights reserved.</small>
+    </footer>
+
 
 </body>
 </html>
