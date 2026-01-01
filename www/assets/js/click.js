@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (Number.isNaN(countdown) || countdown < 0) countdown = 0;
   let clickCount = parseInt(sessionStorage.getItem("bclick.clickCount"), 10);
   if (Number.isNaN(clickCount) || clickCount < 0) clickCount = 0;
+  let cycleTimerId = null;
 
   const setOperationEnabled = (enabled) => {
     if (stopButton) stopButton.disabled = !enabled;
@@ -31,10 +32,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  if (showClick) {
+    showClick.textContent = "";
+    for (let i = 0; i < clickCount; i += 1) {
+      const box = document.createElement("div");
+      box.className = "clickBox";
+      showClick.appendChild(box);
+    }
+  }
+
+  const startClickBoxCycle = () => {
+    const boxes = showClick ? Array.from(showClick.querySelectorAll(".clickBox")) : [];
+    if (boxes.length === 0) return;
+
+    let index = 0;
+    boxes.forEach((box) => box.classList.remove("active"));
+    boxes[0].classList.add("active");
+
+    cycleTimerId = setInterval(() => {
+      boxes[index].classList.remove("active");
+      index = (index + 1) % boxes.length;
+      boxes[index].classList.add("active");
+    }, 1000);
+  };
+
+  if (stopButton) {
+    stopButton.addEventListener("click", () => {
+      if (cycleTimerId !== null) {
+        clearInterval(cycleTimerId);
+        cycleTimerId = null;
+      }
+    });
+  }
+
   if (countdown <= 0) {
     updateCountdownDisplay(0);
     setOperationEnabled(true);
     setOverlayVisible(false);
+    startClickBoxCycle();
   } else {
     setOperationEnabled(false);
     setOverlayVisible(true);
@@ -47,18 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCountdownDisplay(0);
         setOperationEnabled(true);
         setOverlayVisible(false);
+        startClickBoxCycle();
         return;
       }
       updateCountdownDisplay(countdown);
     }, 1000);
-  }
-
-  if (showClick) {
-    showClick.textContent = "";
-    for (let i = 0; i < clickCount; i += 1) {
-      const box = document.createElement("div");
-      box.className = "clickBox";
-      showClick.appendChild(box);
-    }
   }
 });

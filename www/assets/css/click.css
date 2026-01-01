@@ -31,3 +31,7 @@
   border: 1px solid black;
   background: white;
 }
+
+.clickBox.active {
+  background: lightgreen;
+}
