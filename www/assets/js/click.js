@@ -1,7 +1,9 @@
+import { beep } from "/assets/lib/Beep.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const showClick = document.getElementById("showClick");
   const countdownText = document.getElementById("countdownText");
-  const stopButton = document.getElementById("stop");
+  const stopButton = document.getElementById("stopBtn");
   const operation = document.getElementById("operation");
   const countdownOverlay = document.getElementById("countdownOverlay");
 
@@ -10,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let clickCount = parseInt(sessionStorage.getItem("bclick.clickCount"), 10);
   if (Number.isNaN(clickCount) || clickCount < 0) clickCount = 0;
   let cycleTimerId = null;
+  let stopClickCount = 0;
 
   const setOperationEnabled = (enabled) => {
     if (stopButton) stopButton.disabled = !enabled;
@@ -48,19 +51,26 @@ document.addEventListener("DOMContentLoaded", () => {
     let index = 0;
     boxes.forEach((box) => box.classList.remove("active"));
     boxes[0].classList.add("active");
+    beep();
 
     cycleTimerId = setInterval(() => {
       boxes[index].classList.remove("active");
       index = (index + 1) % boxes.length;
       boxes[index].classList.add("active");
+      beep();
     }, 1000);
   };
 
   if (stopButton) {
     stopButton.addEventListener("click", () => {
-      if (cycleTimerId !== null) {
-        clearInterval(cycleTimerId);
-        cycleTimerId = null;
+      stopClickCount += 1;
+      if (stopClickCount === 1) {
+        if (cycleTimerId !== null) {
+          clearInterval(cycleTimerId);
+          cycleTimerId = null;
+        }
+      } else {
+        window.location.reload();
       }
     });
   }
