@@ -28,6 +28,22 @@ const KeyFrequencies = Object.freeze({
 });
 
 /**
+ * AudioContext を返す。
+ */
+let audioContext = null;
+
+const getAudioContext = () => {
+  if (!audioContext) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    audioContext = new Ctx();
+  }
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+  return audioContext;
+};
+
+/**
  * 最大音量を返す。
  * @returns 
  */
@@ -39,7 +55,7 @@ function getMaxVolume() {
  * クリック音を鳴らす。
  */
 function clickSound(volume = MaxVolume, key = "A5") {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const ctx = getAudioContext();
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   const now = ctx.currentTime;

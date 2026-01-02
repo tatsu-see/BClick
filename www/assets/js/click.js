@@ -96,6 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setOperationEnabled(false);
     setOverlayVisible(true);
     updateCountdownDisplay(countdown);
+
+    // 最初のクリック音
     clickSound( maxVolume / countdown, "A4" );
 
     // 1 秒ごとにカウントダウンする
