@@ -1,4 +1,4 @@
-import { clickSound, getMaxVolume } from "/assets/lib/Beep.js";
+import { clickSound, getMaxVolume } from "/assets/lib/Sound.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (Number.isNaN(countdown) || countdown < 0) countdown = 0;
   let clickCount = parseInt(sessionStorage.getItem("bclick.clickCount"), 10);
   if (Number.isNaN(clickCount) || clickCount < 0) clickCount = 0;
+  let tempo = parseInt(sessionStorage.getItem("bclick.tempo"), 10);
+  if (Number.isNaN(tempo) || tempo <= 0) tempo = 120;
+  const beatMs = 60000 / tempo;
   let cycleTimerId = null;
   let stopClickCount = 0;
 
@@ -48,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // クリックボックスの表示を変化させる処理を開始する。
   const startClickBoxCycle = () => {
     const boxes = showClick ? Array.from(showClick.querySelectorAll(".clickBox")) : [];
     if (boxes.length === 0) return;
@@ -62,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
       index = (index + 1) % boxes.length;
       boxes[index].classList.add("active");
       clickSound();
-    }, 1000);
+    }, beatMs);
   };
 
   if (stopButton) {
@@ -73,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
           clearInterval(cycleTimerId);
           cycleTimerId = null;
         }
+        stopButton.textContent = "再開";
       } else {
         window.location.reload();
       }
@@ -87,10 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
     startClickBoxCycle();
   } else {
     // カウントダウン開始
+    const maxVolume = getMaxVolume();
     setOperationEnabled(false);
     setOverlayVisible(true);
     updateCountdownDisplay(countdown);
-    clickSound();
+    clickSound( maxVolume / countdown, "A4" );
 
     // 1 秒ごとにカウントダウンする
     const timerId = setInterval(() => {
@@ -106,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       updateCountdownDisplay(countdown);
       // カウント中もクリック音を鳴らす。
-      clickSound( getMaxVolume() / countdown );
-    }, 1000);
+      clickSound( maxVolume / countdown, "A4" );
+    }, beatMs);
   }
 });
