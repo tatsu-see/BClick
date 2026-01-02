@@ -1,12 +1,15 @@
-import { beep } from "/assets/lib/Beep.js";
+import { clickSound, getMaxVolume } from "/assets/lib/Beep.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  // 要素の取得
   const showClick = document.getElementById("showClick");
   const countdownText = document.getElementById("countdownText");
   const stopButton = document.getElementById("stopBtn");
   const operation = document.getElementById("operation");
   const countdownOverlay = document.getElementById("countdownOverlay");
 
+  // 設定値を取得する。
   let countdown = parseInt(sessionStorage.getItem("bclick.countdown"), 10);
   if (Number.isNaN(countdown) || countdown < 0) countdown = 0;
   let clickCount = parseInt(sessionStorage.getItem("bclick.clickCount"), 10);
@@ -14,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let cycleTimerId = null;
   let stopClickCount = 0;
 
+  // カウントイン画面の表示
   const setOperationEnabled = (enabled) => {
     if (stopButton) stopButton.disabled = !enabled;
     if (operation) operation.setAttribute("aria-disabled", String(!enabled));
@@ -51,13 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let index = 0;
     boxes.forEach((box) => box.classList.remove("active"));
     boxes[0].classList.add("active");
-    beep();
+    clickSound();
 
     cycleTimerId = setInterval(() => {
       boxes[index].classList.remove("active");
       index = (index + 1) % boxes.length;
       boxes[index].classList.add("active");
-      beep();
+      clickSound();
     }, 1000);
   };
 
@@ -75,18 +79,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // カウントイン画面を表示する。
   if (countdown <= 0) {
     updateCountdownDisplay(0);
     setOperationEnabled(true);
     setOverlayVisible(false);
     startClickBoxCycle();
   } else {
+    // カウントダウン開始
     setOperationEnabled(false);
     setOverlayVisible(true);
     updateCountdownDisplay(countdown);
+    clickSound();
 
+    // 1 秒ごとにカウントダウンする
     const timerId = setInterval(() => {
       countdown -= 1;
+
       if (countdown <= 0) {
         clearInterval(timerId);
         updateCountdownDisplay(0);
@@ -96,6 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       updateCountdownDisplay(countdown);
+      // カウント中もクリック音を鳴らす。
+      clickSound( getMaxVolume() / countdown );
     }, 1000);
   }
 });

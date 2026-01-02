@@ -1,8 +1,18 @@
 
+const MaxVolume = 2.0;
+
 /**
- * Beep音を鳴らす。
+ * 最大音量を返す。
+ * @returns 
  */
-function beep() {
+function getMaxVolume() {
+  return MaxVolume;
+}
+
+/**
+ * クリック音を鳴らす。
+ */
+function clickSound(volume = MaxVolume) {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -13,7 +23,7 @@ function beep() {
   
   // 簡易エンベロープでアタック/リリースをつける
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(0.14, now + 0.015);
+  gain.gain.linearRampToValueAtTime(volume, now + 0.015);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
 
   osc.connect(gain);
@@ -23,4 +33,4 @@ function beep() {
   osc.stop(now + 0.13); // 余韻を少し残す
 }
 
-export { beep };
+export { clickSound, getMaxVolume };
