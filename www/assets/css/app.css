@@ -28,10 +28,12 @@ header {
   width:calc(100%-6px);
 
   font-size:18pt;
+  font-weight:900;
+  color:darkgreen;
 
-  border:3px solid green;
+  border:0px solid green;
   border-radius: 8px;
-  background-color: white;
+  background-color: mintcream;
 }
 
 footer {
@@ -41,9 +43,9 @@ footer {
 
   font-size:9pt;
 
-  border:3px solid green;
+  border:0px solid green;
   border-radius: 8px;
-
+  background-color: mintcream;
 }
 
 #preference {
@@ -51,8 +53,9 @@ footer {
   padding:3px;
   width:calc(100%-6px);
 
-  border:3px solid green;
+  border:0px solid green;
   border-radius: 8px;
+  background-color: mintcream;
 }
 
 #clicking {
@@ -60,6 +63,20 @@ footer {
   padding:3px;
   width:calc(100%-6px);
 
-  border:3px solid green;
+  border:0px solid green;
   border-radius: 8px;
+  background-color: mintcream;
+}
+
+#showClick {
+  margin:3px;
+
+  display: flex;
+  gap: 8px;
+
+  height:100px;
+
+  border:0px solid black;
+  border-radius: 8px;
+  background-color: mintcream;
 }

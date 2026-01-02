@@ -1,7 +1,7 @@
 import { clickSound, getMaxVolume } from "/assets/lib/Sound.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 要素の取得
+  // DOM要素の取得
   const showClick = document.getElementById("showClick");
   const countdownText = document.getElementById("countdownText");
   const startButton = document.getElementById("start");
@@ -12,10 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const clickCountSelect = document.getElementById("clickCount");
   const countdownSelect = document.getElementById("countdown");
 
+  // タイマーと状態
   let cycleTimerId = null;
   let countdownTimerId = null;
   let isRunning = false;
 
+  // 値の読み取りユーティリティ
   const getNumberValue = (value, fallback) => {
     const parsed = parseInt(value, 10);
     return Number.isNaN(parsed) ? fallback : parsed;
@@ -27,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return getNumberValue(stored, fallback);
   };
 
+  // 現在の設定値
   const getTempo = () => {
     const value = getSettingValue(tempoInput, "bclick.tempo", 120);
     return value > 0 ? value : 120;
@@ -42,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return value >= 0 ? value : 0;
   };
 
+  // UI更新
   const setOperationEnabled = (enabled) => {
     if (startButton) startButton.disabled = !enabled;
     if (stopButton) stopButton.disabled = !enabled;
@@ -64,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // タイマー停止
   const clearTimers = () => {
     if (cycleTimerId !== null) {
       clearInterval(cycleTimerId);
@@ -75,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // クリックボックス描画
   const renderClickBoxes = (count) => {
     if (!showClick) return;
     showClick.textContent = "";
@@ -85,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // クリックボックスのループ再生
   const startClickBoxCycle = (beatMs) => {
     const boxes = showClick ? Array.from(showClick.querySelectorAll(".clickBox")) : [];
     if (boxes.length === 0) return;
@@ -102,6 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, beatMs);
   };
 
+  // 再生停止
   const stopPlayback = () => {
     clearTimers();
     isRunning = false;
@@ -111,6 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (stopButton) stopButton.textContent = "開始";
   };
 
+  // 再生開始
   const startPlayback = () => {
     const tempo = getTempo();
     const beatMs = 60000 / tempo;
@@ -153,6 +162,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, beatMs);
   };
 
+  // 再生トグル
   const togglePlayback = () => {
     if (isRunning) {
       stopPlayback();
@@ -161,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
     startPlayback();
   };
 
+  // イベント登録
   if (startButton) {
     startButton.addEventListener("click", togglePlayback);
   }
