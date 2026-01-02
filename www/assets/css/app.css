@@ -1,6 +1,14 @@
 
 html, body {
   font-size: 18pt;
+  font-family: "Baloo 2", "M PLUS Rounded 1c", "Segoe UI", sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 body {

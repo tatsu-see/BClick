@@ -1,27 +1,49 @@
 import { clickSound, getMaxVolume } from "/assets/lib/Sound.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-
   // 要素の取得
   const showClick = document.getElementById("showClick");
   const countdownText = document.getElementById("countdownText");
+  const startButton = document.getElementById("start");
   const stopButton = document.getElementById("stopBtn");
   const operation = document.getElementById("operation");
   const countdownOverlay = document.getElementById("countdownOverlay");
+  const tempoInput = document.getElementById("tempo");
+  const clickCountSelect = document.getElementById("clickCount");
+  const countdownSelect = document.getElementById("countdown");
 
-  // 設定値を取得する。
-  let countdown = parseInt(sessionStorage.getItem("bclick.countdown"), 10);
-  if (Number.isNaN(countdown) || countdown < 0) countdown = 0;
-  let clickCount = parseInt(sessionStorage.getItem("bclick.clickCount"), 10);
-  if (Number.isNaN(clickCount) || clickCount < 0) clickCount = 0;
-  let tempo = parseInt(sessionStorage.getItem("bclick.tempo"), 10);
-  if (Number.isNaN(tempo) || tempo <= 0) tempo = 120;
-  const beatMs = 60000 / tempo;
   let cycleTimerId = null;
-  let stopClickCount = 0;
+  let countdownTimerId = null;
+  let isRunning = false;
 
-  // カウントイン画面の表示
+  const getNumberValue = (value, fallback) => {
+    const parsed = parseInt(value, 10);
+    return Number.isNaN(parsed) ? fallback : parsed;
+  };
+
+  const getSettingValue = (inputEl, storageKey, fallback) => {
+    if (inputEl) return getNumberValue(inputEl.value, fallback);
+    const stored = sessionStorage.getItem(storageKey);
+    return getNumberValue(stored, fallback);
+  };
+
+  const getTempo = () => {
+    const value = getSettingValue(tempoInput, "bclick.tempo", 120);
+    return value > 0 ? value : 120;
+  };
+
+  const getClickCount = () => {
+    const value = getSettingValue(clickCountSelect, "bclick.clickCount", 0);
+    return value >= 0 ? value : 0;
+  };
+
+  const getCountdown = () => {
+    const value = getSettingValue(countdownSelect, "bclick.countdown", 0);
+    return value >= 0 ? value : 0;
+  };
+
   const setOperationEnabled = (enabled) => {
+    if (startButton) startButton.disabled = !enabled;
     if (stopButton) stopButton.disabled = !enabled;
     if (operation) operation.setAttribute("aria-disabled", String(!enabled));
   };
@@ -42,17 +64,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  if (showClick) {
+  const clearTimers = () => {
+    if (cycleTimerId !== null) {
+      clearInterval(cycleTimerId);
+      cycleTimerId = null;
+    }
+    if (countdownTimerId !== null) {
+      clearInterval(countdownTimerId);
+      countdownTimerId = null;
+    }
+  };
+
+  const renderClickBoxes = (count) => {
+    if (!showClick) return;
     showClick.textContent = "";
-    for (let i = 0; i < clickCount; i += 1) {
+    for (let i = 0; i < count; i += 1) {
       const box = document.createElement("div");
       box.className = "clickBox";
       showClick.appendChild(box);
     }
-  }
+  };
 
-  // クリックボックスの表示を変化させる処理を開始する。
-  const startClickBoxCycle = () => {
+  const startClickBoxCycle = (beatMs) => {
     const boxes = showClick ? Array.from(showClick.querySelectorAll(".clickBox")) : [];
     if (boxes.length === 0) return;
 
@@ -69,52 +102,74 @@ document.addEventListener("DOMContentLoaded", () => {
     }, beatMs);
   };
 
-  if (stopButton) {
-    stopButton.addEventListener("click", () => {
-      stopClickCount += 1;
-      if (stopClickCount === 1) {
-        if (cycleTimerId !== null) {
-          clearInterval(cycleTimerId);
-          cycleTimerId = null;
-        }
-        stopButton.textContent = "再開";
-      } else {
-        window.location.reload();
-      }
-    });
-  }
-
-  // カウントイン画面を表示する。
-  if (countdown <= 0) {
-    updateCountdownDisplay(0);
-    setOperationEnabled(true);
+  const stopPlayback = () => {
+    clearTimers();
+    isRunning = false;
     setOverlayVisible(false);
-    startClickBoxCycle();
-  } else {
-    // カウントダウン開始
+    setOperationEnabled(true);
+    if (startButton) startButton.textContent = "開始";
+    if (stopButton) stopButton.textContent = "開始";
+  };
+
+  const startPlayback = () => {
+    const tempo = getTempo();
+    const beatMs = 60000 / tempo;
+    const clickCount = getClickCount();
+    let countdown = getCountdown();
     const maxVolume = getMaxVolume();
-    setOperationEnabled(false);
+
+    renderClickBoxes(clickCount);
+    isRunning = true;
+    if (startButton) startButton.textContent = "停止";
+    if (stopButton) stopButton.textContent = "停止";
+    setOperationEnabled(true);
+
+    if (countdown <= 0) {
+      updateCountdownDisplay(0);
+      setOverlayVisible(false);
+      startClickBoxCycle(beatMs);
+      return;
+    }
+
     setOverlayVisible(true);
     updateCountdownDisplay(countdown);
+    // 初回の音切れ回避用のウォームアップ
+    clickSound(0.02, "A4");
+    clickSound(maxVolume / countdown, "A4");
 
-    // 最初のクリック音
-    clickSound( maxVolume / countdown, "A4" );
-
-    // 1 秒ごとにカウントダウンする
-    const timerId = setInterval(() => {
+    countdownTimerId = setInterval(() => {
       countdown -= 1;
 
       if (countdown <= 0) {
-        clearInterval(timerId);
+        clearInterval(countdownTimerId);
+        countdownTimerId = null;
         updateCountdownDisplay(0);
-        setOperationEnabled(true);
         setOverlayVisible(false);
-        startClickBoxCycle();
+        startClickBoxCycle(beatMs);
         return;
       }
       updateCountdownDisplay(countdown);
-      // カウント中もクリック音を鳴らす。
-      clickSound( maxVolume / countdown, "A4" );
+      clickSound(maxVolume / countdown, "A4");
     }, beatMs);
+  };
+
+  const togglePlayback = () => {
+    if (isRunning) {
+      stopPlayback();
+      return;
+    }
+    startPlayback();
+  };
+
+  if (startButton) {
+    startButton.addEventListener("click", togglePlayback);
+  }
+
+  if (stopButton) {
+    stopButton.addEventListener("click", togglePlayback);
+  }
+
+  if (!startButton) {
+    startPlayback();
   }
 });
