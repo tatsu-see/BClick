@@ -83,13 +83,13 @@ function clickSound(volume = MaxVolume, key = "A5") {
   // 簡易エンベロープでアタック/リリースをつける
   gain.gain.setValueAtTime(0.0001, now);
   gain.gain.linearRampToValueAtTime(volume, now + 0.015);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
 
   osc.start();
-  osc.stop(now + 0.13); // 余韻を少し残す
+  osc.stop(now + 0.33); // 余韻を少し残す
 }
 
 export { clickSound, getMaxVolume, KeyFrequencies, warmUpAudioContext };

@@ -16,7 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let cycleTimerId = null;
   let countdownTimerId = null;
   let isRunning = false;
+  let cycleBoxes = [];
+  let cycleIndex = 0;
+  let currentBeatMs = null;
 
+  // コード
+  // ギターのコードは 「三和音」「四和音」「テンション」「分数」「変化系」に分類されるらしい。
+  // 三和音系（トライアド）が基本らしいので、まずそこから使う。
   const naturalMajorChordPool = ["C", "D", "E", "F", "G", "A", "B"];
   const naturalMinorChordPool = ["Cm", "Dm", "Em", "Fm", "Gm", "Am", "Bm"];
   const naturalChordPool = [...naturalMajorChordPool, ...naturalMinorChordPool];
@@ -85,15 +91,22 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // タイマー停止
-  const clearTimers = () => {
+  const clearCycleTimer = () => {
     if (cycleTimerId !== null) {
       clearInterval(cycleTimerId);
       cycleTimerId = null;
     }
+  };
+
+  const clearTimers = () => {
+    clearCycleTimer();
     if (countdownTimerId !== null) {
       clearInterval(countdownTimerId);
       countdownTimerId = null;
     }
+    cycleBoxes = [];
+    cycleIndex = 0;
+    currentBeatMs = null;
   };
 
   // クリックボックス描画
@@ -109,22 +122,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  const startCycleTimer = () => {
+    if (cycleBoxes.length === 0 || currentBeatMs === null) return;
+    clearCycleTimer();
+    cycleTimerId = setInterval(() => {
+      cycleBoxes[cycleIndex].classList.remove("active");
+      cycleIndex = (cycleIndex + 1) % cycleBoxes.length;
+      cycleBoxes[cycleIndex].classList.add("active");
+      clickSound();
+    }, currentBeatMs);
+  };
+
   // クリックボックスのループ再生
   const startClickBoxCycle = (beatMs) => {
     const boxes = showClick ? Array.from(showClick.querySelectorAll(".clickBox")) : [];
     if (boxes.length === 0) return;
 
-    let index = 0;
-    boxes.forEach((box) => box.classList.remove("active"));
-    boxes[0].classList.add("active");
+    cycleBoxes = boxes;
+    cycleIndex = 0;
+    currentBeatMs = beatMs;
+
+    cycleBoxes.forEach((box) => box.classList.remove("active"));
+    cycleBoxes[0].classList.add("active");
     clickSound();
 
-    cycleTimerId = setInterval(() => {
-      boxes[index].classList.remove("active");
-      index = (index + 1) % boxes.length;
-      boxes[index].classList.add("active");
-      clickSound();
-    }, beatMs);
+    startCycleTimer();
+  };
+
+  const updateTempo = (tempo) => {
+    if (!Number.isFinite(tempo) || tempo <= 0) return;
+    currentBeatMs = 60000 / tempo;
+    if (isRunning && cycleTimerId !== null) {
+      startCycleTimer();
+    }
   };
 
   // 再生停止
@@ -148,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const tempo = getTempo();
     const beatMs = 60000 / tempo;
+    currentBeatMs = beatMs;
     const clickCount = getClickCount();
     let countdown = getCountdown();
     const maxVolume = getMaxVolume();
@@ -158,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (stopButton) stopButton.textContent = "停止";
     setOperationEnabled(true);
 
+    // カウントダウンが0の場合
     if (countdown <= 0) {
       updateCountdownDisplay(0);
       setOverlayVisible(false);
@@ -165,6 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // カウントダウンが0より大きい場合
     setOverlayVisible(true);
     updateCountdownDisplay(countdown);
     // 初回の音切れ回避用のウォームアップ
@@ -179,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
         countdownTimerId = null;
         updateCountdownDisplay(0);
         setOverlayVisible(false);
-        startClickBoxCycle(beatMs);
+        startClickBoxCycle(currentBeatMs ?? beatMs);
         return;
       }
       updateCountdownDisplay(countdown);
@@ -208,4 +241,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!startButton) {
     startPlayback();
   }
+
+  document.addEventListener("bclick:tempochange", (event) => {
+    const nextTempo = getNumberValue(event?.detail?.tempo, getTempo());
+    updateTempo(nextTempo);
+  });
 });

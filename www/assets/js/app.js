@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number.isNaN(parsed) ? fallback : parsed;
   };
 
+  const notifyTempoChange = (value) => {
+    document.dispatchEvent(new CustomEvent("bclick:tempochange", { detail: { tempo: value } }));
+  };
+
   const setTempoDisplay = (value) => {
     if (!tempoInput) return;
     tempoInput.textContent = value.toString();
@@ -38,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextValue = Math.min(maxValue, Math.max(minValue, baseValue + delta));
     setTempoDisplay(nextValue);
     store.setTempo(nextValue);
+    notifyTempoChange(nextValue);
   };
 
   if (tempoInput) {
