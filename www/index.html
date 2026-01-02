@@ -35,24 +35,14 @@
   </header>
   <main>
     <div id="preference">
-      カウントダウン：
-      <select id="countdown" default="1">
-        <option value="0">0</option>
-        <option value="1" selected>1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-      </select>
+      <!--  BPM テンポ設定 -->
+      BPM:
+      <input type="number" id="tempo" min="40" max="240" value="120" step="1">
 
       <br>
 
-      クリック数：
+      <!--  周回クリック数 -->
+      クリック数:
       <select id="clickCount" default="4">
         <option value="0">0</option>
         <option value="1">1</option>
@@ -64,6 +54,26 @@
         <option value="7">7</option>
         <option value="8">8</option>
       </select>
+
+      <br>
+
+      <!--  1 小節カウント（シングルカウント） -->
+      カウントイン:
+      <select id="countdown" default="4">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+
+      <br>
 
     </div>
     <div id="clicking">
