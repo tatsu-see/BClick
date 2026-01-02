@@ -1,6 +1,6 @@
 // Ver. 1.0.0
 
-class OSDetector {
+export class OSDetector {
 
     constructor() {
         this.userAgent = navigator.userAgent || navigator.vendor || window.opera;

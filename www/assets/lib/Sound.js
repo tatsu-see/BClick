@@ -1,5 +1,9 @@
 
+import { OSDetector } from "./OSDetector.js";
+
 const MaxVolume = 2.0;
+const AndroidVolumeMultiplier = 2.0;
+const osDetector = new OSDetector();    // Android / それ以外（windows, iPhone など）判別用
 const KeyFrequencies = Object.freeze({
   A4: 440.0,      // 基準音ラ
   "A#4": 466.16,
@@ -65,7 +69,7 @@ const warmUpAudioContext = () => {
  * @returns 
  */
 function getMaxVolume() {
-  return MaxVolume;
+  return osDetector.getOS() === "Android" ? MaxVolume * AndroidVolumeMultiplier : MaxVolume;
 }
 
 /**
