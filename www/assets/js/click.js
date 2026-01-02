@@ -37,15 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const getSettingValue = (inputEl, storageKey, fallback) => {
-    if (inputEl) return getNumberValue(inputEl.value, fallback);
+    if (inputEl) {
+      const rawValue = "value" in inputEl ? inputEl.value : inputEl.textContent;
+      return getNumberValue(rawValue, fallback);
+    }
     const stored = sessionStorage.getItem(storageKey);
     return getNumberValue(stored, fallback);
   };
 
   // 現在の設定値
   const getTempo = () => {
-    const value = getSettingValue(tempoInput, "bclick.tempo", 120);
-    return value > 0 ? value : 120;
+    const value = getSettingValue(tempoInput, "bclick.tempo", 60);
+    return value > 0 ? value : 60;
   };
 
   const getClickCount = () => {

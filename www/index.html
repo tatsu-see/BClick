@@ -41,7 +41,11 @@
     <div id="preference">
       <!--  BPM テンポ設定 -->
       BPM:
-      <input type="number" id="tempo" min="40" max="240" value="120" step="1">
+      <button type="button" id="tempoDown10">-10</button>
+      <button type="button" id="tempoDown">-1</button>
+      <div id="tempo" data-min="30" data-max="240">60</div>
+      <button type="button" id="tempoUp">+1</button>
+      <button type="button" id="tempoUp10">+10</button>
 
       <br>
 
@@ -92,7 +96,7 @@
 
   </main>
   <footer>
-    Ver. 2 /
+    Ver. 3 /
 
       <!--
       <a href="/manual.html" target="_blank">

@@ -2,6 +2,7 @@
 html, body {
   font-size: 18pt;
   font-family: "Baloo 2", "M PLUS Rounded 1c", "Segoe UI", sans-serif;
+  zoom: 1;
 }
 
 button,
@@ -56,6 +57,16 @@ footer {
   border:0px solid green;
   border-radius: 8px;
   background-color: mintcream;
+}
+
+#tempo {
+  display: inline-block;
+  width: 30px;
+  padding: 2px 4px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  background-color: white;
+  text-align: center;
 }
 
 #clicking {
