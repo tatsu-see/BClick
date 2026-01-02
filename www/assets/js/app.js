@@ -1,44 +1,28 @@
 
+import { ConfigStore } from "./store.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const startButton = document.getElementById("start");
   if (!startButton) return;
 
+  const store = new ConfigStore();
   const tempoInput = document.getElementById("tempo");
   const clickCountSelect = document.getElementById("clickCount");
   const countdownSelect = document.getElementById("countdown");
 
-  const loadNumber = (key, fallback) => {
-    const stored = localStorage.getItem(key);
-    if (stored === null) return fallback;
-    const value = parseInt(stored, 10);
-    return Number.isNaN(value) ? fallback : value;
-  };
-
   if (tempoInput) {
-    const tempoValue = loadNumber("bclick.tempo", parseInt(tempoInput.value, 10));
-    if (!Number.isNaN(tempoValue)) tempoInput.value = String(tempoValue);
-    tempoInput.addEventListener("change", () => {
-      const value = parseInt(tempoInput.value, 10);
-      if (!Number.isNaN(value)) localStorage.setItem("bclick.tempo", String(value));
-    });
+    store.loadTempoInput(tempoInput);
+    tempoInput.addEventListener("change", () => store.saveTempoInput(tempoInput));
   }
 
   if (clickCountSelect) {
-    const clickCountValue = loadNumber("bclick.clickCount", parseInt(clickCountSelect.value, 10));
-    if (!Number.isNaN(clickCountValue)) clickCountSelect.value = String(clickCountValue);
-    clickCountSelect.addEventListener("change", () => {
-      const value = parseInt(clickCountSelect.value, 10);
-      if (!Number.isNaN(value)) localStorage.setItem("bclick.clickCount", String(value));
-    });
+    store.loadClickCountInput(clickCountSelect);
+    clickCountSelect.addEventListener("change", () => store.saveClickCountInput(clickCountSelect));
   }
 
   if (countdownSelect) {
-    const countdownValue = loadNumber("bclick.countdown", parseInt(countdownSelect.value, 10));
-    if (!Number.isNaN(countdownValue)) countdownSelect.value = String(countdownValue);
-    countdownSelect.addEventListener("change", () => {
-      const value = parseInt(countdownSelect.value, 10);
-      if (!Number.isNaN(value)) localStorage.setItem("bclick.countdown", String(value));
-    });
+    store.loadCountInSecInput(countdownSelect);
+    countdownSelect.addEventListener("change", () => store.saveCountInSecInput(countdownSelect));
   }
 
   startButton.addEventListener("click", () => {

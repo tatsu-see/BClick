@@ -8,7 +8,68 @@ export class ConfigStore extends LocalStore {
   constructor() {
     super();
     this.keys = {
+      Tempo: 'bclick.tempo',
+      ClickCount: 'bclick.clickCount',
+      Countdown: 'bclick.countdown',
     };
+  }
+
+  getNumberSetting(key) {
+    const saved = this.getSettings(key);
+    return typeof saved === 'number' && !Number.isNaN(saved) ? saved : null;
+  }
+
+  setNumberSetting(key, value) {
+    if (!Number.isFinite(value)) return;
+    this.saveSettings(key, Math.trunc(value));
+  }
+
+  /**
+   * BPMテンポのI/O
+   */
+  getTempo() {
+    return this.getNumberSetting(this.keys.Tempo);
+  }
+
+  setTempo(value) {
+    if (!Number.isFinite(value) || value < 0) return;
+    this.setNumberSetting(this.keys.Tempo, value);
+  }
+
+  loadTempoInput(inputEl) {
+    const saved = this.getTempo();
+    if (saved === null) return;
+    inputEl.value = saved.toString();
+  }
+
+  saveTempoInput(inputEl) {
+    const value = parseInt(inputEl.value, 10);
+    if (Number.isNaN(value) || value < 0) return;
+    this.setTempo(value);
+  }
+
+  /**
+   * クリック数のI/O
+   */
+  getClickCount() {
+    return this.getNumberSetting(this.keys.ClickCount);
+  }
+
+  setClickCount(value) {
+    if (!Number.isFinite(value) || value < 0) return;
+    this.setNumberSetting(this.keys.ClickCount, value);
+  }
+
+  loadClickCountInput(inputEl) {
+    const saved = this.getClickCount();
+    if (saved === null) return;
+    inputEl.value = saved.toString();
+  }
+
+  saveClickCountInput(inputEl) {
+    const value = parseInt(inputEl.value, 10);
+    if (Number.isNaN(value) || value < 0) return;
+    this.setClickCount(value);
   }
 
   /**
@@ -16,13 +77,12 @@ export class ConfigStore extends LocalStore {
    * @returns 
    */
   getCountInSec() {
-    const saved = this.getSettings(this.keys.CountInSec);
-    return typeof saved === 'number' && !Number.isNaN(saved) ? saved : null;
+    return this.getNumberSetting(this.keys.Countdown);
   }
 
   setCountInSec(value) {
     if (!Number.isFinite(value) || value < 0) return;
-    this.saveSettings(this.keys.CountInSec, Math.trunc(value));
+    this.setNumberSetting(this.keys.Countdown, value);
   }
 
   loadCountInSecInput(inputEl) {

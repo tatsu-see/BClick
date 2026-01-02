@@ -1,4 +1,4 @@
-// Ver. 1.0.0
+// Ver. 1.0.1
 
 /**
  * localStorageのラッパークラス。
@@ -34,6 +34,10 @@ export class LocalStore {
         } catch (e) {
             console.warn('保存に失敗しました', e);
         }
+    }
+
+    saveLastTime() {
+        // Optional hook for subclasses.
     }
 
     /**
