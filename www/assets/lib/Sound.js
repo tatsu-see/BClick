@@ -31,6 +31,7 @@ const KeyFrequencies = Object.freeze({
  * AudioContext を返す。
  */
 let audioContext = null;
+let didWarmUp = false;
 
 const getAudioContext = () => {
   if (!audioContext) {
@@ -41,6 +42,22 @@ const getAudioContext = () => {
     audioContext.resume();
   }
   return audioContext;
+};
+
+const warmUpAudioContext = () => {
+  if (didWarmUp) return;
+  didWarmUp = true;
+  const ctx = getAudioContext();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const now = ctx.currentTime;
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.linearRampToValueAtTime(0.02, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(now + 0.06);
 };
 
 /**
@@ -75,4 +92,4 @@ function clickSound(volume = MaxVolume, key = "A5") {
   osc.stop(now + 0.13); // 余韻を少し残す
 }
 
-export { clickSound, getMaxVolume, KeyFrequencies };
+export { clickSound, getMaxVolume, KeyFrequencies, warmUpAudioContext };

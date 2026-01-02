@@ -1,4 +1,4 @@
-import { clickSound, getMaxVolume } from "/assets/lib/Sound.js";
+import { clickSound, getMaxVolume, warmUpAudioContext } from "/assets/lib/Sound.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得
@@ -119,8 +119,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (stopButton) stopButton.textContent = "開始";
   };
 
+  // audioContextのウォームアップ
+  warmUpAudioContext();
+
   // 再生開始
   const startPlayback = () => {
+
+    // audioContextのウォームアップ
+    warmUpAudioContext();
+
     const tempo = getTempo();
     const beatMs = 60000 / tempo;
     const clickCount = getClickCount();
