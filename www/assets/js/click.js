@@ -17,6 +17,19 @@ document.addEventListener("DOMContentLoaded", () => {
   let countdownTimerId = null;
   let isRunning = false;
 
+  const naturalMajorChordPool = ["C", "D", "E", "F", "G", "A", "B"];
+  const naturalMinorChordPool = ["Cm", "Dm", "Em", "Fm", "Gm", "Am", "Bm"];
+  const naturalChordPool = [...naturalMajorChordPool, ...naturalMinorChordPool];
+
+  const sharpMajorChordPool = ["C#", "F#", "G#", "A#"];
+  const sharpMinorChordPool = ["C#m", "D#m", "F#m", "G#m", "A#m"];
+  const sharpChordPool = [...sharpMajorChordPool, ...sharpMinorChordPool];
+
+  const flatMajorChordPool = ["Db", "Eb", "Gb", "Ab", "Bb", "Cb"];
+  const flatMinorChordPool = ["Ebm", "Abm", "Bbm"];
+  const flatChordPool = [...flatMajorChordPool, ...flatMinorChordPool];
+  const chordPool = naturalMajorChordPool;
+
   // 値の読み取りユーティリティ
   const getNumberValue = (value, fallback) => {
     const parsed = parseInt(value, 10);
@@ -87,6 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < count; i += 1) {
       const box = document.createElement("div");
       box.className = "clickBox";
+      const chord = chordPool[Math.floor(Math.random() * chordPool.length)];
+      box.textContent = chord;
       showClick.appendChild(box);
     }
   };
