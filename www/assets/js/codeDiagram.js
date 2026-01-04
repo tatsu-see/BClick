@@ -86,7 +86,16 @@ document.addEventListener("DOMContentLoaded", () => {
     showCodeDiagramButton.addEventListener("click", () => {
       const newTab = window.open("/codeDiagram.html", "_blank", "noopener,noreferrer");
       if (!newTab) {
-      // window.location.href = "/codeDiagram.html";
+        window.location.href = "/codeDiagram.html";
+      }
+    });
+  }
+
+  if (closeCodeDiagramButton) {
+    closeCodeDiagramButton.addEventListener("click", () => {
+      window.close();
+      if (!window.closed) {
+        window.location.href = "/";
       }
     });
   }
