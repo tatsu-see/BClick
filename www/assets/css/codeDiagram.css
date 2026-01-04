@@ -137,3 +137,29 @@ header {
   border: 2px solid #111;
   box-sizing: border-box;
 }
+
+.mute {
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+
+.mute::before,
+.mute::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 2px;
+  background-color: #111;
+  transform-origin: center;
+}
+
+.mute::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.mute::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
