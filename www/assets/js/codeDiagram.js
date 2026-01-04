@@ -1,75 +1,121 @@
 document.addEventListener("DOMContentLoaded", () => {
   const chordSelect = document.getElementById("chordSelect");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
+  const fretboard = document.querySelector(".fretboard");
 
   const chordPositions = {
-    C: [
-      { string: 1, fret: 0 },
-      { string: 2, fret: 1 },
-      { string: 3, fret: 0 },
-      { string: 4, fret: 2 },
-      { string: 5, fret: 3 },
-      { string: 6, fret: -1 },
-    ],
-    D: [
-      { string: 1, fret: 2 },
-      { string: 2, fret: 3 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 0 },
-      { string: 5, fret: -1 },
-      { string: 6, fret: -1 },
-    ],
-    E: [
-      { string: 1, fret: 0 },
-      { string: 2, fret: 0 },
-      { string: 3, fret: 1 },
-      { string: 4, fret: 2 },
-      { string: 5, fret: 2 },
-      { string: 6, fret: 0 },
-    ],
-    F: [
-      { string: 1, fret: 1 },
-      { string: 2, fret: 1 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 3 },
-      { string: 5, fret: 3 },
-    ],
-    G: [
-      { string: 1, fret: 3 },
-      { string: 2, fret: 0 },
-      { string: 5, fret: 2 },
-      { string: 3, fret: 0 },
-      { string: 4, fret: 0 },
-      { string: 6, fret: 3 },
-    ],
-    A: [
-      { string: 1, fret: 0 },
-      { string: 2, fret: 2 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 2 },
-      { string: 5, fret: 0 },
-      { string: 6, fret: -1 },
-    ],
-    B: [
-      { string: 1, fret: 2 },
-      { string: 2, fret: 4 },
-      { string: 3, fret: 4 },
-      { string: 4, fret: 4 },
-      { string: 5, fret: 2 },
-      { string: 6, fret: -1 },
-    ],
+    C: {
+      positions: [
+        { string: 1, fret: 0 },
+        { string: 2, fret: 1 },
+        { string: 3, fret: 0 },
+        { string: 4, fret: 2 },
+        { string: 5, fret: 3 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    D: {
+      positions: [
+        { string: 1, fret: 2 },
+        { string: 2, fret: 3 },
+        { string: 3, fret: 2 },
+        { string: 4, fret: 0 },
+        { string: 5, fret: -1 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    E: {
+      positions: [
+        { string: 1, fret: 0 },
+        { string: 2, fret: 0 },
+        { string: 3, fret: 1 },
+        { string: 4, fret: 2 },
+        { string: 5, fret: 2 },
+        { string: 6, fret: 0 },
+      ],
+    },
+    F: {
+      positions: [
+        { string: 3, fret: 2 },
+        { string: 4, fret: 3 },
+        { string: 5, fret: 3 },
+      ],
+      barres: [
+        { fret: 1, fromString: 1, toString: 6 },
+      ],
+    },
+    G: {
+      positions: [
+        { string: 1, fret: 3 },
+        { string: 2, fret: 0 },
+        { string: 5, fret: 2 },
+        { string: 3, fret: 0 },
+        { string: 4, fret: 0 },
+        { string: 6, fret: 3 },
+      ],
+    },
+    A: {
+      positions: [
+        { string: 1, fret: 0 },
+        { string: 2, fret: 2 },
+        { string: 3, fret: 2 },
+        { string: 4, fret: 2 },
+        { string: 5, fret: 0 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    B: {
+      positions: [
+        { string: 2, fret: 4 },
+        { string: 3, fret: 4 },
+        { string: 4, fret: 4 },
+        { string: 5, fret: 2 },
+        { string: 6, fret: -1 },
+      ],
+      barres: [
+        { fret: 2, fromString: 1, toString: 5 },
+      ],
+    },
   };
 
   const clearFingers = () => {
     document.querySelectorAll(".fretCell .finger, .fretCell .mute").forEach((mark) => mark.remove());
+    document.querySelectorAll(".fretboard .barre").forEach((barre) => barre.remove());
+  };
+
+  const renderBarres = (barres) => {
+    if (!fretboard || !barres) return;
+    const fretboardRect = fretboard.getBoundingClientRect();
+    const barreWidth = 16;
+
+    barres.forEach(({ fret, fromString, toString }) => {
+      const startCell = document.getElementById(`fret-s${fromString}-f${fret}`);
+      const endCell = document.getElementById(`fret-s${toString}-f${fret}`);
+      if (!startCell || !endCell) return;
+
+      const startRect = startCell.getBoundingClientRect();
+      const endRect = endCell.getBoundingClientRect();
+      const left = startRect.left - fretboardRect.left + (startRect.width - barreWidth) / 2;
+      const top = startRect.top - fretboardRect.top + (startRect.height - barreWidth) / 2;
+      const bottom = endRect.top - fretboardRect.top + (endRect.height - barreWidth) / 2;
+
+      const barre = document.createElement("div");
+      barre.className = "barre";
+      barre.style.left = `${left}px`;
+      barre.style.top = `${top}px`;
+      barre.style.width = `${barreWidth}px`;
+      barre.style.height = `${bottom - top + barreWidth}px`;
+      fretboard.appendChild(barre);
+    });
   };
 
   const renderChord = (chordName) => {
     clearFingers();
-    const positions = chordPositions[chordName];
-    if (!positions) return;
+    const chord = chordPositions[chordName];
+    if (!chord) return;
+    renderBarres(chord.barres);
 
-    positions.forEach(({ string, fret }) => {
+    chord.positions.forEach(({ string, fret }) => {
       const targetFret = fret < 0 ? 0 : fret;
       const cell = document.getElementById(`fret-s${string}-f${targetFret}`);
       if (!cell) return;

@@ -38,6 +38,7 @@ header {
   grid-template-rows: repeat(6, 32px) 20px;
   gap: 0;
   justify-content: center;
+  position: relative;
 }
 
 .fretLabel,
@@ -130,6 +131,8 @@ header {
   height: 16px;
   border-radius: 50%;
   background-color: #111;
+  position: relative;
+  z-index: 3;
 }
 
 .fingerOpen {
@@ -142,6 +145,7 @@ header {
   position: relative;
   width: 16px;
   height: 16px;
+  z-index: 3;
 }
 
 .mute::before,
@@ -162,4 +166,11 @@ header {
 
 .mute::after {
   transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.barre {
+  position: absolute;
+  background-color: #111;
+  border-radius: 8px;
+  z-index: 2;
 }
