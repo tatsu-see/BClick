@@ -4,8 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得
   const showClick = document.getElementById("showClick");
   const countdownText = document.getElementById("countdownText");
-  const startButton = document.getElementById("start");
-  const stopButton = document.getElementById("stopBtn");
+  const setClickButton = document.getElementById("setClick");
+  const startClickButton = document.getElementById("startClick");
+  const stopClickButton = document.getElementById("stopClickart");
   const operation = document.getElementById("operation");
   const countdownOverlay = document.getElementById("countdownOverlay");
   const tempoInput = document.getElementById("tempo");
@@ -19,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let cycleBoxes = [];
   let cycleIndex = 0;
   let currentBeatMs = null;
+  let isPaused = false;
 
   // コード
   // ギターのコードは 「三和音」「四和音」「テンション」「分数」「変化系」に分類されるらしい。
@@ -69,8 +71,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // UI更新
   const setOperationEnabled = (enabled) => {
-    if (startButton) startButton.disabled = !enabled;
-    if (stopButton) stopButton.disabled = !enabled;
+    if (setClickButton) setClickButton.disabled = !enabled;
+    if (startClickButton) startClickButton.disabled = !enabled;
+    if (stopClickButton) stopClickButton.disabled = !enabled;
     if (operation) operation.setAttribute("aria-disabled", String(!enabled));
   };
 
@@ -107,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cycleBoxes = [];
     cycleIndex = 0;
     currentBeatMs = null;
+    isPaused = false;
   };
 
   // クリックボックス描画
@@ -157,24 +161,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // 再生停止
-  const stopPlayback = () => {
-    clearTimers();
-    isRunning = false;
-    setOverlayVisible(false);
-    setOperationEnabled(true);
-    if (startButton) startButton.textContent = "開始";
-    if (stopButton) stopButton.textContent = "開始";
-  };
-
   // audioContextのウォームアップ
   warmUpAudioContext();
 
   // 再生開始
   const startPlayback = () => {
 
+    if (isRunning) {
+      return;
+    }
+
     // audioContextのウォームアップ
     warmUpAudioContext();
+
+    if (isPaused && cycleBoxes.length > 0 && currentBeatMs !== null) {
+      isRunning = true;
+      isPaused = false;
+      setOperationEnabled(true);
+      startCycleTimer();
+      return;
+    }
 
     const tempo = getTempo();
     const beatMs = 60000 / tempo;
@@ -185,8 +191,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderClickBoxes(clickCount);
     isRunning = true;
-    if (startButton) startButton.textContent = "停止";
-    if (stopButton) stopButton.textContent = "停止";
     setOperationEnabled(true);
 
     // カウントダウンが0の場合
@@ -220,25 +224,45 @@ document.addEventListener("DOMContentLoaded", () => {
     }, beatMs);
   };
 
-  // 再生トグル
-  const togglePlayback = () => {
-    if (isRunning) {
-      stopPlayback();
-      return;
+  const setClickBoxes = () => {
+    const clickCount = getClickCount();
+    renderClickBoxes(clickCount);
+    clearCycleTimer();
+    if (countdownTimerId !== null) {
+      clearInterval(countdownTimerId);
+      countdownTimerId = null;
     }
-    startPlayback();
+    isRunning = false;
+    isPaused = false;
+    setOverlayVisible(false);
+  };
+
+  const pausePlayback = () => {
+    clearCycleTimer();
+    if (countdownTimerId !== null) {
+      clearInterval(countdownTimerId);
+      countdownTimerId = null;
+    }
+    isRunning = false;
+    isPaused = true;
+    setOverlayVisible(false);
+    setOperationEnabled(true);
   };
 
   // イベント登録
-  if (startButton) {
-    startButton.addEventListener("click", togglePlayback);
+  if (setClickButton) {
+    setClickButton.addEventListener("click", setClickBoxes);
   }
 
-  if (stopButton) {
-    stopButton.addEventListener("click", togglePlayback);
+  if (startClickButton) {
+    startClickButton.addEventListener("click", startPlayback);
   }
 
-  if (!startButton) {
+  if (stopClickButton) {
+    stopClickButton.addEventListener("click", pausePlayback);
+  }
+
+  if (!startClickButton) {
     startPlayback();
   }
 
