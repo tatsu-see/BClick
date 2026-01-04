@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoUp10Button = document.getElementById("tempoUp10");
   const clickCountSelect = document.getElementById("clickCount");
   const countdownSelect = document.getElementById("countdown");
+  const showCodeDiagramButton = document.getElementById("showCodeDiagram");
 
   const getNumberAttribute = (element, attrName, fallback) => {
     if (!element) return fallback;
@@ -78,5 +79,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (countdownSelect) {
     store.loadCountInSecInput(countdownSelect);
     countdownSelect.addEventListener("change", () => store.saveCountInSecInput(countdownSelect));
+  }
+
+  if (showCodeDiagramButton) {
+    showCodeDiagramButton.addEventListener("click", () => {
+      window.location.href = "/codeDiagram.html";
+    });
   }
 });
