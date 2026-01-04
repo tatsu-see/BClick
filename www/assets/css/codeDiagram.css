@@ -58,13 +58,60 @@ header {
   align-items: center;
   justify-content: center;
   border: 0px solid #33333333;  /* 確認用の全体border*/
-  border-right: 1px solid #88888888;  /* 確認用の全体border*/
   border-radius: 0;
   background-color: #fff;
+  position: relative;
 }
 
 .fretCell.isNut {
-  border-left: 3px solid #666666;
+}
+
+.fretCell.isNut::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background-color: #666666;
+}
+
+.fretCell.isNut.stringTop::before {
+  height: 50%;
+  top: 50%;
+}
+
+.fretCell.isNut.stringBottom::before {
+  height: 50%;
+  top: 0;
+}
+
+.fretCell.stringTop {
+  background: linear-gradient(to bottom, transparent 0 50%, #fff 50% 100%);
+}
+
+.fretCell.stringBottom {
+  background: linear-gradient(to bottom, #fff 0 50%, transparent 50% 100%);
+}
+
+.fretCell::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: #88888888;
+}
+
+.fretCell.stringTop::after {
+  height: 50%;
+  top: 50%;
+}
+
+.fretCell.stringBottom::after {
+  height: 50%;
+  top: 0;
 }
 
 /*
