@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
   const fretboard = document.querySelector(".fretboard");
 
+  /**
+   * 基本的なポジションデータを定義する。(簡易な抑え方法もあるけど、それは先生に教えてもらう。)
+   */
   const chordPositions = {
     C: {
       positions: [
