@@ -40,47 +40,58 @@
   <main>
     <div id="preference">
       <!--  BPM テンポ設定 -->
-      BPM:
-      <button type="button" id="tempoDown10">-10</button>
-      <button type="button" id="tempoDown">-1</button>
-      <div id="tempo" data-min="30" data-max="240">60</div>
-      <button type="button" id="tempoUp">+1</button>
-      <button type="button" id="tempoUp10">+10</button>
-
-      <br>
+      <div class="preferenceName">
+        BPM:
+      </div>
+      <div class="preferenceValue">
+        <div class="bpmButtonGroup">
+          <button type="button" class="bpmButton" id="tempoDown10">-10</button>
+          <button type="button" class="bpmButton" id="tempoDown">-1</button>
+        </div>
+        <div id="tempo" data-min="30" data-max="240">60</div>
+        <div class="bpmButtonGroup">
+          <button type="button" class="bpmButton" id="tempoUp10">+10</button>
+          <button type="button" class="bpmButton" id="tempoUp">+1</button>
+        </div>
+      </div>
 
       <!--  周回クリック数 -->
-      クリック数:
-      <select id="clickCount" default="4">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4" selected>4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-      </select>
-
-      <br>
+      <div class="preferenceName">
+        クリック数:
+      </div>
+      <div class="preferenceValue">
+        <select id="clickCount" default="4">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+      </div>
 
       <!--  1 小節カウント（シングルカウント） -->
-      カウントイン:
-      <select id="countdown" default="4">
-        <option value="0">0</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4" selected>4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-      </select>
+      <div class="preferenceName">
+        カウントイン:
+      </div>
 
-      <br>
+      <div class="preferenceValue">
+        <select id="countdown" default="4">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
 
     </div>
     <div id="clicking">

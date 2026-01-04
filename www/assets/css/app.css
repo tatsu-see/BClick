@@ -16,14 +16,14 @@ button {
   -webkit-appearance: none;
   appearance: none;
   display: inline-block;
-  min-width: 40px;
+  min-width: 20px;
   padding: 4px 10px;
   margin: 0 2px;
   border: 1px solid #666;
   border-radius: 4px;
   background-color: #d7d7d7;
   color: #111;
-  font-size: 0.9em;
+  font-size: 0.6em; /* 親サイズの70% */
   line-height: 1.2;
   cursor: pointer;
 }
@@ -97,6 +97,24 @@ footer {
   border:0px solid green;
   border-radius: 8px;
   background-color: mintcream;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  row-gap: 6px;
+  align-items: center;
+  text-align: left;
+}
+
+.preferenceName {
+  justify-self: end;
+}
+
+.preferenceValue {
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 #tempo {
@@ -109,6 +127,21 @@ footer {
   text-align: center;
 }
 
+.bpmButton {
+  width: 44px;
+  text-align: center;
+  padding:0px;
+  padding-top:5px;
+  padding-bottom:5px;
+  margin:0px;
+}
+
+.bpmButtonGroup {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 #clicking {
   margin:3px;
   padding:3px;
@@ -117,6 +150,10 @@ footer {
   border:0px solid green;
   border-radius: 8px;
   background-color: mintcream;
+}
+
+#clicking button {
+  min-width: 90px;
 }
 
 #showClick {
