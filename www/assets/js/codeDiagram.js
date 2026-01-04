@@ -1,5 +1,84 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const chordSelect = document.getElementById("chordSelect");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
+
+  const chordPositions = {
+    C: [
+      { string: 1, fret: 0 },
+      { string: 2, fret: 1 },
+      { string: 3, fret: 0 },
+      { string: 4, fret: 2 },
+      { string: 5, fret: 3 },
+    ],
+    D: [
+      { string: 4, fret: 0 },
+      { string: 1, fret: 2 },
+      { string: 2, fret: 3 },
+      { string: 3, fret: 2 },
+    ],
+    E: [
+      { string: 1, fret: 0 },
+      { string: 2, fret: 0 },
+      { string: 6, fret: 0 },
+      { string: 3, fret: 1 },
+      { string: 4, fret: 2 },
+      { string: 5, fret: 2 },
+    ],
+    F: [
+      { string: 1, fret: 1 },
+      { string: 2, fret: 1 },
+      { string: 3, fret: 2 },
+      { string: 4, fret: 3 },
+      { string: 5, fret: 3 },
+    ],
+    G: [
+      { string: 1, fret: 3 },
+      { string: 2, fret: 0 },
+      { string: 5, fret: 2 },
+      { string: 3, fret: 0 },
+      { string: 4, fret: 0 },
+      { string: 6, fret: 3 },
+    ],
+    A: [
+      { string: 1, fret: 0 },
+      { string: 5, fret: 0 },
+      { string: 2, fret: 2 },
+      { string: 3, fret: 2 },
+      { string: 4, fret: 2 },
+    ],
+    B: [
+      { string: 1, fret: 2 },
+      { string: 2, fret: 4 },
+      { string: 3, fret: 4 },
+      { string: 4, fret: 4 },
+      { string: 5, fret: 2 },
+    ],
+  };
+
+  const clearFingers = () => {
+    document.querySelectorAll(".fretCell .finger").forEach((finger) => finger.remove());
+  };
+
+  const renderChord = (chordName) => {
+    clearFingers();
+    const positions = chordPositions[chordName];
+    if (!positions) return;
+
+    positions.forEach(({ string, fret }) => {
+      const cell = document.getElementById(`fret-s${string}-f${fret}`);
+      if (!cell) return;
+      const dot = document.createElement("span");
+      dot.className = fret === 0 ? "finger fingerOpen" : "finger";
+      cell.appendChild(dot);
+    });
+  };
+
+  if (chordSelect) {
+    chordSelect.addEventListener("change", () => {
+      renderChord(chordSelect.value);
+    });
+    renderChord(chordSelect.value);
+  }
 
   if (closeCodeDiagramButton) {
     closeCodeDiagramButton.addEventListener("click", () => {

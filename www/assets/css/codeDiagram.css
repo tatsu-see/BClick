@@ -124,3 +124,16 @@ header {
   height: 50%;
   top: 0;
 }
+
+.finger {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #111;
+}
+
+.fingerOpen {
+  background-color: #fff;
+  border: 2px solid #111;
+  box-sizing: border-box;
+}
