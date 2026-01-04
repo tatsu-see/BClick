@@ -78,6 +78,17 @@ header {
   background-color: mintcream;
 }
 
+#closePage {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 28px;
+  padding: 0;
+  font-size: 0.9em;
+  line-height: 1.2;
+}
+
 
 footer {
   margin:3px;

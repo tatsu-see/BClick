@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const chordSelect = document.getElementById("chordSelect");
-  const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
+  const closePageButton = document.getElementById("closePage");
   const fretboard = document.querySelector(".fretboard");
 
   /**
@@ -141,8 +141,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderChord(chordSelect.value);
   }
 
-  if (closeCodeDiagramButton) {
-    closeCodeDiagramButton.addEventListener("click", () => {
+  if (closePageButton) {
+    closePageButton.addEventListener("click", () => {
       window.close();
       if (!window.closed) {
         window.location.href = "/";
