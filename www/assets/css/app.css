@@ -12,6 +12,46 @@ textarea {
   font-family: inherit;
 }
 
+button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-block;
+  min-width: 40px;
+  padding: 4px 10px;
+  margin: 0 2px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  background-color: #d7d7d7;
+  color: #111;
+  font-size: 0.9em;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+button:active {
+  background-color: #e7e7e7;
+}
+
+button:focus-visible {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
+
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-block;
+  min-width: 40px;
+  padding: 4px 10px;
+  margin: 0 2px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  background-color: #f7f7f7;
+  color: #111;
+  font-size: 0.9em;
+  line-height: 1.2;
+}
+
 body {
   background-color: lightgreen;
   text-align: center;

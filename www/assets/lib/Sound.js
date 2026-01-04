@@ -1,4 +1,9 @@
+// Ver. 1.0.0
 
+/**
+ * Sound.js
+ * 音再生用のライブラリ。音量は iPhone や Anddroid で差があるので、最大音量の割合で指定する。
+ */
 import { OSDetector } from "./OSDetector.js";
 
 const MaxVolume = 2.0;
