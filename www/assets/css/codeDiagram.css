@@ -101,13 +101,6 @@ header {
   background-color: #444;
 }
 
-.fretCell.stringTop::before {
-  top: 50%;
-}
-
-.fretCell.stringBottom::before {
-  top: 50%;
-}
 
 .fretCell[id$="-f0"]::before {
   content: none;
