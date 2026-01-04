@@ -1,4 +1,5 @@
 import { clickSound, getMaxVolume, warmUpAudioContext } from "/assets/lib/Sound.js";
+import { chordPool } from "/assets/lib/guiterCode.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得
@@ -21,22 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let cycleIndex = 0;
   let currentBeatMs = null;
   let isPaused = false;
-
-  // コード
-  // ギターのコードは 「三和音」「四和音」「テンション」「分数」「変化系」に分類されるらしい。
-  // 三和音系（トライアド）が基本らしいので、まずそこから使う。
-  const naturalMajorChordPool = ["C", "D", "E", "F", "G", "A", "B"];
-  const naturalMinorChordPool = ["Cm", "Dm", "Em", "Fm", "Gm", "Am", "Bm"];
-  const naturalChordPool = [...naturalMajorChordPool, ...naturalMinorChordPool];
-
-  const sharpMajorChordPool = ["C#", "F#", "G#", "A#"];
-  const sharpMinorChordPool = ["C#m", "D#m", "F#m", "G#m", "A#m"];
-  const sharpChordPool = [...sharpMajorChordPool, ...sharpMinorChordPool];
-
-  const flatMajorChordPool = ["Db", "Eb", "Gb", "Ab", "Bb", "Cb"];
-  const flatMinorChordPool = ["Ebm", "Abm", "Bbm"];
-  const flatChordPool = [...flatMajorChordPool, ...flatMinorChordPool];
-  const chordPool = naturalMajorChordPool;
 
   // 値の読み取りユーティリティ
   const getNumberValue = (value, fallback) => {
