@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderBarres = (barres) => {
     if (!fretboard || !barres) return;
     const fretboardRect = fretboard.getBoundingClientRect();
-    const barreWidth = 16;
+    const barreWidth = 20;
 
     barres.forEach(({ fret, fromString, toString }) => {
       const startCell = document.getElementById(`fret-s${fromString}-f${fret}`);
@@ -212,7 +212,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!chord) return;
     renderBarres(chord.barres);
 
-    chord.positions.forEach(({ string, fret }) => {
+    const isJapanese = (navigator.language || navigator.userLanguage || "").startsWith("ja");
+    const fingerLabelMap = {
+      1: "人",
+      2: "中",
+      3: "薬",
+      4: "小",
+      5: "親",
+    };
+
+    chord.positions.forEach(({ string, fret, finger }) => {
       const targetFret = fret < 0 ? 0 : fret;
       const cell = document.getElementById(`fret-s${string}-f${targetFret}`);
       if (!cell) return;
@@ -224,6 +233,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const dot = document.createElement("span");
       dot.className = fret === 0 ? "finger fingerOpen" : "finger";
+      if (typeof finger === "number" && finger > 0) {
+        const label = document.createElement("span");
+        label.className = "fingerLabel";
+        label.textContent = isJapanese ? fingerLabelMap[finger] || String(finger) : String(finger);
+        dot.appendChild(label);
+      }
       cell.appendChild(dot);
     });
   };

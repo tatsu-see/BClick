@@ -117,18 +117,28 @@ header {
 }
 
 .finger {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background-color: #111;
   position: relative;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .fingerOpen {
   background-color: #fff;
   border: 2px solid #111;
   box-sizing: border-box;
+}
+
+.fingerLabel {
+  font-size: 0.65em;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
 }
 
 .mute {
@@ -161,6 +171,6 @@ header {
 .barre {
   position: absolute;
   background-color: #111;
-  border-radius: 8px;
+  border-radius: 10px;
   z-index: 2;
 }
