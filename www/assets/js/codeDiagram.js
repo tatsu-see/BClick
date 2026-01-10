@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const chordSelect = document.getElementById("chordSelect");
   const minorChordSelect = document.getElementById("minorChordSelect");
+  const majorLabel = document.querySelector(".preferenceNameMajor");
+  const minorLabel = document.querySelector(".preferenceNameMinor");
   const closePageButton = document.getElementById("closePage");
   const fretboard = document.querySelector(".fretboard");
 
@@ -258,6 +260,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (chordSelect) {
     chordSelect.addEventListener("change", () => {
       renderChord(chordSelect.value);
+      if (majorLabel) majorLabel.classList.add("isActive");
+      if (minorLabel) minorLabel.classList.remove("isActive");
     });
     renderChord(chordSelect.value);
   }
@@ -265,6 +269,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (minorChordSelect) {
     minorChordSelect.addEventListener("change", () => {
       renderChord(minorChordSelect.value);
+      if (minorLabel) minorLabel.classList.add("isActive");
+      if (majorLabel) majorLabel.classList.remove("isActive");
     });
     // 初期表示はメジャーのまま
   }

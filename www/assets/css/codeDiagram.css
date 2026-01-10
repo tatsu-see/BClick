@@ -41,6 +41,16 @@ header {
   color: #333;
 }
 
+.preferenceName {
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 160ms ease;
+}
+
+.preferenceName.isActive {
+  background-color: lightgreen;
+}
+
 /*
   フレットをグリッド表示するためのセル情報。
 */
