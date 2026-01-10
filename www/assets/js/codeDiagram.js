@@ -221,6 +221,18 @@ document.addEventListener("DOMContentLoaded", () => {
       5: "親",
     };
 
+    const shouldShowLabel = ({ string, fret, finger }) => {
+      if (typeof finger !== "number" || finger <= 0) return false;
+      if (!chord.barres || chord.barres.length === 0) return true;
+
+      const matchingBarre = chord.barres.find(
+        (barre) => fret === barre.fret && string >= barre.fromString && string <= barre.toString,
+      );
+      if (!matchingBarre) return true;
+
+      return string === matchingBarre.fromString;
+    };
+
     chord.positions.forEach(({ string, fret, finger }) => {
       const targetFret = fret < 0 ? 0 : fret;
       const cell = document.getElementById(`fret-s${string}-f${targetFret}`);
@@ -233,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const dot = document.createElement("span");
       dot.className = fret === 0 ? "finger fingerOpen" : "finger";
-      if (typeof finger === "number" && finger > 0) {
+      if (shouldShowLabel({ string, fret, finger })) {
         const label = document.createElement("span");
         label.className = "fingerLabel";
         label.textContent = isJapanese ? fingerLabelMap[finger] || String(finger) : String(finger);
