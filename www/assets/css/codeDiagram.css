@@ -34,6 +34,7 @@ header {
 .fretLabel,
 .fretNumber,
 .stringNumber {
+  width:50px;
   display: flex;
   align-items: center;
   justify-content: center;
