@@ -9,7 +9,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoUpButton = document.getElementById("tempoUp");
   const tempoUp10Button = document.getElementById("tempoUp10");
   const clickCountSelect = document.getElementById("clickCount");
+  const clickCountDownButton = document.getElementById("clickCountDown");
+  const clickCountUpButton = document.getElementById("clickCountUp");
   const countdownSelect = document.getElementById("countdown");
+  const countdownDownButton = document.getElementById("countdownDown");
+  const countdownUpButton = document.getElementById("countdownUp");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
   const configScoreButton = document.getElementById("configScore");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
@@ -78,9 +82,37 @@ document.addEventListener("DOMContentLoaded", () => {
     clickCountSelect.addEventListener("change", () => store.saveClickCountInput(clickCountSelect));
   }
 
+  const bumpSelectValue = (selectEl, delta) => {
+    if (!selectEl) return;
+    const values = Array.from(selectEl.options).map((option) => Number.parseInt(option.value, 10));
+    const current = Number.parseInt(selectEl.value, 10);
+    const currentIndex = values.indexOf(current);
+    if (currentIndex < 0) return;
+    const nextIndex = Math.min(values.length - 1, Math.max(0, currentIndex + delta));
+    if (nextIndex === currentIndex) return;
+    selectEl.value = values[nextIndex].toString();
+    selectEl.dispatchEvent(new Event("change", { bubbles: true }));
+  };
+
+  if (clickCountDownButton) {
+    clickCountDownButton.addEventListener("click", () => bumpSelectValue(clickCountSelect, -1));
+  }
+
+  if (clickCountUpButton) {
+    clickCountUpButton.addEventListener("click", () => bumpSelectValue(clickCountSelect, 1));
+  }
+
   if (countdownSelect) {
     store.loadCountInSecInput(countdownSelect);
     countdownSelect.addEventListener("change", () => store.saveCountInSecInput(countdownSelect));
+  }
+
+  if (countdownDownButton) {
+    countdownDownButton.addEventListener("click", () => bumpSelectValue(countdownSelect, -1));
+  }
+
+  if (countdownUpButton) {
+    countdownUpButton.addEventListener("click", () => bumpSelectValue(countdownSelect, 1));
   }
 
   if (showCodeDiagramButton) {

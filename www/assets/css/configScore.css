@@ -67,6 +67,10 @@
   outline-offset: 2px;
 }
 
+#codeProgression {
+  font-size: 0.9em;
+}
+
 #saveButtonContainer {
   margin-bottom:3px;
   padding:3px;
