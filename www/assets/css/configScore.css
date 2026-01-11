@@ -10,7 +10,7 @@
 
   display: grid;
   grid-template-columns: 0.5fr 1.5fr;
-  column-gap: 10px;
+  column-gap: 5px;
   row-gap: 6px;
   align-items: center;
   text-align: left;
@@ -19,7 +19,7 @@
 .chipGroup {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 2px;
 }
 
 .chipGroupSection {
@@ -45,37 +45,24 @@
   color: #333;
 }
 
-.chipOption {
-  position: relative;
-  cursor: pointer;
-}
-
-.chipInput {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.chipLabel {
+.chipButton {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 1px 5px;
+  padding: 1px 6px;
   min-height: 28px;
+  min-width:  42px;
   border-radius: 10px;
   border: 1px solid #666;
   background-color: #f7f7f7;
   font-size: 0.85em;
   color: #111;
   user-select: none;
+  cursor: pointer;
 }
 
-.chipInput:checked + .chipLabel {
-  background-color: lightgreen;
-  border-color: #3b7a4b;
-}
-
-.chipInput:focus-visible + .chipLabel {
+.chipButton:focus-visible {
   outline: 2px solid #333;
   outline-offset: 2px;
 }

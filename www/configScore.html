@@ -65,76 +65,44 @@
         <div class="chipGroupSectionRow" role="group" aria-label="使用コードの選択（メジャー）">
           <div class="chipGroupTitle">メジャー</div>
           <div class="chipGroup">
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="C" class="chipInput">
-              <span class="chipLabel">C</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="D" class="chipInput">
-              <span class="chipLabel">D</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="E" class="chipInput">
-              <span class="chipLabel">E</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="F" class="chipInput">
-              <span class="chipLabel">F</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="G" class="chipInput">
-              <span class="chipLabel">G</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="A" class="chipInput">
-              <span class="chipLabel">A</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="B" class="chipInput">
-              <span class="chipLabel">B</span>
-            </label>
+            <button type="button" class="chipButton" data-chord="C">C</button>
+            <button type="button" class="chipButton" data-chord="D">D</button>
+            <button type="button" class="chipButton" data-chord="E">E</button>
+            <button type="button" class="chipButton" data-chord="F">F</button>
+            <button type="button" class="chipButton" data-chord="G">G</button>
+            <button type="button" class="chipButton" data-chord="A">A</button>
+            <button type="button" class="chipButton" data-chord="B">B</button>
           </div>
         </div>
         <div class="chipGroupSectionRow" role="group" aria-label="使用コードの選択（マイナー）">
           <div class="chipGroupTitle">マイナー</div>
           <div class="chipGroup">
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="Cm" class="chipInput">
-              <span class="chipLabel">Cm</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="Dm" class="chipInput">
-              <span class="chipLabel">Dm</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="Em" class="chipInput">
-              <span class="chipLabel">Em</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="Fm" class="chipInput">
-              <span class="chipLabel">Fm</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="Gm" class="chipInput">
-              <span class="chipLabel">Gm</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="Am" class="chipInput">
-              <span class="chipLabel">Am</span>
-            </label>
-            <label class="chipOption">
-              <input type="checkbox" name="chord" value="Bm" class="chipInput">
-              <span class="chipLabel">Bm</span>
-            </label>
+            <button type="button" class="chipButton" data-chord="Cm">Cm</button>
+            <button type="button" class="chipButton" data-chord="Dm">Dm</button>
+            <button type="button" class="chipButton" data-chord="Em">Em</button>
+            <button type="button" class="chipButton" data-chord="Fm">Fm</button>
+            <button type="button" class="chipButton" data-chord="Gm">Gm</button>
+            <button type="button" class="chipButton" data-chord="Am">Am</button>
+            <button type="button" class="chipButton" data-chord="Bm">Bm</button>
           </div>
         </div>
       </div>
 
       <div class="preferenceName">
-        リズム:
+        コード進行:
       </div>
 
       <div class="preferenceValue" role="group" aria-label="">
+        <input type="text" id="codeProgression" value="C G Am F" inputmode="latin">
+        <button type="button" id="clearCodeProgression">クリア</button>
+      </div>
+
+      <div class="preferenceName">
+      </div>
+
+      <div class="preferenceValue" role="group" aria-label="">
+        <button type="button" id="addRandom3Chords">ランダムで3つ追加</button>
+        <button type="button" id="addRandom4Chords">ランダムで4つ追加</button>
       </div>
 
       <div class="preferenceName">

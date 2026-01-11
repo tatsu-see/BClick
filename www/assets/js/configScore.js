@@ -7,9 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const timeSignatureInputs = Array.from(
     document.querySelectorAll('input[name="timeSignature"]'),
   );
-  const chordInputs = Array.from(
-    document.querySelectorAll('input[name="chord"]'),
+  const chordButtons = Array.from(
+    document.querySelectorAll(".chipButton"),
   );
+  const codeProgressionInput = document.getElementById("codeProgression");
+  const clearProgressionButton = document.getElementById("clearCodeProgression");
+  const addRandom3ChordsButton = document.getElementById("addRandom3Chords");
+  const addRandom4ChordsButton = document.getElementById("addRandom4Chords");
   const measuresInput = document.querySelector('input[name="measures"]');
 
   const savedTimeSignature = store.getScoreTimeSignature();
@@ -19,10 +23,51 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const savedChords = store.getScoreChords();
-  if (savedChords.length > 0) {
-    chordInputs.forEach((input) => {
-      input.checked = savedChords.includes(input.value);
+  const savedProgression = store.getScoreProgression();
+  if (codeProgressionInput && savedProgression) {
+    codeProgressionInput.value = savedProgression;
+  }
+
+  chordButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!codeProgressionInput) return;
+      const chord = button.dataset.chord || button.textContent.trim();
+      if (!chord) return;
+      const prefix = codeProgressionInput.value.length > 0 ? " " : "";
+      codeProgressionInput.value += `${prefix}${chord}`;
+    });
+  });
+
+  if (clearProgressionButton) {
+    clearProgressionButton.addEventListener("click", () => {
+      if (!codeProgressionInput) return;
+      codeProgressionInput.value = "";
+      codeProgressionInput.focus();
+    });
+  }
+
+  const appendRandomChords = (count) => {
+    if (!codeProgressionInput) return;
+    const pool = chordButtons
+      .map((button) => (button.dataset.chord || button.textContent || "").trim())
+      .filter((chord) => chord.length > 0);
+    if (pool.length === 0) return;
+    const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+    const picks = shuffled.slice(0, Math.min(count, shuffled.length));
+    const prefix = codeProgressionInput.value.length > 0 ? " " : "";
+    codeProgressionInput.value += `${prefix}${picks.join(" ")}`;
+    codeProgressionInput.focus();
+  };
+
+  if (addRandom3ChordsButton) {
+    addRandom3ChordsButton.addEventListener("click", () => {
+      appendRandomChords(3);
+    });
+  }
+
+  if (addRandom4ChordsButton) {
+    addRandom4ChordsButton.addEventListener("click", () => {
+      appendRandomChords(4);
     });
   }
 
@@ -38,19 +83,18 @@ document.addEventListener("DOMContentLoaded", () => {
       store.setScoreTimeSignature(selectedTimeSignature);
     }
 
-    const selectedChords = chordInputs
-      .filter((input) => input.checked)
-      .map((input) => input.value);
-    if (selectedChords.length === 0) {
+    const progressionRaw = codeProgressionInput ? codeProgressionInput.value : "";
+    const trimmedProgression = progressionRaw.trim();
+    if (trimmedProgression.length === 0) {
       const langPrefix = window.LANG_PRE_FIX
         || ((navigator.language || navigator.userLanguage || "").startsWith("ja") ? "ja" : "en");
       const message = langPrefix === "ja"
-        ? "使用コードを1つ以上選択してください。"
-        : "Please select at least one chord.";
+        ? "コード進行を1つ以上入力してください。"
+        : "Please enter at least one chord.";
       window.alert(message);
       return;
     }
-    store.setScoreChords(selectedChords);
+    store.setScoreProgression(trimmedProgression);
 
     if (measuresInput) {
       const parsed = Number.parseInt(measuresInput.value, 10);
