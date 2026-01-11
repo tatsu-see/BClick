@@ -8,13 +8,11 @@ class RhythmScore {
     timeSignature = "4/4",
     chord = "E",
     measures = 2,
-    showClef = true,
   } = {}) {
     this.container = document.getElementById(containerId);
     this.timeSignature = timeSignature;
     this.chord = chord;
     this.measures = measures;
-    this.showClef = showClef;
     this.render();
   }
 
@@ -34,11 +32,6 @@ class RhythmScore {
     const parsed = Number.parseInt(value, 10);
     if (Number.isNaN(parsed) || parsed <= 0) return;
     this.measures = parsed;
-    this.render();
-  }
-
-  setShowClef(value) {
-    this.showClef = Boolean(value);
     this.render();
   }
 

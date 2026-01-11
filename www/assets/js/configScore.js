@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chordInputs = Array.from(
     document.querySelectorAll('input[name="chord"]'),
   );
+  const measuresInput = document.querySelector('input[name="measures"]');
 
   const savedTimeSignature = store.getScoreTimeSignature();
   if (savedTimeSignature) {
@@ -25,6 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const savedMeasures = store.getScoreMeasures();
+  if (measuresInput && savedMeasures) {
+    measuresInput.value = savedMeasures.toString();
+  }
+
   if (!saveButton) return;
   saveButton.addEventListener("click", () => {
     const selectedTimeSignature = timeSignatureInputs.find((input) => input.checked)?.value;
@@ -36,6 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter((input) => input.checked)
       .map((input) => input.value);
     store.setScoreChords(selectedChords);
+
+    if (measuresInput) {
+      const parsed = Number.parseInt(measuresInput.value, 10);
+      if (!Number.isNaN(parsed)) {
+        store.setScoreMeasures(parsed);
+      }
+    }
 
     window.close();
     if (!window.closed) {

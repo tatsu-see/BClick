@@ -13,6 +13,7 @@ export class ConfigStore extends LocalStore {
       Countdown: 'bclick.countdown',
       ScoreTimeSignature: 'bclick.score.timeSignature',
       ScoreChords: 'bclick.score.chords',
+      ScoreMeasures: 'bclick.score.measures',
     };
   }
 
@@ -121,6 +122,16 @@ export class ConfigStore extends LocalStore {
     if (!Array.isArray(values)) return;
     const sanitized = values.filter((value) => typeof value === 'string' && value.length > 0);
     this.saveSettings(this.keys.ScoreChords, sanitized);
+  }
+
+  getScoreMeasures() {
+    const saved = this.getNumberSetting(this.keys.ScoreMeasures);
+    return typeof saved === 'number' ? saved : null;
+  }
+
+  setScoreMeasures(value) {
+    if (!Number.isFinite(value) || value <= 0) return;
+    this.setNumberSetting(this.keys.ScoreMeasures, value);
   }
 
   /**

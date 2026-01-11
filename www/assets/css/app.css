@@ -64,7 +64,7 @@ main {
 }
 
 header {
-  margin:3px;
+  margin-bottom:3px;
   padding:3px;
   width:calc(100%-6px);
   position: relative;
@@ -91,7 +91,7 @@ header {
 
 
 footer {
-  margin:3px;
+  margin-bottom:3px;
   padding:3px;
   width:calc(100%-6px);
 
@@ -103,7 +103,7 @@ footer {
 }
 
 #preference {
-  margin:3px;
+  margin-bottom:3px;
   padding:3px;
   width:calc(100%-6px);
 
@@ -157,7 +157,7 @@ footer {
 }
 
 #clicking {
-  margin:3px;
+  margin-bottom:3px;
   padding:3px;
   width:calc(100%-6px);
 
@@ -171,7 +171,7 @@ footer {
 }
 
 #showClick {
-  margin:3px;
+  margin-bottom:3px;
 
   display: flex;
   gap: 2px;
@@ -184,10 +184,12 @@ footer {
 }
 
 #scoreArea {
-  margin: 3px;
-  padding: 8px;
+  margin-bottom: 3px;
+  padding: 0px;
   border-radius: 8px;
   background-color: mintcream;
+
+  border:0px solid black;
 }
 
 #score {
