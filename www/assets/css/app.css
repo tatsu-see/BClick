@@ -83,12 +83,30 @@ header {
   right: 6px;
   top: 50%;
   transform: translateY(-50%);
-  min-width: 28px;
+  min-width: 32px;
   padding: 0;
   font-size: 0.9em;
   line-height: 1.2;
+
+  background-color:whitesmoke;
+  color:green;
+  font-weight:bold;
+ 
+  border:3px solid green;
+  border-radius:8px;
 }
 
+.okPage {
+  font-size: 0.9em;
+  line-height: 1.2;
+
+  background-color:whitesmoke;
+  color:green;
+  font-weight:bold;
+ 
+  border:3px solid green;
+  border-radius:8px;
+}
 
 footer {
   margin-bottom:3px;
