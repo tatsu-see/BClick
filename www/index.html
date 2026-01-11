@@ -44,7 +44,7 @@
     <div id="preference">
       <!--  BPM テンポ設定 -->
       <div class="preferenceName">
-        BPM:
+        BPM(♪=):
       </div>
       <div class="preferenceValue">
         <div class="bpmButtonGroup">
@@ -96,23 +96,37 @@
         </select>
       </div>
 
+      <!--  スコア設定 -->
+      <div class="preferenceName">
+        スコア:
+      </div>
+
+      <div class="preferenceValue">
+        <button id="configScore" type="button">
+          <span class="material-symbols-outlined" aria-hidden="true">queue_music</span>
+          スコア
+        </button>
+      </div>
+
     </div>
     <div id="clicking">
-      <button id="configScore" type="button">
-        <span class="material-symbols-outlined" aria-hidden="true">settings</span>
-        スコア
-      </button>
-
       <button id="setClick" type="button">
-        <span class="material-symbols-outlined" aria-hidden="true">queue_music</span>
+        <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
         セット
       </button>
     </div>
 
     <div id="clicking">
-      <button id="startClick" type="button">開始</button>
-      <button id="stopClickart" type="button">一時停止</button>
+      <button id="startClick" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+        開始
+      </button>
+      <button id="stopClickart" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">pause</span>
+        一時停止
+      </button>
       <button id="showCodeDiagram" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">back_hand</span>
         コード確認
       </button>
     </div>
@@ -122,10 +136,11 @@
     </div>
 
     <div id="showClick">
-      (クリック表示)
+      <!-- (ここにクリックが表示されます) -->
     </div>
 
     <div id="scoreArea">
+      <!-- (ここにリズム譜が表示されます) -->
       <div id="score" aria-label="2小節の楽譜"></div>
     </div>
 

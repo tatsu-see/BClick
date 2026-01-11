@@ -250,6 +250,8 @@ document.addEventListener("DOMContentLoaded", () => {
     startPlayback();
   }
 
+  setClickBoxes();
+
   document.addEventListener("bclick:tempochange", (event) => {
     const nextTempo = getNumberValue(event?.detail?.tempo, getTempo());
     updateTempo(nextTempo);

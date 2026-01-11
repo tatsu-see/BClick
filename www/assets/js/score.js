@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   };
 
-  // リズム譜を表示する。
   const initialSettings = loadSettings();
   const score = new RhythmScore("score", {
     timeSignature: initialSettings.timeSignature,

@@ -51,7 +51,6 @@ class RhythmScore {
     }
 
     return [
-      "\\title \"Rhythm\"",
       ".",
       `:4 ${bars.join(" | ")} |`,
     ].join("\n");

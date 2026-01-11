@@ -175,6 +175,10 @@ footer {
 
   display: flex;
   gap: 2px;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.6em;
+  text-align: center;
 
   border:0px solid black;
   border-radius: 8px;
