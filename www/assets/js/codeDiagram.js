@@ -1,12 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const chordSelect = document.getElementById("chordSelect");
+  const chordSelectMajor = document.getElementById("chordSelectMajor");
+  const chordSelectMinor = document.getElementById("chordSelectMinor");
   const closePageButton = document.getElementById("closePage");
   const fretboard = document.querySelector(".fretboard");
 
   /**
    * 基本的なポジションデータを定義する。(簡易な抑え方法もあるけど、それは先生に教えてもらう。)
    */
-  const chordPositions = {
+  const majorChordPositions = {
     C: {
       positions: [
         { string: 1, fret: 0 },
@@ -39,9 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     F: {
       positions: [
+        { string: 1, fret: 1, finger: 1 },
+        { string: 2, fret: 1, finger: 1 },
         { string: 3, fret: 2, finger: 2 },
         { string: 4, fret: 3, finger: 3 },
         { string: 5, fret: 3, finger: 4 },
+        { string: 6, fret: 1, finger: 1 },
       ],
       barres: [
         { fret: 1, fromString: 1, toString: 6 },
@@ -69,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     B: {
       positions: [
+        { string: 1, fret: 2, finger: 1 },
         { string: 2, fret: 4, finger: 2 },
         { string: 3, fret: 4, finger: 4 },
         { string: 4, fret: 4, finger: 3 },
@@ -79,6 +84,96 @@ document.addEventListener("DOMContentLoaded", () => {
         { fret: 2, fromString: 1, toString: 5 },
       ],
     },
+  };
+
+  const minorChordPositions = {
+    Cm: {
+      positions: [
+        { string: 1, fret: 3, finger: 1 },
+        { string: 2, fret: 4, finger: 2 },
+        { string: 3, fret: 5, finger: 4 },
+        { string: 4, fret: 5, finger: 3 },
+        { string: 5, fret: 3, finger: 1 },
+        { string: 6, fret: -1 },
+      ],
+      barres: [
+        { fret: 3, fromString: 1, toString: 5 },
+      ],
+    },
+    Dm: {
+      positions: [
+        { string: 1, fret: 1, finger: 1 },
+        { string: 2, fret: 3, finger: 3 },
+        { string: 3, fret: 2, finger: 2 },
+        { string: 4, fret: 0 },
+        { string: 5, fret: -1 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    Em: {
+      positions: [
+        { string: 1, fret: 0 },
+        { string: 2, fret: 0 },
+        { string: 3, fret: 0 },
+        { string: 4, fret: 2, finger: 3 },
+        { string: 5, fret: 2, finger: 2 },
+        { string: 6, fret: 0 },
+      ],
+    },
+    Fm: {
+      positions: [
+        { string: 1, fret: 1, finger: 1 },
+        { string: 2, fret: 1, finger: 1 },
+        { string: 3, fret: 1, finger: 1 },
+        { string: 4, fret: 3, finger: 3 },
+        { string: 5, fret: 3, finger: 4 },
+        { string: 6, fret: 1, finger: 1 },
+      ],
+      barres: [
+        { fret: 1, fromString: 1, toString: 6 },
+      ],
+    },
+    Gm: {
+      positions: [
+        { string: 1, fret: 3, finger: 1 },
+        { string: 2, fret: 3, finger: 1 },
+        { string: 3, fret: 3, finger: 1 },
+        { string: 4, fret: 5, finger: 4 },
+        { string: 5, fret: 5, finger: 3 },
+        { string: 6, fret: 3, finger: 1 },
+      ],
+      barres: [
+        { fret: 3, fromString: 1, toString: 6 },
+      ],
+    },
+    Am: {
+      positions: [
+        { string: 1, fret: 0 },
+        { string: 2, fret: 1, finger: 1 },
+        { string: 3, fret: 2, finger: 3 },
+        { string: 4, fret: 2, finger: 2 },
+        { string: 5, fret: 0 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    Bm: {
+      positions: [
+        { string: 1, fret: 2, finger: 1 },
+        { string: 2, fret: 3, finger: 2 },
+        { string: 3, fret: 4, finger: 4 },
+        { string: 4, fret: 4, finger: 3 },
+        { string: 5, fret: 2, finger: 1 },
+        { string: 6, fret: 2, finger: 1 },
+      ],
+      barres: [
+        { fret: 2, fromString: 1, toString: 6 },
+      ],
+    },
+  };
+
+  const chordPositions = {
+    ...majorChordPositions,
+    ...minorChordPositions,
   };
 
   const clearFingers = () => {
@@ -117,6 +212,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const chord = chordPositions[chordName];
     if (!chord) return;
     renderBarres(chord.barres);
+    const barreFrets = new Set(
+      (chord.barres || []).map((barre) => barre.fret),
+    );
 
     chord.positions.forEach(({ string, fret, finger }) => {
       const targetFret = fret < 0 ? 0 : fret;
@@ -131,6 +229,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const dot = document.createElement("span");
       dot.className = fret === 0 ? "finger fingerOpen" : "finger";
       if (fret > 0 && Number.isFinite(finger) && finger > 0) {
+        if (finger === 1 && barreFrets.has(fret) && string !== 1) {
+          cell.appendChild(dot);
+          return;
+        }
         const label = document.createElement("span");
         label.className = "fingerLabel";
         label.textContent = String(finger);
@@ -140,11 +242,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  if (chordSelect) {
-    chordSelect.addEventListener("change", () => {
-      renderChord(chordSelect.value);
+  if (chordSelectMajor) {
+    chordSelectMajor.addEventListener("change", () => {
+      if (chordSelectMinor) chordSelectMinor.value = "";
+      renderChord(chordSelectMajor.value);
     });
-    renderChord(chordSelect.value);
+  }
+
+  if (chordSelectMinor) {
+    chordSelectMinor.addEventListener("change", () => {
+      if (chordSelectMajor) chordSelectMajor.value = "";
+      if (chordSelectMinor.value) {
+        renderChord(chordSelectMinor.value);
+      }
+    });
+  }
+
+  if (chordSelectMajor && chordSelectMajor.value) {
+    renderChord(chordSelectMajor.value);
+  } else if (chordSelectMinor && chordSelectMinor.value) {
+    renderChord(chordSelectMinor.value);
   }
 
   if (closePageButton) {
