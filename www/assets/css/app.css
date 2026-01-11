@@ -181,3 +181,15 @@ footer {
   border-radius: 8px;
   background-color: mintcream;
 }
+
+#scoreArea {
+  margin: 3px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: mintcream;
+}
+
+#score {
+  width: 100%;
+  min-height: 140px;
+}
