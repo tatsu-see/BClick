@@ -1,42 +1,32 @@
+/**
+ * score.js
+ * alphaTabで2小節のリズム譜 (4/4, 四分音符×4) を表示する。
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window.Vex) return;
+  if (!window.alphaTab) return;
 
   const container = document.getElementById("score");
   if (!container) return;
+  container.textContent = "";
 
-  const VF = window.Vex.Flow;
-  const width = container.clientWidth || 520;
-  const height = 140;
-  const padding = 10;
-  const staveWidth = Math.floor((width - padding * 2) / 2);
+  const alphaTex = [
+    "\\title \"Rhythm\"",
+    ".",
+    ":4 0.6 { slashed } 0.6 { slashed } 0.6 { slashed } 0.6 { slashed } |",
+    "   0.6 { slashed } 0.6 { slashed } 0.6 { slashed } 0.6 { slashed } |",
+  ].join("\n");
 
-  const renderer = new VF.Renderer(container, VF.Renderer.Backends.SVG);
-  renderer.resize(width, height);
+  const settings = {
+    tex: true,
+    display: {
+      staveProfile: window.alphaTab.StaveProfile.Score,
+    },
+    notation: {
+      rhythmMode: window.alphaTab.TabRhythmMode.Hidden,
+    },
+  };
 
-  const context = renderer.getContext();
-  context.setFont("Arial", 10, "");
-
-  const firstStave = new VF.Stave(padding, 20, staveWidth);
-  firstStave.addClef("treble").addTimeSignature("4/4");
-  firstStave.setContext(context).draw();
-
-  const secondStave = new VF.Stave(padding + staveWidth, 20, staveWidth);
-  secondStave.setEndBarType(VF.Barline.type.END);
-  secondStave.setContext(context).draw();
-
-  const makeQuarterNotes = () => ([
-    new VF.StaveNote({ keys: ["c/4"], duration: "q" }),
-    new VF.StaveNote({ keys: ["d/4"], duration: "q" }),
-    new VF.StaveNote({ keys: ["e/4"], duration: "q" }),
-    new VF.StaveNote({ keys: ["f/4"], duration: "q" }),
-  ]);
-
-  const voice1 = new VF.Voice({ num_beats: 4, beat_value: 4 }).addTickables(makeQuarterNotes());
-  const voice2 = new VF.Voice({ num_beats: 4, beat_value: 4 }).addTickables(makeQuarterNotes());
-
-  new VF.Formatter().joinVoices([voice1]).formatToStave([voice1], firstStave);
-  voice1.draw(context, firstStave);
-
-  new VF.Formatter().joinVoices([voice2]).formatToStave([voice2], secondStave);
-  voice2.draw(context, secondStave);
+  container.textContent = alphaTex;
+  new window.alphaTab.AlphaTabApi(container, settings);
 });
