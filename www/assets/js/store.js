@@ -11,6 +11,8 @@ export class ConfigStore extends LocalStore {
       Tempo: 'bclick.tempo',
       ClickCount: 'bclick.clickCount',
       Countdown: 'bclick.countdown',
+      ScoreTimeSignature: 'bclick.score.timeSignature',
+      ScoreChords: 'bclick.score.chords',
     };
   }
 
@@ -95,6 +97,30 @@ export class ConfigStore extends LocalStore {
     const value = parseInt(inputEl.value, 10);
     if (Number.isNaN(value) || value < 0) return;
     this.setCountInSec(value);
+  }
+
+  /**
+   * スコア設定のI/O
+   */
+  getScoreTimeSignature() {
+    const saved = this.getSettings(this.keys.ScoreTimeSignature);
+    return typeof saved === 'string' ? saved : null;
+  }
+
+  setScoreTimeSignature(value) {
+    if (typeof value !== 'string' || value.length === 0) return;
+    this.saveSettings(this.keys.ScoreTimeSignature, value);
+  }
+
+  getScoreChords() {
+    const saved = this.getSettings(this.keys.ScoreChords);
+    return Array.isArray(saved) ? saved : [];
+  }
+
+  setScoreChords(values) {
+    if (!Array.isArray(values)) return;
+    const sanitized = values.filter((value) => typeof value === 'string' && value.length > 0);
+    this.saveSettings(this.keys.ScoreChords, sanitized);
   }
 
   /**
