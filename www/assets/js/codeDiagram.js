@@ -1,8 +1,13 @@
+import { ConfigStore } from "./store.js";
+
 document.addEventListener("DOMContentLoaded", () => {
+  const store = new ConfigStore();
   const chordSelectMajor = document.getElementById("chordSelectMajor");
   const chordSelectMinor = document.getElementById("chordSelectMinor");
   const closePageButton = document.getElementById("closePage");
+  const saveButton = document.getElementById("saveConfigScore");
   const fretboard = document.querySelector(".fretboard");
+  let currentChord = "";
 
   /**
    * 基本的なポジションデータを定義する。(簡易な抑え方法もあるけど、それは先生に教えてもらう。)
@@ -211,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     clearFingers();
     const chord = chordPositions[chordName];
     if (!chord) return;
+    currentChord = chordName;
     renderBarres(chord.barres);
     const barreFrets = new Set(
       (chord.barres || []).map((barre) => barre.fret),
@@ -258,10 +264,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (chordSelectMajor && chordSelectMajor.value) {
+  const savedChord = store.getCodeDiagramChord();
+  if (savedChord) {
+    if (savedChord.endsWith("m") && chordSelectMinor) {
+      chordSelectMinor.value = savedChord;
+      if (chordSelectMajor) chordSelectMajor.value = "";
+      renderChord(savedChord);
+    } else if (chordSelectMajor) {
+      chordSelectMajor.value = savedChord;
+      if (chordSelectMinor) chordSelectMinor.value = "";
+      renderChord(savedChord);
+    }
+  } else if (chordSelectMajor && chordSelectMajor.value) {
     renderChord(chordSelectMajor.value);
   } else if (chordSelectMinor && chordSelectMinor.value) {
     renderChord(chordSelectMinor.value);
+  }
+
+  if (saveButton) {
+    saveButton.addEventListener("click", () => {
+      if (currentChord) {
+        store.setCodeDiagramChord(currentChord);
+      }
+      window.close();
+      if (!window.closed) {
+        window.location.href = "/";
+      }
+    });
   }
 
   if (closePageButton) {

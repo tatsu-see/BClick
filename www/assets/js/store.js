@@ -14,6 +14,7 @@ export class ConfigStore extends LocalStore {
       ScoreTimeSignature: 'bclick.score.timeSignature',
       ScoreProgression: 'bclick.score.progression',
       ScoreMeasures: 'bclick.score.measures',
+      CodeDiagramChord: 'bclick.codeDiagram.chord',
     };
   }
 
@@ -121,6 +122,16 @@ export class ConfigStore extends LocalStore {
   setScoreProgression(value) {
     if (typeof value !== 'string') return;
     this.saveSettings(this.keys.ScoreProgression, value);
+  }
+
+  getCodeDiagramChord() {
+    const saved = this.getSettings(this.keys.CodeDiagramChord);
+    return typeof saved === 'string' ? saved : '';
+  }
+
+  setCodeDiagramChord(value) {
+    if (typeof value !== 'string' || value.length === 0) return;
+    this.saveSettings(this.keys.CodeDiagramChord, value);
   }
 
   getScoreMeasures() {

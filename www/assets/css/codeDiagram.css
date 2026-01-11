@@ -185,3 +185,19 @@ header {
   border-radius: 10px;
   z-index: 2;
 }
+
+#saveButtonContainer {
+  margin-bottom:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:0px solid green;
+  border-radius: 8px;
+  background-color: mintcream;
+  display: flex;
+  justify-content: center;
+}
+
+#saveConfigScore {
+  width:100px;
+}
