@@ -16,11 +16,15 @@ class RhythmScore {
     this.measures = measures;
     this.progression = this.normalizeProgression(progression);
     this.overlayTimer = null;
-    this.handleResize = () => {
+    this.handleOverlayRefresh = () => {
       this.clearOverlay();
       this.startOverlayPoll();
     };
-    window.addEventListener("resize", this.handleResize);
+    window.addEventListener("resize", this.handleOverlayRefresh);
+    window.addEventListener("scroll", this.handleOverlayRefresh, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", this.handleOverlayRefresh);
+    }
     this.render();
   }
 
