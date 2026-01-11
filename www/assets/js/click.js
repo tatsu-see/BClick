@@ -105,8 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < count; i += 1) {
       const box = document.createElement("div");
       box.className = "clickBox";
-      const chord = chordPool[Math.floor(Math.random() * chordPool.length)];
-      box.textContent = chord;
+      box.textContent = (i + 1).toString();
       showClick.appendChild(box);
     }
   };

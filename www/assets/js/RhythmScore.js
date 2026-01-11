@@ -65,7 +65,7 @@ class RhythmScore {
       tex: true,
       display: {
         staveProfile: window.alphaTab.StaveProfile.Score,
-        scale: 0.9,
+        scale: 0.95,
       },
     };
 
