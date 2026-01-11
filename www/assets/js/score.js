@@ -16,9 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadSettings = () => {
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
+    const savedProgression = store.getScoreProgression();
     return {
       timeSignature: savedTimeSignature || "4/4",
       measures: savedMeasures || 2,
+      progression: savedProgression || "",
     };
   };
 
@@ -27,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timeSignature: initialSettings.timeSignature,
     chord: "E",
     measures: initialSettings.measures,
+    progression: initialSettings.progression,
   });
 
   if (setClickButton) {
@@ -34,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const nextSettings = loadSettings();
       score.setTimeSignature(nextSettings.timeSignature);
       score.setMeasures(nextSettings.measures);
+      score.setProgression(nextSettings.progression);
     });
   }
 });

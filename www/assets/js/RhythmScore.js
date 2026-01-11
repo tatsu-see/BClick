@@ -8,11 +8,13 @@ class RhythmScore {
     timeSignature = "4/4",
     chord = "E",
     measures = 2,
+    progression = "",
   } = {}) {
     this.container = document.getElementById(containerId);
     this.timeSignature = timeSignature;
     this.chord = chord;
     this.measures = measures;
+    this.progression = this.normalizeProgression(progression);
     this.render();
   }
 
@@ -35,6 +37,20 @@ class RhythmScore {
     this.render();
   }
 
+  setProgression(value) {
+    this.progression = this.normalizeProgression(value);
+    this.render();
+  }
+
+  normalizeProgression(value) {
+    if (Array.isArray(value)) {
+      return value.filter((item) => typeof item === "string" && item.length > 0);
+    }
+    if (typeof value !== "string") return [];
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed.split(/\s+/) : [];
+  }
+
   buildAlphaTex() {
     const numerator = Number.parseInt(this.timeSignature.split("/")[0], 10);
     const beats = Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
@@ -42,9 +58,12 @@ class RhythmScore {
 
     for (let barIndex = 0; barIndex < this.measures; barIndex += 1) {
       const notes = [];
+      const barChord = this.progression.length > 0
+        ? this.progression[barIndex % this.progression.length]
+        : this.chord;
       for (let beatIndex = 0; beatIndex < beats; beatIndex += 1) {
-        const hasChordLabel = barIndex === 0 && beatIndex === 0 && this.chord;
-        const props = hasChordLabel ? `slashed txt "${this.chord}"` : "slashed";
+        const hasChordLabel = beatIndex === 0 && barChord;
+        const props = hasChordLabel ? `slashed txt "${barChord}"` : "slashed";
         notes.push(`0.6 { ${props} }`);
       }
       bars.push(notes.join(" "));
