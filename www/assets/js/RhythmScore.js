@@ -1,6 +1,9 @@
 /**
  * RhythmScore.js
- * alphaTabでリズム譜を表示するクラス。
+ * alphaTabでリズム譜を表示するクラス
+ * 
+ * alphaTabは以下のサイトで情報公開している。
+ * https://www.alphatab.net/docs/alphatex/bar-metadata#ts。
  */
 
 class RhythmScore {
@@ -62,8 +65,12 @@ class RhythmScore {
   }
 
   buildAlphaTex() {
-    const numerator = Number.parseInt(this.timeSignature.split("/")[0], 10);
-    const beats = Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
+    const [numeratorRaw, denominatorRaw] = this.timeSignature.split("/");
+    const numeratorValue = Number.parseInt(numeratorRaw, 10);
+    const denominatorValue = Number.parseInt(denominatorRaw, 10);
+    const numerator = Number.isNaN(numeratorValue) || numeratorValue <= 0 ? 4 : numeratorValue;
+    const denominator = Number.isNaN(denominatorValue) || denominatorValue <= 0 ? 4 : denominatorValue;
+    const beats = numerator;
     const bars = [];
 
     for (let barIndex = 0; barIndex < this.measures; barIndex += 1) {
@@ -80,8 +87,9 @@ class RhythmScore {
     }
 
     return [
+      `\\ts ${numerator} ${denominator}`,
       ".",
-      `:4 ${bars.join(" | ")} |`,
+      `:${denominator} ${bars.join(" | ")} |`,
     ].join("\n");
   }
 
