@@ -215,4 +215,20 @@ footer {
 #score {
   width: 100%;
   min-height: 140px;
+  position: relative;
+}
+
+.scoreChordOverlayLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.scoreChordOverlayLabel {
+  position: absolute;
+  transform: translateY(-2px);
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
 }
