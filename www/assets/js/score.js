@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const alphaTex = [
     "\\title \"Rhythm\"",
     ".",
-    ":4 0.6 { slashed } 0.6 { slashed } 0.6 { slashed } 0.6 { slashed } |",
+    ":4 0.6 { slashed txt \"E\" } 0.6 { slashed } 0.6 { slashed } 0.6 { slashed } |",
     "   0.6 { slashed } 0.6 { slashed } 0.6 { slashed } 0.6 { slashed } |",
   ].join("\n");
 
@@ -21,9 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
     tex: true,
     display: {
       staveProfile: window.alphaTab.StaveProfile.Score,
-    },
-    notation: {
-      rhythmMode: window.alphaTab.TabRhythmMode.Hidden,
     },
   };
 

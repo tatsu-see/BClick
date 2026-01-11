@@ -22,7 +22,7 @@
   <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
 
   <link rel="stylesheet" href="/assets/css/app.css">
-  <link rel="stylesheet" href="/assets/css/codeDiagram.css">
+  <link rel="stylesheet" href="/assets/css/configScore.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
@@ -38,18 +38,100 @@
     <button id="closePage" type="button" aria-label="閉じる">×</button>
   </header>
   <main>
-    <div id="preference">
+    <div id="scorePreference">
       <div class="preferenceName">
-        メジャーコード:
+        拍子:
       </div>
-      <div class="preferenceValue">
+
+      <div class="preferenceValue" role="group" aria-label="拍子の選択">
+        <label>
+          <input type="radio" name="timeSignature" value="4/4" checked>
+          4/4
+        </label>
+        <label>
+          <input type="radio" name="timeSignature" value="3/4">
+          3/4
+        </label>
       </div>
+
       <div class="preferenceName">
-        マイナーコード:
+        使用コード:
       </div>
+
       <div class="preferenceValue">
+        <div class="chipGroupSection" role="group" aria-label="使用コードの選択（メジャー）">
+          <div class="chipGroupTitle">メジャー</div>
+          <div class="chipGroup">
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="C" class="chipInput">
+              <span class="chipLabel">C</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="D" class="chipInput">
+              <span class="chipLabel">D</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="E" class="chipInput">
+              <span class="chipLabel">E</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="F" class="chipInput">
+              <span class="chipLabel">F</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="G" class="chipInput">
+              <span class="chipLabel">G</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="A" class="chipInput">
+              <span class="chipLabel">A</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="B" class="chipInput">
+              <span class="chipLabel">B</span>
+            </label>
+          </div>
+        </div>
+        <div class="chipGroupSection" role="group" aria-label="使用コードの選択（マイナー）">
+          <div class="chipGroupTitle">マイナー</div>
+          <div class="chipGroup">
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="Cm" class="chipInput">
+              <span class="chipLabel">Cm</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="Dm" class="chipInput">
+              <span class="chipLabel">Dm</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="Em" class="chipInput">
+              <span class="chipLabel">Em</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="Fm" class="chipInput">
+              <span class="chipLabel">Fm</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="Gm" class="chipInput">
+              <span class="chipLabel">Gm</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="Am" class="chipInput">
+              <span class="chipLabel">Am</span>
+            </label>
+            <label class="chipOption">
+              <input type="checkbox" name="chord" value="Bm" class="chipInput">
+              <span class="chipLabel">Bm</span>
+            </label>
+          </div>
+        </div>
       </div>
+
     </div>
+
+      <div class="preferenceValue">
+        <button type="button" id="saveConfigScore">保存</button>
+      </div>
 
   </main>
 

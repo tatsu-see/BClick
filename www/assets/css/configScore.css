@@ -1,0 +1,70 @@
+
+#scorePreference {
+  margin:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:0px solid green;
+  border-radius: 8px;
+  background-color: mintcream;
+
+  display: grid;
+  grid-template-columns: 0.6fr 1.4fr;
+  column-gap: 10px;
+  row-gap: 6px;
+  align-items: center;
+  text-align: left;
+}
+
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chipGroupSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chipGroupTitle {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #333;
+}
+
+.chipOption {
+  position: relative;
+  cursor: pointer;
+}
+
+.chipInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chipLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 5px;
+  min-height: 28px;
+  border-radius: 10px;
+  border: 1px solid #666;
+  background-color: #f7f7f7;
+  font-size: 0.85em;
+  color: #111;
+  user-select: none;
+}
+
+.chipInput:checked + .chipLabel {
+  background-color: lightgreen;
+  border-color: #3b7a4b;
+}
+
+.chipInput:focus-visible + .chipLabel {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
