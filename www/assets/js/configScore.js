@@ -41,6 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedChords = chordInputs
       .filter((input) => input.checked)
       .map((input) => input.value);
+    if (selectedChords.length === 0) {
+      const langPrefix = window.LANG_PRE_FIX
+        || ((navigator.language || navigator.userLanguage || "").startsWith("ja") ? "ja" : "en");
+      const message = langPrefix === "ja"
+        ? "使用コードを1つ以上選択してください。"
+        : "Please select at least one chord.";
+      window.alert(message);
+      return;
+    }
     store.setScoreChords(selectedChords);
 
     if (measuresInput) {
