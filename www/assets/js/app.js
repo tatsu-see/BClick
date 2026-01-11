@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const clickCountSelect = document.getElementById("clickCount");
   const countdownSelect = document.getElementById("countdown");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
+  const configScoreButton = document.getElementById("configScore");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
 
   const getNumberAttribute = (element, attrName, fallback) => {
@@ -87,6 +88,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const newTab = window.open("/codeDiagram.html", "_blank", "noopener,noreferrer");
       if (!newTab) {
       // window.location.href = "/codeDiagram.html";
+      }
+    });
+  }
+
+  if (configScoreButton) {
+    configScoreButton.addEventListener("click", () => {
+      const newTab = window.open("/configScore.html", "_blank", "noopener,noreferrer");
+      if (!newTab) {
+      // window.location.href = "/configScore.html";
       }
     });
   }
