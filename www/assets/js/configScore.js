@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const savedProgression = store.getScoreProgression();
-  if (codeProgressionInput && savedProgression) {
+  if (codeProgressionInput && typeof savedProgression === "string") {
     codeProgressionInput.value = savedProgression;
   }
 
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const savedMeasures = store.getScoreMeasures();
-  if (measuresInput && savedMeasures) {
+  if (measuresInput && savedMeasures !== null) {
     measuresInput.value = savedMeasures.toString();
   }
 
