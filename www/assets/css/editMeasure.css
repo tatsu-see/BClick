@@ -95,16 +95,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
 }
 
 .rhythmBeatLabel {
-  min-width: 72px;
+  min-width: 22px;
   text-align: right;
 }
 
 .rhythmBeatSelect {
-  flex: 1;
+  flex: 0 1 140px;
+  max-width: 100%;
 }
 
 #saveButtonContainer {
