@@ -99,9 +99,12 @@
         進行:
       </div>
 
-      <div class="preferenceValue" role="group" aria-label="">
+      <div class="preferenceValue codeProgressionGroup" role="group" aria-label="">
         <input type="text" id="codeProgression" value="C G Am F" inputmode="latin">
-        <button type="button" id="clearCodeProgression">クリア</button>
+        <div class="codeProgressionButtons">
+          <button type="button" id="backCodeProgression">Back.</button>
+          <button type="button" id="clearCodeProgression">Init.</button>
+        </div>
       </div>
 
       <div class="preferenceName">
@@ -130,9 +133,7 @@
     </div>
 
     <div id="saveButtonContainer">
-      <div class="preferenceValue">
-        <button type="button" id="saveConfigScore" class="okPage">OK</button>
-      </div>
+        <button type="button" id="saveConfigScore" class="okConfig">OK</button>
     </div>
 
   </main>

@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".chipButton"),
   );
   const codeProgressionInput = document.getElementById("codeProgression");
+  const backProgressionButton = document.getElementById("backCodeProgression");
   const clearProgressionButton = document.getElementById("clearCodeProgression");
   const addRandom3ChordsButton = document.getElementById("addRandom3Chords");
   const addRandom4ChordsButton = document.getElementById("addRandom4Chords");
@@ -44,6 +45,17 @@ document.addEventListener("DOMContentLoaded", () => {
     clearProgressionButton.addEventListener("click", () => {
       if (!codeProgressionInput) return;
       codeProgressionInput.value = "";
+      codeProgressionInput.focus();
+    });
+  }
+
+  if (backProgressionButton) {
+    backProgressionButton.addEventListener("click", () => {
+      if (!codeProgressionInput) return;
+      const parts = codeProgressionInput.value.trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return;
+      parts.pop();
+      codeProgressionInput.value = parts.join(" ");
       codeProgressionInput.focus();
     });
   }
