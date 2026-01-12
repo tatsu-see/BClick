@@ -12,12 +12,14 @@ class RhythmScore {
     chord = "E",
     measures = 2,
     progression = "",
+    bars = [],
   } = {}) {
     this.container = document.getElementById(containerId);
     this.timeSignature = timeSignature;
     this.chord = chord;
     this.measures = measures;
     this.progression = this.normalizeProgression(progression);
+    this.bars = Array.isArray(bars) ? bars : [];
     this.overlayTimer = null;
     this.handleOverlayRefresh = () => {
       this.clearOverlay();
@@ -55,6 +57,11 @@ class RhythmScore {
     this.render();
   }
 
+  setBars(value) {
+    this.bars = Array.isArray(value) ? value : [];
+    this.render();
+  }
+
   normalizeProgression(value) {
     if (Array.isArray(value)) {
       return value.filter((item) => typeof item === "string" && item.length > 0);
@@ -72,17 +79,26 @@ class RhythmScore {
     const denominator = Number.isNaN(denominatorValue) || denominatorValue <= 0 ? 4 : denominatorValue;
     const beats = numerator;
     const bars = [];
+    const barSource = Array.isArray(this.bars) && this.bars.length > 0 ? this.bars : null;
+    const barCount = barSource ? barSource.length : this.measures;
 
-    for (let barIndex = 0; barIndex < this.measures; barIndex += 1) {
+    for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
       const notes = [];
-      const barChord = this.progression.length > 0
-        ? this.progression[barIndex % this.progression.length]
-        : this.chord;
-      for (let beatIndex = 0; beatIndex < beats; beatIndex += 1) {
-        const hasChordLabel = beatIndex === 0 && barChord;
+      const barData = barSource ? barSource[barIndex] : null;
+      const barChord = barData && typeof barData.chord === "string"
+        ? barData.chord
+        : (this.progression.length > 0
+          ? this.progression[barIndex % this.progression.length]
+          : this.chord);
+      const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
+        ? barData.rhythm
+        : Array.from({ length: beats }, () => "4");
+      rhythm.forEach((value, index) => {
+        const hasChordLabel = index === 0 && barChord;
+        const noteValue = value === "8" ? "0.8" : "0.6";
         const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
-        notes.push(`0.6 { ${props} }`);
-      }
+        notes.push(`${noteValue} { ${props} }`);
+      });
       bars.push(notes.join(" "));
     }
 
