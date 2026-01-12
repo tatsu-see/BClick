@@ -63,8 +63,18 @@
 
       <div class="preferenceValue chipGroupColumn">
 
-        <div class="chipGroupSectionRow" role="group" aria-label="使用コードの選択（メジャー）">
-          <div class="chipGroupTitle">メジャー</div>
+        <div class="chipGroupToggleRow" role="group" aria-label="コード区分の表示切り替え">
+          <label class="chipGroupTitle">
+            <input type="checkbox" id="toggleMajorChords" checked>
+            メジャー
+          </label>
+          <label class="chipGroupTitle">
+            <input type="checkbox" id="toggleMinorChords" checked>
+            マイナー
+          </label>
+        </div>
+
+        <div class="chipGroupSectionRow" id="majorChordSection" role="group" aria-label="使用コードの選択（メジャー）">
           <div class="chipGroup">
             <button type="button" class="chipButton" data-chord="C">C</button>
             <button type="button" class="chipButton" data-chord="D">D</button>
@@ -76,8 +86,7 @@
           </div>
         </div>
 
-        <div class="chipGroupSectionRow" role="group" aria-label="使用コードの選択（マイナー）">
-          <div class="chipGroupTitle">マイナー</div>
+        <div class="chipGroupSectionRow" id="minorChordSection" role="group" aria-label="使用コードの選択（マイナー）">
           <div class="chipGroup">
             <button type="button" class="chipButton" data-chord="Cm">Cm</button>
             <button type="button" class="chipButton" data-chord="Dm">Dm</button>

@@ -33,10 +33,24 @@
   align-items: flex-start;
 }
 
+.chipGroupToggleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .chipGroupTitle {
   font-size: 0.85em;
   font-weight: 600;
   color: #333;
+}
+
+.chipGroupTitle input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+.chipGroupSectionRow.isHidden .chipGroup {
+  display: none;
 }
 
 .chipButton {

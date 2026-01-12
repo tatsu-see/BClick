@@ -8,6 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const chordButtons = Array.from(document.querySelectorAll(".chipButton"));
   const rhythmBeatList = document.getElementById("rhythmBeatList");
   const rhythmBeatTemplate = document.getElementById("rhythmBeatTemplate");
+  const majorChordSection = document.getElementById("majorChordSection");
+  const minorChordSection = document.getElementById("minorChordSection");
+  const toggleMajorChords = document.getElementById("toggleMajorChords");
+  const toggleMinorChords = document.getElementById("toggleMinorChords");
   const store = new ConfigStore();
 
   const params = new URLSearchParams(window.location.search);
@@ -65,6 +69,29 @@ document.addEventListener("DOMContentLoaded", () => {
       updateSelection(chord);
     });
   });
+
+  const updateChordSections = () => {
+    if (!toggleMajorChords || !toggleMinorChords) return;
+    if (!toggleMajorChords.checked && !toggleMinorChords.checked) {
+      toggleMajorChords.checked = true;
+    }
+    if (majorChordSection) {
+      majorChordSection.classList.toggle("isHidden", !toggleMajorChords.checked);
+    }
+    if (minorChordSection) {
+      minorChordSection.classList.toggle("isHidden", !toggleMinorChords.checked);
+    }
+  };
+
+  if (toggleMajorChords) {
+    toggleMajorChords.addEventListener("change", updateChordSections);
+  }
+
+  if (toggleMinorChords) {
+    toggleMinorChords.addEventListener("change", updateChordSections);
+  }
+
+  updateChordSections();
 
   const getBeatPattern = (rhythm, offset) => {
     const first = rhythm[offset];
