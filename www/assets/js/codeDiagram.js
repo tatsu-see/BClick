@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chordSelectMajor = document.getElementById("chordSelectMajor");
   const chordSelectMinor = document.getElementById("chordSelectMinor");
   const closePageButton = document.getElementById("closePage");
-  const saveButton = document.getElementById("saveConfigScore");
+  const saveButton = document.getElementById("saveCodeDiagram");
   const fretboard = document.querySelector(".fretboard");
   let currentChord = "";
 

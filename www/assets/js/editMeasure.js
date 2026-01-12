@@ -4,7 +4,7 @@ import ScoreData from "./ScoreData.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const closePageButton = document.getElementById("closePage");
-  const saveButton = document.getElementById("saveConfigScore");
+  const saveButton = document.getElementById("saveEditMeasure");
   const chordButtons = Array.from(document.querySelectorAll(".chipButton"));
   const rhythmBeatList = document.getElementById("rhythmBeatList");
   const rhythmBeatTemplate = document.getElementById("rhythmBeatTemplate");
