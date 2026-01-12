@@ -77,6 +77,26 @@
       </div>
 
       <div class="preferenceName">
+        リズム:
+      </div>
+
+      <div class="preferenceValue rhythmBeatValue" role="group" aria-label="リズムの選択">
+        <div id="rhythmBeatList" class="rhythmBeatList"></div>
+        <template id="rhythmBeatTemplate">
+          <div class="rhythmBeatRow">
+            <div class="rhythmBeatLabel"></div>
+            <select class="rhythmBeatSelect">
+              <option value="quarter">4分音符</option>
+              <option value="restQuarter">4分休符</option>
+              <option value="eighths">8分+8分</option>
+              <option value="eighthRest">8分+休符</option>
+              <option value="restEighth">休符+8分</option>
+            </select>
+          </div>
+        </template>
+      </div>
+
+      <div class="preferenceName">
         小節数:
       </div>
 

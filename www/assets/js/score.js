@@ -15,11 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreDataOutput = document.getElementById("scoreData");
   const store = new ConfigStore();
 
-  const loadSettings = () => {
+  const loadSettings = (resetBars = false) => {
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
-    const savedBars = store.getScoreBars();
+    const savedBars = resetBars ? null : store.getScoreBars();
     return new ScoreData({
       timeSignature: savedTimeSignature || "4/4",
       measures: savedMeasures || 2,
@@ -53,7 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (setClickButton) {
     setClickButton.addEventListener("click", () => {
-      const nextSettings = loadSettings();
+      const nextSettings = loadSettings(true);
+      store.setScoreBars(nextSettings.bars);
       renderScoreData(nextSettings);
       applyScoreData(nextSettings);
     });

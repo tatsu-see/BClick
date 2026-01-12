@@ -39,6 +39,7 @@ class ScoreData {
   normalizeBars(bars) {
     if (!Array.isArray(bars)) return null;
     const defaults = this.buildBars();
+    const expectedBeats = this.buildDefaultRhythm().length;
     const normalized = defaults.map((fallback, index) => {
       const source = bars[index];
       if (!source || typeof source !== "object") return fallback;
@@ -46,9 +47,14 @@ class ScoreData {
       const rhythm = Array.isArray(source.rhythm) && source.rhythm.length > 0
         ? source.rhythm.filter((value) => typeof value === "string" && value.length > 0)
         : fallback.rhythm;
+      const duration = rhythm.reduce((total, value) => {
+        if (value.endsWith("8")) return total + 0.5;
+        if (value.endsWith("4")) return total + 1;
+        return total;
+      }, 0);
       return {
         chord,
-        rhythm: rhythm.length > 0 ? rhythm : fallback.rhythm,
+        rhythm: rhythm.length > 0 && duration === expectedBeats ? rhythm : fallback.rhythm,
       };
     });
     return normalized;

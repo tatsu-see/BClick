@@ -66,6 +66,33 @@
   background-color: #dff2df;
 }
 
+.rhythmBeatValue {
+  align-items: stretch;
+}
+
+.rhythmBeatList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.rhythmBeatRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.rhythmBeatLabel {
+  min-width: 72px;
+  text-align: right;
+}
+
+.rhythmBeatSelect {
+  flex: 1;
+}
+
 #saveButtonContainer {
   margin-bottom:3px;
   padding:3px;
