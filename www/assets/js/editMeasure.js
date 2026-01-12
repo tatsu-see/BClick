@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const minorChordSection = document.getElementById("minorChordSection");
   const toggleMajorChords = document.getElementById("toggleMajorChords");
   const toggleMinorChords = document.getElementById("toggleMinorChords");
+  const measuresInput = document.getElementById("measures");
+  const measuresDownButton = document.getElementById("measuresDown");
+  const measuresUpButton = document.getElementById("measuresUp");
   const store = new ConfigStore();
 
   const params = new URLSearchParams(window.location.search);
@@ -143,6 +146,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderBeatSelectors();
 
+  const cloneBar = (bar) => ({
+    chord: typeof bar?.chord === "string" ? bar.chord : "",
+    rhythm: Array.isArray(bar?.rhythm) && bar.rhythm.length > 0
+      ? bar.rhythm.slice()
+      : scoreData.buildDefaultRhythm(),
+  });
+
+  const getSelectedCopyValue = () => {
+    if (!measuresInput) return "0";
+    return measuresInput.value;
+  };
+
+  const bumpSelectValue = (selectEl, delta) => {
+    if (!selectEl) return;
+    const values = Array.from(selectEl.options)
+      .map((option) => Number.parseInt(option.value, 10))
+      .filter((value) => !Number.isNaN(value));
+    const current = Number.parseInt(selectEl.value, 10);
+    const currentValue = Number.isNaN(current) ? 0 : current;
+    const currentIndex = values.indexOf(currentValue);
+    if (currentIndex < 0) return;
+    const nextIndex = Math.min(values.length - 1, Math.max(0, currentIndex + delta));
+    if (nextIndex === currentIndex) return;
+    selectEl.value = values[nextIndex].toString();
+  };
+
+  if (measuresDownButton) {
+    measuresDownButton.addEventListener("click", () => bumpSelectValue(measuresInput, -1));
+  }
+
+  if (measuresUpButton) {
+    measuresUpButton.addEventListener("click", () => bumpSelectValue(measuresInput, 1));
+  }
+
   if (saveButton) {
     saveButton.addEventListener("click", () => {
       const targetBar = bars[safeBarIndex];
@@ -159,7 +196,36 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         targetBar.rhythm = nextRhythm;
       }
+
+      const copyValue = getSelectedCopyValue();
+      if (copyValue === "del") {
+        const shouldDelete = window.confirm("この小節を削除しますか？");
+        if (!shouldDelete) return;
+        if (bars.length > 1) {
+          bars.splice(safeBarIndex, 1);
+        } else if (targetBar) {
+          targetBar.chord = "";
+          targetBar.rhythm = scoreData.buildDefaultRhythm();
+        }
+        store.setScoreBars(bars);
+        store.setScoreMeasures(bars.length);
+        window.close();
+        if (!window.closed) {
+          window.location.href = "/";
+        }
+        return;
+      }
+
+      const copyCount = Number.parseInt(copyValue, 10);
+      if (Number.isFinite(copyCount) && copyCount > 0 && targetBar) {
+        const baseBar = cloneBar(targetBar);
+        for (let i = 0; i < copyCount; i += 1) {
+          bars.splice(safeBarIndex + 1 + i, 0, cloneBar(baseBar));
+        }
+      }
+
       store.setScoreBars(bars);
+      store.setScoreMeasures(bars.length);
       window.close();
       if (!window.closed) {
         window.location.href = "/";
