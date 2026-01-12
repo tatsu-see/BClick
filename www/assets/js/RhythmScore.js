@@ -3,7 +3,12 @@
  * alphaTabでリズム譜を表示するクラス
  * 
  * alphaTabは以下のサイトで情報公開している。
+ * 
+ * 拍子について
  * https://www.alphatab.net/docs/alphatex/bar-metadata#ts。
+ * 
+ * 休符について
+ * https://alphatab.net/docs/alphatex/document-structure
  */
 
 class RhythmScore {
