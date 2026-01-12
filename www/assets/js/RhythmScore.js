@@ -8,7 +8,10 @@
  * https://www.alphatab.net/docs/alphatex/bar-metadata#ts。
  * 
  * 休符について
- * https://alphatab.net/docs/alphatex/document-structure
+ * https://alphatab.net/docs/alphatex/document-structure#beat-content-required
+ * 
+ * 音符表現について
+ * https://alphatab.net/docs/alphatex/document-structure#beats
  */
 
 class RhythmScore {
@@ -109,6 +112,9 @@ class RhythmScore {
         }
         else {
           const noteValue = value === "8" ? "0.8" : "0.6";
+//          const noteValue = value === "8" ? ".8" : "(C4 D4).8"; // 8分音符１つ
+//          const noteValue = value === "8" ? ".8" : "r.8";       // 8分休符
+//          const noteValue = value === "8" ? ".8" : "C4.16";       // 16分音符
           const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
           notes.push(`${noteValue} { ${props} }`);
         }
