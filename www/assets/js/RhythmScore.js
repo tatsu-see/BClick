@@ -106,15 +106,15 @@ class RhythmScore {
 
         if( value.startsWith("r") ){
           // 休符の場合
-          const noteValue = value === "r8" ? "0.8" : "0.6";
+          const noteValue = value === "r8" ? "r.8" : "r.4";
           const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
-          notes.push(`r { ${props} }`);
+          notes.push(`${noteValue} { ${props} }`);
         }
         else {
-          const noteValue = value === "8" ? "0.8" : "0.6";
-//          const noteValue = value === "8" ? ".8" : "(C4 D4).8"; // 8分音符１つ
-//          const noteValue = value === "8" ? ".8" : "r.8";       // 8分休符
-//          const noteValue = value === "8" ? ".8" : "C4.16";       // 16分音符
+          const noteValue = value === "8" ? "C4.8" : "C4.4";
+//          const noteValue = value === "8" ? ".8" : "(C4 D4).8"; // サンプル 8分音符
+//          const noteValue = value === "8" ? ".8" : "r.8";       // サンプル 8分休符
+//          const noteValue = value === "8" ? ".8" : "C4.16";     // サンプル 16分音符
           const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
           notes.push(`${noteValue} { ${props} }`);
         }
