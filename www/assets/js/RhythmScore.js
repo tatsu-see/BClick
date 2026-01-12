@@ -102,11 +102,15 @@ class RhythmScore {
       bars.push(notes.join(" "));
     }
 
-    return [
+    // 文字列を確認する。
+    var check_alphaTex = 
+    [
       `\\ts ${numerator} ${denominator}`,
       ".",
       `:${denominator} ${bars.join(" | ")} |`,
     ].join("\n");
+
+    return check_alphaTex;
   }
 
   render() {
