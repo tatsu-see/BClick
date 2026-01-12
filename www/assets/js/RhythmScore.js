@@ -164,6 +164,7 @@ class RhythmScore {
 
     const containerRect = this.container.getBoundingClientRect();
     let found = false;
+    let barIndex = 0;
 
     svgs.forEach((svg) => {
       svg.querySelectorAll("text").forEach((node) => {
@@ -174,6 +175,8 @@ class RhythmScore {
         const rect = node.getBoundingClientRect();
         const left = rect.left - containerRect.left;
         const top = rect.top - containerRect.top;
+        const currentIndex = barIndex;
+        barIndex += 1;
 
         found = true;
         node.style.opacity = "0";
@@ -183,6 +186,12 @@ class RhythmScore {
         const badge = document.createElement("span");
         badge.className = "scoreChordOverlayLabel";
         badge.textContent = label;
+        badge.dataset.barIndex = String(currentIndex);
+        badge.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          window.location.href = `/editMeasure.html?bar=${currentIndex}`;
+        });
         badge.style.left = `${left}px`;
         badge.style.top = `${top}px`;
         overlay.appendChild(badge);

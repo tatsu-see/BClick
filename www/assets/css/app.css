@@ -246,4 +246,6 @@ footer {
   font-weight: 700;
   color: #111;
   white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
 }
