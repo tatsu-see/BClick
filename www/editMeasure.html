@@ -105,13 +105,14 @@
         </template>
       </div>
 
-      <div class="preferenceName">
-        小節数:
+      <div class="preferenceName" aria-label="編集中の小節をコピーする数">
+        コピー:
       </div>
 
-      <div class="preferenceValue" role="group" aria-label="小節数の入力">
+      <div class="preferenceValue" role="group" aria-label="編集中の小節をコピーする数の入力">
         <button type="button" class="bpmButton" id="measuresDown">-1</button>
         <select id="measures" name="measures">
+          <option value="0">0</option>
           <option value="1" selected>1</option>
           <option value="2">2</option>
           <option value="3">3</option>
