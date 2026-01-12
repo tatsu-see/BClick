@@ -2,20 +2,25 @@
  * オリジナルの簡易楽譜データオブジェクト
  */
 class ScoreData {
-  constructor({ timeSignature, measures, progression } = {}) {
+  constructor({ timeSignature, measures, progression, bars } = {}) {
     this.timeSignature = timeSignature || "4/4";
     this.measures = Number.isNaN(Number.parseInt(measures, 10))
       ? 2
       : Number.parseInt(measures, 10);
     this.progression = progression || "";
-    this.bars = this.buildBars();
+    const normalizedBars = this.normalizeBars(bars);
+    this.bars = normalizedBars || this.buildBars();
   }
 
-  buildBars() {
+  buildDefaultRhythm() {
     const [numeratorRaw] = this.timeSignature.split("/");
     const numerator = Number.parseInt(numeratorRaw, 10);
     const beats = Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
-    const defaultRhythm = Array.from({ length: beats }, () => "4");
+    return Array.from({ length: beats }, () => "4");
+  }
+
+  buildBars() {
+    const defaultRhythm = this.buildDefaultRhythm();
     const chords = this.progression.trim().length > 0
       ? this.progression.trim().split(/\s+/)
       : [];
@@ -29,6 +34,24 @@ class ScoreData {
       });
     }
     return bars;
+  }
+
+  normalizeBars(bars) {
+    if (!Array.isArray(bars)) return null;
+    const defaults = this.buildBars();
+    const normalized = defaults.map((fallback, index) => {
+      const source = bars[index];
+      if (!source || typeof source !== "object") return fallback;
+      const chord = typeof source.chord === "string" ? source.chord : fallback.chord;
+      const rhythm = Array.isArray(source.rhythm) && source.rhythm.length > 0
+        ? source.rhythm.filter((value) => typeof value === "string" && value.length > 0)
+        : fallback.rhythm;
+      return {
+        chord,
+        rhythm: rhythm.length > 0 ? rhythm : fallback.rhythm,
+      };
+    });
+    return normalized;
   }
 }
 

@@ -39,20 +39,6 @@
   </header>
   <main>
     <div id="scorePreference">
-      <div class="preferenceName">
-        拍子:
-      </div>
-
-      <div class="preferenceValue" role="group" aria-label="拍子の選択">
-        <label>
-          <input type="radio" name="timeSignature" value="4/4" checked>
-          4/4
-        </label>
-        <label>
-          <input type="radio" name="timeSignature" value="3/4">
-          3/4
-        </label>
-      </div>
 
       <div class="preferenceName">
         <span class="lang" data-lang="en">Code</span>
@@ -88,22 +74,6 @@
           </div>
         </div>
 
-        <div class="preferenceValue" role="group" aria-label="">
-          <button type="button" id="addRandom3Chords">ランダム3つ</button>
-          <button type="button" id="addRandom4Chords">ランダム4つ</button>
-        </div>
-      </div>
-
-      <div class="preferenceName">
-        進行:
-      </div>
-
-      <div class="preferenceValue codeProgressionGroup" role="group" aria-label="">
-        <input type="text" id="codeProgression" value="C G Am F" inputmode="latin">
-        <div class="codeProgressionButtons">
-          <button type="button" id="backCodeProgression">Back.</button>
-          <button type="button" id="clearCodeProgression">Init.</button>
-        </div>
       </div>
 
       <div class="preferenceName">
@@ -113,10 +83,10 @@
       <div class="preferenceValue" role="group" aria-label="小節数の入力">
         <button type="button" class="bpmButton" id="measuresDown">-1</button>
         <select id="measures" name="measures">
-          <option value="1">1</option>
+          <option value="1" selected>1</option>
           <option value="2">2</option>
           <option value="3">3</option>
-          <option value="4" selected>4</option>
+          <option value="4">4</option>
           <option value="5">5</option>
           <option value="6">6</option>
           <option value="7">7</option>

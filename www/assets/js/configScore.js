@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".chipButton"),
   );
   const codeProgressionInput = document.getElementById("codeProgression");
+  const closePageButton = document.getElementById("closePage");
   const backProgressionButton = document.getElementById("backCodeProgression");
   const clearProgressionButton = document.getElementById("clearCodeProgression");
   const addRandom3ChordsButton = document.getElementById("addRandom3Chords");
@@ -107,6 +108,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (measuresUpButton) {
     measuresUpButton.addEventListener("click", () => bumpSelectValue(measuresInput, 1));
+  }
+
+  if (closePageButton) {
+    closePageButton.addEventListener("click", () => {
+      window.close();
+      if (!window.closed) {
+        window.location.href = "/";
+      }
+    });
   }
 
   if (!saveButton) return;

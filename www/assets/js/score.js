@@ -19,10 +19,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
+    const savedBars = store.getScoreBars();
     return new ScoreData({
       timeSignature: savedTimeSignature || "4/4",
       measures: savedMeasures || 2,
       progression: savedProgression || "",
+      bars: savedBars || null,
     });
   };
 

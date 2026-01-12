@@ -153,8 +153,11 @@ class RhythmScore {
     if (!this.container) return false;
     const svgs = Array.from(this.container.querySelectorAll("svg"));
     if (svgs.length === 0) return false;
+    const barChords = Array.isArray(this.bars)
+      ? this.bars.map((bar) => (typeof bar?.chord === "string" ? bar.chord : ""))
+      : [];
     const chordSet = new Set(
-      [...this.progression, this.chord].filter((value) => typeof value === "string" && value.length > 0),
+      [...barChords, ...this.progression, this.chord].filter((value) => typeof value === "string" && value.length > 0),
     );
     if (chordSet.size === 0) return true;
 
