@@ -215,6 +215,9 @@ class RhythmScore {
         badge.className = "scoreChordOverlayLabel";
         badge.textContent = label;
         badge.dataset.barIndex = String(currentIndex);
+        if (window.bclickActiveChordIndex === currentIndex) {
+          badge.classList.add("isActiveChord");
+        }
         badge.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();

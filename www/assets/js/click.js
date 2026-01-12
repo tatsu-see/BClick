@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let cycleIndex = 0;
   let currentBeatMs = null;
   let isPaused = false;
+  let chordScrollIndex = 0;
 
   // 値の読み取りユーティリティ
   const getNumberValue = (value, fallback) => {
@@ -117,8 +118,31 @@ document.addEventListener("DOMContentLoaded", () => {
       cycleBoxes[cycleIndex].classList.remove("active");
       cycleIndex = (cycleIndex + 1) % cycleBoxes.length;
       cycleBoxes[cycleIndex].classList.add("active");
+      if (cycleIndex === 0) {
+        // 1周ごとに次のコードへスクロールする。
+        scrollToNextChord();
+      }
       clickSound();
     }, currentBeatMs);
+  };
+
+  const scrollToNextChord = () => {
+    // カスタム描画されたコード表示を順番にスクロールし、現在位置をハイライトする。
+    const labels = Array.from(document.querySelectorAll(".scoreChordOverlayLabel"));
+    if (labels.length === 0) return;
+    labels.forEach((label) => label.classList.remove("isActiveChord"));
+    const target = labels[chordScrollIndex % labels.length];
+    chordScrollIndex = (chordScrollIndex + 1) % labels.length;
+    const barIndex = Number.parseInt(target.dataset.barIndex, 10);
+    if (!Number.isNaN(barIndex)) {
+      // リサイズ等で再描画されてもハイライトを復元できるように保存する。
+      window.bclickActiveChordIndex = barIndex;
+    }
+    target.classList.add("isActiveChord");
+    const rect = target.getBoundingClientRect();
+    const targetTop = rect.top + window.scrollY;
+    const scrollTop = Math.max(0, targetTop - window.innerHeight / 2);
+    window.scrollTo({ top: scrollTop, behavior: "smooth" });
   };
 
   // クリックボックスのループ再生
@@ -132,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cycleBoxes.forEach((box) => box.classList.remove("active"));
     cycleBoxes[0].classList.add("active");
+    scrollToNextChord();
     clickSound();
 
     startCycleTimer();
