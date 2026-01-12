@@ -100,9 +100,19 @@ class RhythmScore {
         : Array.from({ length: beats }, () => "4");
       rhythm.forEach((value, index) => {
         const hasChordLabel = index === 0 && barChord;
-        const noteValue = value === "8" ? "0.8" : "0.6";
-        const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
-        notes.push(`${noteValue} { ${props} }`);
+
+        if( value.startsWith("r") ){
+          // 休符の場合
+          const noteValue = value === "r8" ? "0.8" : "0.6";
+          const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
+          notes.push(`r { ${props} }`);
+        }
+        else {
+          const noteValue = value === "8" ? "0.8" : "0.6";
+          const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
+          notes.push(`${noteValue} { ${props} }`);
+        }
+        return;
       });
       bars.push(notes.join(" "));
     }
