@@ -81,6 +81,34 @@
   outline-offset: 2px;
 }
 
+.rhythmBeatValue {
+  align-items: stretch;
+}
+
+.rhythmBeatList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.rhythmBeatRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.rhythmBeatLabel {
+  min-width: 24px;
+  text-align: right;
+}
+
+.rhythmBeatSelect {
+  flex: 0 1 220px;
+  max-width: 100%;
+}
+
 #codeProgression {
   font-size: 0.9em;
 }

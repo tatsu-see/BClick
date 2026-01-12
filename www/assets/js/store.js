@@ -15,6 +15,7 @@ export class ConfigStore extends LocalStore {
       ScoreProgression: 'bclick.score.progression',
       ScoreMeasures: 'bclick.score.measures',
       ScoreBars: 'bclick.score.bars',
+      ScoreBeatPatterns: 'bclick.score.beatPatterns',
       CodeDiagramChord: 'bclick.codeDiagram.chord',
     };
   }
@@ -143,6 +144,16 @@ export class ConfigStore extends LocalStore {
   setScoreMeasures(value) {
     if (!Number.isFinite(value) || value <= 0) return;
     this.setNumberSetting(this.keys.ScoreMeasures, value);
+  }
+
+  getScoreBeatPatterns() {
+    const saved = this.getSettings(this.keys.ScoreBeatPatterns);
+    return Array.isArray(saved) ? saved : null;
+  }
+
+  setScoreBeatPatterns(value) {
+    if (!Array.isArray(value)) return;
+    this.saveSettings(this.keys.ScoreBeatPatterns, value);
   }
 
   getScoreBars() {

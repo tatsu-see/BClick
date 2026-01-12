@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const minorChordSection = document.getElementById("minorChordSection");
   const toggleMajorChords = document.getElementById("toggleMajorChords");
   const toggleMinorChords = document.getElementById("toggleMinorChords");
+  const rhythmBeatList = document.getElementById("rhythmBeatList");
+  const rhythmBeatTemplate = document.getElementById("rhythmBeatTemplate");
   const codeProgressionInput = document.getElementById("codeProgression");
   const closePageButton = document.getElementById("closePage");
   const backProgressionButton = document.getElementById("backCodeProgression");
@@ -35,6 +37,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (codeProgressionInput && savedProgression) {
     codeProgressionInput.value = savedProgression;
   }
+
+  const savedBeatPatterns = store.getScoreBeatPatterns();
+  let selectedBeatPatterns = Array.isArray(savedBeatPatterns) ? savedBeatPatterns.slice() : [];
+
+  const getBeatCount = () => {
+    const selected = timeSignatureInputs.find((input) => input.checked)?.value || "4/4";
+    const [numeratorRaw] = selected.split("/");
+    const numerator = Number.parseInt(numeratorRaw, 10);
+    return Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
+  };
 
   chordButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -68,6 +80,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   updateChordSections();
+
+  const renderBeatSelectors = () => {
+    if (!rhythmBeatList || !rhythmBeatTemplate) return;
+    const beatCount = getBeatCount();
+    if (selectedBeatPatterns.length < beatCount) {
+      selectedBeatPatterns = selectedBeatPatterns.concat(
+        Array.from({ length: beatCount - selectedBeatPatterns.length }, () => "quarter"),
+      );
+    } else if (selectedBeatPatterns.length > beatCount) {
+      selectedBeatPatterns = selectedBeatPatterns.slice(0, beatCount);
+    }
+
+    rhythmBeatList.textContent = "";
+    for (let i = 0; i < beatCount; i += 1) {
+      const fragment = rhythmBeatTemplate.content.cloneNode(true);
+      const label = fragment.querySelector(".rhythmBeatLabel");
+      const select = fragment.querySelector(".rhythmBeatSelect");
+      if (!label || !select) continue;
+      label.textContent = `${i + 1}`;
+      const selectedValue = selectedBeatPatterns[i] || "quarter";
+      Array.from(select.options).forEach((option) => {
+        option.selected = option.value === selectedValue;
+      });
+      select.addEventListener("change", () => {
+        selectedBeatPatterns[i] = select.value;
+      });
+      rhythmBeatList.appendChild(fragment);
+    }
+  };
+
+  timeSignatureInputs.forEach((input) => {
+    input.addEventListener("change", renderBeatSelectors);
+  });
+
+  renderBeatSelectors();
 
   if (clearProgressionButton) {
     clearProgressionButton.addEventListener("click", () => {
@@ -151,6 +198,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedTimeSignature = timeSignatureInputs.find((input) => input.checked)?.value;
     if (selectedTimeSignature) {
       store.setScoreTimeSignature(selectedTimeSignature);
+    }
+    if (selectedBeatPatterns.length > 0) {
+      store.setScoreBeatPatterns(selectedBeatPatterns);
     }
 
     const progressionRaw = codeProgressionInput ? codeProgressionInput.value : "";

@@ -2,21 +2,42 @@
  * オリジナルの簡易楽譜データオブジェクト
  */
 class ScoreData {
-  constructor({ timeSignature, measures, progression, bars } = {}) {
+  constructor({ timeSignature, measures, progression, bars, beatPatterns } = {}) {
     this.timeSignature = timeSignature || "4/4";
     this.measures = Number.isNaN(Number.parseInt(measures, 10))
       ? 2
       : Number.parseInt(measures, 10);
     this.progression = progression || "";
+    this.beatPatterns = Array.isArray(beatPatterns) ? beatPatterns : null;
     const normalizedBars = this.normalizeBars(bars);
     this.bars = normalizedBars || this.buildBars();
   }
 
-  buildDefaultRhythm() {
+  getBeatCount() {
     const [numeratorRaw] = this.timeSignature.split("/");
     const numerator = Number.parseInt(numeratorRaw, 10);
-    const beats = Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
-    return Array.from({ length: beats }, () => "4");
+    return Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
+  }
+
+  buildDefaultRhythm() {
+    const beats = this.getBeatCount();
+    const beatPatternMap = {
+      quarter: ["4"],
+      restQuarter: ["r4"],
+      eighths: ["8", "8"],
+      eighthRest: ["8", "r8"],
+      restEighth: ["r8", "8"],
+    };
+    const patterns = Array.isArray(this.beatPatterns) && this.beatPatterns.length > 0
+      ? this.beatPatterns
+      : [];
+    const rhythm = [];
+    for (let i = 0; i < beats; i += 1) {
+      const patternId = patterns[i] || "quarter";
+      const pattern = beatPatternMap[patternId] || beatPatternMap.quarter;
+      rhythm.push(...pattern);
+    }
+    return rhythm;
   }
 
   buildBars() {
@@ -39,7 +60,7 @@ class ScoreData {
   normalizeBars(bars) {
     if (!Array.isArray(bars)) return null;
     const defaults = this.buildBars();
-    const expectedBeats = this.buildDefaultRhythm().length;
+    const expectedBeats = this.getBeatCount();
     const normalized = defaults.map((fallback, index) => {
       const source = bars[index];
       if (!source || typeof source !== "object") return fallback;
