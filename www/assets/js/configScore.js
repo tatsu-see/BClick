@@ -195,32 +195,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!saveButton) return;
   saveButton.addEventListener("click", () => {
-    const selectedTimeSignature = timeSignatureInputs.find((input) => input.checked)?.value;
-    if (selectedTimeSignature) {
-      store.setScoreTimeSignature(selectedTimeSignature);
-    }
-    if (selectedBeatPatterns.length > 0) {
-      store.setScoreBeatPatterns(selectedBeatPatterns);
-    }
-
-    const progressionRaw = codeProgressionInput ? codeProgressionInput.value : "";
-    const trimmedProgression = progressionRaw.trim();
-    if (trimmedProgression.length === 0) {
-      const langPrefix = window.LANG_PRE_FIX
-        || ((navigator.language || navigator.userLanguage || "").startsWith("ja") ? "ja" : "en");
-      const message = langPrefix === "ja"
-        ? "コード進行を1つ以上入力してください。"
-        : "Please enter at least one chord.";
-      window.alert(message);
-      return;
-    }
-    store.setScoreProgression(trimmedProgression);
-
-    if (measuresInput) {
-      const parsed = Number.parseInt(measuresInput.value, 10);
-      if (!Number.isNaN(parsed)) {
-        store.setScoreMeasures(parsed);
+    // OKボタンで、現在の設定を保存してトップへ戻る。
+    try {
+      const selectedTimeSignature = timeSignatureInputs.find((input) => input.checked)?.value;
+      if (selectedTimeSignature) {
+        store.setScoreTimeSignature(selectedTimeSignature);
       }
+      if (selectedBeatPatterns.length > 0) {
+        store.setScoreBeatPatterns(selectedBeatPatterns);
+      }
+
+      const progressionRaw = codeProgressionInput ? codeProgressionInput.value : "";
+      const trimmedProgression = progressionRaw.trim();
+      if (trimmedProgression.length === 0) {
+        const langPrefix = window.LANG_PRE_FIX
+          || ((navigator.language || navigator.userLanguage || "").startsWith("ja") ? "ja" : "en");
+        const message = langPrefix === "ja"
+          ? "コード進行を1つ以上入力してください。"
+          : "Please enter at least one chord.";
+        window.alert(message);
+        return;
+      }
+      store.setScoreProgression(trimmedProgression);
+
+      if (measuresInput) {
+        const parsed = Number.parseInt(measuresInput.value, 10);
+        if (!Number.isNaN(parsed)) {
+          store.setScoreMeasures(parsed);
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`configScore: OK保存中にエラーが発生しました。 ${message}`, error);
+      window.alert(`保存に失敗しました: ${message}`);
+      return;
     }
 
     window.close();
