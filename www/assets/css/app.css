@@ -236,16 +236,25 @@ footer {
 .scoreChordOverlayLayer {
   position: absolute;
   inset: 0;
-  pointer-events: none;
+  pointer-events: auto;
+  z-index: 1;
 }
 
 .scoreChordOverlayLabel {
+  min-width:35px;
   position: absolute;
   transform: translateY(-2px);
+
   font-size: 26px;
   font-weight: 700;
-  color: #111;
+  line-height: 1;
+  color: green;
+
   white-space: nowrap;
   cursor: pointer;
   pointer-events: auto;
+  border: 3px solid green;
+  border-radius: 8px;
+  padding: 1px 1px;
+  background-color: rgba(255, 255, 255, 0.85);
 }
