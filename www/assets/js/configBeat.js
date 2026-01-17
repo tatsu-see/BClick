@@ -78,8 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!dialEl) return;
     const step = Number.parseFloat(dialEl.dataset.step || "1");
     const degreesPerStep = Number.parseFloat(dialEl.dataset.degreesPerStep || "18");
-    const labelEl = dialEl.querySelector(".tempoDialLabel");
-    const defaultLabel = labelEl ? labelEl.textContent : "";
     let isActive = false;
     let lastAngle = 0;
     let carry = 0;
@@ -102,8 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
         adjustTempo(steps * step);
         carry -= steps * degreesPerStep;
       }
-      if (labelEl) {
-        labelEl.textContent = diff > 0 ? "+ " : diff < 0 ? "- " : defaultLabel;
+      if (diff > 0) {
+        dialEl.classList.add("isTurningPositive");
+        dialEl.classList.remove("isTurningNegative");
+      } else if (diff < 0) {
+        dialEl.classList.add("isTurningNegative");
+        dialEl.classList.remove("isTurningPositive");
       }
       lastAngle = currentAngle;
     });
@@ -111,9 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const releaseDial = () => {
       isActive = false;
       carry = 0;
-      if (labelEl) {
-        labelEl.textContent = defaultLabel;
-      }
+      dialEl.classList.remove("isTurningPositive", "isTurningNegative");
     };
 
     dialEl.addEventListener("pointerup", releaseDial);

@@ -23,7 +23,8 @@
   padding: 0;
   border-radius: 50%;
   border: 2px solid #1e7a4f;
-  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e3f4ea 45%, #c8ead7 100%);
+  background-color: #ffffff;
+  background-image: linear-gradient(90deg, #f5fbff 0 50%, #f9fff2 50 100%);
   color: #165f3f;
   display: flex;
   align-items: center;
@@ -33,6 +34,21 @@
   font-size: 1.125em;
   cursor: grab;
   touch-action: none;
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.tempoDial.isTurningPositive {
+  background-color: #ffffff;
+  background-image: linear-gradient(90deg, #f0f8ff 0 50%, #ffd59c 50 100%);
+  border-color: #d08a2d;
+  box-shadow: 0 0 0 3px rgba(255, 197, 128, 0.4);
+}
+
+.tempoDial.isTurningNegative {
+  background-color: #ffffff;
+  background-image: linear-gradient(90deg, #8fd0ff 0 50%, #f9fff2 50 100%);
+  border-color: #2b75b4;
+  box-shadow: 0 0 0 3px rgba(120, 178, 230, 0.35);
 }
 
 .tempoDial:active {
@@ -50,6 +66,24 @@
 
 .tempoDialLabel {
   letter-spacing: 0.5px;
+}
+
+.tempoDialSide {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 800;
+  font-size: 0.9em;
+  color: #165f3f;
+  opacity: 0.85;
+}
+
+.tempoDialMinus {
+  left: 16px;
+}
+
+.tempoDialPlus {
+  right: 16px;
 }
 
 #tempoInput {
