@@ -3,10 +3,8 @@ import { ConfigStore } from "./store.js";
 document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
   const tempoInput = document.getElementById("tempoInput");
-  const tempoDown10Button = document.getElementById("tempoDown10");
-  const tempoDownButton = document.getElementById("tempoDown");
-  const tempoUpButton = document.getElementById("tempoUp");
-  const tempoUp10Button = document.getElementById("tempoUp10");
+  const tempoDialCoarse = document.getElementById("tempoDialCoarse");
+  const tempoDialFine = document.getElementById("tempoDialFine");
   const clickCountRange = document.getElementById("clickCountRange");
   const clickCountValue = document.getElementById("clickCountValue");
   const countdownRange = document.getElementById("countdownRange");
@@ -53,23 +51,78 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       setTempoInput(getInputNumberValue(tempoInput, 60));
     }
+
+    tempoInput.addEventListener("change", () => {
+      const clamped = clampTempo(getInputNumberValue(tempoInput, 60));
+      setTempoInput(clamped);
+    });
   }
 
-  if (tempoDownButton) {
-    tempoDownButton.addEventListener("click", () => adjustTempo(-1));
-  }
+  const angleDiff = (current, previous) => {
+    let diff = current - previous;
+    while (diff <= -180) diff += 360;
+    while (diff > 180) diff -= 360;
+    return diff;
+  };
 
-  if (tempoUpButton) {
-    tempoUpButton.addEventListener("click", () => adjustTempo(1));
-  }
+  const getAngle = (dialEl, event) => {
+    const rect = dialEl.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const dx = event.clientX - centerX;
+    const dy = event.clientY - centerY;
+    return (Math.atan2(dy, dx) * 180) / Math.PI;
+  };
 
-  if (tempoDown10Button) {
-    tempoDown10Button.addEventListener("click", () => adjustTempo(-10));
-  }
+  const setupDial = (dialEl) => {
+    if (!dialEl) return;
+    const step = Number.parseFloat(dialEl.dataset.step || "1");
+    const degreesPerStep = Number.parseFloat(dialEl.dataset.degreesPerStep || "18");
+    const labelEl = dialEl.querySelector(".tempoDialLabel");
+    const defaultLabel = labelEl ? labelEl.textContent : "";
+    let isActive = false;
+    let lastAngle = 0;
+    let carry = 0;
 
-  if (tempoUp10Button) {
-    tempoUp10Button.addEventListener("click", () => adjustTempo(10));
-  }
+    dialEl.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      dialEl.setPointerCapture(event.pointerId);
+      isActive = true;
+      lastAngle = getAngle(dialEl, event);
+      carry = 0;
+    });
+
+    dialEl.addEventListener("pointermove", (event) => {
+      if (!isActive) return;
+      const currentAngle = getAngle(dialEl, event);
+      const diff = angleDiff(currentAngle, lastAngle);
+      carry += diff;
+      const steps = Math.trunc(carry / degreesPerStep);
+      if (steps !== 0) {
+        adjustTempo(steps * step);
+        carry -= steps * degreesPerStep;
+      }
+      if (labelEl) {
+        labelEl.textContent = diff > 0 ? "+ " : diff < 0 ? "- " : defaultLabel;
+      }
+      lastAngle = currentAngle;
+    });
+
+    const releaseDial = () => {
+      isActive = false;
+      carry = 0;
+      if (labelEl) {
+        labelEl.textContent = defaultLabel;
+      }
+    };
+
+    dialEl.addEventListener("pointerup", releaseDial);
+    dialEl.addEventListener("pointercancel", releaseDial);
+    dialEl.addEventListener("lostpointercapture", releaseDial);
+  };
+
+  setupDial(tempoDialCoarse);
+  setupDial(tempoDialFine);
 
   const syncRangeValue = (rangeEl, outputEl) => {
     if (!rangeEl || !outputEl) return;

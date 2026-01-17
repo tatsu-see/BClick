@@ -1,5 +1,5 @@
 
-.beatPreference {
+#beatPreference {
   margin-bottom:3px;
   padding:3px;
   width:calc(100%-6px);
@@ -7,22 +7,89 @@
   border:0px solid green;
   border-radius: 3px;
   background-color: mintcream;
+}
 
-  display: grid;
-  grid-template-columns: 0.5fr 0.5fr;
-  column-gap: 5px;
-  row-gap: 6px;
+.tempoControl {
+  display: flex;
   align-items: center;
-  text-align: left;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.tempoDial {
+  width: 96px;
+  height: 96px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #1e7a4f;
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #e3f4ea 45%, #c8ead7 100%);
+  color: #165f3f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-weight: 700;
+  font-size: 1.125em;
+  cursor: grab;
+  touch-action: none;
+}
+
+.tempoDial:active {
+  cursor: grabbing;
+}
+
+.tempoDialIndicator {
+  position: absolute;
+  top: 8px;
+  width: 4px;
+  height: 24px;
+  background-color: #1e7a4f;
+  border-radius: 2px;
+}
+
+.tempoDialLabel {
+  letter-spacing: 0.5px;
 }
 
 #tempoInput {
-  width: 64px;
+  width: 72px;
   padding: 2px 4px;
   border: 1px solid #666;
   border-radius: 3px;
   background-color: white;
   text-align: center;
+}
+
+.tempoValueGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 72px;
+}
+
+.tempoInputLarge {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: darkgreen;
+}
+
+.tempoHint {
+  margin-top: 4px;
+  font-size: 0.75em;
+  color: #1e7a4f;
+}
+
+#tempoInput::-webkit-outer-spin-button,
+#tempoInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#tempoInput {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .preferenceValueCentered {
