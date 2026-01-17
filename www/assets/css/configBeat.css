@@ -1,0 +1,42 @@
+
+#beatPreference {
+  margin-bottom:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:0px solid green;
+  border-radius: 3px;
+  background-color: mintcream;
+
+  display: grid;
+  grid-template-columns: 0.5fr 1.5fr;
+  column-gap: 5px;
+  row-gap: 6px;
+  align-items: center;
+  text-align: left;
+}
+
+#tempoInput {
+  width: 64px;
+  padding: 2px 4px;
+  border: 1px solid #666;
+  border-radius: 3px;
+  background-color: white;
+  text-align: center;
+}
+
+#saveButtonContainer {
+  margin-bottom:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:0px solid green;
+  border-radius: 3px;
+  background-color: mintcream;
+  display: flex;
+  justify-content: center;
+}
+
+#saveConfigBeat {
+  width:100px;
+}

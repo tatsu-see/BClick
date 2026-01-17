@@ -1,9 +1,8 @@
-
 import { ConfigStore } from "./store.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
-  const tempoInput = document.getElementById("tempo");
+  const tempoInput = document.getElementById("tempoInput");
   const tempoDown10Button = document.getElementById("tempoDown10");
   const tempoDownButton = document.getElementById("tempoDown");
   const tempoUpButton = document.getElementById("tempoUp");
@@ -14,10 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const countdownSelect = document.getElementById("countdown");
   const countdownDownButton = document.getElementById("countdownDown");
   const countdownUpButton = document.getElementById("countdownUp");
-  const showCodeDiagramButton = document.getElementById("showCodeDiagram");
-  const configBeatButton = document.getElementById("configBeat");
-  const configScoreButton = document.getElementById("configScore");
-  const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
+  const saveButton = document.getElementById("saveConfigBeat");
+  const closePageButton = document.getElementById("closePage");
 
   const getNumberAttribute = (element, attrName, fallback) => {
     if (!element) return fallback;
@@ -26,39 +23,37 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number.isNaN(parsed) ? fallback : parsed;
   };
 
-  const getElementNumberValue = (element, fallback) => {
+  const getInputNumberValue = (element, fallback) => {
     if (!element) return fallback;
-    const raw = "value" in element ? element.value : element.textContent;
+    const raw = element.value;
     const parsed = parseInt(raw, 10);
     return Number.isNaN(parsed) ? fallback : parsed;
   };
 
-  const notifyTempoChange = (value) => {
-    document.dispatchEvent(new CustomEvent("bclick:tempochange", { detail: { tempo: value } }));
+  const setTempoInput = (value) => {
+    if (!tempoInput) return;
+    tempoInput.value = value.toString();
   };
 
-  const setTempoDisplay = (value) => {
-    if (!tempoInput) return;
-    tempoInput.textContent = value.toString();
+  const clampTempo = (value) => {
+    const minValue = getNumberAttribute(tempoInput, "min", Number.NEGATIVE_INFINITY);
+    const maxValue = getNumberAttribute(tempoInput, "max", Number.POSITIVE_INFINITY);
+    return Math.min(maxValue, Math.max(minValue, value));
   };
 
   const adjustTempo = (delta) => {
     if (!tempoInput) return;
-    const baseValue = getElementNumberValue(tempoInput, 60);
-    const minValue = getNumberAttribute(tempoInput, "data-min", Number.NEGATIVE_INFINITY);
-    const maxValue = getNumberAttribute(tempoInput, "data-max", Number.POSITIVE_INFINITY);
-    const nextValue = Math.min(maxValue, Math.max(minValue, baseValue + delta));
-    setTempoDisplay(nextValue);
-    store.setTempo(nextValue);
-    notifyTempoChange(nextValue);
+    const baseValue = getInputNumberValue(tempoInput, 60);
+    const nextValue = clampTempo(baseValue + delta);
+    setTempoInput(nextValue);
   };
 
   if (tempoInput) {
     const savedTempo = store.getTempo();
     if (savedTempo !== null) {
-      setTempoDisplay(savedTempo);
+      setTempoInput(clampTempo(savedTempo));
     } else {
-      setTempoDisplay(getElementNumberValue(tempoInput, 60));
+      setTempoInput(getInputNumberValue(tempoInput, 60));
     }
   }
 
@@ -79,8 +74,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (clickCountSelect) {
-    store.loadClickCountInput(clickCountSelect);
-    clickCountSelect.addEventListener("change", () => store.saveClickCountInput(clickCountSelect));
+    const savedClickCount = store.getClickCount();
+    if (savedClickCount !== null) {
+      clickCountSelect.value = savedClickCount.toString();
+    }
+  }
+
+  if (countdownSelect) {
+    const savedCountdown = store.getCountInSec();
+    if (savedCountdown !== null) {
+      countdownSelect.value = savedCountdown.toString();
+    }
   }
 
   const bumpSelectValue = (selectEl, delta) => {
@@ -92,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextIndex = Math.min(values.length - 1, Math.max(0, currentIndex + delta));
     if (nextIndex === currentIndex) return;
     selectEl.value = values[nextIndex].toString();
-    selectEl.dispatchEvent(new Event("change", { bubbles: true }));
   };
 
   if (clickCountDownButton) {
@@ -103,11 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
     clickCountUpButton.addEventListener("click", () => bumpSelectValue(clickCountSelect, 1));
   }
 
-  if (countdownSelect) {
-    store.loadCountInSecInput(countdownSelect);
-    countdownSelect.addEventListener("change", () => store.saveCountInSecInput(countdownSelect));
-  }
-
   if (countdownDownButton) {
     countdownDownButton.addEventListener("click", () => bumpSelectValue(countdownSelect, -1));
   }
@@ -116,30 +114,48 @@ document.addEventListener("DOMContentLoaded", () => {
     countdownUpButton.addEventListener("click", () => bumpSelectValue(countdownSelect, 1));
   }
 
-  if (showCodeDiagramButton) {
-    showCodeDiagramButton.addEventListener("click", () => {
-      const newTab = window.open("/codeDiagram.html", "_blank", "noopener,noreferrer");
-      if (!newTab) {
-      // window.location.href = "/codeDiagram.html";
+  if (closePageButton) {
+    closePageButton.addEventListener("click", () => {
+      window.close();
+      if (!window.closed) {
+        window.location.href = "/";
       }
     });
   }
 
-  if (configScoreButton) {
-    configScoreButton.addEventListener("click", () => {
-      const newTab = window.open("/configScore.html", "_blank", "noopener,noreferrer");
-      if (!newTab) {
-      // window.location.href = "/configScore.html";
+  if (!saveButton) return;
+  saveButton.addEventListener("click", () => {
+    try {
+      if (tempoInput) {
+        const tempoValue = clampTempo(getInputNumberValue(tempoInput, 60));
+        if (Number.isFinite(tempoValue)) {
+          store.setTempo(tempoValue);
+        }
       }
-    });
-  }
 
-  if (configBeatButton) {
-    configBeatButton.addEventListener("click", () => {
-      const newTab = window.open("/configBeat.html", "_blank", "noopener,noreferrer");
-      if (!newTab) {
-      // window.location.href = "/configBeat.html";
+      if (clickCountSelect) {
+        const clickCountValue = Number.parseInt(clickCountSelect.value, 10);
+        if (!Number.isNaN(clickCountValue)) {
+          store.setClickCount(clickCountValue);
+        }
       }
-    });
-  }
+
+      if (countdownSelect) {
+        const countdownValue = Number.parseInt(countdownSelect.value, 10);
+        if (!Number.isNaN(countdownValue)) {
+          store.setCountInSec(countdownValue);
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`configBeat: OK保存中にエラーが発生しました。 ${message}`, error);
+      window.alert(`保存に失敗しました: ${message}`);
+      return;
+    }
+
+    window.close();
+    if (!window.closed) {
+      window.location.href = "/";
+    }
+  });
 });
