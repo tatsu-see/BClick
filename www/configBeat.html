@@ -38,7 +38,12 @@
     <button id="closePage" type="button" aria-label="閉じる">×</button>
   </header>
   <main>
-    <div id="beatPreference">
+
+    <div class="preferenceTitle">
+      BPM(♪=):
+    </div>
+
+    <div class="beatPreference">
       <div class="preferenceName">
         BPM(♪=):
       </div>
@@ -54,48 +59,25 @@
           <button type="button" class="bpmButton" id="tempoUp">+1</button>
         </div>
       </div>
-
-      <div class="preferenceName">
-        クリック数:
-      </div>
-
-      <div class="preferenceValue">
-        <button type="button" class="bpmButton" id="clickCountDown">-1</button>
-        <select id="clickCount">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4" selected>4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-        </select>
-        <button type="button" class="bpmButton" id="clickCountUp">+1</button>
-      </div>
-
-      <div class="preferenceName">
-        カウントイン:
-      </div>
-
-      <div class="preferenceValue">
-        <button type="button" class="bpmButton" id="countdownDown">-1</button>
-        <select id="countdown">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4" selected>4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-        <button type="button" class="bpmButton" id="countdownUp">+1</button>
-      </div>
     </div>
+
+    <div class="preferenceTitle">
+      クリック数 (1-8)
+    </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <input type="range" id="clickCountRange" min="1" max="8" step="1" value="4">
+        <output id="clickCountValue" for="clickCountRange">4</output>
+      </div>
+
+    <div class="preferenceTitle">
+      カウントイン (0-10)
+    </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <input type="range" id="countdownRange" min="0" max="10" step="1" value="4">
+        <output id="countdownValue" for="countdownRange">4</output>
+      </div>
 
     <div id="saveButtonContainer">
         <button type="button" id="saveConfigBeat" class="okConfig">OK</button>

@@ -1,5 +1,5 @@
 
-#beatPreference {
+.beatPreference {
   margin-bottom:3px;
   padding:3px;
   width:calc(100%-6px);
@@ -9,7 +9,7 @@
   background-color: mintcream;
 
   display: grid;
-  grid-template-columns: 0.5fr 1.5fr;
+  grid-template-columns: 0.5fr 0.5fr;
   column-gap: 5px;
   row-gap: 6px;
   align-items: center;
@@ -25,14 +25,33 @@
   text-align: center;
 }
 
+.preferenceValueCentered {
+  justify-content: center;
+}
+
+#clickCountRange,
+#countdownRange {
+  flex: 0 0 220px;
+  max-width: 220px;
+  width: 220px;
+}
+
+#clickCountValue,
+#countdownValue {
+  min-width: 32px;
+  text-align: right;
+  font-weight: 600;
+}
+
 #saveButtonContainer {
+  margin-top:3px;
   margin-bottom:3px;
   padding:3px;
   width:calc(100%-6px);
 
   border:0px solid green;
   border-radius: 3px;
-  background-color: mintcream;
+
   display: flex;
   justify-content: center;
 }

@@ -7,12 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoDownButton = document.getElementById("tempoDown");
   const tempoUpButton = document.getElementById("tempoUp");
   const tempoUp10Button = document.getElementById("tempoUp10");
-  const clickCountSelect = document.getElementById("clickCount");
-  const clickCountDownButton = document.getElementById("clickCountDown");
-  const clickCountUpButton = document.getElementById("clickCountUp");
-  const countdownSelect = document.getElementById("countdown");
-  const countdownDownButton = document.getElementById("countdownDown");
-  const countdownUpButton = document.getElementById("countdownUp");
+  const clickCountRange = document.getElementById("clickCountRange");
+  const clickCountValue = document.getElementById("clickCountValue");
+  const countdownRange = document.getElementById("countdownRange");
+  const countdownValue = document.getElementById("countdownValue");
   const saveButton = document.getElementById("saveConfigBeat");
   const closePageButton = document.getElementById("closePage");
 
@@ -73,45 +71,31 @@ document.addEventListener("DOMContentLoaded", () => {
     tempoUp10Button.addEventListener("click", () => adjustTempo(10));
   }
 
-  if (clickCountSelect) {
-    const savedClickCount = store.getClickCount();
-    if (savedClickCount !== null) {
-      clickCountSelect.value = savedClickCount.toString();
-    }
-  }
-
-  if (countdownSelect) {
-    const savedCountdown = store.getCountInSec();
-    if (savedCountdown !== null) {
-      countdownSelect.value = savedCountdown.toString();
-    }
-  }
-
-  const bumpSelectValue = (selectEl, delta) => {
-    if (!selectEl) return;
-    const values = Array.from(selectEl.options).map((option) => Number.parseInt(option.value, 10));
-    const current = Number.parseInt(selectEl.value, 10);
-    const currentIndex = values.indexOf(current);
-    if (currentIndex < 0) return;
-    const nextIndex = Math.min(values.length - 1, Math.max(0, currentIndex + delta));
-    if (nextIndex === currentIndex) return;
-    selectEl.value = values[nextIndex].toString();
+  const syncRangeValue = (rangeEl, outputEl) => {
+    if (!rangeEl || !outputEl) return;
+    outputEl.textContent = rangeEl.value;
   };
 
-  if (clickCountDownButton) {
-    clickCountDownButton.addEventListener("click", () => bumpSelectValue(clickCountSelect, -1));
+  if (clickCountRange) {
+    const savedClickCount = store.getClickCount();
+    if (savedClickCount !== null) {
+      clickCountRange.value = savedClickCount.toString();
+    }
+    syncRangeValue(clickCountRange, clickCountValue);
+    clickCountRange.addEventListener("input", () => {
+      syncRangeValue(clickCountRange, clickCountValue);
+    });
   }
 
-  if (clickCountUpButton) {
-    clickCountUpButton.addEventListener("click", () => bumpSelectValue(clickCountSelect, 1));
-  }
-
-  if (countdownDownButton) {
-    countdownDownButton.addEventListener("click", () => bumpSelectValue(countdownSelect, -1));
-  }
-
-  if (countdownUpButton) {
-    countdownUpButton.addEventListener("click", () => bumpSelectValue(countdownSelect, 1));
+  if (countdownRange) {
+    const savedCountdown = store.getCountInSec();
+    if (savedCountdown !== null) {
+      countdownRange.value = savedCountdown.toString();
+    }
+    syncRangeValue(countdownRange, countdownValue);
+    countdownRange.addEventListener("input", () => {
+      syncRangeValue(countdownRange, countdownValue);
+    });
   }
 
   if (closePageButton) {
@@ -133,17 +117,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      if (clickCountSelect) {
-        const clickCountValue = Number.parseInt(clickCountSelect.value, 10);
-        if (!Number.isNaN(clickCountValue)) {
-          store.setClickCount(clickCountValue);
+      if (clickCountRange) {
+        const clickCountNumber = Number.parseInt(clickCountRange.value, 10);
+        if (!Number.isNaN(clickCountNumber)) {
+          store.setClickCount(clickCountNumber);
         }
       }
 
-      if (countdownSelect) {
-        const countdownValue = Number.parseInt(countdownSelect.value, 10);
-        if (!Number.isNaN(countdownValue)) {
-          store.setCountInSec(countdownValue);
+      if (countdownRange) {
+        const countdownNumber = Number.parseInt(countdownRange.value, 10);
+        if (!Number.isNaN(countdownNumber)) {
+          store.setCountInSec(countdownNumber);
         }
       }
     } catch (error) {
