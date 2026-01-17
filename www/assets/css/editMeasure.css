@@ -5,7 +5,7 @@
   width:calc(100%-6px);
 
   border:0px solid green;
-  border-radius: 8px;
+  border-radius: 3px;
   background-color: mintcream;
 
   display: grid;
@@ -61,7 +61,7 @@
   padding: 1px 6px;
   min-height: 28px;
   min-width:  42px;
-  border-radius: 10px;
+  border-radius: 3px;
   border: 1px solid #666;
   background-color: #f7f7f7;
   font-size: 0.85em;
@@ -113,7 +113,7 @@
   width:calc(100%-6px);
 
   border:0px solid green;
-  border-radius: 8px;
+  border-radius: 3px;
   background-color: mintcream;
   display: flex;
   justify-content: center;

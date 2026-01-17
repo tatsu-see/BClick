@@ -10,7 +10,7 @@ header {
   color:darkgreen;
 
   border:0px solid green;
-  border-radius: 8px;
+  border-radius: 3px;
   background-color: mintcream;
 }
 
@@ -18,7 +18,7 @@ header {
 #codeDiagram {
   margin: 3px;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 3px;
   background-color: mintcream;
 }
 
@@ -44,7 +44,7 @@ header {
 
 .preferenceName {
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: 3px;
   transition: background-color 160ms ease;
 }
 
@@ -182,7 +182,7 @@ header {
 .barre {
   position: absolute;
   background-color: #111;
-  border-radius: 10px;
+  border-radius: 3px;
   z-index: 2;
 }
 
@@ -192,7 +192,7 @@ header {
   width:calc(100%-6px);
 
   border:0px solid green;
-  border-radius: 8px;
+  border-radius: 3px;
   background-color: mintcream;
   display: flex;
   justify-content: center;
