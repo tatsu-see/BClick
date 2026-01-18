@@ -3,11 +3,69 @@
   justify-content: center;
 }
 
+.tempoControlStack {
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tempoDialRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.tempoValueTop {
+  align-items: center;
+}
+
 #clickCountRange,
 #countdownRange {
   flex: 0 0 220px;
   max-width: 220px;
   width: 220px;
+  height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+#clickCountRange::-webkit-slider-runnable-track,
+#countdownRange::-webkit-slider-runnable-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#clickCountRange::-webkit-slider-thumb,
+#countdownRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#clickCountRange::-moz-range-track,
+#countdownRange::-moz-range-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#clickCountRange::-moz-range-thumb,
+#countdownRange::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 #clickCountValue,
