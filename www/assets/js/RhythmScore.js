@@ -107,7 +107,7 @@ class RhythmScore {
         if( value.startsWith("r") ){
           // 休符の場合
           const noteValue = value === "r8" ? "r.8" : "r.4";
-          const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
+          const props = hasChordLabel ? `slashed txt "CHORD:${barIndex + 1}:${barChord}"` : "slashed";
           notes.push(`${noteValue} { ${props} }`);
         }
         else {
@@ -115,7 +115,7 @@ class RhythmScore {
 //          const noteValue = value === "8" ? ".8" : "(C4 D4).8"; // サンプル 8分音符
 //          const noteValue = value === "8" ? ".8" : "r.8";       // サンプル 8分休符
 //          const noteValue = value === "8" ? ".8" : "C4.16";     // サンプル 16分音符
-          const props = hasChordLabel ? `slashed txt "CHORD:${barChord}"` : "slashed";
+          const props = hasChordLabel ? `slashed txt "CHORD:${barIndex + 1}:${barChord}"` : "slashed";
           notes.push(`${noteValue} { ${props} }`);
         }
         return;
@@ -191,49 +191,60 @@ class RhythmScore {
     overlay.className = "scoreChordOverlayLayer";
 
     const containerRect = this.container.getBoundingClientRect();
-    let found = false;
-    let barIndex = 0;
+    const entries = [];
 
     svgs.forEach((svg) => {
       svg.querySelectorAll("text").forEach((node) => {
         const raw = node.textContent?.trim();
         if (!raw || !raw.startsWith("CHORD:")) return;
-        const label = raw.replace("CHORD:", "");
+        const labelPayload = raw.replace("CHORD:", "");
+        const [barIndexRaw, label] = labelPayload.split(":");
+        const parsedBarIndex = Number.parseInt(barIndexRaw, 10);
+        const barIndex = Number.isNaN(parsedBarIndex) ? null : Math.max(parsedBarIndex - 1, 0);
         if (!chordSet.has(label)) return;
         const rect = node.getBoundingClientRect();
-        const left = rect.left - containerRect.left;
-        const top = rect.top - containerRect.top;
-        const currentIndex = barIndex;
-        barIndex += 1;
+        entries.push({
+          node,
+          label,
+          barIndex,
+          left: rect.left - containerRect.left,
+          top: rect.top - containerRect.top,
+        });
+      });
+    });
 
-        found = true;
-        node.style.opacity = "0";
-        node.style.fill = "transparent";
-        node.setAttribute("visibility", "hidden");
+    if (entries.length === 0) return false;
+
+    entries
+      .sort((a, b) => {
+        if (a.top !== b.top) return a.top - b.top;
+        return a.left - b.left;
+      })
+      .forEach((entry, index) => {
+        const resolvedIndex = entry.barIndex !== null ? entry.barIndex : index;
+        entry.node.style.opacity = "0";
+        entry.node.style.fill = "transparent";
+        entry.node.setAttribute("visibility", "hidden");
 
         const badge = document.createElement("span");
         badge.className = "scoreChordOverlayLabel";
-        badge.textContent = label;
-        badge.dataset.barIndex = String(currentIndex);
-        if (window.bclickActiveChordIndex === currentIndex) {
+        badge.textContent = entry.label;
+        badge.dataset.barIndex = String(resolvedIndex);
+        if (window.bclickActiveChordIndex === resolvedIndex) {
           badge.classList.add("isActiveChord");
         }
         badge.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
-          window.location.href = `/editMeasure.html?bar=${currentIndex}`;
+          window.location.href = `/editMeasure.html?bar=${resolvedIndex}`;
         });
-        badge.style.left = `${left}px`;
-        badge.style.top = `${top}px`;
+        badge.style.left = `${entry.left}px`;
+        badge.style.top = `${entry.top}px`;
         overlay.appendChild(badge);
       });
-    });
 
-    if (found) {
-      this.container.appendChild(overlay);
-    }
-
-    return found;
+    this.container.appendChild(overlay);
+    return true;
   }
 }
 

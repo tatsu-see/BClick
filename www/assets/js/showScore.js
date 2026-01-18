@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   currentScoreData = loadSettings(true);
   if (scoreElement && window.alphaTab) {
-    window.bclickActiveChordIndex = 0;
+    window.bclickActiveChordIndex = -1;
     rhythmScore = new RhythmScore("score", {
       timeSignature: currentScoreData.timeSignature,
       chord: "E",
@@ -54,6 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
       bars: currentScoreData.bars,
     });
     window.bclickRhythmScore = rhythmScore;
+    if (Array.isArray(currentScoreData.bars)) {
+      window.bclickScoreBarCount = currentScoreData.bars.length;
+    }
   }
 
   if (scoreArea && rhythmScore) {

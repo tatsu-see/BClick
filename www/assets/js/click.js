@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let cycleIndex = 0;
   let currentBeatMs = null;
   let isPaused = false;
-  let chordScrollIndex = 0;
 
   // 値の読み取りユーティリティ
   const getNumberValue = (value, fallback) => {
@@ -143,27 +142,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const scrollToNextChord = () => {
     // カスタム描画されたコード表示を順番にスクロールし、現在位置をハイライトする。
-    const labels = Array.from(document.querySelectorAll(".scoreChordOverlayLabel"));
-    if (labels.length === 0) return;
-    labels.forEach((label) => label.classList.remove("isActiveChord"));
-    const target = labels[chordScrollIndex % labels.length];
-    chordScrollIndex = (chordScrollIndex + 1) % labels.length;
-    const barIndex = Number.parseInt(target.dataset.barIndex, 10);
-    if (!Number.isNaN(barIndex)) {
-      // リサイズ等で再描画されてもハイライトを復元できるように保存する。
-      window.bclickActiveChordIndex = barIndex;
-    }
-    target.classList.add("isActiveChord");
+    const labels = Array.from(document.querySelectorAll(".scoreChordOverlayLabel"))
+      .map((label) => ({
+        label,
+        barIndex: Number.parseInt(label.dataset.barIndex, 10),
+      }))
+      .filter((entry) => Number.isFinite(entry.barIndex));
+    const labelMap = new Map(labels.map((entry) => [entry.barIndex, entry.label]));
+    const fallbackCount = Number.isFinite(window.bclickScoreBarCount)
+      ? window.bclickScoreBarCount
+      : labels.length;
+    if (fallbackCount <= 0) return;
+    const currentIndex = Number.isFinite(window.bclickActiveChordIndex)
+      ? window.bclickActiveChordIndex
+      : -1;
+    const nextIndex = (currentIndex + 1) % fallbackCount;
+    // リサイズ等で再描画されてもハイライトを復元できるように保存する。
+    window.bclickActiveChordIndex = nextIndex;
+
     const scrollContainer = document.getElementById("scoreArea");
     if (!scrollContainer) return;
-    const containerRect = scrollContainer.getBoundingClientRect();
-    const targetRect = target.getBoundingClientRect();
-    const offset = targetRect.top - containerRect.top + scrollContainer.scrollTop;
-    const scrollTop = Math.max(0, offset);
-    scrollContainer.scrollTo({ top: scrollTop, behavior: "smooth" });
+
+    labels.forEach((entry) => entry.label.classList.remove("isActiveChord"));
+    const target = labelMap.get(nextIndex);
+    if (target) {
+      target.classList.add("isActiveChord");
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const offset = targetRect.top - containerRect.top + scrollContainer.scrollTop;
+      const scrollTop = Math.max(0, offset);
+      scrollContainer.scrollTo({ top: scrollTop, behavior: "smooth" });
+      if (window.bclickRhythmScore?.handleOverlayRefresh) {
+        window.bclickRhythmScore.handleOverlayRefresh();
+      }
+      return;
+    }
+
+    const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+    const ratio = fallbackCount > 1 ? nextIndex / (fallbackCount - 1) : 0;
+    scrollContainer.scrollTo({ top: Math.max(0, maxScroll * ratio), behavior: "smooth" });
     if (window.bclickRhythmScore?.handleOverlayRefresh) {
       window.bclickRhythmScore.handleOverlayRefresh();
     }
+    setTimeout(() => {
+      const retry = scrollContainer.querySelector(
+        `.scoreChordOverlayLabel[data-bar-index="${nextIndex}"]`,
+      );
+      if (!retry) return;
+      retry.classList.add("isActiveChord");
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const targetRect = retry.getBoundingClientRect();
+      const offset = targetRect.top - containerRect.top + scrollContainer.scrollTop;
+      const scrollTop = Math.max(0, offset);
+      scrollContainer.scrollTo({ top: scrollTop, behavior: "smooth" });
+    }, 60);
   };
 
   // クリックボックスのループ再生
@@ -270,7 +302,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetPlayback = () => {
     clearTimers();
     if (typeof window.bclickActiveChordIndex !== "undefined") {
-      window.bclickActiveChordIndex = 0;
+      window.bclickActiveChordIndex = -1;
+    }
+    const scrollContainer = document.getElementById("scoreArea");
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: "auto" });
     }
     setClickBoxes();
   };
