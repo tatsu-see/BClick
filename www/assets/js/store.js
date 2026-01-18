@@ -16,6 +16,7 @@ export class ConfigStore extends LocalStore {
       ScoreMeasures: 'bclick.score.measures',
       ScoreBars: 'bclick.score.bars',
       ScoreBeatPatterns: 'bclick.score.beatPatterns',
+      ScoreEnabled: 'bclick.score.enabled',
       CodeDiagramChord: 'bclick.codeDiagram.chord',
     };
   }
@@ -164,6 +165,16 @@ export class ConfigStore extends LocalStore {
   setScoreBars(value) {
     if (!Array.isArray(value)) return;
     this.saveSettings(this.keys.ScoreBars, value);
+  }
+
+  getScoreEnabled() {
+    const saved = this.getSettings(this.keys.ScoreEnabled);
+    return typeof saved === 'boolean' ? saved : null;
+  }
+
+  setScoreEnabled(value) {
+    if (typeof value !== 'boolean') return;
+    this.saveSettings(this.keys.ScoreEnabled, value);
   }
 
   /**

@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoStepFine = document.getElementById("tempoStepFine");
   const beatSummary = document.getElementById("configBeat");
   const scoreSummary = document.getElementById("configScore");
+  const scoreSetting = document.getElementById("scoreSetting");
+  const scoreToggle = document.getElementById("scoreToggle");
   const tempoDown10Button = document.getElementById("tempoDown10");
   const tempoDownButton = document.getElementById("tempoDown");
   const tempoUpButton = document.getElementById("tempoUp");
@@ -67,6 +69,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const measures = store.getScoreMeasures() || 2;
     const displayProgression = progression.length > 0 ? progression : "(未設定)";
     scoreSummary.textContent = `拍子 ${timeSignature}、進行 ${displayProgression}、小節数 ${measures}`;
+  };
+
+  if (scoreToggle) {
+    const savedScoreEnabled = store.getScoreEnabled();
+    if (savedScoreEnabled !== null) {
+      scoreToggle.checked = savedScoreEnabled;
+    } else {
+      scoreToggle.checked = false;
+    }
+  }
+
+  const updateScoreToggle = () => {
+    if (!scoreToggle || !scoreSetting) return;
+    const enabled = scoreToggle.checked;
+    scoreSetting.classList.toggle("isDisabled", !enabled);
+    scoreSetting.setAttribute("aria-disabled", String(!enabled));
+    if (configScoreButton) {
+      configScoreButton.disabled = !enabled;
+    }
   };
 
   const syncTempoFromStore = () => {
@@ -167,6 +188,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateBeatSummary();
   updateScoreSummary();
+  updateScoreToggle();
+
+  if (scoreToggle) {
+    scoreToggle.addEventListener("change", () => {
+      updateScoreToggle();
+      store.setScoreEnabled(scoreToggle.checked);
+    });
+  }
 
   if (tempoDownButton) {
     tempoDownButton.addEventListener("click", () => adjustTempo(-1));

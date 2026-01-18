@@ -156,6 +156,24 @@ footer {
   border-radius: 3px;
 }
 
+.preferenceExec {
+
+  margin-bottom: 3px;
+}
+
+.scoreToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8em;
+  cursor: pointer;
+}
+
+.preferenceSummery.isDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .preferenceTitle .material-symbols-outlined {
   line-height: 1;
 }

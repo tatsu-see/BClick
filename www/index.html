@@ -44,7 +44,7 @@
   <main>
     <div class="preferenceTitle">
       <span class="material-symbols-outlined" aria-hidden="true">speed</span>
-      テンポ設定
+      テンポ
     </div>
 
       <!--  BPM テンポ設定 -->
@@ -90,10 +90,14 @@
 
     <div class="preferenceTitle">
       <span class="material-symbols-outlined" aria-hidden="true">queue_music</span>
-      スコア
+      リズム
+      <label class="scoreToggle">
+        <input type="checkbox" id="scoreToggle">
+        On
+      </label>
     </div>
 
-    <div class="preferenceSummery">
+    <div class="preferenceSummery" id="scoreSetting">
       <!--  スコア設定 -->
       <div class="preferenceNow" id="configScore">
         <!-- ここに拍子、コード進行、小節数 を表示する。 -->
@@ -107,7 +111,7 @@
 
     </div>
 
-      <div>
+    <div class="preferenceExec">
         <!-- Readyボタンのクリック/タップは、index.htmlとconfigScore.htmlで設定した値で新規作成しなおし。 -->
         <button id="setClick" type="button" class="okConfig">
           &#x2B07;
@@ -117,6 +121,11 @@
         </button>
       <!-- 内部データ参照用 -->
       <textarea id="scoreData" style="width:400px; height:100px; display:none;"></textarea>
+    </div>
+
+    <div class="preferenceTitle">
+      <span class="material-symbols-outlined" aria-hidden="true"></span>
+      スコア
     </div>
 
     <div id="playClicking">
