@@ -7,13 +7,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const timeSignatureInputs = Array.from(
     document.querySelectorAll('input[name="timeSignature"]'),
   );
-  const chordButtons = Array.from(
-    document.querySelectorAll(".chipButton"),
+  const chordRootButtons = Array.from(
+    document.querySelectorAll(".chordRoot"),
   );
-  const majorChordSection = document.getElementById("majorChordSection");
-  const minorChordSection = document.getElementById("minorChordSection");
-  const toggleMajorChords = document.getElementById("toggleMajorChords");
-  const toggleMinorChords = document.getElementById("toggleMinorChords");
+  const chordQualityButtons = Array.from(
+    document.querySelectorAll(".chordQuality"),
+  );
   const rhythmBeatList = document.getElementById("rhythmBeatList");
   const rhythmBeatTemplate = document.getElementById("rhythmBeatTemplate");
   const codeProgressionInput = document.getElementById("codeProgression");
@@ -47,38 +46,65 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
   };
 
-  chordButtons.forEach((button) => {
+  const appendChord = (chord) => {
+    if (!codeProgressionInput) return;
+    const trimmedChord = chord.trim();
+    if (!trimmedChord) return;
+    const prefix = codeProgressionInput.value.length > 0 ? " " : "";
+    codeProgressionInput.value += `${prefix}${trimmedChord}`;
+  };
+
+  const setActiveQuality = (button) => {
+    chordQualityButtons.forEach((qualityButton) => {
+      const isActive = qualityButton === button;
+      qualityButton.classList.toggle("isActive", isActive);
+      qualityButton.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+  };
+
+  const getActiveQuality = () =>
+    chordQualityButtons.find((button) => button.classList.contains("isActive"));
+
+  const setActiveRoot = (button) => {
+    chordRootButtons.forEach((rootButton) => {
+      const isActive = rootButton === button;
+      rootButton.classList.toggle("isActive", isActive);
+      rootButton.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+  };
+
+  const getActiveRoot = () => chordRootButtons.find((button) => button.classList.contains("isActive"));
+
+  if (chordQualityButtons.length > 0) {
+    const activeQuality =
+      getActiveQuality() || chordQualityButtons[0];
+    setActiveQuality(activeQuality);
+  }
+
+  const buildChord = (rootButton, qualityButton) => {
+    const root = rootButton.dataset.root || rootButton.textContent.trim();
+    const quality = qualityButton?.dataset.quality || "maj";
+    const suffix = quality === "min" ? "m" : "";
+    return `${root}${suffix}`;
+  };
+
+  chordRootButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      if (!codeProgressionInput) return;
-      const chord = button.dataset.chord || button.textContent.trim();
-      if (!chord) return;
-      const prefix = codeProgressionInput.value.length > 0 ? " " : "";
-      codeProgressionInput.value += `${prefix}${chord}`;
+      setActiveRoot(button);
+      const qualityButton = getActiveQuality() || chordQualityButtons[0];
+      if (!qualityButton) return;
+      appendChord(buildChord(button, qualityButton));
+      if (codeProgressionInput) {
+        codeProgressionInput.focus();
+      }
     });
   });
 
-  const updateChordSections = () => {
-    if (!toggleMajorChords || !toggleMinorChords) return;
-    if (!toggleMajorChords.checked && !toggleMinorChords.checked) {
-      toggleMajorChords.checked = true;
-    }
-    if (majorChordSection) {
-      majorChordSection.classList.toggle("isHidden", !toggleMajorChords.checked);
-    }
-    if (minorChordSection) {
-      minorChordSection.classList.toggle("isHidden", !toggleMinorChords.checked);
-    }
-  };
-
-  if (toggleMajorChords) {
-    toggleMajorChords.addEventListener("change", updateChordSections);
-  }
-
-  if (toggleMinorChords) {
-    toggleMinorChords.addEventListener("change", updateChordSections);
-  }
-
-  updateChordSections();
+  chordQualityButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setActiveQuality(button);
+    });
+  });
 
   const renderBeatSelectors = () => {
     if (!rhythmBeatList || !rhythmBeatTemplate) return;
@@ -136,14 +162,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const appendRandomChords = (count) => {
     if (!codeProgressionInput) return;
-    const pool = chordButtons
-      .map((button) => (button.dataset.chord || button.textContent || "").trim())
-      .filter((chord) => chord.length > 0);
+    const roots = chordRootButtons
+      .map((button) => (button.dataset.root || button.textContent || "").trim())
+      .filter((root) => root.length > 0);
+    const qualities = chordQualityButtons
+      .map((button) => (button.dataset.quality || button.textContent || "").trim())
+      .filter((quality) => quality.length > 0);
+    const pool = roots.flatMap((root) =>
+      qualities.map((quality) => {
+        if (quality === "min") return `${root}m`;
+        if (quality === "maj") return root;
+        return `${root}${quality}`;
+      }),
+    );
     if (pool.length === 0) return;
     const shuffled = pool.slice().sort(() => Math.random() - 0.5);
     const picks = shuffled.slice(0, Math.min(count, shuffled.length));
-    const prefix = codeProgressionInput.value.length > 0 ? " " : "";
-    codeProgressionInput.value += `${prefix}${picks.join(" ")}`;
+    picks.forEach((chord) => appendChord(chord));
     codeProgressionInput.focus();
   };
 
