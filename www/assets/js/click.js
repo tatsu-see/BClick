@@ -1,5 +1,6 @@
 import { clickSound, getMaxVolume, warmUpAudioContext } from "/assets/lib/Sound.js";
 import { chordPool } from "/assets/lib/guiterCode.js";
+import { ConfigStore } from "./store.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoInput = document.getElementById("tempoInput") || document.getElementById("tempo");
   const clickCountSelect = document.getElementById("clickCount");
   const countdownSelect = document.getElementById("countdown");
+  const store = new ConfigStore();
 
   // タイマーと状態
   let cycleTimerId = null;
@@ -46,13 +48,21 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const getClickCount = () => {
-    const value = getSettingValue(clickCountSelect, "bclick.clickCount", 0);
-    return value >= 0 ? value : 0;
+    if (clickCountSelect) {
+      const value = getSettingValue(clickCountSelect, "bclick.clickCount", 4);
+      return value >= 0 ? value : 4;
+    }
+    const storedValue = store.getClickCount();
+    return typeof storedValue === "number" && storedValue >= 0 ? storedValue : 4;
   };
 
   const getCountdown = () => {
-    const value = getSettingValue(countdownSelect, "bclick.countdown", 0);
-    return value >= 0 ? value : 0;
+    if (countdownSelect) {
+      const value = getSettingValue(countdownSelect, "bclick.countdown", 4);
+      return value >= 0 ? value : 4;
+    }
+    const storedValue = store.getCountInSec();
+    return typeof storedValue === "number" && storedValue >= 0 ? storedValue : 4;
   };
 
   // UI更新

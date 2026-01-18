@@ -3,23 +3,6 @@
   justify-content: center;
 }
 
-.tempoControlStack {
-  flex-direction: column;
-  gap: 10px;
-}
-
-.tempoDialRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.tempoValueTop {
-  align-items: center;
-}
-
 #clickCountRange,
 #countdownRange {
   flex: 0 0 220px;
