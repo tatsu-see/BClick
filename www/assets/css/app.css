@@ -283,6 +283,16 @@ footer {
   min-width: 90px;
 }
 
+#setClick {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#setClick .material-symbols-outlined {
+  line-height: 1;
+}
+
 #showClick {
   margin-bottom:3px;
 
