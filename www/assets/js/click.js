@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const setClickButton = document.getElementById("setClick");
   const startClickButton = document.getElementById("startClick");
   const stopClickButton = document.getElementById("stopClickart");
+  const resetClickButton = document.getElementById("resetClickart");
   const operation = document.getElementById("operation");
   const countdownOverlay = document.getElementById("countdownOverlay");
   const tempoInput = document.getElementById("tempoInput") || document.getElementById("tempo");
@@ -256,6 +257,14 @@ document.addEventListener("DOMContentLoaded", () => {
     setOverlayVisible(false);
   };
 
+  const resetPlayback = () => {
+    clearTimers();
+    if (typeof window.bclickActiveChordIndex !== "undefined") {
+      window.bclickActiveChordIndex = 0;
+    }
+    setClickBoxes();
+  };
+
   const pausePlayback = () => {
     clearCycleTimer();
     if (countdownTimerId !== null) {
@@ -279,6 +288,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (stopClickButton) {
     stopClickButton.addEventListener("click", pausePlayback);
+  }
+
+  if (resetClickButton) {
+    resetClickButton.addEventListener("click", resetPlayback);
   }
 
   if (!startClickButton) {
