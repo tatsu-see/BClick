@@ -58,19 +58,6 @@
   font-weight: 600;
 }
 
-#saveButtonContainer {
-  margin-top:3px;
-  margin-bottom:3px;
-  padding:3px;
-  width:calc(100%-6px);
-
-  border:0px solid green;
-  border-radius: 3px;
-
-  display: flex;
-  justify-content: center;
-}
-
 #saveConfigBeat {
   width:100px;
 }

@@ -22,9 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const clearProgressionButton = document.getElementById("clearCodeProgression");
   const addRandom3ChordsButton = document.getElementById("addRandom3Chords");
   const addRandom4ChordsButton = document.getElementById("addRandom4Chords");
-  const measuresInput = document.querySelector('select[name="measures"]');
-  const measuresDownButton = document.getElementById("measuresDown");
-  const measuresUpButton = document.getElementById("measuresUp");
+  const measuresRange = document.getElementById("measuresRange");
+  const measuresValue = document.getElementById("measuresValue");
 
   const savedTimeSignature = store.getScoreTimeSignature();
   if (savedTimeSignature) {
@@ -161,27 +160,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const savedMeasures = store.getScoreMeasures();
-  if (measuresInput && savedMeasures !== null) {
-    measuresInput.value = savedMeasures.toString();
-  }
-
-  const bumpSelectValue = (selectEl, delta) => {
-    if (!selectEl) return;
-    const values = Array.from(selectEl.options).map((option) => Number.parseInt(option.value, 10));
-    const current = Number.parseInt(selectEl.value, 10);
-    const currentIndex = values.indexOf(current);
-    if (currentIndex < 0) return;
-    const nextIndex = Math.min(values.length - 1, Math.max(0, currentIndex + delta));
-    if (nextIndex === currentIndex) return;
-    selectEl.value = values[nextIndex].toString();
-  };
-
-  if (measuresDownButton) {
-    measuresDownButton.addEventListener("click", () => bumpSelectValue(measuresInput, -1));
-  }
-
-  if (measuresUpButton) {
-    measuresUpButton.addEventListener("click", () => bumpSelectValue(measuresInput, 1));
+  if (measuresRange) {
+    if (savedMeasures !== null) {
+      measuresRange.value = savedMeasures.toString();
+    }
+    if (measuresValue) {
+      measuresValue.textContent = measuresRange.value;
+    }
+    measuresRange.addEventListener("input", () => {
+      if (measuresValue) {
+        measuresValue.textContent = measuresRange.value;
+      }
+    });
   }
 
   if (closePageButton) {
@@ -218,8 +208,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       store.setScoreProgression(trimmedProgression);
 
-      if (measuresInput) {
-        const parsed = Number.parseInt(measuresInput.value, 10);
+      if (measuresRange) {
+        const parsed = Number.parseInt(measuresRange.value, 10);
         if (!Number.isNaN(parsed)) {
           store.setScoreMeasures(parsed);
         }

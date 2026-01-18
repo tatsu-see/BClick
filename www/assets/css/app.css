@@ -343,3 +343,16 @@ footer {
   /* 自動スクロール対象のコードを強調表示する。 */
   background-color: #fff4b2;
 }
+
+#saveButtonContainer {
+  margin-top:3px;
+  margin-bottom:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:0px solid green;
+  border-radius: 3px;
+
+  display: flex;
+  justify-content: center;
+}

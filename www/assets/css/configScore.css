@@ -8,12 +8,15 @@
   border-radius: 3px;
   background-color: mintcream;
 
-  display: grid;
-  grid-template-columns: 0.5fr 1.5fr;
-  column-gap: 5px;
-  row-gap: 6px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
   text-align: left;
+}
+
+.preferenceValueCentered {
+  justify-content: center;
 }
 
 .chipGroup {
@@ -43,6 +46,63 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.chipGroupActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+#measuresRange {
+  flex: 0 0 220px;
+  max-width: 220px;
+  width: 220px;
+  height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+#measuresRange::-webkit-slider-runnable-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#measuresRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#measuresRange::-moz-range-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#measuresRange::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#measuresValue {
+  min-width: 32px;
+  text-align: right;
+  font-weight: 600;
 }
 
 .chipGroupTitle {
@@ -122,18 +182,6 @@
 .codeProgressionButtons {
   display: flex;
   gap: 6px;
-}
-
-#saveButtonContainer {
-  margin-bottom:3px;
-  padding:3px;
-  width:calc(100%-6px);
-
-  border:0px solid green;
-  border-radius: 3px;
-  background-color: mintcream;
-  display: flex;
-  justify-content: center;
 }
 
 #saveConfigScore {

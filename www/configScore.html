@@ -39,11 +39,11 @@
   </header>
   <main>
     <div id="scorePreference">
-      <div class="preferenceName">
-        拍子:
+      <div class="preferenceTitle">
+        拍子
       </div>
 
-      <div class="preferenceValue" role="group" aria-label="拍子の選択">
+      <div class="preferenceValue preferenceValueCentered" role="group" aria-label="拍子の選択">
         <label>
           <input type="radio" name="timeSignature" value="4/4" checked>
           4/4
@@ -54,13 +54,12 @@
         </label>
       </div>
 
-      <div class="preferenceName">
+      <div class="preferenceTitle">
         <span class="lang" data-lang="en">Code</span>
         <span class="lang" data-lang="ja">コード</span>
-        :
       </div>
 
-      <div class="preferenceValue chipGroupColumn">
+      <div class="preferenceValue preferenceValueCentered chipGroupColumn">
 
         <div class="chipGroupToggleRow" role="group" aria-label="コード区分の表示切り替え">
           <label class="chipGroupTitle">
@@ -97,17 +96,17 @@
           </div>
         </div>
 
-        <div class="preferenceValue" role="group" aria-label="">
+        <div class="chipGroupActions" role="group" aria-label="ランダム選択">
           <button type="button" id="addRandom3Chords">ランダム3つ</button>
           <button type="button" id="addRandom4Chords">ランダム4つ</button>
         </div>
       </div>
 
-      <div class="preferenceName">
-        進行:
+      <div class="preferenceTitle">
+        進行
       </div>
 
-      <div class="preferenceValue codeProgressionGroup" role="group" aria-label="">
+      <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="進行の入力">
         <input type="text" id="codeProgression" value="C G Am F" inputmode="latin">
         <div class="codeProgressionButtons">
           <button type="button" id="backCodeProgression">Back.</button>
@@ -115,11 +114,11 @@
         </div>
       </div>
 
-      <div class="preferenceName">
-        リズム:
+      <div class="preferenceTitle">
+        リズム
       </div>
 
-      <div class="preferenceValue rhythmBeatValue" role="group" aria-label="リズムの選択">
+      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="リズムの選択">
         <div id="rhythmBeatList" class="rhythmBeatList"></div>
         <template id="rhythmBeatTemplate">
           <div class="rhythmBeatRow">
@@ -135,27 +134,13 @@
         </template>
       </div>
 
-      <div class="preferenceName">
-        小節数:
+      <div class="preferenceTitle">
+        小節数
       </div>
 
-      <div class="preferenceValue" role="group" aria-label="小節数の入力">
-        <button type="button" class="bpmButton" id="measuresDown">-1</button>
-        <select id="measures" name="measures">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4" selected>4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
-        </select>
-        <button type="button" class="bpmButton" id="measuresUp">+1</button>
+      <div class="preferenceValue preferenceValueCentered" role="group" aria-label="小節数の入力">
+        <input type="range" id="measuresRange" min="1" max="12" step="1" value="4">
+        <output id="measuresValue" for="measuresRange">4</output>
       </div>
 
     </div>
