@@ -44,8 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 現在の設定値
   const getTempo = () => {
-    const value = getSettingValue(tempoInput, "bclick.tempo", 60);
-    return value > 0 ? value : 60;
+    if (tempoInput) {
+      const value = getSettingValue(tempoInput, "bclick.tempo", 60);
+      return value > 0 ? value : 60;
+    }
+    const storedValue = store.getTempo();
+    return typeof storedValue === "number" && storedValue > 0 ? storedValue : 60;
   };
 
   const getClickCount = () => {
@@ -150,10 +154,16 @@ document.addEventListener("DOMContentLoaded", () => {
       window.bclickActiveChordIndex = barIndex;
     }
     target.classList.add("isActiveChord");
-    const rect = target.getBoundingClientRect();
-    const targetTop = rect.top + window.scrollY;
-    const scrollTop = Math.max(0, targetTop - window.innerHeight / 2);
-    window.scrollTo({ top: scrollTop, behavior: "smooth" });
+    const scrollContainer = document.getElementById("scoreArea");
+    if (!scrollContainer) return;
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const offset = targetRect.top - containerRect.top + scrollContainer.scrollTop;
+    const scrollTop = Math.max(0, offset);
+    scrollContainer.scrollTo({ top: scrollTop, behavior: "smooth" });
+    if (window.bclickRhythmScore?.handleOverlayRefresh) {
+      window.bclickRhythmScore.handleOverlayRefresh();
+    }
   };
 
   // クリックボックスのループ再生

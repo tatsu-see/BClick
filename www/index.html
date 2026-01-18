@@ -31,10 +31,6 @@
   <script src="/assets/lib/Language.js"></script>
 
   <script type="module" src="/assets/js/app.js"></script>
-  <script type="module" src="/assets/js/click.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.min.js"></script>
-  <!-- VexFlow も検討したが、リズム譜はalphaTabの方が良さそうなのでこちらで実装する。 -->
-  <script type="module" src="/assets/js/score.js"></script>
 </head>
 
 <body>
@@ -119,42 +115,6 @@
            Make Score
            &#x2B07;
         </button>
-      <!-- 内部データ参照用 -->
-      <textarea id="scoreData" style="width:400px; height:100px; display:none;"></textarea>
-    </div>
-
-    <div class="preferenceTitle">
-      <span class="material-symbols-outlined" aria-hidden="true"></span>
-      スコア
-    </div>
-
-    <div id="playClicking">
-      <button id="startClick" type="button">
-        <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
-      </button>
-      <button id="stopClickart" type="button">
-        <span class="material-symbols-outlined" aria-hidden="true">pause</span>
-      </button>
-      <button id="resetClickart" type="button">
-        <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
-      </button>
-      <button id="showCodeDiagram" type="button">
-        <span class="material-symbols-outlined" aria-hidden="true">back_hand</span>
-        コード
-      </button>
-    </div>
-
-    <div id="countdownOverlay" aria-hidden="true" hidden>
-      <div id="countdownText" aria-live="polite"></div>
-    </div>
-
-    <div id="showClick">
-      <!-- (ここにクリックが表示されます) -->
-    </div>
-
-    <div id="scoreArea">
-      <!-- (ここにリズム譜が表示されます) -->
-      <div id="score" aria-label="2小節の楽譜"></div>
     </div>
 
   </main>

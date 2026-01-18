@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const countdownDownButton = document.getElementById("countdownDown");
   const countdownUpButton = document.getElementById("countdownUp");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
+  const setClickButton = document.getElementById("setClick");
   const configBeatButton = document.getElementById("configBeatButton");
   const configScoreButton = document.getElementById("configScoreButton");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
@@ -304,6 +305,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const newTab = window.open("/configScore.html", "_blank", "noopener,noreferrer");
       if (!newTab) {
       // window.location.href = "/configScore.html";
+      }
+    });
+  }
+
+  if (setClickButton) {
+    setClickButton.addEventListener("click", () => {
+      const newTab = window.open("/showScore.html", "_blank", "noopener,noreferrer");
+      if (!newTab) {
+        window.location.href = "/showScore.html";
       }
     });
   }

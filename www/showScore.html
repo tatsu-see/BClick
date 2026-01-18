@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click - スコア再生</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="/assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="/assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="/assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="/assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
+
+  <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="/assets/css/click.css">
+  <link rel="stylesheet" href="/assets/css/showScore.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <script src="/assets/lib/Language.js"></script>
+
+  <script type="module" src="/assets/js/click.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.min.js"></script>
+  <script type="module" src="/assets/js/showScore.js"></script>
+</head>
+
+<body>
+  <header>
+    <div id="title">B.Click</div>
+    <button id="closePage" type="button" aria-label="閉じる">×</button>
+  </header>
+  <main>
+    <div id="playClicking">
+      <button id="startClick" type="button" aria-label="再生">
+        <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+      </button>
+      <button id="stopClickart" type="button" aria-label="一時停止">
+        <span class="material-symbols-outlined" aria-hidden="true">pause</span>
+      </button>
+      <button id="resetClickart" type="button" aria-label="リセット">
+        <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+      </button>
+      <button id="showCodeDiagram" type="button">
+        <span class="material-symbols-outlined" aria-hidden="true">back_hand</span>
+        コード
+      </button>
+    </div>
+
+    <div id="scorePane">
+      <div id="countdownOverlay" aria-hidden="true" hidden>
+        <div id="countdownText" aria-live="polite"></div>
+      </div>
+
+      <div id="showClick">
+        <!-- (ここにクリックが表示されます) -->
+      </div>
+
+      <div id="scoreArea">
+        <!-- (ここにリズム譜が表示されます) -->
+        <div id="score" aria-label="2小節の楽譜"></div>
+      </div>
+    </div>
+
+    <div id="saveButtonContainer">
+        <button type="button" id="saveShowScore" class="okConfig">OK</button>
+    </div>
+  </main>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+</body>
+</html>
