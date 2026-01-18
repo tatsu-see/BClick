@@ -6,8 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
   const tempoInput = document.getElementById("tempoInput");
   const tempoDisplay = document.getElementById("tempo");
-  const tempoDialCoarse = document.getElementById("tempoDialCoarse");
-  const tempoDialFine = document.getElementById("tempoDialFine");
+  const tempoDialEl = document.getElementById("tempoDial");
+  const tempoStepCoarse = document.getElementById("tempoStepCoarse");
+  const tempoStepFine = document.getElementById("tempoStepFine");
   const beatSummary = document.getElementById("configBeat");
   const scoreSummary = document.getElementById("configScore");
   const tempoDown10Button = document.getElementById("tempoDown10");
@@ -109,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoDial = tempoInput
     ? new TempoDialController({
         inputEl: tempoInput,
-        dialEls: [tempoDialCoarse, tempoDialFine],
+        dialEls: [tempoDialEl],
         defaultValue: 60,
         onValueChange: (value) => {
           store.setTempo(value);
@@ -120,6 +121,35 @@ document.addEventListener("DOMContentLoaded", () => {
     : null;
 
   if (tempoDial) {
+    const tempoStepButtons = [tempoStepCoarse, tempoStepFine].filter(Boolean);
+    const dialLabelEl = tempoDialEl ? tempoDialEl.querySelector(".tempoDialLabel") : null;
+    const setTempoStep = (step, activeButton = null) => {
+      if (!tempoDialEl) return;
+      const parsedStep = Number.parseInt(step, 10);
+      if (Number.isNaN(parsedStep)) return;
+      tempoDialEl.dataset.step = parsedStep.toString();
+      if (dialLabelEl) {
+        dialLabelEl.textContent = parsedStep.toString();
+      }
+      tempoDialEl.setAttribute("aria-label", `テンポを${parsedStep}ずつ変更`);
+      tempoStepButtons.forEach((button) => {
+        const isActive = button === activeButton;
+        button.classList.toggle("isActive", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    };
+
+    if (tempoStepButtons.length > 0) {
+      const activeButton =
+        tempoStepButtons.find((button) => button.classList.contains("isActive")) || tempoStepButtons[0];
+      setTempoStep(activeButton.dataset.step, activeButton);
+      tempoStepButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          setTempoStep(button.dataset.step, button);
+        });
+      });
+    }
+
     const savedTempo = store.getTempo();
     if (savedTempo !== null) {
       tempoDial.applyStoredValue(savedTempo);

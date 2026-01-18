@@ -23,6 +23,35 @@
   align-items: center;
 }
 
+.tempoStepSwitch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tempoStepButton {
+  min-width: 52px;
+  padding: 6px 10px;
+  border: 1px solid #1e7a4f;
+  border-radius: 999px;
+  background: #eaf7f0;
+  color: #165f3f;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.tempoStepButton.isActive {
+  background: #1e7a4f;
+  border-color: #1e7a4f;
+  color: #ffffff;
+}
+
+.tempoStepButton:focus-visible {
+  outline: 2px solid #1e7a4f;
+  outline-offset: 2px;
+}
+
 .tempoDial {
   width: 96px;
   height: 96px;
@@ -61,6 +90,11 @@
   cursor: grabbing;
 }
 
+#beatPreference .tempoDial {
+  width: 144px;
+  height: 144px;
+}
+
 .tempoDialIndicator {
   position: absolute;
   top: 8px;
@@ -68,6 +102,11 @@
   height: 24px;
   background-color: #1e7a4f;
   border-radius: 2px;
+}
+
+#beatPreference .tempoDialIndicator {
+  top: 12px;
+  height: 32px;
 }
 
 .tempoDialLabel {

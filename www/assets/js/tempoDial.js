@@ -81,8 +81,8 @@ export class TempoDialController {
 
   setupDial(dialEl) {
     if (!dialEl) return;
-    const step = Number.parseFloat(dialEl.dataset.step || "1");
-    const degreesPerStep = Number.parseFloat(dialEl.dataset.degreesPerStep || "18");
+    const getStep = () => Number.parseFloat(dialEl.dataset.step || "1");
+    const getDegreesPerStep = () => Number.parseFloat(dialEl.dataset.degreesPerStep || "18");
     let isActive = false;
     let lastAngle = 0;
     let carry = 0;
@@ -99,6 +99,8 @@ export class TempoDialController {
       if (!isActive) return;
       const currentAngle = this.getAngle(dialEl, event);
       const diff = this.angleDiff(currentAngle, lastAngle);
+      const step = getStep();
+      const degreesPerStep = getDegreesPerStep();
       carry += diff;
       const steps = Math.trunc(carry / degreesPerStep);
       if (steps !== 0) {
