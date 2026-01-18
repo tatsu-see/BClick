@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const stopClickButton = document.getElementById("stopClickart");
   const operation = document.getElementById("operation");
   const countdownOverlay = document.getElementById("countdownOverlay");
-  const tempoInput = document.getElementById("tempo");
+  const tempoInput = document.getElementById("tempoInput") || document.getElementById("tempo");
   const clickCountSelect = document.getElementById("clickCount");
   const countdownSelect = document.getElementById("countdown");
 

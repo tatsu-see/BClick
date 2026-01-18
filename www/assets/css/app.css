@@ -130,6 +130,16 @@ footer {
   background-color: mintcream;
 }
 
+#beatPreference {
+  margin-bottom:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:0px solid green;
+  border-radius: 3px;
+  background-color: mintcream;
+}
+
 /* 設定項目の区分タイトル */
 .preferenceTitle {
   display: flex;

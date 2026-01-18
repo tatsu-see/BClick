@@ -1,9 +1,13 @@
 
 import { ConfigStore } from "./store.js";
+import { TempoDialController } from "./tempoDial.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
-  const tempoInput = document.getElementById("tempo");
+  const tempoInput = document.getElementById("tempoInput");
+  const tempoDisplay = document.getElementById("tempo");
+  const tempoDialCoarse = document.getElementById("tempoDialCoarse");
+  const tempoDialFine = document.getElementById("tempoDialFine");
   const tempoDown10Button = document.getElementById("tempoDown10");
   const tempoDownButton = document.getElementById("tempoDown");
   const tempoUpButton = document.getElementById("tempoUp");
@@ -37,28 +41,68 @@ document.addEventListener("DOMContentLoaded", () => {
     document.dispatchEvent(new CustomEvent("bclick:tempochange", { detail: { tempo: value } }));
   };
 
+  const syncTempoFromStore = () => {
+    const savedTempo = store.getTempo();
+    if (savedTempo === null) return;
+    if (tempoDial) {
+      tempoDial.setValue(tempoDial.clamp(savedTempo));
+    } else {
+      setTempoDisplay(savedTempo);
+    }
+    notifyTempoChange(savedTempo);
+  };
+
   const setTempoDisplay = (value) => {
-    if (!tempoInput) return;
-    tempoInput.textContent = value.toString();
+    if (tempoInput) {
+      tempoInput.value = value.toString();
+      return;
+    }
+    if (tempoDisplay) {
+      tempoDisplay.textContent = value.toString();
+    }
   };
 
   const adjustTempo = (delta) => {
-    if (!tempoInput) return;
-    const baseValue = getElementNumberValue(tempoInput, 60);
-    const minValue = getNumberAttribute(tempoInput, "data-min", Number.NEGATIVE_INFINITY);
-    const maxValue = getNumberAttribute(tempoInput, "data-max", Number.POSITIVE_INFINITY);
+    if (tempoDial) {
+      tempoDial.adjustBy(delta);
+      return;
+    }
+    if (!tempoDisplay) return;
+    const baseValue = getElementNumberValue(tempoDisplay, 60);
+    const minValue = getNumberAttribute(tempoDisplay, "data-min", Number.NEGATIVE_INFINITY);
+    const maxValue = getNumberAttribute(tempoDisplay, "data-max", Number.POSITIVE_INFINITY);
     const nextValue = Math.min(maxValue, Math.max(minValue, baseValue + delta));
     setTempoDisplay(nextValue);
     store.setTempo(nextValue);
     notifyTempoChange(nextValue);
   };
 
-  if (tempoInput) {
+  const tempoDial = tempoInput
+    ? new TempoDialController({
+        inputEl: tempoInput,
+        dialEls: [tempoDialCoarse, tempoDialFine],
+        defaultValue: 60,
+        onValueChange: (value) => {
+          store.setTempo(value);
+          notifyTempoChange(value);
+        },
+      })
+    : null;
+
+  if (tempoDial) {
+    const savedTempo = store.getTempo();
+    if (savedTempo !== null) {
+      tempoDial.applyStoredValue(savedTempo);
+    } else {
+      tempoDial.setValue(tempoDial.clamp(tempoDial.getInputValue()));
+    }
+    tempoDial.attach();
+  } else if (tempoDisplay) {
     const savedTempo = store.getTempo();
     if (savedTempo !== null) {
       setTempoDisplay(savedTempo);
     } else {
-      setTempoDisplay(getElementNumberValue(tempoInput, 60));
+      setTempoDisplay(getElementNumberValue(tempoDisplay, 60));
     }
   }
 
@@ -77,6 +121,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (tempoUp10Button) {
     tempoUp10Button.addEventListener("click", () => adjustTempo(10));
   }
+
+  window.addEventListener("storage", (event) => {
+    if (event.storageArea !== window.localStorage) return;
+    if (event.key !== "bclick.tempo") return;
+    syncTempoFromStore();
+  });
 
   if (clickCountSelect) {
     store.loadClickCountInput(clickCountSelect);

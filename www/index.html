@@ -22,6 +22,7 @@
   <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
 
   <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="/assets/css/tempoDial.css">
   <link rel="stylesheet" href="/assets/css/click.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
@@ -46,24 +47,39 @@
       テンポ設定
     </div>
 
-    <div class="preference">
       <!--  BPM テンポ設定 -->
 
-        <div class="preferenceName">
-        BPM(♪=):
-      </div>
-      <div class="preferenceValue">
-        <div class="bpmButtonGroup">
-          <button type="button" class="bpmButton" id="tempoDown10">-10</button>
-          <button type="button" class="bpmButton" id="tempoDown">-1</button>
+      <div id="beatPreference" class="tempoControl">
+        <button type="button"
+          class="tempoDial"
+          id="tempoDialCoarse"
+          data-step="10"
+          data-degrees-per-step="36"
+          aria-label="テンポを10ずつ変更">
+          <span class="tempoDialSide tempoDialMinus" aria-hidden="true">-</span>
+          <span class="tempoDialIndicator" aria-hidden="true"></span>
+          <span class="tempoDialLabel">10</span>
+          <span class="tempoDialSide tempoDialPlus" aria-hidden="true">+</span>
+        </button>
+
+        <div class="tempoValueGroup">
+          <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric">
         </div>
-        <div id="tempo" data-min="30" data-max="240">60</div>
-        <div class="bpmButtonGroup">
-          <button type="button" class="bpmButton" id="tempoUp10">+10</button>
-          <button type="button" class="bpmButton" id="tempoUp">+1</button>
-        </div>
+
+        <button type="button"
+          class="tempoDial"
+          id="tempoDialFine"
+          data-step="1"
+          data-degrees-per-step="36"
+          aria-label="テンポを1ずつ変更">
+          <span class="tempoDialSide tempoDialMinus" aria-hidden="true">-</span>
+          <span class="tempoDialIndicator" aria-hidden="true"></span>
+          <span class="tempoDialLabel">1</span>
+          <span class="tempoDialSide tempoDialPlus" aria-hidden="true">+</span>
+        </button>
       </div>
 
+    <div class="preference">
       <!--  周回クリック数 -->
       <div class="preferenceName">
         クリック数:
