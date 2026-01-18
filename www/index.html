@@ -79,56 +79,15 @@
         </button>
       </div>
 
-    <div class="preference">
-      <!--  周回クリック数 -->
-      <div class="preferenceName">
-        クリック数:
-      </div>
-      <div class="preferenceValue">
-        <button type="button" class="bpmButton" id="clickCountDown">-1</button>
-        <select id="clickCount" default="4">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4" selected>4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-        </select>
-        <button type="button" class="bpmButton" id="clickCountUp">+1</button>
-      </div>
-
-      <!--  1 小節カウント（シングルカウント） -->
-      <div class="preferenceName">
-        カウントイン:
-      </div>
-
-      <div class="preferenceValue">
-        <button type="button" class="bpmButton" id="countdownDown">-1</button>
-        <select id="countdown" default="4">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4" selected>4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-        <button type="button" class="bpmButton" id="countdownUp">+1</button>
-      </div>
+    <div class="preferenceSummery">
 
       <!--  Beat設定 -->
-      <div class="preferenceNow">
+      <div class="preferenceNow" id="configBeat">
         <!-- ここにBPM、クリック数、カウントインの設定を表示する。 -->
       </div>
 
       <div class="preferenceValue">
-        <button id="configBeat" type="button">
+        <button id="configBeatButton" type="button">
           <span class="material-symbols-outlined" aria-hidden="true">tune</span>
         </button>
       </div>
@@ -140,14 +99,14 @@
       スコア
     </div>
 
-    <div class="preference">
+    <div class="preferenceSummery">
       <!--  スコア設定 -->
-      <div class="preferenceNow">
+      <div class="preferenceNow" id="configScore">
         <!-- ここに拍子、コード進行、小節数 を表示する。 -->
       </div>
 
       <div class="preferenceValue">
-        <button id="configScore" type="button">
+        <button id="configScoreButton" type="button">
           <span class="material-symbols-outlined" aria-hidden="true">tune</span>
         </button>
       </div>

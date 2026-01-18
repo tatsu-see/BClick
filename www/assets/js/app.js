@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoDisplay = document.getElementById("tempo");
   const tempoDialCoarse = document.getElementById("tempoDialCoarse");
   const tempoDialFine = document.getElementById("tempoDialFine");
+  const beatSummary = document.getElementById("configBeat");
+  const scoreSummary = document.getElementById("configScore");
   const tempoDown10Button = document.getElementById("tempoDown10");
   const tempoDownButton = document.getElementById("tempoDown");
   const tempoUpButton = document.getElementById("tempoUp");
@@ -19,8 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const countdownDownButton = document.getElementById("countdownDown");
   const countdownUpButton = document.getElementById("countdownUp");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
-  const configBeatButton = document.getElementById("configBeat");
-  const configScoreButton = document.getElementById("configScore");
+  const configBeatButton = document.getElementById("configBeatButton");
+  const configScoreButton = document.getElementById("configScoreButton");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
 
   const getNumberAttribute = (element, attrName, fallback) => {
@@ -41,6 +43,31 @@ document.addEventListener("DOMContentLoaded", () => {
     document.dispatchEvent(new CustomEvent("bclick:tempochange", { detail: { tempo: value } }));
   };
 
+  const updateBeatSummary = () => {
+    if (!beatSummary) return;
+    const tempoValue = tempoInput
+      ? getElementNumberValue(tempoInput, 60)
+      : getElementNumberValue(tempoDisplay, 60);
+    const clickCountValue = clickCountSelect
+      ? getElementNumberValue(clickCountSelect, 4)
+      : store.getClickCount();
+    const countdownValue = countdownSelect
+      ? getElementNumberValue(countdownSelect, 4)
+      : store.getCountInSec();
+    const safeClickCount = Number.isFinite(clickCountValue) ? clickCountValue : 4;
+    const safeCountdown = Number.isFinite(countdownValue) ? countdownValue : 4;
+    beatSummary.textContent = `BPM ${tempoValue}、クリック数 ${safeClickCount}、カウントイン ${safeCountdown}`;
+  };
+
+  const updateScoreSummary = () => {
+    if (!scoreSummary) return;
+    const timeSignature = store.getScoreTimeSignature() || "4/4";
+    const progression = store.getScoreProgression() || "";
+    const measures = store.getScoreMeasures() || 2;
+    const displayProgression = progression.length > 0 ? progression : "(未設定)";
+    scoreSummary.textContent = `拍子 ${timeSignature}、進行 ${displayProgression}、小節数 ${measures}`;
+  };
+
   const syncTempoFromStore = () => {
     const savedTempo = store.getTempo();
     if (savedTempo === null) return;
@@ -50,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setTempoDisplay(savedTempo);
     }
     notifyTempoChange(savedTempo);
+    updateBeatSummary();
   };
 
   const setTempoDisplay = (value) => {
@@ -75,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTempoDisplay(nextValue);
     store.setTempo(nextValue);
     notifyTempoChange(nextValue);
+    updateBeatSummary();
   };
 
   const tempoDial = tempoInput
@@ -85,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         onValueChange: (value) => {
           store.setTempo(value);
           notifyTempoChange(value);
+          updateBeatSummary();
         },
       })
     : null;
@@ -105,6 +135,8 @@ document.addEventListener("DOMContentLoaded", () => {
       setTempoDisplay(getElementNumberValue(tempoDisplay, 60));
     }
   }
+  updateBeatSummary();
+  updateScoreSummary();
 
   if (tempoDownButton) {
     tempoDownButton.addEventListener("click", () => adjustTempo(-1));
@@ -124,13 +156,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("storage", (event) => {
     if (event.storageArea !== window.localStorage) return;
-    if (event.key !== "bclick.tempo") return;
-    syncTempoFromStore();
+    if (event.key === "bclick.tempo") {
+      syncTempoFromStore();
+      return;
+    }
+    if (event.key === "bclick.clickCount") {
+      const savedClickCount = store.getClickCount();
+      if (clickCountSelect && savedClickCount !== null) {
+        clickCountSelect.value = savedClickCount.toString();
+      }
+      updateBeatSummary();
+      return;
+    }
+    if (event.key === "bclick.countdown") {
+      const savedCountdown = store.getCountInSec();
+      if (countdownSelect && savedCountdown !== null) {
+        countdownSelect.value = savedCountdown.toString();
+      }
+      updateBeatSummary();
+      return;
+    }
+    if (
+      event.key === "bclick.score.timeSignature"
+      || event.key === "bclick.score.progression"
+      || event.key === "bclick.score.measures"
+    ) {
+      updateScoreSummary();
+    }
   });
 
   if (clickCountSelect) {
     store.loadClickCountInput(clickCountSelect);
-    clickCountSelect.addEventListener("change", () => store.saveClickCountInput(clickCountSelect));
+    clickCountSelect.addEventListener("change", () => {
+      store.saveClickCountInput(clickCountSelect);
+      updateBeatSummary();
+    });
+    updateBeatSummary();
   }
 
   const bumpSelectValue = (selectEl, delta) => {
@@ -155,7 +216,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (countdownSelect) {
     store.loadCountInSecInput(countdownSelect);
-    countdownSelect.addEventListener("change", () => store.saveCountInSecInput(countdownSelect));
+    countdownSelect.addEventListener("change", () => {
+      store.saveCountInSecInput(countdownSelect);
+      updateBeatSummary();
+    });
+    updateBeatSummary();
   }
 
   if (countdownDownButton) {

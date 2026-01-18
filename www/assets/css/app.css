@@ -177,6 +177,30 @@ footer {
   text-align: left;
 }
 
+.preferenceSummery {
+  margin-bottom:3px;
+  padding:3px;
+  width:calc(100%-6px);
+
+  border:1px solid #cfcfcf;
+  border-radius: 3px;
+  background-color: mintcream;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 0.65em;
+  font-weight: normal;
+}
+
+.preferenceSummery .preferenceNow {
+  flex: 1;
+}
+
+.preferenceSummery .preferenceValue {
+  width: auto;
+}
 .preferenceNow {
   height:100%;
   border:1px solid darkgreen;
