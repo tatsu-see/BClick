@@ -2,8 +2,8 @@ import { ConfigStore } from "./store.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
-  const chordSelectMajor = document.getElementById("chordSelectMajor");
-  const chordSelectMinor = document.getElementById("chordSelectMinor");
+  const chordRootButtons = Array.from(document.querySelectorAll(".chordRoot"));
+  const chordQualityButtons = Array.from(document.querySelectorAll(".chordQuality"));
   const closePageButton = document.getElementById("closePage");
   const saveButton = document.getElementById("saveCodeDiagram");
   const fretboard = document.querySelector(".fretboard");
@@ -248,37 +248,75 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  if (chordSelectMajor) {
-    chordSelectMajor.addEventListener("change", () => {
-      if (chordSelectMinor) chordSelectMinor.value = "";
-      renderChord(chordSelectMajor.value);
+  const setActiveQuality = (button) => {
+    chordQualityButtons.forEach((qualityButton) => {
+      const isActive = qualityButton === button;
+      qualityButton.classList.toggle("isActive", isActive);
+      qualityButton.setAttribute("aria-pressed", isActive ? "true" : "false");
     });
-  }
+  };
 
-  if (chordSelectMinor) {
-    chordSelectMinor.addEventListener("change", () => {
-      if (chordSelectMajor) chordSelectMajor.value = "";
-      if (chordSelectMinor.value) {
-        renderChord(chordSelectMinor.value);
-      }
+  const setActiveRoot = (button) => {
+    chordRootButtons.forEach((rootButton) => {
+      const isActive = rootButton === button;
+      rootButton.classList.toggle("isActive", isActive);
+      rootButton.setAttribute("aria-pressed", isActive ? "true" : "false");
     });
-  }
+  };
+
+  const getActiveQuality = () =>
+    chordQualityButtons.find((button) => button.classList.contains("isActive"));
+
+  const getActiveRoot = () =>
+    chordRootButtons.find((button) => button.classList.contains("isActive"));
+
+  const buildChordName = () => {
+    const rootButton = getActiveRoot();
+    const qualityButton = getActiveQuality();
+    if (!rootButton || !qualityButton) return null;
+    const root = rootButton.dataset.root || rootButton.textContent.trim();
+    const quality = qualityButton.dataset.quality || "maj";
+    const suffix = quality === "min" ? "m" : "";
+    return `${root}${suffix}`;
+  };
+
+  chordQualityButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setActiveQuality(button);
+      const chordName = buildChordName();
+      if (chordName) renderChord(chordName);
+    });
+  });
+
+  chordRootButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setActiveRoot(button);
+      const chordName = buildChordName();
+      if (chordName) renderChord(chordName);
+    });
+  });
 
   const savedChord = store.getCodeDiagramChord();
   if (savedChord) {
-    if (savedChord.endsWith("m") && chordSelectMinor) {
-      chordSelectMinor.value = savedChord;
-      if (chordSelectMajor) chordSelectMajor.value = "";
-      renderChord(savedChord);
-    } else if (chordSelectMajor) {
-      chordSelectMajor.value = savedChord;
-      if (chordSelectMinor) chordSelectMinor.value = "";
-      renderChord(savedChord);
-    }
-  } else if (chordSelectMajor && chordSelectMajor.value) {
-    renderChord(chordSelectMajor.value);
-  } else if (chordSelectMinor && chordSelectMinor.value) {
-    renderChord(chordSelectMinor.value);
+    const isMinor = savedChord.endsWith("m");
+    const rootValue = isMinor ? savedChord.slice(0, -1) : savedChord;
+    const qualityValue = isMinor ? "min" : "maj";
+    const rootButton =
+      chordRootButtons.find((button) => (button.dataset.root || button.textContent.trim()) === rootValue)
+      || chordRootButtons[0];
+    const qualityButton =
+      chordQualityButtons.find((button) => button.dataset.quality === qualityValue)
+      || chordQualityButtons[0];
+    if (rootButton) setActiveRoot(rootButton);
+    if (qualityButton) setActiveQuality(qualityButton);
+    renderChord(savedChord);
+  } else {
+    const defaultRoot = chordRootButtons[0];
+    const defaultQuality = chordQualityButtons[0];
+    if (defaultRoot) setActiveRoot(defaultRoot);
+    if (defaultQuality) setActiveQuality(defaultQuality);
+    const chordName = buildChordName();
+    if (chordName) renderChord(chordName);
   }
 
   if (saveButton) {
