@@ -311,6 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (setClickButton) {
     setClickButton.addEventListener("click", () => {
+      // showScoreは常に開き、楽譜表示の可否はshowScore側で制御する。
       const newTab = window.open("/showScore.html", "_blank", "noopener,noreferrer");
       if (!newTab) {
       // window.location.href = "/showScore.html";

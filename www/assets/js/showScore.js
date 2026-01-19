@@ -44,7 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   currentScoreData = loadSettings(true);
-  if (scoreElement && window.alphaTab) {
+  if (store.getScoreEnabled() === false) {
+    // 仕様: リズム表示がOFFならクリックUIのみ表示し、楽譜エリアは隠す。
+    if (scoreArea) {
+      scoreArea.hidden = true;
+    }
+  } else if (scoreElement && window.alphaTab) {
     window.bclickActiveChordIndex = -1;
     rhythmScore = new RhythmScore("score", {
       timeSignature: currentScoreData.timeSignature,

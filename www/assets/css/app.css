@@ -164,9 +164,49 @@ footer {
 .scoreToggle {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.8em;
   cursor: pointer;
+}
+
+/* コンパクトなトグルをconfigBeatのスライダー風に合わせる。 */
+.scoreToggle input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 44px;
+  height: 20px;
+  background: #d6efe0;
+  border-radius: 999px;
+  border: 1px solid #1e7a4f;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.scoreToggle input::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  width: 14px;
+  height: 14px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.scoreToggle input:checked {
+  background: #bfe8d5;
+}
+
+.scoreToggle input:checked::before {
+  transform: translate(22px, -50%);
+}
+
+.scoreToggle input:focus-visible {
+  outline: 2px solid #333;
+  outline-offset: 2px;
 }
 
 .preferenceSummery.isDisabled {
