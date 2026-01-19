@@ -2,13 +2,14 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
 }
 
 main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3px;
   min-height: 0;
 }
 
@@ -29,7 +30,6 @@ main {
   flex-direction: column;
   gap: 3px;
   overflow-x: hidden;
-  padding-bottom: 3px;
 }
 
 #showClick {
@@ -40,6 +40,8 @@ main {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+
+/*  border: 1px solid black;  */
 }
 
 #saveShowScore {

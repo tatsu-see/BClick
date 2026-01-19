@@ -313,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setClickButton.addEventListener("click", () => {
       const newTab = window.open("/showScore.html", "_blank", "noopener,noreferrer");
       if (!newTab) {
-        window.location.href = "/showScore.html";
+      // window.location.href = "/showScore.html";
       }
     });
   }
