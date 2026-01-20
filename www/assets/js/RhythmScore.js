@@ -101,22 +101,39 @@ class RhythmScore {
       const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
         ? barData.rhythm
         : Array.from({ length: beats }, () => "4");
+      let lastNoteIndex = null;
       rhythm.forEach((value, index) => {
         const hasChordLabel = index === 0 && barChord;
+        const duration = value.endsWith("16") ? "16" : value.endsWith("8") ? "8" : "4";
+        const isRest = value.startsWith("r");
+        const isTie = value.startsWith("t");
 
-        if( value.startsWith("r") ){
+        if (isTie) {
+          if (lastNoteIndex !== null) {
+            notes[lastNoteIndex] = `${notes[lastNoteIndex]}-`;
+            const noteValue = `C4.${duration}`;
+            const props = hasChordLabel ? `slashed txt "CHORD:${barIndex + 1}:${barChord}"` : "slashed";
+            notes.push(`${noteValue} { ${props} }`);
+            lastNoteIndex = notes.length - 1;
+            return;
+          }
+        }
+
+        if (isRest) {
           // 休符の場合
-          const noteValue = value === "r8" ? "r.8" : "r.4";
+          const noteValue = duration === "16" ? "r.16" : duration === "8" ? "r.8" : "r.4";
           const props = hasChordLabel ? `slashed txt "CHORD:${barIndex + 1}:${barChord}"` : "slashed";
           notes.push(`${noteValue} { ${props} }`);
+          lastNoteIndex = null;
         }
         else {
-          const noteValue = value === "8" ? "C4.8" : "C4.4";
+          const noteValue = duration === "16" ? "C4.16" : duration === "8" ? "C4.8" : "C4.4";
 //          const noteValue = value === "8" ? ".8" : "(C4 D4).8"; // サンプル 8分音符
 //          const noteValue = value === "8" ? ".8" : "r.8";       // サンプル 8分休符
 //          const noteValue = value === "8" ? ".8" : "C4.16";     // サンプル 16分音符
           const props = hasChordLabel ? `slashed txt "CHORD:${barIndex + 1}:${barChord}"` : "slashed";
           notes.push(`${noteValue} { ${props} }`);
+          lastNoteIndex = notes.length - 1;
         }
         return;
       });

@@ -151,38 +151,86 @@
   align-items: stretch;
 }
 
-.rhythmBeatList {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.rhythmPatternTable {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
   width: 100%;
 }
 
-.rhythmBeatRow {
+.rhythmPatternHeader,
+.rhythmPatternRow {
+  display: grid;
+  grid-template-columns: 24px 54px 1fr 160px;
+  align-items: stretch;
+  gap: 1px;
+}
+
+/* リズムパターンのセル */
+.rhythmPatternCell {
+  min-height: 28px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 100%;
+  justify-content: center;
+
+  padding:0px;
+  margin-bottom:3px;
+
+  border: 0px solid forestgreen;
+  border-radius: 3px;
 }
 
-.rhythmBeatLabel {
-  min-width: 24px;
-  text-align: right;
+.rhythmPatternHeader .rhythmPatternCell {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #333;
+  justify-content: center;
 }
 
-.rhythmBeatSelect {
-  flex: 0 1 220px;
+.rhythmPatternIndex {
+  justify-content: center;
+  font-size: 0.6em;
+}
+
+.rhythmPatternSymbols {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  justify-content: center;
+}
+
+.rhythmPatternSymbols .rhythmSymbolSelect {
+  min-width: 0;
+  text-align: center;
+  font-size: 0.7em;
+  padding: 1px 2px;
+  height: 100%;
+}
+
+.rhythmDivisionSelect,
+.rhythmPatternSymbols .rhythmSymbolSelect {
+  height: 100%;
+}
+
+.rhythmPatternPreview {
+  justify-content: center;
+}
+
+.rhythmPatternPreview .abcjs-inline-svg {
   max-width: 100%;
+  height: 32px;
 }
 
 #codeProgression {
   font-size: 0.9em;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .codeProgressionGroup {
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
 }
 
 #saveConfigScore {
