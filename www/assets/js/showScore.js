@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreElement = document.getElementById("score");
   const scoreArea = document.getElementById("scoreArea");
   const saveButton = document.getElementById("saveShowScore");
+  const backButton = document.getElementById("backShowScore");
   const closePageButton = document.getElementById("closePage");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
   let currentScoreData = null;
@@ -32,6 +33,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!window.closed) {
       window.location.href = "/";
     }
+  };
+
+  /**
+   * 戻るボタンの処理。(現状は未実装のため空にしておく。)
+   */
+  const handleBack = () => {
   };
 
   if (showCodeDiagramButton) {
@@ -77,6 +84,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       closePage();
     });
+  }
+
+  if (backButton) {
+    backButton.addEventListener("click", handleBack);
   }
 
   if (closePageButton) {

@@ -186,5 +186,5 @@
 }
 
 #saveConfigScore {
-  width:100px;
+  min-width: 66px;
 }

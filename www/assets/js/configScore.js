@@ -209,18 +209,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (closePageButton) {
-    closePageButton.addEventListener("click", () => {
-      window.close();
-      if (!window.closed) {
-        window.location.href = "/";
-      }
+  const goBack = () => {
+    window.close();
+    if (!window.closed) {
+      window.location.href = "/";
+    }
+  };
+
+  if (saveButton) {
+    saveButton.addEventListener("click", () => {
+      goBack();
     });
   }
 
-  if (!saveButton) return;
-  saveButton.addEventListener("click", () => {
-    // OKボタンで、現在の設定を保存してトップへ戻る。
+  const saveAndGoBack = () => {
+    // Doneボタンで、現在の設定を保存してトップへ戻る。
     try {
       const selectedTimeSignature = timeSignatureInputs.find((input) => input.checked)?.value;
       if (selectedTimeSignature) {
@@ -256,9 +259,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    window.close();
-    if (!window.closed) {
-      window.location.href = "/";
-    }
-  });
+    goBack();
+  };
+
+  if (closePageButton) {
+    closePageButton.addEventListener("click", () => {
+      saveAndGoBack();
+    });
+  }
 });

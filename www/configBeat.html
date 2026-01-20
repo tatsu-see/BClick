@@ -35,8 +35,12 @@
 
 <body>
   <header>
+    <button type="button" id="saveConfigBeat" class="okConfig" aria-label="戻る">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
     <div id="title">B.Click</div>
-    <button id="closePage" type="button" aria-label="閉じる">×</button>
+    <button id="closePage" type="button" aria-label="保存して戻る">Done</button>
   </header>
   <main>
 
@@ -85,10 +89,6 @@
         <input type="range" id="countdownRange" min="0" max="10" step="1" value="4">
         <output id="countdownValue" for="countdownRange">4</output>
       </div>
-
-    <div id="saveButtonContainer">
-        <button type="button" id="saveConfigBeat" class="okConfig">OK</button>
-    </div>
 
   </main>
 

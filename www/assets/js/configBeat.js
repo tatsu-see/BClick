@@ -86,17 +86,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (closePageButton) {
-    closePageButton.addEventListener("click", () => {
-      window.close();
-      if (!window.closed) {
-        window.location.href = "/";
-      }
+  const goBack = () => {
+    window.close();
+    if (!window.closed) {
+      window.location.href = "/";
+    }
+  };
+
+  if (saveButton) {
+    saveButton.addEventListener("click", () => {
+      goBack();
     });
   }
 
-  if (!saveButton) return;
-  saveButton.addEventListener("click", () => {
+  const saveAndGoBack = () => {
     try {
       if (tempoInput) {
         const tempoValue = tempoDial.clamp(tempoDial.getInputValue());
@@ -125,9 +128,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    window.close();
-    if (!window.closed) {
-      window.location.href = "/";
-    }
-  });
+    goBack();
+  };
+
+  if (closePageButton) {
+    closePageButton.addEventListener("click", () => {
+      saveAndGoBack();
+    });
+  }
 });

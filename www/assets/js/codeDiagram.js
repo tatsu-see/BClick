@@ -319,24 +319,29 @@ document.addEventListener("DOMContentLoaded", () => {
     if (chordName) renderChord(chordName);
   }
 
+  const goBack = () => {
+    window.close();
+    if (!window.closed) {
+      window.location.href = "/";
+    }
+  };
+
   if (saveButton) {
     saveButton.addEventListener("click", () => {
-      if (currentChord) {
-        store.setCodeDiagramChord(currentChord);
-      }
-      window.close();
-      if (!window.closed) {
-        window.location.href = "/";
-      }
+      goBack();
     });
   }
 
+  const saveAndGoBack = () => {
+    if (currentChord) {
+      store.setCodeDiagramChord(currentChord);
+    }
+    goBack();
+  };
+
   if (closePageButton) {
     closePageButton.addEventListener("click", () => {
-      window.close();
-      if (!window.closed) {
-        window.location.href = "/";
-      }
+      saveAndGoBack();
     });
   }
 });

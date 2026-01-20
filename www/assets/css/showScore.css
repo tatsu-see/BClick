@@ -45,5 +45,6 @@ main {
 }
 
 #saveShowScore {
-  width: 100px;
+  left: auto;
+  right: 6px;
 }
