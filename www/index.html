@@ -106,11 +106,54 @@
 
     </div>
 
+    <div class="preferenceTitle">
+      <span class="material-symbols-outlined" aria-hidden="true">library_music</span>
+      スコア
+    </div>
+
+    <!--Spec
+      以下のボタンは、configBeat.html画面やconfigScore.html画面で設定した情報から楽譜を新規生成したり、保存したりする機能のボタンである。
+      ボタンは2行に分けて表示し、それぞれの行に3つずつボタンを等幅で配置する。
+
+      ・Createボタン
+        configBeat.html画面やconfigScore.html画面で設定した情報から新規に楽譜を生成する。Editで編集中の楽譜情報も破棄して、
+        新規生成する。楽譜を新規作成した後は、そのまま編集操作にするため、Editボタンが押されたように、editScore.html画面を表示する。
+      ・Editボタン
+        現在編集中の楽譜を編集する editScore.html画面 を表示する。
+      ・Init.ボタン
+        現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
+        すべて初期値に戻る。
+      ・Saveボタン
+        現在編集中の楽譜情報をローカルストレージに保存する。具体的には楽譜データをJSONファイルとしてダウンロードする。
+        （本当はファイル選択で保存先を指定できると良いが、iOS Safari は仕様上難しいためこの方法を採用している。）
+      ・Loadボタン
+        Saveによって保存した楽譜JSONファイルをファイル選択して読み、アプリの設定画面で編集可能な状態にする。
+      ・Mergeボタン
+        Saveによって保存した楽譜JSONファイルをファイル選択して読むが、楽譜の小節を追加するだけにする。
+    -->
     <div class="preferenceExec">
         <!-- Readyボタンのクリック/タップは、index.htmlとconfigScore.htmlで設定した値で新規作成しなおし。 -->
         <button id="setClick" type="button" class="okConfig makeScoreButton">
-          <span class="material-symbols-outlined" aria-hidden="true">library_music</span>
-          New Score
+          Create
+        </button>
+
+        <button id="editScore" class="okConfig makeScoreButton">
+          Edit
+        </button>
+
+        <button id="editScore" class="okConfig makeScoreButton">
+          Init.
+        </button>
+    </div>
+    <div class="preferenceExec">
+        <button id="editScore" class="okConfig makeScoreButton">
+          Save
+        </button>
+        <button id="editScore" class="okConfig makeScoreButton">
+          Load
+        </button>
+        <button id="editScore" class="okConfig makeScoreButton">
+          Merge
         </button>
     </div>
 

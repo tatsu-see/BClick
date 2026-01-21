@@ -311,10 +311,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (setClickButton) {
     setClickButton.addEventListener("click", () => {
-      // showScoreは常に開き、楽譜表示の可否はshowScore側で制御する。
-      const newTab = window.open("/showScore.html", "_blank", "noopener,noreferrer");
+      // editScoreは常に開き、楽譜表示の可否はeditScore側で制御する。
+      const newTab = window.open("/editScore.html", "_blank", "noopener,noreferrer");
       if (!newTab) {
-      // window.location.href = "/showScore.html";
+      // window.location.href = "/editScore.html";
       }
     });
   }
@@ -328,3 +328,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
