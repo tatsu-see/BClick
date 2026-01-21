@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const countdownDownButton = document.getElementById("countdownDown");
   const countdownUpButton = document.getElementById("countdownUp");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
-  const setClickButton = document.getElementById("setClick");
   const configBeatButton = document.getElementById("configBeatButton");
   const configScoreButton = document.getElementById("configScoreButton");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
@@ -67,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!scoreSummary) return;
     const timeSignature = store.getScoreTimeSignature() || "4/4";
     const progression = store.getScoreProgression() || "";
-    const measures = store.getScoreMeasures() || 2;
+    const measures = store.getScoreMeasures() || 8;
     const displayProgression = progression.length > 0 ? progression : "(未設定)";
     scoreSummary.textContent = `拍子 ${timeSignature}、進行 ${displayProgression}、小節数 ${measures}`;
   };
@@ -309,15 +308,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (setClickButton) {
-    setClickButton.addEventListener("click", () => {
-      // editScoreは常に開き、楽譜表示の可否はeditScore側で制御する。
-      const newTab = window.open("/editScore.html", "_blank", "noopener,noreferrer");
-      if (!newTab) {
-      // window.location.href = "/editScore.html";
-      }
-    });
-  }
 
   if (configBeatButton) {
     configBeatButton.addEventListener("click", () => {
@@ -328,4 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+
 

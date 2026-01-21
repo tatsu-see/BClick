@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedBars = store.getScoreBars();
   const scoreData = new ScoreData({
     timeSignature: savedTimeSignature || "4/4",
-    measures: savedMeasures || 2,
+    measures: savedMeasures || 8,
     progression: savedProgression || "",
     bars: savedBars || null,
   });
@@ -242,3 +242,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+

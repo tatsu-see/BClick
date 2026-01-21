@@ -31,6 +31,12 @@
   <script src="/assets/lib/Language.js"></script>
 
   <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/createScoreButton.js"></script>
+  <script type="module" src="/assets/js/editScoreButton.js"></script>
+  <script type="module" src="/assets/js/initScoreButton.js"></script>
+  <script type="module" src="/assets/js/saveScoreButton.js"></script>
+  <script type="module" src="/assets/js/loadScoreButton.js"></script>
+  <script type="module" src="/assets/js/mergeScoreButton.js"></script>
 </head>
 
 <body>
@@ -43,31 +49,31 @@
       テンポ
     </div>
 
-      <!--  BPM テンポ設定 -->
+    <!--  BPM テンポ設定 -->
 
-      <div id="beatPreference" class="tempoControl tempoControlStack">
-        <div class="tempoValueGroup tempoValueTop">
-          <div class="tempoStepSwitch" role="group" aria-label="テンポ変更モード">
-            <button type="button" id="tempoStepCoarse" class="tempoStepButton" data-step="10" aria-pressed="false">±10</button>
-            <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric">
-            <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
-          </div>
-        </div>
-
-        <div class="tempoDialRow">
-          <button type="button"
-            class="tempoDial"
-            id="tempoDial"
-            data-step="1"
-            data-degrees-per-step="36"
-            aria-label="テンポを1ずつ変更">
-            <span class="tempoDialSide tempoDialMinus" aria-hidden="true">-</span>
-            <span class="tempoDialIndicator" aria-hidden="true"></span>
-            <span class="tempoDialLabel">1</span>
-            <span class="tempoDialSide tempoDialPlus" aria-hidden="true">+</span>
-          </button>
+    <div id="beatPreference" class="tempoControl tempoControlStack">
+      <div class="tempoValueGroup tempoValueTop">
+        <div class="tempoStepSwitch" role="group" aria-label="テンポ変更モード">
+          <button type="button" id="tempoStepCoarse" class="tempoStepButton" data-step="10" aria-pressed="false">±10</button>
+          <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric">
+          <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
         </div>
       </div>
+
+      <div class="tempoDialRow">
+        <button type="button"
+          class="tempoDial"
+          id="tempoDial"
+          data-step="1"
+          data-degrees-per-step="36"
+          aria-label="テンポを1ずつ変更">
+          <span class="tempoDialSide tempoDialMinus" aria-hidden="true">-</span>
+          <span class="tempoDialIndicator" aria-hidden="true"></span>
+          <span class="tempoDialLabel">1</span>
+          <span class="tempoDialSide tempoDialPlus" aria-hidden="true">+</span>
+        </button>
+      </div>
+    </div>
 
     <div class="preferenceSummery">
 
@@ -113,12 +119,13 @@
 
     <!--Spec スコアの操作ボタン
       以下のボタンは、configBeat.html画面やconfigScore.html画面で設定した情報から楽譜を新規生成したり、保存したりする機能のボタンである。
-      ボタンは2行に分けて表示し、それぞれの行に3つずつボタンを等幅で配置する。
+      ボタンは2行に分けて表示し、それぞれの行に3つずつボタンを等しい幅で配置する。
       以下の楽譜編集ボタンや、楽譜ファイル(*.json)の操作ボタンは、app.js に全部実装するのではなくて、適宜モジュールに分割して実装する。
 
       ・Createボタン
         configBeat.html画面やconfigScore.html画面で設定した情報から新規に楽譜を生成する。Editで編集中の楽譜情報も破棄して、
         新規生成する。楽譜を新規作成した後は、そのまま編集操作にするため、Editボタンが押されたように、editScore.html画面を表示する。
+        Createボタンは、現在の楽譜を保存せずに破棄して新規作成するため、注意を促すダイアログを表示してから実行する。
 
       ・Editボタン
         現在編集中の楽譜を編集する editScore.html画面 を表示する。
@@ -127,6 +134,7 @@
         現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
         すべて初期値に戻る。初期値は次の通り。
           テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
+        Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
 
       ・Saveボタン
         現在編集中の楽譜情報をローカルストレージに保存する。具体的には楽譜データをJSONファイルとしてダウンロードする。
@@ -150,8 +158,7 @@
         <button id="initScore" type="button" class="okConfig makeScoreButton">
           Init.
         </button>
-    </div>
-    <div class="preferenceExec">
+
         <button id="saveScore" type="button" class="okConfig makeScoreButton">
           Save
         </button>
@@ -162,6 +169,8 @@
           Merge
         </button>
     </div>
+    <input type="file" id="loadScoreFile" accept="application/json" hidden>
+    <input type="file" id="mergeScoreFile" accept="application/json" hidden>
 
   </main>
   <footer>

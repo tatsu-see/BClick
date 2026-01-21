@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedBars = resetBars ? null : store.getScoreBars();
     return new ScoreData({
       timeSignature: savedTimeSignature || "4/4",
-      measures: savedMeasures || 2,
+      measures: savedMeasures || 8,
       progression: savedProgression || "",
       beatPatterns: savedBeatPatterns || null,
       bars: savedBars || null,
@@ -94,3 +94,4 @@ document.addEventListener("DOMContentLoaded", () => {
     closePageButton.addEventListener("click", closePage);
   }
 });
+

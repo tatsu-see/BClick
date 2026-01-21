@@ -431,15 +431,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const progressionRaw = codeProgressionInput ? codeProgressionInput.value : "";
       const trimmedProgression = progressionRaw.trim();
-      if (trimmedProgression.length === 0) {
-        const langPrefix = window.LANG_PRE_FIX
-          || ((navigator.language || navigator.userLanguage || "").startsWith("ja") ? "ja" : "en");
-        const message = langPrefix === "ja"
-          ? "コード進行を1つ以上入力してください。"
-          : "Please enter at least one chord.";
-        window.alert(message);
-        return;
-      }
       store.setScoreProgression(trimmedProgression);
 
       if (measuresRange) {
@@ -464,3 +455,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+

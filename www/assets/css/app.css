@@ -186,8 +186,13 @@ footer {
 }
 
 .preferenceExec {
-
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
   margin-bottom: 3px;
+  background-color: mintcream;
+  padding: 4px;
+  border-radius: 3px;
 }
 
 .scoreToggle {
@@ -389,6 +394,11 @@ footer {
   min-height: 28px;
   padding: 0 12px;
   font-size: 1.2em;
+  width: 100%;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .makeScoreButton:active {
@@ -468,3 +478,10 @@ footer {
   display: flex;
   justify-content: center;
 }
+
+
+
+
+
+
+
