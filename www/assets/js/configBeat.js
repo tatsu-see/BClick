@@ -14,6 +14,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveButton = document.getElementById("saveConfigBeat");
   const closePageButton = document.getElementById("closePage");
 
+  const initialSnapshot = {
+    tempo: store.getSettings(store.keys.Tempo),
+    clickCount: store.getSettings(store.keys.ClickCount),
+    countdown: store.getSettings(store.keys.Countdown),
+  };
+
+  /**
+   * Back時に保存前の設定へ戻す。
+   */
+  const restoreSnapshot = () => {
+    if (typeof initialSnapshot.tempo === "number" && Number.isFinite(initialSnapshot.tempo)) {
+      store.setTempo(initialSnapshot.tempo);
+    } else if (store.keys?.Tempo) {
+      store.removeSettings(store.keys.Tempo);
+    }
+
+    if (typeof initialSnapshot.clickCount === "number" && Number.isFinite(initialSnapshot.clickCount)) {
+      store.setClickCount(initialSnapshot.clickCount);
+    } else if (store.keys?.ClickCount) {
+      store.removeSettings(store.keys.ClickCount);
+    }
+
+    if (typeof initialSnapshot.countdown === "number" && Number.isFinite(initialSnapshot.countdown)) {
+      store.setCountInSec(initialSnapshot.countdown);
+    } else if (store.keys?.Countdown) {
+      store.removeSettings(store.keys.Countdown);
+    }
+  };
+
   const tempoDial = new TempoDialController({
     inputEl: tempoInput,
     dialEls: [tempoDialEl],
@@ -95,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (saveButton) {
     saveButton.addEventListener("click", () => {
+      restoreSnapshot();
       goBack();
     });
   }

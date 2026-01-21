@@ -36,6 +36,42 @@ document.addEventListener("DOMContentLoaded", () => {
     codeProgressionInput.value = savedProgression;
   }
 
+  const initialSnapshot = {
+    timeSignature: store.getSettings(store.keys.ScoreTimeSignature),
+    progression: store.getSettings(store.keys.ScoreProgression),
+    measures: store.getSettings(store.keys.ScoreMeasures),
+    beatPatterns: store.getSettings(store.keys.ScoreBeatPatterns),
+  };
+
+  /**
+   * Back時に保存前の設定へ戻す。
+   */
+  const restoreSnapshot = () => {
+    if (typeof initialSnapshot.timeSignature === "string" && initialSnapshot.timeSignature.length > 0) {
+      store.setScoreTimeSignature(initialSnapshot.timeSignature);
+    } else if (store.keys?.ScoreTimeSignature) {
+      store.removeSettings(store.keys.ScoreTimeSignature);
+    }
+
+    if (typeof initialSnapshot.progression === "string") {
+      store.setScoreProgression(initialSnapshot.progression);
+    } else if (store.keys?.ScoreProgression) {
+      store.removeSettings(store.keys.ScoreProgression);
+    }
+
+    if (typeof initialSnapshot.measures === "number" && Number.isFinite(initialSnapshot.measures)) {
+      store.setScoreMeasures(initialSnapshot.measures);
+    } else if (store.keys?.ScoreMeasures) {
+      store.removeSettings(store.keys.ScoreMeasures);
+    }
+
+    if (Array.isArray(initialSnapshot.beatPatterns)) {
+      store.setScoreBeatPatterns(initialSnapshot.beatPatterns);
+    } else if (store.keys?.ScoreBeatPatterns) {
+      store.removeSettings(store.keys.ScoreBeatPatterns);
+    }
+  };
+
   /**
    * 選択中の拍子を取得する。
    */
@@ -414,6 +450,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (saveButton) {
     saveButton.addEventListener("click", () => {
+      restoreSnapshot();
       goBack();
     });
   }

@@ -126,7 +126,10 @@ export const resetScoreSettings = (store) => {
 export const openEditScorePage = () => {
   const newTab = window.open("/editScore.html", "_blank", "noopener,noreferrer");
   if (!newTab) {
-    window.location.href = "/editScore.html";
+    // noop: iOS Safari などで window.open が null を返す場合がある。
+
+    //##Spec ここの noop は、ポップアップブロッカー対策です。
+    // windows の Edge は newTab がnullなので、ここに alert() は入れないで。
   }
 };
 
