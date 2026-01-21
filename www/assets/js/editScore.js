@@ -13,49 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentScoreData = null;
   let rhythmScore = null;
 
-  const initialSnapshot = {
-    timeSignature: store.getSettings(store.keys.ScoreTimeSignature),
-    progression: store.getSettings(store.keys.ScoreProgression),
-    measures: store.getSettings(store.keys.ScoreMeasures),
-    beatPatterns: store.getSettings(store.keys.ScoreBeatPatterns),
-    bars: store.getSettings(store.keys.ScoreBars),
-  };
-
-  /**
-   * Back時に保存前の設定へ戻す。
-   */
-  const restoreSnapshot = () => {
-    if (typeof initialSnapshot.timeSignature === "string" && initialSnapshot.timeSignature.length > 0) {
-      store.setScoreTimeSignature(initialSnapshot.timeSignature);
-    } else if (store.keys?.ScoreTimeSignature) {
-      store.removeSettings(store.keys.ScoreTimeSignature);
-    }
-
-    if (typeof initialSnapshot.progression === "string") {
-      store.setScoreProgression(initialSnapshot.progression);
-    } else if (store.keys?.ScoreProgression) {
-      store.removeSettings(store.keys.ScoreProgression);
-    }
-
-    if (typeof initialSnapshot.measures === "number" && Number.isFinite(initialSnapshot.measures)) {
-      store.setScoreMeasures(initialSnapshot.measures);
-    } else if (store.keys?.ScoreMeasures) {
-      store.removeSettings(store.keys.ScoreMeasures);
-    }
-
-    if (Array.isArray(initialSnapshot.beatPatterns)) {
-      store.setScoreBeatPatterns(initialSnapshot.beatPatterns);
-    } else if (store.keys?.ScoreBeatPatterns) {
-      store.removeSettings(store.keys.ScoreBeatPatterns);
-    }
-
-    if (Array.isArray(initialSnapshot.bars)) {
-      store.setScoreBars(initialSnapshot.bars);
-    } else if (store.keys?.ScoreBars) {
-      store.removeSettings(store.keys.ScoreBars);
-    }
-  };
-
   const loadSettings = (resetBars = false) => {
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
@@ -82,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
    * 戻るボタンの処理。(現状は未実装のため空にしておく。)
    */
   const handleBack = () => {
-    restoreSnapshot();
     closePage();
   };
 
