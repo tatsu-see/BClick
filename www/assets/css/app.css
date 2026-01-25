@@ -205,7 +205,7 @@ footer {
 .scoreToggle input {
   -webkit-appearance: none;
   appearance: none;
-  width: 44px;
+  width: 55px;
   height: 20px;
   background: #d6efe0;
   border-radius: 999px;
@@ -254,7 +254,7 @@ footer {
 }
 
 .scoreToggle input:checked::before {
-  transform: translate(22px, -50%);
+  transform: translate(33px, -50%);
 }
 
 .scoreToggle input:focus-visible {
