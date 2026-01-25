@@ -24,9 +24,19 @@
 }
 
 .tempoStepSwitch {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 10px;
+  width: 100%;
+}
+
+.tempoInputNote {
+  justify-self: end;
+}
+
+.tempoInputLarge {
+  justify-self: center;
 }
 
 .tempoStepButton {

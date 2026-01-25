@@ -215,6 +215,18 @@ footer {
   transition: background-color 0.2s ease;
 }
 
+.scoreToggle input::after {
+  content: "OFF";
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  font-size: 0.7em;
+  font-weight: 700;
+  color: #1e7a4f;
+  letter-spacing: 0.2px;
+}
+
 .scoreToggle input::before {
   content: "";
   position: absolute;
@@ -232,6 +244,13 @@ footer {
 
 .scoreToggle input:checked {
   background: #bfe8d5;
+}
+
+.scoreToggle input:checked::after {
+  content: "ON";
+  left: 6px;
+  right: auto;
+  color: #0f6a3d;
 }
 
 .scoreToggle input:checked::before {

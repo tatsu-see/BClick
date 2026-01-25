@@ -48,3 +48,22 @@ main {
   left: auto;
   right: 6px;
 }
+
+.tempoDialToggleLabel {
+  font-size: 0.7em;
+}
+
+.tempoDialToggleControl {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scoreToggle input#tempoDialToggle::after {
+  content: "OFF";
+}
+
+.scoreToggle input#tempoDialToggle:checked::after {
+  content: "DIAL";
+  right: 18px;
+  color: #0f6a3d;
+}
