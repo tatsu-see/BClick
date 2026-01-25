@@ -54,15 +54,14 @@
 
     <div id="beatPreference" class="tempoControl tempoControlStack">
       <div class="tempoValueGroup tempoValueTop">
-        <div class="tempoStepSwitch" role="group" aria-label="テンポ変更モード">
-          <button type="button" id="tempoStepCoarse" class="tempoStepButton" data-step="10" aria-pressed="false">±10</button>
-          ♪=
+        <div class="tempoStepSwitch">
+          <span class="tempoInputNote">♪=</span>
           <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric">
-          <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
         </div>
       </div>
 
-      <div class="tempoDialRow">
+      <div class="tempoDialRow" role="group" aria-label="テンポ変更モード">
+        <button type="button" id="tempoStepCoarse" class="tempoStepButton" data-step="10" aria-pressed="false">±10</button>
         <button type="button"
           class="tempoDial"
           id="tempoDial"
@@ -74,6 +73,7 @@
           <span class="tempoDialLabel">1</span>
           <span class="tempoDialSide tempoDialPlus" aria-hidden="true">+</span>
         </button>
+        <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
       </div>
     </div>
 

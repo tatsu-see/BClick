@@ -28,8 +28,9 @@
   <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
 
   <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="/assets/css/tempoDial.css">
   <link rel="stylesheet" href="/assets/css/click.css">
-  <link rel="stylesheet" href="/assets/css/showScore.css">
+  <link rel="stylesheet" href="/assets/css/editScore.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
@@ -61,7 +62,55 @@
   </header>
   <main>
 
-    <!-- 後で、ここに BPMダイアル (♪=) 30～240 を用意する -->
+    <!-- ここに テンポ（30～240）のBPMダイアルを用意する
+    ・クリック音の再生中にテンポを変更すると、クリック音の再生スピードが、変更したテンポになる。
+    -->
+    <div class="preferenceTitle">
+      <span class="material-symbols-outlined" aria-hidden="true">speed</span>
+      テンポ（30～240）
+    </div>
+
+    <div id="beatPreference" class="tempoControl tempoControlStack">
+      <div class="tempoValueGroup tempoValueTop">
+        <div class="tempoStepSwitch">
+          <span class="tempoInputNote">♪=</span>
+          <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric">
+
+          <!--Spec editScore.htmlのテンポの特殊仕様
+          ・ここに <div class="tempoDialRow"> の表示をON/OFF切り替えられるスイッチを用意する。初期値はOFFで表示しない。
+          ・スイッチの見た目は、index.html の <input type="checkbox" id="scoreToggle"> と同じ見た目。
+          ・文字は OFF と DIAL （ONの代わり） を表示して。ON場合は少し濃い緑色を使う。
+          -->
+          <div class="preferenceValue preferenceValueCentered tempoDialToggleControl">
+            <label class="tempoDialToggleLabel" for="tempoDialToggle">ダイヤル</label>
+            <label class="scoreToggle">
+              <input type="checkbox" id="tempoDialToggle" aria-label="テンポダイヤルの表示切り替え">
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="tempoDialRow" id="tempoDialRow" role="group" aria-label="テンポ変更モード">
+        <button type="button" id="tempoStepCoarse" class="tempoStepButton" data-step="10" aria-pressed="false">±10</button>
+        <button type="button"
+          class="tempoDial"
+          id="tempoDial"
+          data-step="10"
+          data-degrees-per-step="36"
+          aria-label="テンポを10ずつ変更">
+          <span class="tempoDialSide tempoDialMinus" aria-hidden="true">-</span>
+          <span class="tempoDialIndicator" aria-hidden="true"></span>
+          <span class="tempoDialLabel">10</span>
+          <span class="tempoDialSide tempoDialPlus" aria-hidden="true">+</span>
+        </button>
+        <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
+      </div>
+    </div>
+
+    <div class="preferenceTitle">
+      Play
+    </div>
 
     <div id="playClicking">
       <button id="startClick" type="button" aria-label="再生">
@@ -102,4 +151,3 @@
 
 </body>
 </html>
-
