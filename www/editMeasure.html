@@ -51,98 +51,81 @@
   <main>
     <div id="scorePreference">
 
-      <div class="preferenceName">
-        <span class="lang" data-lang="en">Code</span>
-        <span class="lang" data-lang="ja">コード</span>
-        :
+      <!--Spec ここに１小節を編集するパラメータを用意する。
+      ・基本的には、configScore.html のクオリティ、ルート、進行、リズム、の設定入力項目がある。
+      ・少し違うのは「進行」は Back のボタンを用意する。（Init. と ランダムは不要）
+      ・リズムの設定項目は、選択した小節が 4/4 なら、４行の設定項目が現れ、3/4 なら３行の設定項目が現れます。
+      -->
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Quality</span>
+        <span class="lang" data-lang="ja">クオリティ</span>
       </div>
 
-      <div class="preferenceValue chipGroupColumn">
-
-        <div class="chipGroupToggleRow" role="group" aria-label="コード区分の表示切り替え">
-          <label class="chipGroupTitle">
-            <input type="checkbox" id="toggleMajorChords" checked>
-            メジャー
-          </label>
-          <label class="chipGroupTitle">
-            <input type="checkbox" id="toggleMinorChords" checked>
-            マイナー
-          </label>
-        </div>
-
-        <div class="chipGroupSectionRow" id="majorChordSection" role="group" aria-label="使用コードの選択（メジャー）">
+      <div class="preferenceValue preferenceValueCentered">
+        <div class="chipGroupSectionRow" role="group" aria-label="クオリティの選択">
           <div class="chipGroup">
-            <button type="button" class="chipButton" data-chord="C">C</button>
-            <button type="button" class="chipButton" data-chord="D">D</button>
-            <button type="button" class="chipButton" data-chord="E">E</button>
-            <button type="button" class="chipButton" data-chord="F">F</button>
-            <button type="button" class="chipButton" data-chord="G">G</button>
-            <button type="button" class="chipButton" data-chord="A">A</button>
-            <button type="button" class="chipButton" data-chord="B">B</button>
+            <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
+            <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
           </div>
         </div>
+      </div>
 
-        <div class="chipGroupSectionRow" id="minorChordSection" role="group" aria-label="使用コードの選択（マイナー）">
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Root</span>
+        <span class="lang" data-lang="ja">ルート</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <div class="chipGroupSectionRow" role="group" aria-label="ルートの選択">
           <div class="chipGroup">
-            <button type="button" class="chipButton" data-chord="Cm">Cm</button>
-            <button type="button" class="chipButton" data-chord="Dm">Dm</button>
-            <button type="button" class="chipButton" data-chord="Em">Em</button>
-            <button type="button" class="chipButton" data-chord="Fm">Fm</button>
-            <button type="button" class="chipButton" data-chord="Gm">Gm</button>
-            <button type="button" class="chipButton" data-chord="Am">Am</button>
-            <button type="button" class="chipButton" data-chord="Bm">Bm</button>
+            <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
+            <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
+            <button type="button" class="chipButton chordRoot" data-root="E" aria-pressed="false">E</button>
+            <button type="button" class="chipButton chordRoot" data-root="F" aria-pressed="false">F</button>
+            <button type="button" class="chipButton chordRoot" data-root="G" aria-pressed="false">G</button>
+            <button type="button" class="chipButton chordRoot" data-root="A" aria-pressed="false">A</button>
+            <button type="button" class="chipButton chordRoot" data-root="B" aria-pressed="false">B</button>
           </div>
         </div>
-
       </div>
 
-      <div class="preferenceName">
-        リズム:
+      <div class="preferenceTitle">
+        進行
       </div>
 
-      <div class="preferenceValue rhythmBeatValue" role="group" aria-label="リズムの選択">
-        <div id="rhythmBeatList" class="rhythmBeatList"></div>
-        <template id="rhythmBeatTemplate">
-          <div class="rhythmBeatRow">
-            <div class="rhythmBeatLabel"></div>
-            <select class="rhythmBeatSelect">
-              <option value="quarter">4分音符</option>
-              <option value="restQuarter">4分休符</option>
-              <option value="eighths">8分+8分</option>
-              <option value="eighthRest">8分+休符</option>
-              <option value="restEighth">休符+8分</option>
-            </select>
+      <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="進行の入力">
+        <input type="text" id="codeProgression" value="" inputmode="latin">
+
+        <div class="chipGroupActions" role="group" aria-label="進行の編集">
+          <button type="button" id="clearCodeProgression">
+            <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+            Init.
+          </button>
+          <button type="button" id="backCodeProgression">
+            <span class="material-symbols-outlined" aria-hidden="true">undo</span>
+            Back.
+          </button>
+        </div>
+      </div>
+
+      <div class="preferenceTitle">
+        リズム
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="リズムの選択">
+        <div class="rhythmPatternTable" role="table" aria-label="リズムパターン">
+          <div class="rhythmPatternHeader" role="row">
+            <div class="rhythmPatternCell rhythmPatternIndex" role="columnheader"></div>
+            <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">分割</div>
+            <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">パターン</div>
+            <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">プレビュー</div>
+            <div class="rhythmPatternCell rhythmPatternChord" role="columnheader">コード</div>
           </div>
-        </template>
-      </div>
-
-      <div class="preferenceName" aria-label="編集中の小節をコピーする数">
-        コピー:
-      </div>
-
-      <div class="preferenceValue" role="group" aria-label="編集中の小節をコピーする数の入力">
-        <button type="button" class="bpmButton" id="measuresDown">-1</button>
-        <select id="measures" name="measures">
-          <option value="del">Del.</option>
-          <option value="0" selected>0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
-        </select>
-        <button type="button" class="bpmButton" id="measuresUp">+1</button>
+          <div id="rhythmPatternBody" class="rhythmPatternBody"></div>
+        </div>
       </div>
 
     </div>
-
   </main>
 
   <footer>

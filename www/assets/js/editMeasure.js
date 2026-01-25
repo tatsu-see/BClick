@@ -1,13 +1,13 @@
 
 import { ConfigStore } from "./store.js";
 import ScoreData from "./ScoreData.js";
+import RhythmPreviewRenderer from "./RhythmPreviewRenderer.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const doneButton = document.getElementById("closePage");
   const backButton = document.getElementById("backEditMeasure");
   const chordButtons = Array.from(document.querySelectorAll(".chipButton"));
-  const rhythmBeatList = document.getElementById("rhythmBeatList");
-  const rhythmBeatTemplate = document.getElementById("rhythmBeatTemplate");
+  const rhythmPatternBody = document.getElementById("rhythmPatternBody");
   const majorChordSection = document.getElementById("majorChordSection");
   const minorChordSection = document.getElementById("minorChordSection");
   const toggleMajorChords = document.getElementById("toggleMajorChords");
@@ -45,12 +45,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const numerator = Number.parseInt(numeratorRaw, 10);
   const beatCount = Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
 
-  const beatPatternMap = {
-    quarter: ["4"],
-    restQuarter: ["r4"],
-    eighths: ["8", "8"],
-    eighthRest: ["8", "r8"],
-    restEighth: ["r8", "8"],
+  /**
+   * 音符トークンの長さを拍に換算する。
+   * @param {string} value
+   * @returns {number}
+   */
+  const getTokenLength = (value) => {
+    if (value.endsWith("16")) return 0.25;
+    if (value.endsWith("8")) return 0.5;
+    if (value.endsWith("4")) return 1;
+    return 0;
   };
 
   const updateSelection = (value) => {
@@ -96,52 +100,233 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateChordSections();
 
-  const getBeatPattern = (rhythm, offset) => {
-    const first = rhythm[offset];
-    if (!first) return "quarter";
-    if (first === "4") return "quarter";
-    if (first === "r4") return "restQuarter";
-    const second = rhythm[offset + 1];
-    if (first === "8" && second === "8") return "eighths";
-    if (first === "8" && second === "r8") return "eighthRest";
-    if (first === "r8" && second === "8") return "restEighth";
-    return "quarter";
+  /**
+   * リズム配列を拍ごとの配列に分割する。
+   * @param {string[]} rhythm
+   * @returns {string[][]}
+   */
+  const splitRhythmByBeat = (rhythm) => {
+    const beats = [];
+    let index = 0;
+    for (let beatIndex = 0; beatIndex < beatCount; beatIndex += 1) {
+      let total = 0;
+      const tokens = [];
+      while (index < rhythm.length && total < 1) {
+        const token = rhythm[index];
+        const length = getTokenLength(token);
+        if (length > 0) {
+          tokens.push(token);
+          total += length;
+        }
+        index += 1;
+      }
+      beats.push(tokens.length > 0 ? tokens : ["4"]);
+    }
+    return beats;
   };
 
-  const buildBeatPatterns = () => {
-    const patterns = [];
-    let offset = 0;
-    for (let i = 0; i < beatCount; i += 1) {
-      const pattern = getBeatPattern(currentRhythm, offset);
-      patterns.push(pattern);
-      const patternDef = beatPatternMap[pattern];
-      offset += patternDef ? patternDef.length : 1;
-    }
-    return patterns;
+  /**
+   * リズム配列をUI用のパターンに変換する。
+   * @param {string[]} rhythm
+   * @returns {{division: number, pattern: string[]}[]}
+   */
+  const buildBeatPatternsFromRhythm = (rhythm) => {
+    const beats = splitRhythmByBeat(rhythm);
+    return beats.map((tokens) => {
+      const has16 = tokens.some((token) => token.endsWith("16"));
+      const has8 = tokens.some((token) => token.endsWith("8"));
+      const division = has16 ? 16 : has8 ? 8 : 4;
+      const patternLength = division === 4 ? 1 : division === 8 ? 2 : 4;
+      const pattern = [];
+
+      for (let i = 0; i < patternLength; i += 1) {
+        const token = tokens[i];
+        if (!token) {
+          pattern.push("note");
+          continue;
+        }
+        if (token.startsWith("r")) {
+          pattern.push("rest");
+          continue;
+        }
+        if (token.startsWith("t")) {
+          pattern.push(i === 0 ? "tieNote" : "tie");
+          continue;
+        }
+        pattern.push("note");
+      }
+
+      if (division !== 16) {
+        return {
+          division,
+          pattern: pattern.map((value, index) => {
+            if (value === "rest") return "rest";
+            if (value === "tieNote" && index === 0) return "tieNote";
+            return "note";
+          }),
+        };
+      }
+
+      if (pattern[0] === "tie") {
+        pattern[0] = "note";
+      }
+
+      return { division, pattern };
+    });
+  };
+
+  /**
+   * リズムパターンからABCJS用のトークンを生成する。
+   * @param {{division: number, pattern: string[]}} patternItem
+   * @returns {{type: string, length: number}[]}
+   */
+  const buildAbcTokens = (patternItem) => {
+    const division = patternItem.division;
+    const pattern = Array.isArray(patternItem.pattern) ? patternItem.pattern : ["note"];
+    const unit = division === 4 ? 4 : division === 8 ? 2 : 1;
+    const tokens = [];
+    pattern.forEach((value, index) => {
+      if (value === "tie") {
+        const lastToken = tokens[tokens.length - 1];
+        if (lastToken && lastToken.type === "note") {
+          lastToken.length += unit;
+        } else {
+          const restToken = lastToken && lastToken.type === "rest"
+            ? lastToken
+            : null;
+          if (restToken) {
+            restToken.length += unit;
+          } else {
+            tokens.push({ type: "rest", length: unit });
+          }
+        }
+        return;
+      }
+      if (value === "tieNote" && index === 0) {
+        tokens.push({ type: "note", length: unit });
+        return;
+      }
+      const type = value === "rest" ? "rest" : "note";
+      tokens.push({ type, length: unit });
+    });
+    return tokens;
   };
 
   const renderBeatSelectors = () => {
-    if (!rhythmBeatList || !rhythmBeatTemplate) return;
-    rhythmBeatList.textContent = "";
-    selectedBeatPatterns = buildBeatPatterns();
-    for (let i = 0; i < beatCount; i += 1) {
-      const fragment = rhythmBeatTemplate.content.cloneNode(true);
-      const row = fragment.querySelector(".rhythmBeatRow");
-      const label = fragment.querySelector(".rhythmBeatLabel");
-      const select = fragment.querySelector(".rhythmBeatSelect");
-      if (!row || !label || !select) continue;
-      label.textContent = `${i + 1}`;
-      const selectedValue = selectedBeatPatterns[i];
-      Array.from(select.options).forEach((option) => {
-        option.selected = option.value === selectedValue;
+    if (!rhythmPatternBody) return;
+    rhythmPatternBody.textContent = "";
+    selectedBeatPatterns = buildBeatPatternsFromRhythm(currentRhythm);
+
+    selectedBeatPatterns.forEach((patternItem, index) => {
+      const row = document.createElement("div");
+      row.className = "rhythmPatternRow";
+      row.setAttribute("role", "row");
+
+      const indexCell = document.createElement("div");
+      indexCell.className = "rhythmPatternCell rhythmPatternIndex";
+      indexCell.textContent = `${index + 1}`;
+
+      const divisionCell = document.createElement("div");
+      divisionCell.className = "rhythmPatternCell rhythmPatternDivision";
+      const divisionSelect = document.createElement("select");
+      divisionSelect.className = "rhythmDivisionSelect";
+      [4, 8, 16].forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value.toString();
+        option.textContent = value.toString();
+        option.selected = patternItem.division === value;
+        divisionSelect.appendChild(option);
+      });
+      divisionCell.appendChild(divisionSelect);
+
+      const patternCell = document.createElement("div");
+      patternCell.className = "rhythmPatternCell rhythmPatternSymbols";
+
+      const previewCell = document.createElement("div");
+      previewCell.className = "rhythmPatternCell rhythmPatternPreview";
+      const preview = document.createElement("div");
+      preview.className = "rhythmPreview";
+      previewCell.appendChild(preview);
+      const previewRenderer = new RhythmPreviewRenderer(
+        preview,
+        () => scoreData.timeSignature,
+        buildAbcTokens,
+      );
+
+      const rebuildPatternSelectors = () => {
+        patternCell.textContent = "";
+        const patternLength = patternItem.division === 4 ? 1 : patternItem.division === 8 ? 2 : 4;
+        while (patternItem.pattern.length < patternLength) {
+          patternItem.pattern.push("note");
+        }
+        if (patternItem.pattern.length > patternLength) {
+          patternItem.pattern = patternItem.pattern.slice(0, patternLength);
+        }
+        patternItem.pattern = patternItem.pattern.map((value, index) => {
+          if (value === "rest" || value === "tie") return value;
+          if (value === "tieNote" && index === 0) return value;
+          return "note";
+        });
+        if (patternItem.division !== 16) {
+          patternItem.pattern = patternItem.pattern.map((value, index) => {
+            if (value === "rest") return "rest";
+            if (value === "tieNote" && index === 0) return "tieNote";
+            return "note";
+          });
+        }
+        if (patternItem.pattern[0] === "tie") {
+          patternItem.pattern[0] = "note";
+        }
+
+        for (let subIndex = 0; subIndex < patternLength; subIndex += 1) {
+          const value = patternItem.pattern[subIndex] || "note";
+          const symbolSelect = document.createElement("select");
+          symbolSelect.className = "rhythmSymbolSelect";
+          const options = [
+            { value: "note", label: "●" },
+            { value: "rest", label: "○" },
+          ];
+          if (subIndex === 0) {
+            options.push({ value: "tieNote", label: "-●" });
+          }
+          if (patternItem.division === 16 && subIndex > 0) {
+            options.push({ value: "tie", label: "－" });
+          }
+          options.forEach((optionItem) => {
+            const option = document.createElement("option");
+            option.value = optionItem.value;
+            option.textContent = optionItem.label;
+            option.selected = value === optionItem.value;
+            symbolSelect.appendChild(option);
+          });
+          symbolSelect.addEventListener("change", () => {
+            patternItem.pattern[subIndex] = symbolSelect.value;
+            if (patternItem.pattern[0] === "tie") {
+              patternItem.pattern[0] = "note";
+              symbolSelect.value = patternItem.pattern[subIndex];
+            }
+            previewRenderer.render(patternItem);
+          });
+          patternCell.appendChild(symbolSelect);
+        }
+
+        previewRenderer.render(patternItem);
+      };
+
+      divisionSelect.addEventListener("change", () => {
+        const parsed = Number.parseInt(divisionSelect.value, 10);
+        patternItem.division = [4, 8, 16].includes(parsed) ? parsed : 4;
+        rebuildPatternSelectors();
       });
 
-      select.addEventListener("change", () => {
-        selectedBeatPatterns[i] = select.value;
-      });
+      rebuildPatternSelectors();
 
-      rhythmBeatList.appendChild(fragment);
-    }
+      row.appendChild(indexCell);
+      row.appendChild(divisionCell);
+      row.appendChild(patternCell);
+      row.appendChild(previewCell);
+      rhythmPatternBody.appendChild(row);
+    });
   };
 
   renderBeatSelectors();
@@ -195,11 +380,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (targetBar) {
         const nextRhythm = [];
-        selectedBeatPatterns.forEach((patternId) => {
-          const pattern = beatPatternMap[patternId];
-          if (pattern) {
-            nextRhythm.push(...pattern);
-          }
+        selectedBeatPatterns.forEach((patternItem) => {
+          nextRhythm.push(...scoreData.buildRhythmFromPattern(patternItem));
         });
         targetBar.rhythm = nextRhythm;
       }
