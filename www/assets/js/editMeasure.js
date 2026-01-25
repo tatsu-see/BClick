@@ -3,8 +3,8 @@ import { ConfigStore } from "./store.js";
 import ScoreData from "./ScoreData.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const closePageButton = document.getElementById("closePage");
-  const saveButton = document.getElementById("saveEditMeasure");
+  const doneButton = document.getElementById("closePage");
+  const backButton = document.getElementById("backEditMeasure");
   const chordButtons = Array.from(document.querySelectorAll(".chipButton"));
   const rhythmBeatList = document.getElementById("rhythmBeatList");
   const rhythmBeatTemplate = document.getElementById("rhythmBeatTemplate");
@@ -180,8 +180,15 @@ document.addEventListener("DOMContentLoaded", () => {
     measuresUpButton.addEventListener("click", () => bumpSelectValue(measuresInput, 1));
   }
 
-  if (saveButton) {
-    saveButton.addEventListener("click", () => {
+  const goBack = () => {
+    window.close();
+    if (!window.closed) {
+      window.location.href = "/";
+    }
+  };
+
+  if (doneButton) {
+    doneButton.addEventListener("click", () => {
       const targetBar = bars[safeBarIndex];
       if (targetBar && selectedChord) {
         targetBar.chord = selectedChord;
@@ -209,10 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         store.setScoreBars(bars);
         store.setScoreMeasures(bars.length);
-        window.close();
-        if (!window.closed) {
-          window.location.href = "/";
-        }
+        goBack();
         return;
       }
 
@@ -226,19 +230,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       store.setScoreBars(bars);
       store.setScoreMeasures(bars.length);
-      window.close();
-      if (!window.closed) {
-        window.location.href = "/";
-      }
+      goBack();
     });
   }
 
-  if (closePageButton) {
-    closePageButton.addEventListener("click", () => {
-      window.close();
-      if (!window.closed) {
-        window.location.href = "/";
-      }
+  if (backButton) {
+    backButton.addEventListener("click", () => {
+      goBack();
     });
   }
 });

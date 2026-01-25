@@ -115,7 +115,8 @@ header {
 #saveConfigScore,
 #saveCodeDiagram,
 #saveShowScore,
-#backShowScore {
+#backShowScore,
+#backEditMeasure {
   position: absolute;
   left: 6px;
   top: 50%;

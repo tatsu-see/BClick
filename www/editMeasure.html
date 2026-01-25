@@ -35,10 +35,18 @@
   <script type="module" src="/assets/js/editMeasure.js"></script>
 </head>
 
+<!--Spec 作成した楽譜の１小節単位の編集画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+-->
+
 <body>
   <header>
+    <button type="button" id="backEditMeasure" class="okConfig" aria-label="戻る">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
     <div id="title">B.Click</div>
-    <button id="closePage" type="button" aria-label="閉じる">×</button>
+    <button id="closePage" type="button" aria-label="保存して戻る">Done</button>
   </header>
   <main>
     <div id="scorePreference">
@@ -133,10 +141,6 @@
         <button type="button" class="bpmButton" id="measuresUp">+1</button>
       </div>
 
-    </div>
-
-    <div id="saveButtonContainer">
-        <button type="button" id="saveEditMeasure" class="okConfig">OK</button>
     </div>
 
   </main>

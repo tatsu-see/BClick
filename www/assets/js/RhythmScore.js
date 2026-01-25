@@ -240,7 +240,9 @@ class RhythmScore {
         badge.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
-          window.location.href = `/editMeasure.html?bar=${resolvedIndex}`;
+
+          // 小節編集画面を表示する。
+          window.open(`/editMeasure.html?bar=${resolvedIndex}`, "_blank", "noopener,noreferrer");
         });
         const doubledHeight = entry.height * 2;
         const expandedWidth = entry.width * 2.5;
