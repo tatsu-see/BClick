@@ -33,10 +33,14 @@
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <script src="/assets/lib/Language.js"></script>
+  <script type="module" src="/assets/lib/Language.js"></script>
 
   <script type="module" src="/assets/js/configBeat.js"></script>
 </head>
+
+<!--Spec クリック音に関する設定画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+-->
 
 <body>
   <header>
@@ -78,22 +82,35 @@
     </div>
 
     <div class="preferenceTitle">
-      クリック数（1〜8）
+      拍数（1〜8）
     </div>
 
-      <div class="preferenceValue preferenceValueCentered">
-        <input type="range" id="clickCountRange" min="1" max="8" step="1" value="4">
-        <output id="clickCountValue" for="clickCountRange">4</output>
-      </div>
+    <div class="preferenceValue preferenceValueCentered">
+      <input type="range" id="clickCountRange" min="1" max="8" step="1" value="4">
+      <output id="clickCountValue" for="clickCountRange">4</output>
+    </div>
 
     <div class="preferenceTitle">
       カウントイン（0〜10）
     </div>
 
-      <div class="preferenceValue preferenceValueCentered">
-        <input type="range" id="countdownRange" min="0" max="10" step="1" value="4">
-        <output id="countdownValue" for="countdownRange">4</output>
-      </div>
+    <div class="preferenceValue preferenceValueCentered">
+      <input type="range" id="countdownRange" min="0" max="10" step="1" value="4">
+      <output id="countdownValue" for="countdownRange">4</output>
+    </div>
+
+    <!--Spec クリック音の音量を設定する
+    ・ユーザは 0-10 レベルで選択するが、内部的には0.0-2.0で設定する。
+    ・設定の見た目は、拍数やカウントインと同じCSSにする。
+    -->
+    <div class="preferenceTitle">
+      ボリューム（0〜10）
+    </div>
+
+    <div class="preferenceValue preferenceValueCentered">
+      <input type="range" id="clickVolumeRange" min="0" max="10" step="1" value="5">
+      <output id="clickVolumeValue" for="clickVolumeRange">5</output>
+    </div>
 
   </main>
 

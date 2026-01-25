@@ -11,6 +11,7 @@ export class ConfigStore extends LocalStore {
       Tempo: 'bclick.tempo',
       ClickCount: 'bclick.clickCount',
       Countdown: 'bclick.countdown',
+      ClickVolume: 'bclick.clickVolume',
       ScoreTimeSignature: 'bclick.score.timeSignature',
       ScoreProgression: 'bclick.score.progression',
       ScoreMeasures: 'bclick.score.measures',
@@ -77,6 +78,21 @@ export class ConfigStore extends LocalStore {
     const value = parseInt(inputEl.value, 10);
     if (Number.isNaN(value) || value < 0) return;
     this.setClickCount(value);
+  }
+
+  /**
+   * クリック音量のI/O
+   */
+  getClickVolume() {
+    const saved = this.getNumberSetting(this.keys.ClickVolume);
+    return typeof saved === 'number' && saved >= 0 ? saved : null;
+  }
+
+  setClickVolume(value) {
+    if (!Number.isFinite(value)) return;
+    const clamped = Math.min(2, Math.max(0, value));
+    const rounded = Math.round(clamped * 10) / 10;
+    this.saveSettings(this.keys.ClickVolume, rounded);
   }
 
   /**

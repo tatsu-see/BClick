@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let cycleIndex = 0;
   let currentBeatMs = null;
   let isPaused = false;
+  let currentClickVolume = null;
 
   // 値の読み取りユーティリティ
   const getNumberValue = (value, fallback) => {
@@ -67,6 +68,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const storedValue = store.getCountInSec();
     return typeof storedValue === "number" && storedValue >= 0 ? storedValue : 4;
+  };
+
+  /**
+   * 保存済みのクリック音量(0.0-2.0)を取得する。
+   * @returns {number}
+   */
+  const getClickVolume = () => {
+    const storedValue = store.getClickVolume();
+    if (typeof storedValue === "number" && storedValue >= 0) {
+      return Math.min(2, storedValue);
+    }
+    return 1.0;
+  };
+
+  /**
+   * 端末別の最大音量に合わせて補正する。
+   * @param {number} baseVolume
+   * @returns {number}
+   */
+  const toDeviceVolume = (baseVolume) => {
+    const clamped = Math.min(2, Math.max(0, baseVolume));
+    const maxVolume = getMaxVolume();
+    return (clamped / 2) * maxVolume;
   };
 
   // UI更新
@@ -136,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // 1周ごとに次のコードへスクロールする。
         scrollToNextChord();
       }
-      clickSound();
+      clickSound(currentClickVolume ?? undefined);
     }, currentBeatMs);
   };
 
@@ -210,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cycleBoxes.forEach((box) => box.classList.remove("active"));
     cycleBoxes[0].classList.add("active");
     scrollToNextChord();
-    clickSound();
+    clickSound(currentClickVolume ?? undefined);
 
     startCycleTimer();
   };
@@ -249,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentBeatMs = beatMs;
     const clickCount = getClickCount();
     let countdown = getCountdown();
-    const maxVolume = getMaxVolume();
+    currentClickVolume = toDeviceVolume(getClickVolume());
 
     renderClickBoxes(clickCount);
     isRunning = true;
@@ -268,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCountdownDisplay(countdown);
     // 初回の音切れ回避用のウォームアップ
     clickSound(0.02, "A4");
-    clickSound(maxVolume / countdown, "A4");
+    clickSound(currentClickVolume / countdown, "A4");
 
     countdownTimerId = setInterval(() => {
       countdown -= 1;
@@ -282,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       updateCountdownDisplay(countdown);
-      clickSound(maxVolume / countdown, "A4");
+      clickSound(currentClickVolume / countdown, "A4");
     }, beatMs);
   };
 
