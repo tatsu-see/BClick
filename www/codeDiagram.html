@@ -35,6 +35,10 @@
   <script type="module" src="/assets/js/codeDiagram.js"></script>
 </head>
 
+<!--Spec ギターのコードを表示する画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+-->
+
 <body>
   <header>
     <button type="button" id="saveCodeDiagram" class="okConfig" aria-label="戻る">
@@ -46,10 +50,12 @@
   </header>
   <main>
     <div id="preference">
+
       <div class="preferenceTitle">
         <span class="lang" data-lang="en">Quality</span>
         <span class="lang" data-lang="ja">クオリティ</span>
       </div>
+
       <div class="preferenceValue preferenceValueCentered">
         <div class="chipGroupSectionRow" role="group" aria-label="クオリティの選択">
           <div class="chipGroup">
@@ -58,10 +64,12 @@
           </div>
         </div>
       </div>
+
       <div class="preferenceTitle">
         <span class="lang" data-lang="en">Root</span>
         <span class="lang" data-lang="ja">ルート</span>
       </div>
+
       <div class="preferenceValue preferenceValueCentered">
         <div class="chipGroupSectionRow" role="group" aria-label="ルートの選択">
           <div class="chipGroup">

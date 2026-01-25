@@ -79,8 +79,8 @@
       </div>
 
       <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Code</span>
-        <span class="lang" data-lang="ja">コード</span>
+        <span class="lang" data-lang="en">Quality</span>
+        <span class="lang" data-lang="ja">クオリティ</span>
       </div>
 
       <div class="preferenceValue preferenceValueCentered chipGroupColumn">
@@ -90,19 +90,23 @@
             <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
           </div>
         </div>
+      </div>
 
-        <div class="chipGroupSectionRow" role="group" aria-label="ルートの選択">
-          <div class="chipGroup">
-            <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
-            <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
-            <button type="button" class="chipButton chordRoot" data-root="E" aria-pressed="false">E</button>
-            <button type="button" class="chipButton chordRoot" data-root="F" aria-pressed="false">F</button>
-            <button type="button" class="chipButton chordRoot" data-root="G" aria-pressed="false">G</button>
-            <button type="button" class="chipButton chordRoot" data-root="A" aria-pressed="false">A</button>
-            <button type="button" class="chipButton chordRoot" data-root="B" aria-pressed="false">B</button>
-          </div>
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Root</span>
+        <span class="lang" data-lang="ja">ルート</span>
+      </div>
+
+      <div class="chipGroupSectionRow" role="group" aria-label="ルートの選択">
+        <div class="chipGroup">
+          <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
+          <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
+          <button type="button" class="chipButton chordRoot" data-root="E" aria-pressed="false">E</button>
+          <button type="button" class="chipButton chordRoot" data-root="F" aria-pressed="false">F</button>
+          <button type="button" class="chipButton chordRoot" data-root="G" aria-pressed="false">G</button>
+          <button type="button" class="chipButton chordRoot" data-root="A" aria-pressed="false">A</button>
+          <button type="button" class="chipButton chordRoot" data-root="B" aria-pressed="false">B</button>
         </div>
-
       </div>
 
       <div class="preferenceTitle">
@@ -189,6 +193,7 @@
       <div class="preferenceValue preferenceValueCentered" role="group" aria-label="小節数の入力">
         <input type="range" id="measuresRange" min="1" max="12" step="1" value="8">
         <output id="measuresValue" for="measuresRange">8</output>
+      </div>
       </div>
 
     </div>
