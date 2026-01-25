@@ -41,6 +41,12 @@
   <script type="module" src="/assets/js/editScore.js"></script>
 </head>
 
+<!--Spec 作成した楽譜を編集やクリック音の再生をする画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+・１小節ずつ編集する機能もある。
+・クリック音の再生中に、BPMを変更することでクリック音の速度を変更可能。
+-->
+
 <body>
   <header>
     <button type="button" id="backShowScore" class="okConfig" aria-label="戻る">
@@ -54,6 +60,9 @@
     -->
   </header>
   <main>
+
+    <!-- 後で、ここに BPMダイアル (♪=) 30～240 を用意する -->
+
     <div id="playClicking">
       <button id="startClick" type="button" aria-label="再生">
         <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
