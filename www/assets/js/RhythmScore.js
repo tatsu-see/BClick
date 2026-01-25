@@ -93,17 +93,11 @@ class RhythmScore {
     for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
       const notes = [];
       const barData = barSource ? barSource[barIndex] : null;
-      const barChord = barData && typeof barData.chord === "string"
-        ? barData.chord
-        : (this.progression.length > 0
-          ? this.progression[barIndex % this.progression.length]
-          : this.chord);
       const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
         ? barData.rhythm
         : Array.from({ length: beats }, () => "4");
       let lastNoteIndex = null;
       rhythm.forEach((value, index) => {
-        const hasChordLabel = index === 0 && barChord;
         const duration = value.endsWith("16") ? "16" : value.endsWith("8") ? "8" : "4";
         const isRest = value.startsWith("r");
         const isTie = value.startsWith("t");
@@ -112,7 +106,7 @@ class RhythmScore {
           if (lastNoteIndex !== null) {
             notes[lastNoteIndex] = `${notes[lastNoteIndex]}-`;
             const noteValue = `C4.${duration}`;
-            const props = hasChordLabel ? `slashed txt "CHORD:${barIndex + 1}:${barChord}"` : "slashed";
+            const props = "slashed";
             notes.push(`${noteValue} { ${props} }`);
             lastNoteIndex = notes.length - 1;
             return;
@@ -122,7 +116,7 @@ class RhythmScore {
         if (isRest) {
           // 休符の場合
           const noteValue = duration === "16" ? "r.16" : duration === "8" ? "r.8" : "r.4";
-          const props = hasChordLabel ? `slashed txt "CHORD:${barIndex + 1}:${barChord}"` : "slashed";
+          const props = "slashed";
           notes.push(`${noteValue} { ${props} }`);
           lastNoteIndex = null;
         }
@@ -131,7 +125,7 @@ class RhythmScore {
 //          const noteValue = value === "8" ? ".8" : "(C4 D4).8"; // サンプル 8分音符
 //          const noteValue = value === "8" ? ".8" : "r.8";       // サンプル 8分休符
 //          const noteValue = value === "8" ? ".8" : "C4.16";     // サンプル 16分音符
-          const props = hasChordLabel ? `slashed txt "CHORD:${barIndex + 1}:${barChord}"` : "slashed";
+          const props = "slashed";
           notes.push(`${noteValue} { ${props} }`);
           lastNoteIndex = notes.length - 1;
         }
@@ -195,14 +189,6 @@ class RhythmScore {
     if (!this.container) return false;
     const svgs = Array.from(this.container.querySelectorAll("svg"));
     if (svgs.length === 0) return false;
-    const barChords = Array.isArray(this.bars)
-      ? this.bars.map((bar) => (typeof bar?.chord === "string" ? bar.chord : ""))
-      : [];
-    const chordSet = new Set(
-      [...barChords, ...this.progression, this.chord].filter((value) => typeof value === "string" && value.length > 0),
-    );
-    if (chordSet.size === 0) return true;
-
     this.container.querySelectorAll(".scoreChordOverlayLayer").forEach((layer) => layer.remove());
     const overlay = document.createElement("div");
     overlay.className = "scoreChordOverlayLayer";
@@ -213,19 +199,24 @@ class RhythmScore {
     svgs.forEach((svg) => {
       svg.querySelectorAll("text").forEach((node) => {
         const raw = node.textContent?.trim();
-        if (!raw || !raw.startsWith("CHORD:")) return;
-        const labelPayload = raw.replace("CHORD:", "");
-        const [barIndexRaw, label] = labelPayload.split(":");
-        const parsedBarIndex = Number.parseInt(barIndexRaw, 10);
-        const barIndex = Number.isNaN(parsedBarIndex) ? null : Math.max(parsedBarIndex - 1, 0);
-        if (!chordSet.has(label)) return;
+        if (!raw || !/^\d+$/.test(raw)) return;
+        const fillColor = node.getAttribute("fill") || node.style.fill;
+        if (fillColor !== "#C80000") return;
+        const parsedBarIndex = Number.parseInt(raw, 10);
+        if (Number.isNaN(parsedBarIndex)) return;
+        const barIndex = Math.max(parsedBarIndex - 1, 0);
         const rect = node.getBoundingClientRect();
+        const left = rect.left - containerRect.left;
+        const top = rect.top - containerRect.top;
         entries.push({
           node,
-          label,
+          label: raw,
           barIndex,
-          left: rect.left - containerRect.left,
-          top: rect.top - containerRect.top,
+          left,
+          top,
+          width: rect.width,
+          height: rect.height,
+          fontSize: rect.height,
         });
       });
     });
@@ -239,10 +230,6 @@ class RhythmScore {
       })
       .forEach((entry, index) => {
         const resolvedIndex = entry.barIndex !== null ? entry.barIndex : index;
-        entry.node.style.opacity = "0";
-        entry.node.style.fill = "transparent";
-        entry.node.setAttribute("visibility", "hidden");
-
         const badge = document.createElement("span");
         badge.className = "scoreChordOverlayLabel";
         badge.textContent = entry.label;
@@ -255,8 +242,13 @@ class RhythmScore {
           event.stopPropagation();
           window.location.href = `/editMeasure.html?bar=${resolvedIndex}`;
         });
-        badge.style.left = `${entry.left}px`;
-        badge.style.top = `${entry.top}px`;
+        const doubledHeight = entry.height * 2;
+        const expandedWidth = entry.width * 2.5;
+        badge.style.left = `${entry.left - (expandedWidth - entry.width) / 2}px`;
+        badge.style.top = `${entry.top - entry.height / 2}px`;
+        badge.style.width = `${expandedWidth}px`;
+        badge.style.height = `${doubledHeight}px`;
+        badge.style.fontSize = `${entry.fontSize}px`;
         overlay.appendChild(badge);
       });
 

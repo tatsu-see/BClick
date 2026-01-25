@@ -461,28 +461,31 @@ footer {
   z-index: 1;
 }
 
+/* 楽譜に重ねて表示する小節番号。クリックやタップ可能 */
 .scoreChordOverlayLabel {
-  min-width:35px;
+  min-width: 0;
   position: absolute;
-  transform: translateY(-2px);
-
-  font-size: 26px;
   font-weight: 700;
   line-height: 1;
-  color: green;
+  color: white;
 
   white-space: nowrap;
   cursor: pointer;
   pointer-events: auto;
-  border: 3px solid green;
+  border: 4px solid green;
   border-radius: 3px;
-  padding: 1px 1px;
-  background-color: rgba(255, 255, 255, 0.85);
+  padding: 0;
+  background-color: green;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scoreChordOverlayLabel.isActiveChord {
   /* 自動スクロール対象のコードを強調表示する。 */
-  background-color: #fff4b2;
+  color: green;
+  background-color: white;
 }
 
 #saveButtonContainer {

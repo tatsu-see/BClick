@@ -157,15 +157,15 @@ document.addEventListener("DOMContentLoaded", () => {
       cycleIndex = (cycleIndex + 1) % cycleBoxes.length;
       cycleBoxes[cycleIndex].classList.add("active");
       if (cycleIndex === 0) {
-        // 1周ごとに次のコードへスクロールする。
-        scrollToNextChord();
+        // 1周ごとに次の小節番号へスクロールする。
+        scrollToNextBar();
       }
       clickSound(currentClickVolume ?? undefined);
     }, currentBeatMs);
   };
 
-  const scrollToNextChord = () => {
-    // カスタム描画されたコード表示を順番にスクロールし、現在位置をハイライトする。
+  const scrollToNextBar = () => {
+    // カスタム描画された小節番号を順番にスクロールし、現在位置をハイライトする。
     const labels = Array.from(document.querySelectorAll(".scoreChordOverlayLabel"))
       .map((label) => ({
         label,
@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cycleBoxes.forEach((box) => box.classList.remove("active"));
     cycleBoxes[0].classList.add("active");
-    scrollToNextChord();
+    scrollToNextBar();
     clickSound(currentClickVolume ?? undefined);
 
     startCycleTimer();
