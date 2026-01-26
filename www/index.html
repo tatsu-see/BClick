@@ -34,9 +34,7 @@
   <script type="module" src="/assets/js/createScoreButton.js"></script>
   <script type="module" src="/assets/js/editScoreButton.js"></script>
   <script type="module" src="/assets/js/initScoreButton.js"></script>
-  <script type="module" src="/assets/js/saveScoreButton.js"></script>
   <script type="module" src="/assets/js/loadScoreButton.js"></script>
-  <script type="module" src="/assets/js/mergeScoreButton.js"></script>
 </head>
 
 <body>
@@ -44,6 +42,38 @@
     <div id="title">B.Click</div>
   </header>
   <main>
+
+    <div class="preferenceTitle">
+      <span class="material-symbols-outlined" aria-hidden="true">description</span>
+      ファイル
+    </div>
+
+    <!--Spec スコアの操作ボタン
+      以下のボタンは、configBeat.html画面やconfigScore.html画面で設定した情報から楽譜を新規生成したり、保存したりする機能のボタンである。
+      ボタンは1行に横並びで配置し、ボタンを等しい幅で配置する。
+      以下の楽譜編集ボタンや、楽譜ファイル(*.json)の操作ボタンは、app.js に全部実装するのではなくて、適宜モジュールに分割して実装する。
+
+      ・Init.ボタン
+        現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
+        すべて初期値に戻る。初期値は次の通り。
+          テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
+        Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
+
+      ・Loadボタン
+        Saveによって保存した楽譜JSONファイルをファイル選択して読み、アプリの設定画面で編集可能な状態にする。
+
+      ・Mergeボタン
+        Saveによって保存した楽譜JSONファイルをファイル選択して読むが、楽譜の小節を追加するだけにする。
+    -->
+    <div class="preferenceExec">
+        <button id="initScore" type="button" class="okConfig makeScoreButton">
+          Init.
+        </button>
+        <button id="loadScore" type="button" class="okConfig makeScoreButton">
+          Load
+        </button>
+    </div>
+
 
     <!--Spec BPM テンポ設定（ダイアル操作）
     -->
@@ -121,7 +151,7 @@
 
     <!--Spec スコアの操作ボタン
       以下のボタンは、configBeat.html画面やconfigScore.html画面で設定した情報から楽譜を新規生成したり、保存したりする機能のボタンである。
-      ボタンは2行に分けて表示し、それぞれの行に3つずつボタンを等しい幅で配置する。
+      ボタンは1行に横並びで表示し、ボタンを等しい幅で配置する。
       以下の楽譜編集ボタンや、楽譜ファイル(*.json)の操作ボタンは、app.js に全部実装するのではなくて、適宜モジュールに分割して実装する。
 
       ・Createボタン
@@ -131,22 +161,6 @@
 
       ・Editボタン
         現在編集中の楽譜を編集する editScore.html画面 を表示する。
-
-      ・Init.ボタン
-        現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
-        すべて初期値に戻る。初期値は次の通り。
-          テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
-        Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
-
-      ・Saveボタン
-        現在編集中の楽譜情報をローカルストレージに保存する。具体的には楽譜データをJSONファイルとしてダウンロードする。
-        （本当はファイル選択で保存先を指定できると良いが、iOS Safari は仕様上難しいためこの方法を採用している。）
-
-      ・Loadボタン
-        Saveによって保存した楽譜JSONファイルをファイル選択して読み、アプリの設定画面で編集可能な状態にする。
-
-      ・Mergeボタン
-        Saveによって保存した楽譜JSONファイルをファイル選択して読むが、楽譜の小節を追加するだけにする。
     -->
     <div class="preferenceExec">
         <button id="setClick" type="button" class="okConfig makeScoreButton">
@@ -156,23 +170,9 @@
         <button id="editScore" type="button" class="okConfig makeScoreButton">
           Edit
         </button>
-
-        <button id="initScore" type="button" class="okConfig makeScoreButton">
-          Init.
-        </button>
-
-        <button id="saveScore" type="button" class="okConfig makeScoreButton">
-          Save
-        </button>
-        <button id="loadScore" type="button" class="okConfig makeScoreButton">
-          Load
-        </button>
-        <button id="mergeScore" type="button" class="okConfig makeScoreButton">
-          Merge
-        </button>
     </div>
+
     <input type="file" id="loadScoreFile" accept="application/json" hidden>
-    <input type="file" id="mergeScoreFile" accept="application/json" hidden>
 
   </main>
   <footer>
