@@ -94,6 +94,31 @@ class RhythmScore {
     return trimmed.replace(/["\\]/g, "");
   }
 
+  /**
+   * SVG内のコード文字だけを拡大する。
+   */
+  scaleSvgChordText(svgs, scalePercent = 150) {
+    const svgList = Array.isArray(svgs) ? svgs : [];
+    if (svgList.length === 0) return;
+    const multiplier = scalePercent / 100;
+      svgList.forEach((svg) => {
+        svg.querySelectorAll("text").forEach((node) => {
+          const raw = node.textContent?.trim();
+          // アルファベットで始まり、英数字 + #/b を含む8文字以内のテキストだけをコードとして扱う。
+          // 例） F#m7b5 とかのコードも許容するため。余裕を見て8文字とした。
+          if (!raw || !/^[A-Za-z][A-Za-z0-9#b]{0,7}$/.test(raw)) return;
+        const currentSize = node.style.fontSize
+          || (window.getComputedStyle ? window.getComputedStyle(node).fontSize : "");
+        const match = String(currentSize).trim().match(/^([\d.]+)([a-z%]+)$/i);
+        if (!match) return;
+        const value = Number.parseFloat(match[1]);
+        const unit = match[2];
+        if (!Number.isFinite(value) || !unit) return;
+        node.style.fontSize = `${value * multiplier}${unit}`;
+      });
+    });
+  }
+
   buildAlphaTex() {
     const [numeratorRaw, denominatorRaw] = this.timeSignature.split("/");
     const numeratorValue = Number.parseInt(numeratorRaw, 10);
@@ -232,6 +257,7 @@ class RhythmScore {
     const svgs = Array.from(this.container.querySelectorAll("svg"));
     if (svgs.length === 0) return false;
     this.container.querySelectorAll(".scoreChordOverlayLayer").forEach((layer) => layer.remove());
+    this.scaleSvgChordText(svgs, 150);
     const overlay = document.createElement("div");
     overlay.className = "scoreChordOverlayLayer";
 
@@ -289,9 +315,10 @@ class RhythmScore {
 
         // タップできる小節番号のオーバーレイのサイズを求める。
         const doubledHeight = entry.height * 2.5;
-        const expandedWidth = entry.width * 1.5;
+        const expandedWidth = entry.width * 1.2;
+        const overlayShiftX = 4;  // 少しだけ左に移動する量 単位は px
 
-        badge.style.left = `${entry.left - (expandedWidth - entry.width) / 2}px`;
+        badge.style.left = `${entry.left - (expandedWidth - entry.width) / 2 - overlayShiftX}px`;
         badge.style.top = `${entry.top - entry.height / 2}px`;
         badge.style.width = `${expandedWidth}px`;
         badge.style.height = `${doubledHeight}px`;
