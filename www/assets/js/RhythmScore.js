@@ -29,6 +29,14 @@ class RhythmScore {
     this.progression = this.normalizeProgression(progression);
     this.bars = Array.isArray(bars) ? bars : [];
     this.overlayTimer = null;
+    console.log("RhythmScore コンストラクタ実行:", {
+      containerId,
+      container: !!this.container,
+      timeSignature: this.timeSignature,
+      measures: this.measures,
+      progressionLength: this.progression.length,
+      barsLength: this.bars.length,
+    });
     this.handleOverlayRefresh = () => {
       this.clearOverlay();
       this.startOverlayPoll();
@@ -79,6 +87,13 @@ class RhythmScore {
     return trimmed.length > 0 ? trimmed.split(/\s+/) : [];
   }
 
+  sanitizeChordLabel(value) {
+    if (typeof value !== "string") return "";
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+    return trimmed.replace(/["\\]/g, "");
+  }
+
   buildAlphaTex() {
     const [numeratorRaw, denominatorRaw] = this.timeSignature.split("/");
     const numeratorValue = Number.parseInt(numeratorRaw, 10);
@@ -89,10 +104,19 @@ class RhythmScore {
     const bars = [];
     const barSource = Array.isArray(this.bars) && this.bars.length > 0 ? this.bars : null;
     const barCount = barSource ? barSource.length : this.measures;
+    const progression = this.progression.length > 0 ? this.progression : null;
 
+    // alphaTab に向けて小節毎に情報を組み立てていく。
     for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
       const notes = [];
       const barData = barSource ? barSource[barIndex] : null;
+      const rawChord = barData && typeof barData.chord === "string"
+        ? barData.chord
+        : progression
+          ? progression[barIndex % progression.length]
+          : "";
+      const chordLabel = this.sanitizeChordLabel(rawChord);
+      let chordAttached = false;
       const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
         ? barData.rhythm
         : Array.from({ length: beats }, () => "4");
@@ -106,8 +130,13 @@ class RhythmScore {
           if (lastNoteIndex !== null) {
             notes[lastNoteIndex] = `${notes[lastNoteIndex]}-`;
             const noteValue = `C4.${duration}`;
-            const props = "slashed";
-            notes.push(`${noteValue} { ${props} }`);
+            let props = "slashed";
+            if (chordLabel && !chordAttached) {
+              props += ` ch "${chordLabel}"`;
+              chordAttached = true;
+            }
+            const noteText = `${noteValue} { ${props} }`;
+            notes.push(noteText);
             lastNoteIndex = notes.length - 1;
             return;
           }
@@ -117,7 +146,9 @@ class RhythmScore {
           // 休符の場合
           const noteValue = duration === "16" ? "r.16" : duration === "8" ? "r.8" : "r.4";
           const props = "slashed";
-          notes.push(`${noteValue} { ${props} }`);
+          const noteText = `${noteValue} { ${props} }`;
+
+          notes.push(noteText);
           lastNoteIndex = null;
         }
         else {
@@ -125,8 +156,19 @@ class RhythmScore {
 //          const noteValue = value === "8" ? ".8" : "(C4 D4).8"; // サンプル 8分音符
 //          const noteValue = value === "8" ? ".8" : "r.8";       // サンプル 8分休符
 //          const noteValue = value === "8" ? ".8" : "C4.16";     // サンプル 16分音符
-          const props = "slashed";
-          notes.push(`${noteValue} { ${props} }`);
+          let props = "slashed";
+          if (chordLabel && !chordAttached) {
+            props += ` ch "${chordLabel}"`;
+            chordAttached = true;
+          }
+          const noteText = `${noteValue} { ${props} }`;
+
+          /* Spec noteText の例）
+          // コード無しの場合 > C4.4 { slashed }
+          // コード在りの場合 > C4.4 { slashed ch "C" }
+          */
+
+          notes.push(noteText);
           lastNoteIndex = notes.length - 1;
         }
         return;

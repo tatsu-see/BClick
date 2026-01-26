@@ -31,7 +31,16 @@ export const buildDefaultBeatPatterns = (beatCount) =>
   Array.from({ length: beatCount }, () => ({ division: 4, pattern: ["note"] }));
 
 /**
- * 保存済み設定からScoreDataを生成する。
+ * 保存済み設定からScoreDataを自動生成する。
+ */
+/* Spec 自動生成する楽譜の仕様
+  ・楽譜の拍子は configScore.html で選択した拍子となる。  例）4/4
+  ・自動生成する楽譜は、同じ一小節を繰り返した楽譜となる。
+  ・自動生成する楽譜の最大小節数は、 configScore.html で設定した数となる。
+  ・configScore.html で 進行 にコードが設定してあれば、１小節ごとにコードを割り振って配置する。
+    例）進行が G C Em の3つの場合、1小節目 G、2小節目 C、3小節目 Em、4小節目 G、（以降繰り返し）
+  ・１小節に配置する音符は、configScore.html のリズム で設定した音符を配置する。
+    例）4/4拍の場合、設定により "4分音符、4分音符、8分音符、16分音符" を配置するなど。
  */
 export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
   const defaults = getDefaultSettings();

@@ -6,7 +6,7 @@
 ---
 
   > ProjectPolicy.md を最初に読んでください。このアプリの開発は、ProjectPolicy.md に書かれたルールに沿って進めること。
-  > 特にAIが自動作成するコードは、このルールに沿って行い、AIとのチャットのやり取りには、日本語を使用する。
+  > 特にAIが自動作成するコードは、このルールに沿って行い、AIとのチャットのやり取りには、日本語を使用する
 
 ## アプリの目的
 ギターのリズム練習用のアプリ
@@ -53,6 +53,9 @@
 
 - 内部で alphaTab を使用している個所は、仕様の参照は以下のサイトから行う。
 https://www.alphatab.net/docs/introduction/
+
+alphaTab の Chord 表記の例は下記から、{ch "C"} を検索。
+https://next.alphatab.net/docs/alphatex/beat-properties
 
 - 内部で ABCJS を使用している個所は、仕様の参照は以下のサイトから行う。
 https://docs.abcjs.net/

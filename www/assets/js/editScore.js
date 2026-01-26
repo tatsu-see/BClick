@@ -72,7 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (scoreArea) {
       scoreArea.hidden = true;
     }
+    console.log("楽譜表示がOFFです");
   } else if (scoreElement && window.alphaTab) {
+    console.log("alphaTab ロード完了。楽譜を生成します...");
     window.bclickActiveChordIndex = -1;
     rhythmScore = new RhythmScore("score", {
       timeSignature: currentScoreData.timeSignature,
@@ -85,6 +87,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (Array.isArray(currentScoreData.bars)) {
       window.bclickScoreBarCount = currentScoreData.bars.length;
     }
+    console.log("楽譜生成完了。小節数:", currentScoreData.bars?.length || currentScoreData.measures);
+  } else {
+    console.warn("楽譜生成条件エラー:", {
+      scoreElementExists: !!scoreElement,
+      alphaTabLoaded: !!window.alphaTab,
+      scoreEnabled: store.getScoreEnabled(),
+    });
   }
 
   const tempoDial = tempoInput
