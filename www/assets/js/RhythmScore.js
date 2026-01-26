@@ -286,8 +286,11 @@ class RhythmScore {
           // 小節編集画面を表示する。
           window.open(`/editMeasure.html?bar=${resolvedIndex}`, "_blank", "noopener,noreferrer");
         });
-        const doubledHeight = entry.height * 2;
-        const expandedWidth = entry.width * 2.5;
+
+        // タップできる小節番号のオーバーレイのサイズを求める。
+        const doubledHeight = entry.height * 2.5;
+        const expandedWidth = entry.width * 1.5;
+
         badge.style.left = `${entry.left - (expandedWidth - entry.width) / 2}px`;
         badge.style.top = `${entry.top - entry.height / 2}px`;
         badge.style.width = `${expandedWidth}px`;
