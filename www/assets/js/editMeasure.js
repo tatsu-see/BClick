@@ -438,7 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
             { value: "rest", label: "○" },
           ];
           if (subIndex === 0) {
-            options.push({ value: "tieNote", label: "-●" });
+            options.push({ value: "tieNote", label: "⌒●" });
           }
           if (patternItem.division === 16 && subIndex > 0) {
             options.push({ value: "tie", label: "－" });

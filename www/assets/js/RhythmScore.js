@@ -187,16 +187,8 @@ class RhythmScore {
         let handledTie = false;
         if (isTie) {
           if (lastNoteIndex !== null) {
+            // タイの拍は「前の音符を伸ばす」だけにして、新しい音符を追加しない。
             notes[lastNoteIndex] = `${notes[lastNoteIndex]}-`;
-            const noteValue = `C4.${duration}`;
-            let props = "slashed";
-            if (beatChordLabel && !chordAttached) {
-              props += ` ch "${beatChordLabel}"`;
-              chordAttached = true;
-            }
-            const noteText = `${noteValue} { ${props} }`;
-            notes.push(noteText);
-            lastNoteIndex = notes.length - 1;
             beatProgress += beatLength;
             handledTie = true;
           }
