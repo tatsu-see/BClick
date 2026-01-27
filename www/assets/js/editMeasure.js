@@ -6,8 +6,12 @@ import RhythmPreviewRenderer from "./RhythmPreviewRenderer.js";
 document.addEventListener("DOMContentLoaded", () => {
   const doneButton = document.getElementById("closePage");
   const backButton = document.getElementById("backEditMeasure");
-  const chordButtons = Array.from(document.querySelectorAll(".chipButton"));
+  const chordRootButtons = Array.from(document.querySelectorAll(".chordRoot"));
+  const chordQualityButtons = Array.from(document.querySelectorAll(".chordQuality"));
   const rhythmPatternBody = document.getElementById("rhythmPatternBody");
+  const codeProgressionInput = document.getElementById("codeProgression");
+  const backProgressionButton = document.getElementById("backCodeProgression");
+  const clearProgressionButton = document.getElementById("clearCodeProgression");
   const majorChordSection = document.getElementById("majorChordSection");
   const minorChordSection = document.getElementById("minorChordSection");
   const toggleMajorChords = document.getElementById("toggleMajorChords");
@@ -31,6 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
     progression: savedProgression || "",
     bars: savedBars || null,
   });
+
+  if (codeProgressionInput && typeof savedProgression === "string") {
+    codeProgressionInput.value = savedProgression;
+  }
 
   const bars = scoreData.bars;
   const safeBarIndex = Math.min(barIndex, Math.max(0, bars.length - 1));
@@ -57,23 +65,82 @@ document.addEventListener("DOMContentLoaded", () => {
     return 0;
   };
 
-  const updateSelection = (value) => {
-    selectedChord = value;
-    chordButtons.forEach((button) => {
-      button.classList.toggle(
-        "isSelected",
-        (button.dataset.chord || button.textContent.trim()) === selectedChord,
-      );
+  const setActiveQuality = (button) => {
+    chordQualityButtons.forEach((qualityButton) => {
+      const isActive = qualityButton === button;
+      qualityButton.classList.toggle("isActive", isActive);
+      qualityButton.setAttribute("aria-pressed", isActive ? "true" : "false");
     });
   };
 
-  updateSelection(currentChord);
+  const getActiveQuality = () =>
+    chordQualityButtons.find((button) => button.classList.contains("isActive"));
 
-  chordButtons.forEach((button) => {
+  const setActiveRoot = (button) => {
+    chordRootButtons.forEach((rootButton) => {
+      const isActive = rootButton === button;
+      rootButton.classList.toggle("isActive", isActive);
+      rootButton.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+  };
+
+  const getActiveRoot = () => chordRootButtons.find((button) => button.classList.contains("isActive"));
+
+  const buildChord = (rootButton, qualityButton) => {
+    const root = rootButton?.dataset.root || rootButton?.textContent.trim() || "";
+    const quality = qualityButton?.dataset.quality || "maj";
+    const suffix = quality === "min" ? "m" : "";
+    return `${root}${suffix}`;
+  };
+
+  const appendChord = (chord) => {
+    if (!codeProgressionInput) return;
+    const trimmedChord = chord.trim();
+    if (!trimmedChord) return;
+    const prefix = codeProgressionInput.value.length > 0 ? " " : "";
+    codeProgressionInput.value += `${prefix}${trimmedChord}`;
+  };
+
+  if (chordQualityButtons.length > 0) {
+    const matchedQuality = currentChord.endsWith("m")
+      ? chordQualityButtons.find((button) => button.dataset.quality === "min")
+      : chordQualityButtons.find((button) => button.dataset.quality === "maj");
+    const activeQuality = matchedQuality || chordQualityButtons[0];
+    if (activeQuality) {
+      setActiveQuality(activeQuality);
+    }
+  }
+
+  if (chordRootButtons.length > 0) {
+    const normalizedRoot = currentChord.endsWith("m")
+      ? currentChord.slice(0, -1)
+      : currentChord;
+    const matchedRoot = chordRootButtons.find(
+      (button) => (button.dataset.root || button.textContent.trim()) === normalizedRoot,
+    );
+    const activeRoot = matchedRoot || chordRootButtons[0];
+    if (activeRoot) {
+      setActiveRoot(activeRoot);
+    }
+  }
+
+  chordRootButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      const chord = button.dataset.chord || button.textContent.trim();
-      if (!chord) return;
-      updateSelection(chord);
+      setActiveRoot(button);
+      const qualityButton = getActiveQuality() || chordQualityButtons[0];
+      if (!qualityButton) return;
+      const chord = buildChord(button, qualityButton);
+      selectedChord = chord;
+      appendChord(chord);
+    });
+  });
+
+  chordQualityButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setActiveQuality(button);
+      const rootButton = getActiveRoot() || chordRootButtons[0];
+      if (!rootButton) return;
+      selectedChord = buildChord(rootButton, button);
     });
   });
 
@@ -330,6 +397,23 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   renderBeatSelectors();
+
+  if (clearProgressionButton) {
+    clearProgressionButton.addEventListener("click", () => {
+      if (!codeProgressionInput) return;
+      codeProgressionInput.value = "";
+    });
+  }
+
+  if (backProgressionButton) {
+    backProgressionButton.addEventListener("click", () => {
+      if (!codeProgressionInput) return;
+      const parts = codeProgressionInput.value.trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return;
+      parts.pop();
+      codeProgressionInput.value = parts.join(" ");
+    });
+  }
 
   const cloneBar = (bar) => ({
     chord: typeof bar?.chord === "string" ? bar.chord : "",

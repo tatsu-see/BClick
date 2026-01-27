@@ -85,9 +85,10 @@
   outline-offset: 2px;
 }
 
-.chipButton.isSelected {
-  border-color: green;
-  background-color: #dff2df;
+.chipButton.isActive {
+  background-color: #1e7a4f;
+  border-color: #1e7a4f;
+  color: #ffffff;
 }
 
 .rhythmBeatValue {
