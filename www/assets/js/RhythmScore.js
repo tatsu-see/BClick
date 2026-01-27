@@ -172,16 +172,23 @@ class RhythmScore {
       const beatChords = buildBeatChords().map((value) => this.sanitizeChordLabel(value));
       let beatIndex = 0;
       let beatProgress = 0;
+      let lastBeatDivision = 4;
+      let currentBeatDivision = 4;
       let chordAttached = false;
       const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
         ? barData.rhythm
         : Array.from({ length: beats }, () => "4");
       let lastNoteIndex = null;
+
+      // 4 / 8 / 16分音符ごとのループ
       rhythm.forEach((value, index) => {
         const duration = value.endsWith("16") ? "16" : value.endsWith("8") ? "8" : "4";
         const isRest = value.startsWith("r");
         const isTie = value.startsWith("t");
 
+        if (beatProgress === 0) {
+          currentBeatDivision = Number.parseInt(duration, 10);
+        }
         const beatChordLabel = beatChords[beatIndex] || "";
         const beatLength = getBeatLength(duration);
 
@@ -190,9 +197,20 @@ class RhythmScore {
           if (lastNoteIndex !== null) {
             // タイの拍は「前の音符を伸ばす」だけにして、新しい音符を追加しない。1つ前の拍の文字列の最後に "-" を追加する。
             // また、タイの後ろの音符は指定しないことで、リズム譜として タイを表示する。
-            // 例）                         vここに C4.4 は挿入しない。
+
+            // Spec
+            // 例1）4分音符から4分音符へのタイ
+            //                             vここに C4.4 は挿入しない。
             // :4 C4.4 { slashed ch "G" } - { slashed }
-            notes[lastNoteIndex] = `${notes[lastNoteIndex]} - { slashed }`;
+            // 
+            // 例2）4分音符から8分音符へのタイ
+            //                             vここで8分音符に変更する。
+            // :4 C4.4 { slashed ch "G" } :8 - { slashed }
+            // タイ拍の分割が 4→8、8→16 と切り替わる時に、拍の先頭にコロンと共に数字が必要。
+            const divisionToken = currentBeatDivision !== lastBeatDivision
+              ? ` :${currentBeatDivision}`
+              : "";
+            notes[lastNoteIndex] = `${notes[lastNoteIndex]}${divisionToken} - { slashed }`;
             beatProgress += beatLength;
             handledTie = true;
           }
@@ -202,6 +220,7 @@ class RhythmScore {
           if (beatProgress >= 0.999) {
             beatIndex = Math.min(beatIndex + 1, beats - 1);
             beatProgress = 0;
+            lastBeatDivision = currentBeatDivision;
             chordAttached = false;
           }
           return;
@@ -242,6 +261,7 @@ class RhythmScore {
         if (beatProgress >= 0.999) {
           beatIndex = Math.min(beatIndex + 1, beats - 1);
           beatProgress = 0;
+          lastBeatDivision = currentBeatDivision;
           chordAttached = false;
         }
         return;
