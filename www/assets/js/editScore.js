@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoDialRow = document.getElementById("tempoDialRow");
   let currentScoreData = null;
   let rhythmScore = null;
+  let lastSavedBarsJson = "";
 
   /**
    * テンポ変更をクリック再生へ通知する。
@@ -66,7 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  currentScoreData = loadSettings(true);
+  const hasSavedBars = Array.isArray(store.getScoreBars());
+  currentScoreData = loadSettings(!hasSavedBars);
+  if (Array.isArray(currentScoreData.bars)) {
+    lastSavedBarsJson = JSON.stringify(currentScoreData.bars);
+  }
   if (store.getScoreEnabled() === false) {
     // 仕様: リズム表示がOFFならクリックUIのみ表示し、楽譜エリアは隠す。
     if (scoreArea) {
@@ -171,10 +176,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { passive: true });
   }
 
+  window.addEventListener("storage", (event) => {
+    if (event.storageArea !== window.localStorage) return;
+    if (event.key !== store.keys.ScoreBars) return;
+    const savedBars = store.getScoreBars();
+    if (!Array.isArray(savedBars)) return;
+    const nextJson = JSON.stringify(savedBars);
+    if (nextJson === lastSavedBarsJson) return;
+    lastSavedBarsJson = nextJson;
+    if (!currentScoreData) return;
+    currentScoreData.bars = savedBars;
+    if (rhythmScore) {
+      rhythmScore.setBars(savedBars);
+    }
+  });
+
   if (saveButton) {
     saveButton.addEventListener("click", () => {
       if (currentScoreData) {
-        store.setScoreBars(currentScoreData.bars);
+        const latestBars = store.getScoreBars();
+        const barsToSave = Array.isArray(latestBars) ? latestBars : currentScoreData.bars;
+        store.setScoreBars(barsToSave);
       }
       closePage();
     });
@@ -188,4 +210,3 @@ document.addEventListener("DOMContentLoaded", () => {
     closePageButton.addEventListener("click", closePage);
   }
 });
-
