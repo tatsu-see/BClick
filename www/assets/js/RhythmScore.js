@@ -107,12 +107,20 @@ class RhythmScore {
           // アルファベットで始まり、英数字 + #/b を含む8文字以内のテキストだけをコードとして扱う。
           // 例） F#m7b5 とかのコードも許容するため。余裕を見て8文字とした。
           if (!raw || !/^[A-Za-z][A-Za-z0-9#b]{0,7}$/.test(raw)) return;
-        const currentSize = node.style.fontSize
-          || (window.getComputedStyle ? window.getComputedStyle(node).fontSize : "");
-        const match = String(currentSize).trim().match(/^([\d.]+)([a-z%]+)$/i);
-        if (!match) return;
-        const value = Number.parseFloat(match[1]);
-        const unit = match[2];
+        // リサイズ毎に増幅しないように、元サイズを保持する。
+        let baseSize = node.dataset.baseFontSize;
+        if (!baseSize) {
+          const currentSize = node.style.fontSize
+            || (window.getComputedStyle ? window.getComputedStyle(node).fontSize : "");
+          const match = String(currentSize).trim().match(/^([\d.]+)([a-z%]+)$/i);
+          if (!match) return;
+          baseSize = `${match[1]}${match[2]}`;
+          node.dataset.baseFontSize = baseSize;
+        }
+        const baseMatch = String(baseSize).trim().match(/^([\d.]+)([a-z%]+)$/i);
+        if (!baseMatch) return;
+        const value = Number.parseFloat(baseMatch[1]);
+        const unit = baseMatch[2];
         if (!Number.isFinite(value) || !unit) return;
         node.style.fontSize = `${value * multiplier}${unit}`;
       });
