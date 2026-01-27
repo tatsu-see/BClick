@@ -141,6 +141,7 @@ class RhythmScore {
     const progression = this.progression.length > 0 ? this.progression : null;
 
     // alphaTab に向けて小節毎に情報を組み立てていく。
+    let lastBeatDivision = 4;
     for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
       const notes = [];
       const barData = barSource ? barSource[barIndex] : null;
@@ -172,7 +173,6 @@ class RhythmScore {
       const beatChords = buildBeatChords().map((value) => this.sanitizeChordLabel(value));
       let beatIndex = 0;
       let beatProgress = 0;
-      let lastBeatDivision = 4;
       let currentBeatDivision = 4;
       let chordAttached = false;
       const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
@@ -185,6 +185,7 @@ class RhythmScore {
         const duration = value.endsWith("16") ? "16" : value.endsWith("8") ? "8" : "4";
         const isRest = value.startsWith("r");
         const isTie = value.startsWith("t");
+        const isBarHead = beatIndex === 0 && beatProgress === 0;
 
         if (beatProgress === 0) {
           currentBeatDivision = Number.parseInt(duration, 10);
@@ -211,6 +212,19 @@ class RhythmScore {
               ? ` :${currentBeatDivision}`
               : "";
             notes[lastNoteIndex] = `${notes[lastNoteIndex]}${divisionToken} - { slashed }`;
+            beatProgress += beatLength;
+            handledTie = true;
+          } else if (isBarHead && barIndex > 0) {
+
+            // Spec 2小節名以降の先頭のタイは、先頭の拍を "- { slashed }" で始める。
+            // 例）
+            // :4 C4{slashed} :8 -{slashed} r :4 C4{slashed} C4{slashed} |    ← 1小節目
+            // :4 - {slashed} C4{slashed} C4{slashed} C4{slashed} |           ← 2小節目（先頭タイ）
+
+            const divisionToken = currentBeatDivision !== lastBeatDivision
+              ? `:${currentBeatDivision} `
+              : "";
+            notes.push(`${divisionToken}- { slashed }`);
             beatProgress += beatLength;
             handledTie = true;
           }
