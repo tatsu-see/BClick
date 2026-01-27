@@ -127,6 +127,7 @@ class RhythmScore {
     });
   }
 
+  // alphaTab に表示する楽譜用の文字列を作成する。
   buildAlphaTex() {
     const [numeratorRaw, denominatorRaw] = this.timeSignature.split("/");
     const numeratorValue = Number.parseInt(numeratorRaw, 10);
@@ -187,8 +188,11 @@ class RhythmScore {
         let handledTie = false;
         if (isTie) {
           if (lastNoteIndex !== null) {
-            // タイの拍は「前の音符を伸ばす」だけにして、新しい音符を追加しない。
-            notes[lastNoteIndex] = `${notes[lastNoteIndex]}-`;
+            // タイの拍は「前の音符を伸ばす」だけにして、新しい音符を追加しない。1つ前の拍の文字列の最後に "-" を追加する。
+            // また、タイの後ろの音符は指定しないことで、リズム譜として タイを表示する。
+            // 例）                         vここに C4.4 は挿入しない。
+            // :4 C4.4 { slashed ch "G" } - { slashed }
+            notes[lastNoteIndex] = `${notes[lastNoteIndex]} - { slashed }`;
             beatProgress += beatLength;
             handledTie = true;
           }
