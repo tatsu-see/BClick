@@ -138,6 +138,7 @@ class ScoreData {
 
   buildBars() {
     const defaultRhythm = this.buildDefaultRhythm();
+    const beats = this.getBeatCount();
     const chords = this.progression.trim().length > 0
       ? this.progression.trim().split(/\s+/)
       : [];
@@ -145,8 +146,11 @@ class ScoreData {
     const bars = [];
     for (let i = 0; i < this.measures; i += 1) {
       const chord = chords.length > 0 ? chords[i % chords.length] : "";
+      const beatChords = Array.from({ length: beats }, (_, index) =>
+        index === 0 ? chord : "",
+      );
       bars.push({
-        chord,
+        chord: beatChords,
         rhythm: defaultRhythm.slice(),
       });
     }
@@ -160,7 +164,15 @@ class ScoreData {
     const normalized = defaults.map((fallback, index) => {
       const source = bars[index];
       if (!source || typeof source !== "object") return fallback;
-      const chord = typeof source.chord === "string" ? source.chord : fallback.chord;
+      const chord = Array.isArray(source.chord)
+        ? source.chord
+            .map((value) => (typeof value === "string" ? value : ""))
+            .slice(0, expectedBeats)
+        : typeof source.chord === "string"
+          ? Array.from({ length: expectedBeats }, (_, beatIndex) =>
+              beatIndex === 0 ? source.chord : "",
+            )
+          : fallback.chord;
       const rhythm = Array.isArray(source.rhythm) && source.rhythm.length > 0
         ? source.rhythm.filter((value) => typeof value === "string" && value.length > 0)
         : fallback.rhythm;
@@ -171,7 +183,9 @@ class ScoreData {
         return total;
       }, 0);
       return {
-        chord,
+        chord: chord.length < expectedBeats
+          ? chord.concat(Array.from({ length: expectedBeats - chord.length }, () => ""))
+          : chord,
         rhythm: rhythm.length > 0 && duration === expectedBeats ? rhythm : fallback.rhythm,
       };
     });

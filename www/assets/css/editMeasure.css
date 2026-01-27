@@ -149,7 +149,8 @@
 }
 
 .rhythmDivisionSelect,
-.rhythmPatternSymbols .rhythmSymbolSelect {
+.rhythmPatternSymbols .rhythmSymbolSelect,
+.rhythmChordSelect {
   height: 100%;
 }
 
@@ -159,6 +160,13 @@
 
 .rhythmPatternChord {
   justify-content: center;
+}
+
+.rhythmChordSelect {
+  min-width: 0;
+  text-align: center;
+  font-size: 0.7em;
+  padding: 1px 2px;
 }
 
 .rhythmPatternPreview .abcjs-inline-svg {

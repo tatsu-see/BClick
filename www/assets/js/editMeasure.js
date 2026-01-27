@@ -42,16 +42,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const bars = scoreData.bars;
   const safeBarIndex = Math.min(barIndex, Math.max(0, bars.length - 1));
-  const currentChord = bars[safeBarIndex]?.chord || "";
+  const currentBarChords = bars[safeBarIndex]?.chord;
   const currentRhythm = Array.isArray(bars[safeBarIndex]?.rhythm)
     ? bars[safeBarIndex].rhythm
     : [];
-  let selectedChord = currentChord;
+  let selectedBeatChords = [];
   let selectedBeatPatterns = [];
 
   const [numeratorRaw] = scoreData.timeSignature.split("/");
   const numerator = Number.parseInt(numeratorRaw, 10);
   const beatCount = Number.isNaN(numerator) || numerator <= 0 ? 4 : numerator;
+
+  /**
+   * 拍ごとのコード配列を正規化する。
+   * @param {string[]|string} value
+   * @returns {string[]}
+   */
+  const normalizeBeatChords = (value) => {
+    if (Array.isArray(value)) {
+      const normalized = value.map((item) => (typeof item === "string" ? item : ""));
+      while (normalized.length < beatCount) {
+        normalized.push("");
+      }
+      return normalized.slice(0, beatCount);
+    }
+    if (typeof value === "string" && value.length > 0) {
+      return Array.from({ length: beatCount }, (_, index) => (index === 0 ? value : ""));
+    }
+    return Array.from({ length: beatCount }, () => "");
+  };
+
+  selectedBeatChords = normalizeBeatChords(currentBarChords);
 
   /**
    * 音符トークンの長さを拍に換算する。
@@ -93,16 +114,66 @@ document.addEventListener("DOMContentLoaded", () => {
     return `${root}${suffix}`;
   };
 
+  /**
+   * 進行入力からコード一覧を取得する。
+   * @returns {string[]}
+   */
+  const getProgressionOptions = () => {
+    if (!codeProgressionInput) return [];
+    const raw = codeProgressionInput.value.trim();
+    if (!raw) return [];
+    const options = [];
+    const seen = new Set();
+    raw.split(/\s+/).forEach((value) => {
+      if (!value || seen.has(value)) return;
+      seen.add(value);
+      options.push(value);
+    });
+    return options;
+  };
+
+  const applyChordOptions = (selectEl, value, options) => {
+    selectEl.textContent = "";
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = "なし";
+    selectEl.appendChild(emptyOption);
+    options.forEach((optionValue) => {
+      const option = document.createElement("option");
+      option.value = optionValue;
+      option.textContent = optionValue;
+      selectEl.appendChild(option);
+    });
+    const nextValue = options.includes(value) ? value : "";
+    selectEl.value = nextValue;
+    return nextValue;
+  };
+
+  const refreshChordSelectOptions = () => {
+    const options = getProgressionOptions();
+    const selects = Array.from(document.querySelectorAll(".rhythmChordSelect"));
+    selects.forEach((selectEl) => {
+      const beatIndex = Number.parseInt(selectEl.dataset.beatIndex, 10);
+      const index = Number.isNaN(beatIndex) ? 0 : beatIndex;
+      const currentValue = selectedBeatChords[index] || "";
+      const nextValue = applyChordOptions(selectEl, currentValue, options);
+      selectedBeatChords[index] = nextValue;
+    });
+  };
+
   const appendChord = (chord) => {
     if (!codeProgressionInput) return;
     const trimmedChord = chord.trim();
     if (!trimmedChord) return;
     const prefix = codeProgressionInput.value.length > 0 ? " " : "";
     codeProgressionInput.value += `${prefix}${trimmedChord}`;
+    refreshChordSelectOptions();
   };
 
+  const initialChord = selectedBeatChords.find((value) => value) || "";
+
   if (chordQualityButtons.length > 0) {
-    const matchedQuality = currentChord.endsWith("m")
+    const matchedQuality = initialChord.endsWith("m")
       ? chordQualityButtons.find((button) => button.dataset.quality === "min")
       : chordQualityButtons.find((button) => button.dataset.quality === "maj");
     const activeQuality = matchedQuality || chordQualityButtons[0];
@@ -112,9 +183,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (chordRootButtons.length > 0) {
-    const normalizedRoot = currentChord.endsWith("m")
-      ? currentChord.slice(0, -1)
-      : currentChord;
+    const normalizedRoot = initialChord.endsWith("m")
+      ? initialChord.slice(0, -1)
+      : initialChord;
     const matchedRoot = chordRootButtons.find(
       (button) => (button.dataset.root || button.textContent.trim()) === normalizedRoot,
     );
@@ -130,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const qualityButton = getActiveQuality() || chordQualityButtons[0];
       if (!qualityButton) return;
       const chord = buildChord(button, qualityButton);
-      selectedChord = chord;
       appendChord(chord);
     });
   });
@@ -138,9 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
   chordQualityButtons.forEach((button) => {
     button.addEventListener("click", () => {
       setActiveQuality(button);
-      const rootButton = getActiveRoot() || chordRootButtons[0];
-      if (!rootButton) return;
-      selectedChord = buildChord(rootButton, button);
     });
   });
 
@@ -283,6 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rhythmPatternBody) return;
     rhythmPatternBody.textContent = "";
     selectedBeatPatterns = buildBeatPatternsFromRhythm(currentRhythm);
+    const chordOptions = getProgressionOptions();
 
     selectedBeatPatterns.forEach((patternItem, index) => {
       const row = document.createElement("div");
@@ -319,6 +387,22 @@ document.addEventListener("DOMContentLoaded", () => {
         () => scoreData.timeSignature,
         buildAbcTokens,
       );
+
+      const chordCell = document.createElement("div");
+      chordCell.className = "rhythmPatternCell rhythmPatternChord";
+      const chordSelect = document.createElement("select");
+      chordSelect.className = "rhythmChordSelect";
+      chordSelect.dataset.beatIndex = index.toString();
+      const nextValue = applyChordOptions(
+        chordSelect,
+        selectedBeatChords[index] || "",
+        chordOptions,
+      );
+      selectedBeatChords[index] = nextValue;
+      chordSelect.addEventListener("change", () => {
+        selectedBeatChords[index] = chordSelect.value;
+      });
+      chordCell.appendChild(chordSelect);
 
       const rebuildPatternSelectors = () => {
         patternCell.textContent = "";
@@ -392,6 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
       row.appendChild(divisionCell);
       row.appendChild(patternCell);
       row.appendChild(previewCell);
+      row.appendChild(chordCell);
       rhythmPatternBody.appendChild(row);
     });
   };
@@ -402,6 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
     clearProgressionButton.addEventListener("click", () => {
       if (!codeProgressionInput) return;
       codeProgressionInput.value = "";
+      refreshChordSelectOptions();
     });
   }
 
@@ -412,11 +498,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (parts.length === 0) return;
       parts.pop();
       codeProgressionInput.value = parts.join(" ");
+      refreshChordSelectOptions();
+    });
+  }
+
+  if (codeProgressionInput) {
+    codeProgressionInput.addEventListener("input", () => {
+      refreshChordSelectOptions();
     });
   }
 
   const cloneBar = (bar) => ({
-    chord: typeof bar?.chord === "string" ? bar.chord : "",
+    chord: Array.isArray(bar?.chord)
+      ? bar.chord.slice()
+      : normalizeBeatChords(bar?.chord),
     rhythm: Array.isArray(bar?.rhythm) && bar.rhythm.length > 0
       ? bar.rhythm.slice()
       : scoreData.buildDefaultRhythm(),
@@ -459,8 +554,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (doneButton) {
     doneButton.addEventListener("click", () => {
       const targetBar = bars[safeBarIndex];
-      if (targetBar && selectedChord) {
-        targetBar.chord = selectedChord;
+      if (targetBar) {
+        targetBar.chord = selectedBeatChords.slice(0, beatCount);
       }
       if (targetBar) {
         const nextRhythm = [];
@@ -477,7 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (bars.length > 1) {
           bars.splice(safeBarIndex, 1);
         } else if (targetBar) {
-          targetBar.chord = "";
+          targetBar.chord = normalizeBeatChords("");
           targetBar.rhythm = scoreData.buildDefaultRhythm();
         }
         store.setScoreBars(bars);

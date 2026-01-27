@@ -143,12 +143,34 @@ class RhythmScore {
     for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
       const notes = [];
       const barData = barSource ? barSource[barIndex] : null;
-      const rawChord = barData && typeof barData.chord === "string"
-        ? barData.chord
-        : progression
-          ? progression[barIndex % progression.length]
-          : "";
-      const chordLabel = this.sanitizeChordLabel(rawChord);
+      const getBeatLength = (duration) => {
+        if (duration === "16") return 0.25;
+        if (duration === "8") return 0.5;
+        return 1;
+      };
+      const normalizeBeatChords = (value) => {
+        if (Array.isArray(value)) {
+          const normalized = value.map((item) => (typeof item === "string" ? item : ""));
+          while (normalized.length < beats) {
+            normalized.push("");
+          }
+          return normalized.slice(0, beats);
+        }
+        if (typeof value === "string" && value.length > 0) {
+          return Array.from({ length: beats }, (_, index) => (index === 0 ? value : ""));
+        }
+        return Array.from({ length: beats }, () => "");
+      };
+      const buildBeatChords = () => {
+        if (barData && barData.chord) {
+          return normalizeBeatChords(barData.chord);
+        }
+        const fallback = progression ? progression[barIndex % progression.length] : "";
+        return normalizeBeatChords(fallback);
+      };
+      const beatChords = buildBeatChords().map((value) => this.sanitizeChordLabel(value));
+      let beatIndex = 0;
+      let beatProgress = 0;
       let chordAttached = false;
       const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
         ? barData.rhythm
@@ -159,20 +181,34 @@ class RhythmScore {
         const isRest = value.startsWith("r");
         const isTie = value.startsWith("t");
 
+        const beatChordLabel = beatChords[beatIndex] || "";
+        const beatLength = getBeatLength(duration);
+
+        let handledTie = false;
         if (isTie) {
           if (lastNoteIndex !== null) {
             notes[lastNoteIndex] = `${notes[lastNoteIndex]}-`;
             const noteValue = `C4.${duration}`;
             let props = "slashed";
-            if (chordLabel && !chordAttached) {
-              props += ` ch "${chordLabel}"`;
+            if (beatChordLabel && !chordAttached) {
+              props += ` ch "${beatChordLabel}"`;
               chordAttached = true;
             }
             const noteText = `${noteValue} { ${props} }`;
             notes.push(noteText);
             lastNoteIndex = notes.length - 1;
-            return;
+            beatProgress += beatLength;
+            handledTie = true;
           }
+        }
+
+        if (handledTie) {
+          if (beatProgress >= 0.999) {
+            beatIndex = Math.min(beatIndex + 1, beats - 1);
+            beatProgress = 0;
+            chordAttached = false;
+          }
+          return;
         }
 
         if (isRest) {
@@ -183,6 +219,7 @@ class RhythmScore {
 
           notes.push(noteText);
           lastNoteIndex = null;
+          beatProgress += beatLength;
         }
         else {
           const noteValue = duration === "16" ? "C4.16" : duration === "8" ? "C4.8" : "C4.4";
@@ -190,8 +227,8 @@ class RhythmScore {
 //          const noteValue = value === "8" ? ".8" : "r.8";       // サンプル 8分休符
 //          const noteValue = value === "8" ? ".8" : "C4.16";     // サンプル 16分音符
           let props = "slashed";
-          if (chordLabel && !chordAttached) {
-            props += ` ch "${chordLabel}"`;
+          if (beatChordLabel && !chordAttached) {
+            props += ` ch "${beatChordLabel}"`;
             chordAttached = true;
           }
           const noteText = `${noteValue} { ${props} }`;
@@ -203,6 +240,13 @@ class RhythmScore {
 
           notes.push(noteText);
           lastNoteIndex = notes.length - 1;
+          beatProgress += beatLength;
+        }
+
+        if (beatProgress >= 0.999) {
+          beatIndex = Math.min(beatIndex + 1, beats - 1);
+          beatProgress = 0;
+          chordAttached = false;
         }
         return;
       });

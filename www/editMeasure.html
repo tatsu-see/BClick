@@ -117,9 +117,23 @@
         <div class="rhythmPatternTable" role="table" aria-label="リズムパターン">
           <div class="rhythmPatternHeader" role="row">
             <div class="rhythmPatternCell rhythmPatternIndex" role="columnheader"></div>
+
+            <!--Spec 分割は4分音符,8分音符,16分音符を選ぶ列 -->
             <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">分割</div>
+
+            <!--Spec 分割は4,8,16分で分割したときの演奏するか休符かを選ぶ列
+            -->
             <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">パターン</div>
+
+            <!--Spec 選んだ音符や休符による楽譜上での音符を描画する列 -->
             <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">プレビュー</div>
+
+            <!--Spec コードは1行ごとの音符に設定するコードを選ぶ列
+            ・選択するコードは、「進行」に設定したコード文字列（input欄にあるスペース区切りの文字）から選択する。
+            ・コードは空欄も選べる。Createで生成した直後の小節を編集すると、１行目にはコードがあるが、２行目以降はコード無しとなる。
+            ・例えば 4/4拍子、で４つの音符に G G C D とコードを選択したら、Done から editScore に戻ると、編集した小節の音符の上に
+              コードが表示される。
+            -->
             <div class="rhythmPatternCell rhythmPatternChord" role="columnheader">コード</div>
           </div>
           <div id="rhythmPatternBody" class="rhythmPatternBody"></div>

@@ -180,9 +180,16 @@
         <div class="rhythmPatternTable" role="table" aria-label="リズムパターン">
           <div class="rhythmPatternHeader" role="row">
             <div class="rhythmPatternCell rhythmPatternIndex" role="columnheader"></div>
+
+            <!--Spec 分割は4分音符,8分音符,16分音符を選ぶ列 -->
             <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">分割</div>
+
+            <!--Spec 分割は4,8,16分で分割したときの演奏するか休符かを選ぶ列 -->
             <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">パターン</div>
+
+            <!--Spec 選んだ音符や休符による楽譜上での音符を描画する列 -->
             <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">プレビュー</div>
+
           </div>
           <div id="rhythmPatternBody" class="rhythmPatternBody"></div>
         </div>
