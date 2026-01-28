@@ -21,6 +21,46 @@
   <link rel="icon" type="image/png" sizes="128x128" href="/assets/icons/BClick-128x128.png">
   <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
 
+  <!--Spec 画面遷移の仕様（ preconnect / preload / modulepreload / prefetch 用）
+    * preload は index.html だけに入れる
+  index.html → configBeat.html
+  index.html → configScore.html
+  index.html → editScore.html
+  -->
+
+  <!-- Resource hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <link rel="preload" href="/assets/css/app.css" as="style">
+  <link rel="preload" href="/assets/css/tempoDial.css" as="style">
+  <link rel="preload" href="/assets/css/click.css" as="style">
+
+  <link rel="modulepreload" href="/assets/lib/Language.js">
+  <link rel="modulepreload" href="/assets/js/app.js">
+  <link rel="modulepreload" href="/assets/js/createScoreButton.js">
+  <link rel="modulepreload" href="/assets/js/editScoreButton.js">
+  <link rel="modulepreload" href="/assets/js/initScoreButton.js">
+  <link rel="modulepreload" href="/assets/js/loadScoreButton.js">
+
+  <link rel="prefetch" href="/configBeat.html" as="document">
+  <link rel="prefetch" href="/assets/css/configBeat.css" as="style">
+  <link rel="prefetch" href="/assets/js/configBeat.js" as="script">
+
+  <link rel="prefetch" href="/configScore.html" as="document">
+  <link rel="prefetch" href="/assets/css/configScore.css" as="style">
+  <link rel="prefetch" href="/assets/js/configScore.js" as="script">
+  <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/abcjs@6.2.3/dist/abcjs-basic-min.js" as="script" crossorigin>
+
+  <link rel="prefetch" href="/editScore.html" as="document">
+  <link rel="prefetch" href="/assets/css/editScore.css" as="style">
+  <link rel="prefetch" href="/assets/js/click.js" as="script">
+  <link rel="prefetch" href="/assets/js/editScore.js" as="script">
+  <link rel="prefetch" href="/assets/js/saveScoreButton.js" as="script">
+  <link rel="prefetch" href="/assets/js/mergeScoreButton.js" as="script">
+  <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.min.js" as="script" crossorigin>
+
   <link rel="stylesheet" href="/assets/css/app.css">
   <link rel="stylesheet" href="/assets/css/tempoDial.css">
   <link rel="stylesheet" href="/assets/css/click.css">
