@@ -36,6 +36,7 @@
   <script type="module" src="/assets/lib/Language.js"></script>
 
   <script type="module" src="/assets/js/configBeat.js"></script>
+  <script type="module" src="/assets/js/initScoreButton.js"></script>
 </head>
 
 <!--Spec クリック音に関する設定画面
@@ -51,6 +52,7 @@
     <div id="title">B.Click</div>
     <button id="closePage" type="button" aria-label="保存して戻る">Done</button>
   </header>
+
   <main>
 
     <div class="preferenceTitle">
@@ -112,6 +114,23 @@
     <div class="preferenceValue preferenceValueCentered">
       <input type="range" id="clickVolumeRange" min="0" max="10" step="1" value="5">
       <output id="clickVolumeValue" for="clickVolumeRange">5</output>
+    </div>
+
+    <div class="preferenceTitle">
+      その他
+    </div>
+
+    <!--Spec その他設定ボタン
+      ・Init.ボタン
+        現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
+        すべて初期値に戻る。初期値は次の通り。
+          テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
+        Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
+    -->
+    <div class="preferenceExec isRow4">
+        <button id="initScore" type="button" class="okConfig makeScoreButton">
+          Init.
+        </button>
     </div>
 
   </main>

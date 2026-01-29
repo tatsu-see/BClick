@@ -42,6 +42,7 @@
   <script type="module" src="/assets/js/editScore.js"></script>
   <script type="module" src="/assets/js/saveScoreButton.js"></script>
   <script type="module" src="/assets/js/mergeScoreButton.js"></script>
+  <script type="module" src="/assets/js/loadScoreButton.js"></script>
 </head>
 
 <!--Spec 作成した楽譜を編集やクリック音の再生をする画面
@@ -170,17 +171,28 @@
         現在編集中の楽譜情報をローカルストレージに保存する。具体的には楽譜データをJSONファイルとしてダウンロードする。
         （本当はファイル選択で保存先を指定できると良いが、iOS Safari は仕様上難しいためこの方法を採用している。）
 
-      ・Mergeボタン
-        Saveによって保存した楽譜JSONファイルをファイル選択して読むが、楽譜の小節を追加するだけにする。
+      ・Loadボタン
+        Saveによって保存した楽譜JSONファイルをファイル選択して読み、アプリの設定画面で編集可能な状態にする。
+
+      ・Merge トグルスイッチ
+        ONのときに、Load操作を若干変更する。選択したファイルの楽譜の小節部分を、今編集中の楽譜の後ろに小節を結合する。
+        ただし、同じ拍子でないと結合はできない。
     -->
-    <div class="preferenceExec">
-        <button id="saveScore" type="button" class="okConfig makeScoreButton">
-          Save
-        </button>
-        <button id="mergeScore" type="button" class="okConfig makeScoreButton">
-          Merge
-        </button>
+    <div class="preferenceExec isRow4">
+      <div></div>
+      <button id="saveScore" type="button" class="okConfig makeScoreButton">
+        Save
+      </button>
+
+      <button id="loadScore" type="button" class="okConfig makeScoreButton">
+        Load
+      </button>
+
+      <button id="mergeScore" type="button" class="okConfig makeScoreButton">
+        Merge
+      </button>
     </div>
+    <input type="file" id="loadScoreFile" accept="application/json" hidden>
     <input type="file" id="mergeScoreFile" accept="application/json" hidden>
 
   </main>

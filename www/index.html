@@ -42,7 +42,6 @@
   <link rel="modulepreload" href="/assets/js/createScoreButton.js">
   <link rel="modulepreload" href="/assets/js/editScoreButton.js">
   <link rel="modulepreload" href="/assets/js/initScoreButton.js">
-  <link rel="modulepreload" href="/assets/js/loadScoreButton.js">
 
   <link rel="prefetch" href="/configBeat.html" as="document">
   <link rel="prefetch" href="/assets/css/configBeat.css" as="style">
@@ -74,7 +73,6 @@
   <script type="module" src="/assets/js/createScoreButton.js"></script>
   <script type="module" src="/assets/js/editScoreButton.js"></script>
   <script type="module" src="/assets/js/initScoreButton.js"></script>
-  <script type="module" src="/assets/js/loadScoreButton.js"></script>
 </head>
 
 <body>
@@ -138,56 +136,41 @@
       </label>
     </div>
 
-    <div class="preferenceSummery" id="scoreSetting">
-      <!--  スコア設定 -->
-      <div class="preferenceNow" id="configScore">
-        <!-- ここに拍子、コード進行、小節数 を表示する。 -->
+    <div id="preferenceRythm" style="background-color: #f3f7f2; border-radius: 3px;">
+      <div class="preferenceSummery" id="scoreSetting">
+        <!--  スコア設定 -->
+        <div class="preferenceNow" id="configScore">
+          <!-- ここに拍子、コード進行、小節数 を表示する。 -->
+        </div>
+
+        <div class="preferenceValue">
+          <button id="configScoreButton" type="button">
+            <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+          </button>
+        </div>
+
       </div>
 
-      <div class="preferenceValue">
-        <button id="configScoreButton" type="button">
-          <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-        </button>
-      </div>
+      <!--Spec スコアの操作ボタン
+        <div class="preferenceTitle">
+          <span class="material-symbols-outlined" aria-hidden="true">library_music</span>
+          スコア
+        </div>
 
-    </div>
+        以下のボタンは、configBeat.html画面やconfigScore.html画面で設定した情報から楽譜を新規生成したり、保存したりする機能のボタンである。
+        ボタンは1行に横並びで表示し、ボタンを等しい幅で配置する。
+        以下の楽譜編集ボタンや、楽譜ファイル(*.json)の操作ボタンは、app.js に全部実装するのではなくて、適宜モジュールに分割して実装する。
 
-    <div class="preferenceTitle">
-      <span class="material-symbols-outlined" aria-hidden="true">library_music</span>
-      スコア
-    </div>
+        ・Createボタン
+          configBeat.html画面やconfigScore.html画面で設定した情報から新規に楽譜を生成する。Editで編集中の楽譜情報も破棄して、
+          新規生成する。楽譜を新規作成した後は、そのまま編集操作にするため、Editボタンが押されたように、editScore.html画面を表示する。
+          Createボタンは、現在の楽譜を保存せずに破棄して新規作成するため、注意を促すダイアログを表示してから実行する。
 
-    <!--Spec スコアの操作ボタン
-      以下のボタンは、configBeat.html画面やconfigScore.html画面で設定した情報から楽譜を新規生成したり、保存したりする機能のボタンである。
-      ボタンは1行に横並びで表示し、ボタンを等しい幅で配置する。
-      以下の楽譜編集ボタンや、楽譜ファイル(*.json)の操作ボタンは、app.js に全部実装するのではなくて、適宜モジュールに分割して実装する。
-
-      ・Loadボタン
-        Saveによって保存した楽譜JSONファイルをファイル選択して読み、アプリの設定画面で編集可能な状態にする。
-
-      ・Init.ボタン
-        現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
-        すべて初期値に戻る。初期値は次の通り。
-          テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
-        Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
-
-      ・Createボタン
-        configBeat.html画面やconfigScore.html画面で設定した情報から新規に楽譜を生成する。Editで編集中の楽譜情報も破棄して、
-        新規生成する。楽譜を新規作成した後は、そのまま編集操作にするため、Editボタンが押されたように、editScore.html画面を表示する。
-        Createボタンは、現在の楽譜を保存せずに破棄して新規作成するため、注意を促すダイアログを表示してから実行する。
-
-      ・Editボタン
-        現在編集中の楽譜を編集する editScore.html画面 を表示する。
-    -->
-    <div class="preferenceExec isRow4">
-        <button id="loadScore" type="button" class="okConfig makeScoreButton">
-          Load
-        </button>
-
-        <button id="initScore" type="button" class="okConfig makeScoreButton">
-          Init.
-        </button>
-  
+        ・Editボタン
+          現在編集中の楽譜を編集する editScore.html画面 を表示する。
+      -->
+      <div class="preferenceExec isRow4">
+        <div></div>
         <button id="setClick" type="button" class="okConfig makeScoreButton">
           Create
         </button>
@@ -195,13 +178,13 @@
         <button id="editScore" type="button" class="okConfig makeScoreButton">
           Edit
         </button>
+        <div></div>
+      </div>
     </div>
-
-    <input type="file" id="loadScoreFile" accept="application/json" hidden>
-
   </main>
+
   <footer>
-    Ver. 13 /
+    Ver. 14 /
 
     <!--
       <a href="/manual.html" target="_blank">

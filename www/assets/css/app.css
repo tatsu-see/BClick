@@ -280,6 +280,11 @@ footer {
   pointer-events: none;
 }
 
+.preferenceExec.isDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .preferenceTitle .material-symbols-outlined {
   line-height: 1;
 }
@@ -306,7 +311,7 @@ footer {
   padding:3px;
   width:calc(100%-6px);
 
-  border:1px solid #cfcfcf;
+  border:0px solid #cfcfcf;
   border-radius: 3px;
   background-color: mintcream;
 
@@ -324,6 +329,15 @@ footer {
 
 .preferenceSummery .preferenceValue {
   width: auto;
+}
+
+#preferenceRythm .preferenceSummery,
+#preferenceRythm .preferenceExec {
+  margin-bottom: 0;
+}
+
+#preferenceRythm {
+  margin-bottom: 3px;
 }
 .preferenceNow {
   height:100%;

@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreSummary = document.getElementById("configScore");
   const scoreSetting = document.getElementById("scoreSetting");
   const scoreToggle = document.getElementById("scoreToggle");
+  const scoreExec = document.querySelector("#preferenceRythm .preferenceExec");
+  const scoreExecButtons = scoreExec ? scoreExec.querySelectorAll("button") : [];
   const tempoDown10Button = document.getElementById("tempoDown10");
   const tempoDownButton = document.getElementById("tempoDown");
   const tempoUpButton = document.getElementById("tempoUp");
@@ -88,6 +90,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (configScoreButton) {
       configScoreButton.disabled = !enabled;
     }
+    if (scoreExec) {
+      scoreExec.classList.toggle("isDisabled", !enabled);
+      scoreExec.setAttribute("aria-disabled", String(!enabled));
+    }
+    scoreExecButtons.forEach((button) => {
+      button.disabled = !enabled;
+    });
   };
 
   const syncTempoFromStore = () => {
