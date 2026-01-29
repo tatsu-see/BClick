@@ -439,6 +439,16 @@ footer {
   background-color: mintcream;
 }
 
+#showClick {
+  margin-bottom: 3px;
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  background-color: mintcream;
+}
+
 #clicking button {
   min-width: 90px;
 }
