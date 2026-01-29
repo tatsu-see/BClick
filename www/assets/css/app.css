@@ -280,6 +280,14 @@ footer {
   pointer-events: none;
 }
 
+#mergeToggle::after {
+  content: "OFF";
+}
+
+#mergeToggle:checked::after {
+  content: "Merge";
+}
+
 .preferenceExec.isDisabled {
   opacity: 0.5;
   pointer-events: none;
@@ -338,6 +346,20 @@ footer {
 
 #preferenceRythm {
   margin-bottom: 3px;
+}
+
+.mergeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  width: 100%;
+}
+
+.mergeToggleLabel {
+  font-size: 0.7em;
+  font-weight: 700;
+  color: #1e7a4f;
 }
 .preferenceNow {
   height:100%;

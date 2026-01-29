@@ -111,6 +111,8 @@ main {
 .tempoDialToggleControl {
   flex-direction: column;
   gap: 2px;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .scoreToggle input#tempoDialToggle::after {

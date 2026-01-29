@@ -41,7 +41,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.min.js"></script>
   <script type="module" src="/assets/js/editScore.js"></script>
   <script type="module" src="/assets/js/saveScoreButton.js"></script>
-  <script type="module" src="/assets/js/mergeScoreButton.js"></script>
   <script type="module" src="/assets/js/loadScoreButton.js"></script>
 </head>
 
@@ -85,7 +84,6 @@
           ・文字は OFF と DIAL （ONの代わり） を表示して。ON場合は少し濃い緑色を使う。
           -->
           <div class="preferenceValue preferenceValueCentered tempoDialToggleControl">
-            <label class="tempoDialToggleLabel" for="tempoDialToggle">ダイヤル</label>
             <label class="scoreToggle">
               <input type="checkbox" id="tempoDialToggle" aria-label="テンポダイヤルの表示切り替え">
             </label>
@@ -188,12 +186,13 @@
         Load
       </button>
 
-      <button id="mergeScore" type="button" class="okConfig makeScoreButton">
-        Merge
-      </button>
+      <div class="mergeToggle">
+        <label class="scoreToggle">
+          <input type="checkbox" id="mergeToggle" aria-label="Mergeモードの切り替え">
+        </label>
+      </div>
     </div>
     <input type="file" id="loadScoreFile" accept="application/json" hidden>
-    <input type="file" id="mergeScoreFile" accept="application/json" hidden>
 
   </main>
 
