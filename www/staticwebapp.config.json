@@ -1,0 +1,16 @@
+{
+  "routes": [
+    { "route": "/index.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/configBeat.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/configScore.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/editMeasure.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/editScore.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/codeDiagram.html", "headers": { "Cache-Control": "no-cache" } },
+    { "route": "/terms.html", "headers": { "Cache-Control": "no-cache" } },
+
+    { "route": "/assets/*.js", "headers": { "Cache-Control": "max-age=0, must-revalidate" } },
+    { "route": "/assets/*", "headers": { "Cache-Control": "public, max-age=1800, immutable" } },
+
+    { "route": "/*", "headers": { "Cache-Control": "public, max-age=1800, must-revalidate" } }
+  ]
+}
