@@ -323,6 +323,14 @@ document.addEventListener("DOMContentLoaded", () => {
     setOverlayVisible(false);
   };
 
+  const syncClickCountFromStore = () => {
+    if (!clickCountSelect) return;
+    const savedClickCount = store.getClickCount();
+    if (savedClickCount !== null) {
+      clickCountSelect.value = savedClickCount.toString();
+    }
+  };
+
   const resetPlayback = () => {
     clearTimers();
     if (typeof window.bclickActiveChordIndex !== "undefined") {
@@ -368,10 +376,19 @@ document.addEventListener("DOMContentLoaded", () => {
     startPlayback();
   }
 
+  syncClickCountFromStore();
   setClickBoxes();
 
   document.addEventListener("bclick:tempochange", (event) => {
     const nextTempo = getNumberValue(event?.detail?.tempo, getTempo());
     updateTempo(nextTempo);
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.storageArea !== window.localStorage) return;
+    if (event.key === "bclick.clickCount") {
+      syncClickCountFromStore();
+      setClickBoxes();
+    }
   });
 });
