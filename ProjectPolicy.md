@@ -30,12 +30,14 @@
 - 将来的に 最終的に 難読化 → 圧縮、の順にBuildすること。
 
 ## ソースコード(*.html)
-
 - 画面遷移の仕様に従って（ preconnect / preload / modulepreload / prefetch ） を入れる。
  ** preload は index.html だけに入れる
 
 ## ソースコード(*.js)
 - ES module で統一する。(圧縮時の処理安定も兼ねるための対策)
+
+## ソースコード(*.css)
+- 属性にはコメントを追加して、後から手動で編集しやすくしておく。
 
 ### コメント
 - コメントは日本語で書く
@@ -75,4 +77,6 @@ https://docs.abcjs.net/
 - ファイルが用意出来たら ローカルで確認（ npm install → npm run build ）し、確認出来たら push してリリースする。
 - コマンド（npm install → npm run build）はrepoフォルダで実行するが、その際に生成される dist , node_modules フォルダは git 管理対象外。
 - AIは コマンド `npm run build` は 実行しない。(開発者が実行する)
- 
+
+## サーバー設定
+- キャッシュを有効にする。（時々設定を見直すこと）
