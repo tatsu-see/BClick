@@ -33,6 +33,14 @@
 - 画面遷移の仕様に従って（ preconnect / preload / modulepreload / prefetch ） を入れる。
  ** preload は index.html だけに入れる
 
+- index.html 以外の画面は noindex を入れて、検索サイトに「そのページを検索結果に出さないで」と伝える
+
+- 英語と日本語の翻訳に関しては、以下のようにする。翻訳箇所に英語と日本語を用意する。
+
+  例）
+    <span class="lang" data-lang="en">Manual</span>
+    <span class="lang" data-lang="ja">使い方</span>
+
 ## ソースコード(*.js)
 - ES module で統一する。(圧縮時の処理安定も兼ねるための対策)
 
@@ -80,3 +88,7 @@ https://docs.abcjs.net/
 
 ## サーバー設定
 - キャッシュを有効にする。（時々設定を見直すこと）
+- *.html 「キャッシュはするが毎回 revalidate」の設定とする。
+
+- WEB検索から index.html 以外の画面を直接開いたら inded.html へ転送する。
+
