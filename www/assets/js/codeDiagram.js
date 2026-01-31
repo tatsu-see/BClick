@@ -1,5 +1,6 @@
 import { ConfigStore } from "./store.js";
 import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
+import { isLanguage } from "../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -15,6 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
   /**
    * 基本的なポジションデータを定義する。(簡易な抑え方法もあるけど、それは先生に教えてもらう。)
    */
+
+  // メジャー
   const majorChordPositions = {
     C: {
       positions: [
@@ -51,8 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
         { string: 1, fret: 1, finger: 1 },
         { string: 2, fret: 1, finger: 1 },
         { string: 3, fret: 2, finger: 2 },
-        { string: 4, fret: 3, finger: 3 },
-        { string: 5, fret: 3, finger: 4 },
+        { string: 4, fret: 3, finger: 4 },
+        { string: 5, fret: 3, finger: 3 },
         { string: 6, fret: 1, finger: 1 },
       ],
       barres: [
@@ -61,20 +64,20 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     G: {
       positions: [
-        { string: 1, fret: 3, finger: 3 },
+        { string: 1, fret: 3, finger: 4 },
         { string: 2, fret: 0 },
-        { string: 5, fret: 2, finger: 1 },
+        { string: 5, fret: 2, finger: 2 },
         { string: 3, fret: 0 },
         { string: 4, fret: 0 },
-        { string: 6, fret: 3, finger: 2 },
+        { string: 6, fret: 3, finger: 3 },
       ],
     },
     A: {
       positions: [
         { string: 1, fret: 0 },
-        { string: 2, fret: 2, finger: 1 },
+        { string: 2, fret: 2, finger: 3 },
         { string: 3, fret: 2, finger: 2 },
-        { string: 4, fret: 2, finger: 3 },
+        { string: 4, fret: 2, finger: 1 },
         { string: 5, fret: 0 },
         { string: 6, fret: -1 },
       ],
@@ -82,9 +85,9 @@ document.addEventListener("DOMContentLoaded", () => {
     B: {
       positions: [
         { string: 1, fret: 2, finger: 1 },
-        { string: 2, fret: 4, finger: 2 },
-        { string: 3, fret: 4, finger: 4 },
-        { string: 4, fret: 4, finger: 3 },
+        { string: 2, fret: 4, finger: 4 },
+        { string: 3, fret: 4, finger: 3 },
+        { string: 4, fret: 4, finger: 2 },
         { string: 5, fret: 2, finger: 1 },
         { string: 6, fret: -1 },
       ],
@@ -94,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
+  // マイナー
   const minorChordPositions = {
     Cm: {
       positions: [
@@ -133,8 +137,8 @@ document.addEventListener("DOMContentLoaded", () => {
         { string: 1, fret: 1, finger: 1 },
         { string: 2, fret: 1, finger: 1 },
         { string: 3, fret: 1, finger: 1 },
-        { string: 4, fret: 3, finger: 3 },
-        { string: 5, fret: 3, finger: 4 },
+        { string: 4, fret: 3, finger: 4 },
+        { string: 5, fret: 3, finger: 3 },
         { string: 6, fret: 1, finger: 1 },
       ],
       barres: [
@@ -167,9 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
     Bm: {
       positions: [
         { string: 1, fret: 2, finger: 1 },
-        { string: 2, fret: 3, finger: 2 },
+        { string: 2, fret: 3, finger: 3 },
         { string: 3, fret: 4, finger: 4 },
-        { string: 4, fret: 4, finger: 3 },
+        { string: 4, fret: 4, finger: 2 },
         { string: 5, fret: 2, finger: 1 },
         { string: 6, fret: 2, finger: 1 },
       ],
@@ -184,11 +188,17 @@ document.addEventListener("DOMContentLoaded", () => {
     ...minorChordPositions,
   };
 
+  /**
+   * 指番号・ミュート表示をクリアする。
+   */
   const clearFingers = () => {
     document.querySelectorAll(".fretCell .finger, .fretCell .mute").forEach((mark) => mark.remove());
     document.querySelectorAll(".fretboard .barre").forEach((barre) => barre.remove());
   };
 
+  /**
+   * セーハ表示を描画する。
+   */
   const renderBarres = (barres) => {
     if (!fretboard || !barres) return;
     const fretboardRect = fretboard.getBoundingClientRect();
@@ -215,12 +225,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  /**
+   * コードの押さえ方を描画する。
+   */
   const renderChord = (chordName) => {
     clearFingers();
     const chord = chordPositions[chordName];
     if (!chord) return;
     currentChord = chordName;
     renderBarres(chord.barres);
+    const fingerLabelMap = isLanguage("ja")
+      ? { 1: "人", 2: "中", 3: "薬", 4: "小" }
+      : null;
     const barreFrets = new Set(
       (chord.barres || []).map((barre) => barre.fret),
     );
@@ -244,13 +260,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const label = document.createElement("span");
         label.className = "fingerLabel";
-        label.textContent = String(finger);
+
+        //Spec 日本語の場合は、指番号を漢字に置き換えて描画する。
+        label.textContent = fingerLabelMap?.[finger] || String(finger);
         dot.appendChild(label);
       }
       cell.appendChild(dot);
     });
   };
 
+  /**
+   * コード品質ボタンの選択状態を切り替える。
+   */
   const setActiveQuality = (button) => {
     chordQualityButtons.forEach((qualityButton) => {
       const isActive = qualityButton === button;
@@ -259,6 +280,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  /**
+   * ルートボタンの選択状態を切り替える。
+   */
   const setActiveRoot = (button) => {
     chordRootButtons.forEach((rootButton) => {
       const isActive = rootButton === button;
@@ -267,12 +291,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  /**
+   * 選択中のコード品質ボタンを取得する。
+   */
   const getActiveQuality = () =>
     chordQualityButtons.find((button) => button.classList.contains("isActive"));
 
+  /**
+   * 選択中のルートボタンを取得する。
+   */
   const getActiveRoot = () =>
     chordRootButtons.find((button) => button.classList.contains("isActive"));
 
+  /**
+   * 選択中のルート/品質からコード名を生成する。
+   */
   const buildChordName = () => {
     const rootButton = getActiveRoot();
     const qualityButton = getActiveQuality();
@@ -322,6 +355,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (chordName) renderChord(chordName);
   }
 
+  /**
+   * 1つ前の画面へ戻る。
+   */
   const goBack = () => {
     goBackWithFallback();
   };
@@ -332,6 +368,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /**
+   * 選択中のコードを保存して戻る。
+   */
   const saveAndGoBack = () => {
     if (currentChord) {
       store.setCodeDiagramChord(currentChord);
