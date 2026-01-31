@@ -223,6 +223,21 @@
       <div class="mergeToggle">
         <label class="scoreToggle">
           <input type="checkbox" id="mergeToggle" aria-label="Toggle merge mode">
+          <script>
+            (function() {
+              try {
+                const saved = localStorage.getItem("bclick.score.merge");
+                if (saved === null) return;
+                const parsed = JSON.parse(saved);
+                const toggle = document.getElementById("mergeToggle");
+                if (toggle) {
+                  toggle.checked = parsed === true;
+                }
+              } catch (e) {
+                ;
+              }
+            })();
+          </script>
         </label>
       </div>
     </div>

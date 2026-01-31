@@ -175,6 +175,21 @@
       <span class="lang" data-lang="ja">リズム</span>
       <label class="scoreToggle">
         <input type="checkbox" id="scoreToggle" aria-label="Toggle rhythm display">
+        <script>
+          (function() {
+            try {
+              const saved = localStorage.getItem("bclick.score.enabled");
+              if (saved === null) return;
+              const parsed = JSON.parse(saved);
+              const toggle = document.getElementById("scoreToggle");
+              if (toggle) {
+                toggle.checked = parsed === true;
+              }
+            } catch (e) {
+              ;
+            }
+          })();
+        </script>
       </label>
     </div>
 

@@ -8,10 +8,45 @@ import {
 import { showMessage } from "../lib/ShowMessageBox.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  const MERGE_TOGGLE_KEY = "bclick.score.merge";
   const loadButton = document.getElementById("loadScore");
   const loadInput = document.getElementById("loadScoreFile");
   const mergeToggle = document.getElementById("mergeToggle");
   if (!loadButton || !loadInput) return;
+
+  /**
+   * ローカルストレージからトグル設定を取得する。
+   */
+  const getToggleSetting = (key) => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw === null) return null;
+      return JSON.parse(raw) === true;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  /**
+   * ローカルストレージへトグル設定を保存する。
+   */
+  const setToggleSetting = (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(Boolean(value)));
+    } catch (error) {
+      ;
+    }
+  };
+
+  if (mergeToggle) {
+    const savedMerge = getToggleSetting(MERGE_TOGGLE_KEY);
+    if (savedMerge !== null) {
+      mergeToggle.checked = savedMerge;
+    }
+    mergeToggle.addEventListener("change", () => {
+      setToggleSetting(MERGE_TOGGLE_KEY, mergeToggle.checked);
+    });
+  }
 
   /**
    * 読み込みボタンの処理。
