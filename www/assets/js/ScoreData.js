@@ -2,12 +2,16 @@
  * オリジナルの簡易楽譜データオブジェクト
  */
 class ScoreData {
-  constructor({ timeSignature, measures, progression, bars, beatPatterns } = {}) {
+  constructor({ timeSignature, measures, progression, bars, beatPatterns, barsPerRow } = {}) {
     this.timeSignature = timeSignature || "4/4";
     this.measures = Number.isNaN(Number.parseInt(measures, 10))
       ? 2
       : Number.parseInt(measures, 10);
     this.progression = progression || "";
+    const parsedBarsPerRow = Number.parseInt(barsPerRow, 10);
+    this.barsPerRow = Number.isNaN(parsedBarsPerRow)
+      ? 2
+      : Math.max(1, Math.min(4, parsedBarsPerRow));
     this.beatPatterns = Array.isArray(beatPatterns) ? beatPatterns : null;
     const normalizedBars = this.normalizeBars(bars);
     this.bars = normalizedBars || this.buildBars();

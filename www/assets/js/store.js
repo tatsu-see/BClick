@@ -15,6 +15,7 @@ export class ConfigStore extends LocalStore {
       ScoreTimeSignature: 'bclick.score.timeSignature',
       ScoreProgression: 'bclick.score.progression',
       ScoreMeasures: 'bclick.score.measures',
+      ScoreBarsPerRow: 'bclick.score.barsPerRow',
       ScoreBars: 'bclick.score.bars',
       ScoreBeatPatterns: 'bclick.score.beatPatterns',
       ScoreEnabled: 'bclick.score.enabled',
@@ -161,6 +162,17 @@ export class ConfigStore extends LocalStore {
   setScoreMeasures(value) {
     if (!Number.isFinite(value) || value <= 0) return;
     this.setNumberSetting(this.keys.ScoreMeasures, value);
+  }
+
+  getScoreBarsPerRow() {
+    const saved = this.getNumberSetting(this.keys.ScoreBarsPerRow);
+    return typeof saved === 'number' ? saved : null;
+  }
+
+  setScoreBarsPerRow(value) {
+    if (!Number.isFinite(value)) return;
+    const clamped = Math.max(1, Math.min(4, value));
+    this.setNumberSetting(this.keys.ScoreBarsPerRow, clamped);
   }
 
   getScoreBeatPatterns() {

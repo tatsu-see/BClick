@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
     const savedBeatPatterns = store.getScoreBeatPatterns();
+    const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
     return new ScoreData({
       timeSignature: savedTimeSignature || "4/4",
@@ -28,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
       progression: savedProgression || "",
       beatPatterns: savedBeatPatterns || null,
       bars: savedBars || null,
+      barsPerRow: savedBarsPerRow || 2,
     });
   };
 
@@ -42,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     score.setMeasures(data.measures);
     score.setProgression(data.progression);
     score.setBars(data.bars);
+    score.setBarsPerRow(data.barsPerRow || 2);
   };
 
   const initialSettings = loadSettings();
@@ -51,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     measures: initialSettings.measures,
     progression: initialSettings.progression,
     bars: initialSettings.bars,
+    barsPerRow: initialSettings.barsPerRow || 2,
   });
   renderScoreData(initialSettings);
 

@@ -19,6 +19,7 @@ class RhythmScore {
     timeSignature = "4/4",
     chord = "E",
     measures = 2,
+    barsPerRow = null,
     progression = "",
     bars = [],
   } = {}) {
@@ -26,6 +27,7 @@ class RhythmScore {
     this.timeSignature = timeSignature;
     this.chord = chord;
     this.measures = measures;
+    this.barsPerRow = Number.isFinite(barsPerRow) ? barsPerRow : null;
     this.progression = this.normalizeProgression(progression);
     this.bars = Array.isArray(bars) ? bars : [];
     this.overlayTimer = null;
@@ -65,6 +67,13 @@ class RhythmScore {
     const parsed = Number.parseInt(value, 10);
     if (Number.isNaN(parsed) || parsed <= 0) return;
     this.measures = parsed;
+    this.render();
+  }
+
+  setBarsPerRow(value) {
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isNaN(parsed) || parsed <= 0) return;
+    this.barsPerRow = parsed;
     this.render();
   }
 
@@ -200,7 +209,7 @@ class RhythmScore {
             // また、タイの後ろの音符は指定しないことで、リズム譜として タイを表示する。
 
             // Spec
-            // 例1）4分音符から4分音符へのタイ
+            // 例1）4分音符から4分音符へのタイ（alphaTex）
             //                             vここに C4.4 は挿入しない。
             // :4 C4.4 { slashed ch "G" } - { slashed }
             // 
@@ -217,7 +226,7 @@ class RhythmScore {
           } else if (isBarHead && barIndex > 0) {
 
             // Spec 2小節名以降の先頭のタイは、先頭の拍を "- { slashed }" で始める。
-            // 例）
+            // 例）（alphaTex）
             // :4 C4{slashed} :8 -{slashed} r :4 C4{slashed} C4{slashed} |    ← 1小節目
             // :4 - {slashed} C4{slashed} C4{slashed} C4{slashed} |           ← 2小節目（先頭タイ）
 
@@ -262,7 +271,7 @@ class RhythmScore {
           }
           const noteText = `${noteValue} { ${props} }`;
 
-          /* Spec noteText の例）
+          /* Spec noteText の例）（alphaTex）
           // コード無しの場合 > C4.4 { slashed }
           // コード在りの場合 > C4.4 { slashed ch "C" }
           */
@@ -284,12 +293,16 @@ class RhythmScore {
     }
 
     // 文字列を確認する。
+    const layoutLine = Number.isFinite(this.barsPerRow) && this.barsPerRow > 0
+      ? `\\track { defaultSystemsLayout ${this.barsPerRow} }`
+      : null;
     var check_alphaTex = 
     [
+      layoutLine,
       `\\ts ${numerator} ${denominator}`,
       ".",
       `:${denominator} ${bars.join(" | ")} |`,
-    ].join("\n");
+    ].filter(Boolean).join("\n");
 
     return check_alphaTex;
   }
@@ -306,9 +319,13 @@ class RhythmScore {
         scale: 0.95,
       },
     };
+    if (Number.isFinite(this.barsPerRow) && this.barsPerRow > 0) {
+      const layoutMode = window.alphaTab.SystemsLayoutMode?.Model ?? 1;
+      settings.display.systemsLayoutMode = layoutMode;
+    }
 
     this.container.textContent = this.buildAlphaTex();
-    new window.alphaTab.AlphaTabApi(this.container, settings);
+      new window.alphaTab.AlphaTabApi(this.container, settings);
     this.startOverlayPoll();
   }
 

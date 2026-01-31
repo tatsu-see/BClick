@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoStepFine = document.getElementById("tempoStepFine");
   const tempoDialToggle = document.getElementById("tempoDialToggle");
   const tempoDialRow = document.getElementById("tempoDialRow");
+  const barsPerRowRange = document.getElementById("barsPerRowRange");
+  const barsPerRowValue = document.getElementById("barsPerRowValue");
   let currentScoreData = null;
   let rhythmScore = null;
   let lastSavedBarsJson = "";
@@ -34,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
     const savedBeatPatterns = store.getScoreBeatPatterns();
+    const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
     return new ScoreData({
       timeSignature: savedTimeSignature || "4/4",
@@ -41,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       progression: savedProgression || "",
       beatPatterns: savedBeatPatterns || null,
       bars: savedBars || null,
+      barsPerRow: savedBarsPerRow || 2,
     });
   };
 
@@ -87,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
       measures: currentScoreData.measures,
       progression: currentScoreData.progression,
       bars: currentScoreData.bars,
+      barsPerRow: currentScoreData.barsPerRow || 2,
     });
     window.bclickRhythmScore = rhythmScore;
     if (Array.isArray(currentScoreData.bars)) {
@@ -174,6 +179,27 @@ document.addEventListener("DOMContentLoaded", () => {
     scoreArea.addEventListener("scroll", () => {
       rhythmScore.handleOverlayRefresh();
     }, { passive: true });
+  }
+
+  if (barsPerRowRange) {
+    const savedBarsPerRow = store.getScoreBarsPerRow();
+    const initialBarsPerRow = savedBarsPerRow || 2;
+    barsPerRowRange.value = initialBarsPerRow.toString();
+    if (barsPerRowValue) {
+      barsPerRowValue.textContent = barsPerRowRange.value;
+    }
+    barsPerRowRange.addEventListener("input", () => {
+      if (barsPerRowValue) {
+        barsPerRowValue.textContent = barsPerRowRange.value;
+      }
+      const parsed = Number.parseInt(barsPerRowRange.value, 10);
+      if (!Number.isNaN(parsed)) {
+        store.setScoreBarsPerRow(parsed);
+        if (rhythmScore) {
+          rhythmScore.setBarsPerRow(parsed);
+        }
+      }
+    });
   }
 
   window.addEventListener("storage", (event) => {

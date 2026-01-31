@@ -87,6 +87,9 @@ https://www.alphatab.net/docs/introduction/
 alphaTab の Chord 表記の例は下記から、{ch "C"} を検索。
 https://next.alphatab.net/docs/alphatex/beat-properties
 
+alphaTab/alphaTex の1段ごとの小節数の表記の例は下記から。
+https://alphatab.net/docs/alphatex/score-metadata#defaultsystemslayout
+
 - 内部で ABCJS を使用している個所は、仕様の参照は以下のサイトから行う。
 https://docs.abcjs.net/
 
