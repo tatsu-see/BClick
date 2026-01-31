@@ -364,10 +364,6 @@ document.addEventListener("DOMContentLoaded", () => {
       row.className = "rhythmPatternRow";
       row.setAttribute("role", "row");
 
-      const indexCell = document.createElement("div");
-      indexCell.className = "rhythmPatternCell rhythmPatternIndex";
-      indexCell.textContent = `${index + 1}`;
-
       const divisionCell = document.createElement("div");
       divisionCell.className = "rhythmPatternCell rhythmPatternDivision";
       const divisionSelect = document.createElement("select");
@@ -479,7 +475,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       rebuildPatternSelectors();
 
-      row.appendChild(indexCell);
       row.appendChild(divisionCell);
       row.appendChild(patternCell);
       row.appendChild(previewCell);

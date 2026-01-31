@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chordRootButtons = Array.from(
     document.querySelectorAll(".chordRoot"),
   );
+  const chordSlashToggle = document.querySelector(".chordSlashToggle");
   const chordQualityButtons = Array.from(
     document.querySelectorAll(".chordQuality"),
   );
@@ -172,6 +173,31 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /**
+   * コード進行の最後のアルファベットの直後に "/" を挿入する。
+   */
+  const appendSlashToProgression = () => {
+    if (!codeProgressionInput) return;
+    const rawValue = codeProgressionInput.value || "";
+    const trimmed = rawValue.replace(/\s+$/g, "");
+    if (!trimmed) {
+      codeProgressionInput.value = "/";
+      return;
+    }
+    if (trimmed.endsWith("/")) {
+      codeProgressionInput.value = trimmed;
+      return;
+    }
+    const lastLetterMatch = /[A-Za-z](?!.*[A-Za-z])/.exec(trimmed);
+    if (!lastLetterMatch || lastLetterMatch.index == null) {
+      codeProgressionInput.value = `${trimmed}/`;
+      return;
+    }
+    const insertIndex = lastLetterMatch.index + 1;
+    codeProgressionInput.value =
+      `${trimmed.slice(0, insertIndex)}/${trimmed.slice(insertIndex)}`;
+  };
+
+  /**
    * コード品質ボタンの選択状態を切り替える。
    */
   const setActiveQuality = (button) => {
@@ -204,11 +230,26 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   const getActiveRoot = () => chordRootButtons.find((button) => button.classList.contains("isActive"));
 
+  /**
+   * "/" トグルの選択状態を切り替える。
+   */
+  const setSlashActive = (isActive) => {
+    if (!chordSlashToggle) return;
+    chordSlashToggle.classList.toggle("isActive", isActive);
+    chordSlashToggle.setAttribute("aria-pressed", isActive ? "true" : "false");
+  };
+
+  /**
+   * "/" トグルがONかどうかを返す。
+   */
+  const isSlashActive = () => Boolean(chordSlashToggle?.classList.contains("isActive"));
+
   if (chordQualityButtons.length > 0) {
     const activeQuality =
       getActiveQuality() || chordQualityButtons[0];
     setActiveQuality(activeQuality);
   }
+  setSlashActive(false);
 
   /**
    * 選択中のルート/品質からコード文字列を生成する。
@@ -223,6 +264,16 @@ document.addEventListener("DOMContentLoaded", () => {
   chordRootButtons.forEach((button) => {
     button.addEventListener("click", () => {
       setActiveRoot(button);
+      if (isSlashActive()) {
+        const root = button.dataset.root || button.textContent.trim();
+        if (!codeProgressionInput) return;
+        if (!codeProgressionInput.value.trim().endsWith("/")) {
+          appendSlashToProgression();
+        }
+        codeProgressionInput.value += root;
+        setSlashActive(false);
+        return;
+      }
       const qualityButton = getActiveQuality() || chordQualityButtons[0];
       if (!qualityButton) return;
       appendChord(buildChord(button, qualityButton));
@@ -234,6 +285,16 @@ document.addEventListener("DOMContentLoaded", () => {
       setActiveQuality(button);
     });
   });
+
+  if (chordSlashToggle) {
+    chordSlashToggle.addEventListener("click", () => {
+      const willBeActive = !isSlashActive();
+      setSlashActive(willBeActive);
+      if (willBeActive) {
+        appendSlashToProgression();
+      }
+    });
+  }
 
   /**
    * リズムパターンのUIを描画する。
@@ -248,10 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const row = document.createElement("div");
       row.className = "rhythmPatternRow";
       row.setAttribute("role", "row");
-
-      const indexCell = document.createElement("div");
-      indexCell.className = "rhythmPatternCell rhythmPatternIndex";
-      indexCell.textContent = `${index + 1}`;
 
       const divisionCell = document.createElement("div");
       divisionCell.className = "rhythmPatternCell rhythmPatternDivision";
@@ -348,7 +405,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       rebuildPatternSelectors();
 
-      row.appendChild(indexCell);
       row.appendChild(divisionCell);
       row.appendChild(patternCell);
       row.appendChild(previewCell);
