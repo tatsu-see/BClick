@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreSetting = document.getElementById("scoreSetting");
   const scoreToggle = document.getElementById("scoreToggle");
   const scoreExec = document.querySelector("#preferenceRythm .preferenceExec");
+  const scoreSectionTitle = document.querySelector("#preferenceRythm .preferenceTitle");
   const scoreExecButtons = scoreExec ? scoreExec.querySelectorAll("button") : [];
   const tempoDown10Button = document.getElementById("tempoDown10");
   const tempoDownButton = document.getElementById("tempoDown");
@@ -93,6 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (scoreExec) {
       scoreExec.classList.toggle("isDisabled", !enabled);
       scoreExec.setAttribute("aria-disabled", String(!enabled));
+    }
+    if (scoreSectionTitle) {
+      scoreSectionTitle.classList.toggle("isDisabled", !enabled);
+      scoreSectionTitle.setAttribute("aria-disabled", String(!enabled));
     }
     scoreExecButtons.forEach((button) => {
       button.disabled = !enabled;

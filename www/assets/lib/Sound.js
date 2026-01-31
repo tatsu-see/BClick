@@ -61,7 +61,7 @@ const warmUpAudioContext = () => {
   const gain = ctx.createGain();
   const now = ctx.currentTime;
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(0.02, now + 0.01);
+  gain.gain.linearRampToValueAtTime(0.0002, now + 0.01);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
   osc.connect(gain);
   gain.connect(ctx.destination);

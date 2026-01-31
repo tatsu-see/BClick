@@ -207,6 +207,11 @@ footer {
   border-radius: 3px;
 }
 
+.preferenceTitle.isDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .preferenceExec {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
