@@ -16,4 +16,7 @@ export const flatChordPool = [...flatMajorChordPool, ...flatMinorChordPool];
 
 export const chordPool = naturalMajorChordPool;
 
+// Cメジャーのダイアトニックコード
+export const cMajorDiatonicPool = ["C", "Dm", "Em", "F", "G", "Am", "Bdim"];
+
 // コード対応するフレットを押す場所を定義する。

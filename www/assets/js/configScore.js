@@ -1,6 +1,7 @@
 import { ConfigStore } from "./store.js";
 import RhythmPreviewRenderer from "./RhythmPreviewRenderer.js";
 import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
+import { cMajorDiatonicPool } from "../lib/guiterCode.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -159,6 +160,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedBeatPatterns = store.getScoreBeatPatterns();
   let selectedBeatPatterns = normalizeBeatPatternItems(savedBeatPatterns, getBeatCount());
 
+  /**
+   * コード進行欄へコードを追加する。
+   */
   const appendChord = (chord) => {
     if (!codeProgressionInput) return;
     const trimmedChord = chord.trim();
@@ -167,6 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
     codeProgressionInput.value += `${prefix}${trimmedChord}`;
   };
 
+  /**
+   * コード品質ボタンの選択状態を切り替える。
+   */
   const setActiveQuality = (button) => {
     chordQualityButtons.forEach((qualityButton) => {
       const isActive = qualityButton === button;
@@ -175,9 +182,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  /**
+   * 選択中のコード品質ボタンを取得する。
+   */
   const getActiveQuality = () =>
     chordQualityButtons.find((button) => button.classList.contains("isActive"));
 
+  /**
+   * ルートボタンの選択状態を切り替える。
+   */
   const setActiveRoot = (button) => {
     chordRootButtons.forEach((rootButton) => {
       const isActive = rootButton === button;
@@ -186,6 +199,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  /**
+   * 選択中のルートボタンを取得する。
+   */
   const getActiveRoot = () => chordRootButtons.find((button) => button.classList.contains("isActive"));
 
   if (chordQualityButtons.length > 0) {
@@ -194,6 +210,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setActiveQuality(activeQuality);
   }
 
+  /**
+   * 選択中のルート/品質からコード文字列を生成する。
+   */
   const buildChord = (rootButton, qualityButton) => {
     const root = rootButton.dataset.root || rootButton.textContent.trim();
     const quality = qualityButton?.dataset.quality || "maj";
@@ -360,21 +379,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /**
+   * ランダムにコードを指定数追加する。
+   */
   const appendRandomChords = (count) => {
     if (!codeProgressionInput) return;
-    const roots = chordRootButtons
-      .map((button) => (button.dataset.root || button.textContent || "").trim())
-      .filter((root) => root.length > 0);
-    const qualities = chordQualityButtons
-      .map((button) => (button.dataset.quality || button.textContent || "").trim())
-      .filter((quality) => quality.length > 0);
-    const pool = roots.flatMap((root) =>
-      qualities.map((quality) => {
-        if (quality === "min") return `${root}m`;
-        if (quality === "maj") return root;
-        return `${root}${quality}`;
-      }),
-    );
+    
+    // キーCのダイアトニックコードからコードを決定する。
+    const pool = Array.isArray(cMajorDiatonicPool) ? cMajorDiatonicPool : [];
     if (pool.length === 0) return;
     const shuffled = pool.slice().sort(() => Math.random() - 0.5);
     const picks = shuffled.slice(0, Math.min(count, shuffled.length));
@@ -414,6 +426,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /**
+   * 現在の設定を保存して戻る。
+   */
   const saveAndGoBack = () => {
     // Doneボタンで、現在の設定を保存してトップへ戻る。
     try {
