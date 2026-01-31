@@ -91,6 +91,13 @@ header {
   background-color: mintcream;
 }
 
+/* タイトル内のBアイコン */
+.titleIcon {
+  height: 0.8em; /* 文字サイズに合わせる */
+  width: 0.8em; /* 正方形に揃える */
+  vertical-align: -0.1em; /* ベースライン調整 */
+}
+
 /* 閉じるボタン */
 #closePage {
   position: absolute;
