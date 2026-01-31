@@ -1,3 +1,9 @@
+
+#
+# 使い方
+# > .\run-codex.ps1 -Prompt "index.htmlのファイルサイズを教えて"
+#
+
 param(
   [string]$Prompt,
   [Parameter(ValueFromRemainingArguments = $true)]

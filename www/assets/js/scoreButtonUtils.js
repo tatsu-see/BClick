@@ -133,13 +133,7 @@ export const resetScoreSettings = (store) => {
  * editScore.html を開く。
  */
 export const openEditScorePage = () => {
-  const newTab = window.open("/editScore.html", "_blank", "noopener,noreferrer");
-  if (!newTab) {
-    // noop: iOS Safari などで window.open が null を返す場合がある。
-
-    //##Spec ここの noop は、ポップアップブロッカー対策です。
-    // windows の Edge は newTab がnullなので、ここに alert() は入れないで。
-  }
+  window.location.href = "/editScore.html";
 };
 
 /**
@@ -199,6 +193,5 @@ export const mergeBars = (currentBars, nextBars) => {
   const extra = Array.isArray(nextBars) ? nextBars : [];
   return base.concat(extra);
 };
-
 
 

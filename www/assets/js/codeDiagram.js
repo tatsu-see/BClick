@@ -1,6 +1,9 @@
 import { ConfigStore } from "./store.js";
+import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!ensureInAppNavigation()) return;
+
   const store = new ConfigStore();
   const chordRootButtons = Array.from(document.querySelectorAll(".chordRoot"));
   const chordQualityButtons = Array.from(document.querySelectorAll(".chordQuality"));
@@ -320,10 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const goBack = () => {
-    window.close();
-    if (!window.closed) {
-      window.location.href = "/";
-    }
+    goBackWithFallback();
   };
 
   if (saveButton) {

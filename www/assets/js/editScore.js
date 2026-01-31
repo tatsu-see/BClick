@@ -2,8 +2,11 @@ import { ConfigStore } from "./store.js";
 import RhythmScore from "./RhythmScore.js";
 import ScoreData from "./ScoreData.js";
 import { TempoDialController } from "./tempoDial.js";
+import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!ensureInAppNavigation()) return;
+
   const store = new ConfigStore();
   const scoreElement = document.getElementById("score");
   const scoreArea = document.getElementById("scoreArea");
@@ -49,10 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const closePage = () => {
-    window.close();
-    if (!window.closed) {
-      window.location.href = "/";
-    }
+    goBackWithFallback();
   };
 
   /**
@@ -64,10 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (showCodeDiagramButton) {
     showCodeDiagramButton.addEventListener("click", () => {
-      const newTab = window.open("/codeDiagram.html", "_blank", "noopener,noreferrer");
-      if (!newTab) {
-      // window.location.href = "/codeDiagram.html";
-      }
+      window.location.href = "/codeDiagram.html";
     });
   }
 

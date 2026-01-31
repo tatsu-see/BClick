@@ -2,8 +2,11 @@
 import { ConfigStore } from "./store.js";
 import ScoreData from "./ScoreData.js";
 import RhythmPreviewRenderer from "./RhythmPreviewRenderer.js";
+import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!ensureInAppNavigation()) return;
+
   const doneButton = document.getElementById("closePage");
   const backButton = document.getElementById("backEditMeasure");
   const chordRootButtons = Array.from(document.querySelectorAll(".chordRoot"));
@@ -545,10 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const goBack = () => {
-    window.close();
-    if (!window.closed) {
-      window.location.href = "/";
-    }
+    goBackWithFallback();
   };
 
   if (doneButton) {

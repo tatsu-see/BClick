@@ -409,7 +409,7 @@ class RhythmScore {
           event.stopPropagation();
 
           // 小節編集画面を表示する。
-          window.open(`/editMeasure.html?bar=${resolvedIndex}`, "_blank", "noopener,noreferrer");
+          window.location.href = `/editMeasure.html?bar=${resolvedIndex}`;
         });
 
         // タップできる小節番号のオーバーレイのサイズを求める。

@@ -1,7 +1,10 @@
 import { ConfigStore } from "./store.js";
 import { TempoDialController } from "./tempoDial.js";
+import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!ensureInAppNavigation()) return;
+
   const store = new ConfigStore();
   const tempoInput = document.getElementById("tempoInput");
   const tempoDialEl = document.getElementById("tempoDial");
@@ -114,16 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const goBack = () => {
-    window.close();
-    if (!window.closed) {
-      window.location.href = "/";
-    }
-  };
-
   if (saveButton) {
     saveButton.addEventListener("click", () => {
-      goBack();
+      goBackWithFallback();
     });
   }
 
@@ -163,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    goBack();
+    goBackWithFallback();
   };
 
   if (closePageButton) {
