@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
   ・例えば、使用するフレットが2~4フレットであったとしても、開放弦とミュート弦の表示は必ず表示します。
   */
 
+  // https://hikigatarisuto-labo.jp/category/guitar-code/
+  // https://www.aki-f.com/chordbook/item.php?id=0_28
+
   // メジャー
   const majorChordPositions = {
     C: {
@@ -197,59 +200,59 @@ document.addEventListener("DOMContentLoaded", () => {
     Cdim: {
       positions: [
         { string: 1, fret: -1 },
-        { string: 2, fret: 4, finger: 3 },
-        { string: 3, fret: 5, finger: 4 },
-        { string: 4, fret: 4, finger: 2 },
-        { string: 5, fret: 3, finger: 1 },
+        { string: 2, fret: 4, finger: 4 },
+        { string: 3, fret: 2, finger: 1 },
+        { string: 4, fret: 4, finger: 3 },
+        { string: 5, fret: 3, finger: 2 },
         { string: 6, fret: -1 },
       ],
     },
     Ddim: {
       positions: [
-        { string: 1, fret: -1 },
-        { string: 2, fret: 6, finger: 3 },
-        { string: 3, fret: 7, finger: 4 },
-        { string: 4, fret: 6, finger: 2 },
-        { string: 5, fret: 5, finger: 1 },
+        { string: 1, fret: 1, finger: 1 },
+        { string: 2, fret: 0 },
+        { string: 3, fret: 1, finger: 2 },
+        { string: 4, fret: 0 },
+        { string: 5, fret: -1 },
         { string: 6, fret: -1 },
       ],
     },
     Edim: {
       positions: [
-        { string: 1, fret: -1 },
-        { string: 2, fret: 8, finger: 3 },
-        { string: 3, fret: 9, finger: 4 },
-        { string: 4, fret: 8, finger: 2 },
-        { string: 5, fret: 7, finger: 1 },
-        { string: 6, fret: -1 },
+        { string: 1, fret: 0 },
+        { string: 2, fret: 2, finger: 3 },
+        { string: 3, fret: 0 },
+        { string: 4, fret: 2, finger: 2 },
+        { string: 5, fret: 1, finger: 1 },
+        { string: 6, fret: 0 },
       ],
     },
     Fdim: {
       positions: [
-        { string: 1, fret: -1 },
-        { string: 2, fret: 9, finger: 3 },
-        { string: 3, fret: 10, finger: 4 },
-        { string: 4, fret: 9, finger: 2 },
-        { string: 5, fret: 8, finger: 1 },
-        { string: 6, fret: -1 },
+        { string: 1, fret: 1, finger: 1 },
+        { string: 2, fret: 0 },
+        { string: 3, fret: 1, finger: 2 },
+        { string: 4, fret: 0 },
+        { string: 5, fret: 0 },
+        { string: 6, fret: 1, finger: 3 },
       ],
     },
     Gdim: {
       positions: [
         { string: 1, fret: -1 },
-        { string: 2, fret: -1 },
-        { string: 3, fret: 4, finger: 1 },
-        { string: 4, fret: 5, finger: 2 },
-        { string: 5, fret: 4, finger: 1 },
-        { string: 6, fret: 3, finger: 1 },
+        { string: 2, fret: 2, finger: 1 },
+        { string: 3, fret: 3, finger: 3 },
+        { string: 4, fret: 2, finger: 2 },
+        { string: 5, fret: -1 },
+        { string: 6, fret: 3, finger: 4 },
       ],
     },
     Adim: {
       positions: [
-        { string: 1, fret: -1 },
+        { string: 1, fret: 2, finger: 2 },
         { string: 2, fret: 1, finger: 1 },
-        { string: 3, fret: 2, finger: 2 },
-        { string: 4, fret: 1, finger: 1 },
+        { string: 3, fret: 2, finger: 4 },
+        { string: 4, fret: 1, finger: 3 },
         { string: 5, fret: 0 },
         { string: 6, fret: -1 },
       ],
@@ -258,9 +261,9 @@ document.addEventListener("DOMContentLoaded", () => {
       positions: [
         { string: 1, fret: -1 },
         { string: 2, fret: 3, finger: 3 },
-        { string: 3, fret: 4, finger: 4 },
-        { string: 4, fret: 3, finger: 2 },
-        { string: 5, fret: 2, finger: 1 },
+        { string: 3, fret: 1, finger: 1 },
+        { string: 4, fret: 3, finger: 4 },
+        { string: 5, fret: 2, finger: 2 },
         { string: 6, fret: -1 },
       ],
     },
@@ -448,7 +451,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rootButton || !qualityButton) return null;
     const root = rootButton.dataset.root || rootButton.textContent.trim();
     const quality = qualityButton.dataset.quality || "maj";
-    const suffix = quality === "min" ? "m" : "";
+    const suffix = quality === "min" ? "m" : quality === "dim" ? "dim" : "";
     return `${root}${suffix}`;
   };
 
@@ -470,9 +473,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const savedChord = store.getCodeDiagramChord();
   if (savedChord) {
-    const isMinor = savedChord.endsWith("m");
-    const rootValue = isMinor ? savedChord.slice(0, -1) : savedChord;
-    const qualityValue = isMinor ? "min" : "maj";
+    const isDim = savedChord.endsWith("dim");
+    const isMinor = !isDim && savedChord.endsWith("m");
+    const rootValue = isDim
+      ? savedChord.slice(0, -3)
+      : isMinor
+        ? savedChord.slice(0, -1)
+        : savedChord;
+    const qualityValue = isDim ? "dim" : isMinor ? "min" : "maj";
     const rootButton =
       chordRootButtons.find((button) => (button.dataset.root || button.textContent.trim()) === rootValue)
       || chordRootButtons[0];
