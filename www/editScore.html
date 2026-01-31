@@ -170,6 +170,19 @@
     </div>
 
     <div class="preferenceTitle">
+      <span class="lang" data-lang="en">Bars per row (1–4)</span>
+      <span class="lang" data-lang="ja">一段当たりの小節数（1〜4）</span>
+    </div>
+    <!--Spec 1段当たりの小節通
+    ・スライドバーを配置して1段当たりの小節数を設定する。設定範囲は（1～4）。初期値は2。
+    -->
+
+    <div class="preferenceValue preferenceValueCentered barsPerRowValue">
+      <input type="range" id="barsPerRowRange" min="1" max="4" step="1" value="2" aria-label="Bars per row">
+      <output id="barsPerRowValue" for="barsPerRowRange">2</output>
+    </div>
+
+    <div class="preferenceTitle">
       <span class="material-symbols-outlined" aria-hidden="true">folder</span>
       <span class="lang" data-lang="en">File</span>
       <span class="lang" data-lang="ja">ファイル</span>
