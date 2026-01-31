@@ -435,6 +435,18 @@ footer {
   background-color: mintcream;
 }
 
+/* 規約画面のmainをヘッダー/フッターと同じ幅に揃える */
+main.pageFrame {
+  width: calc(100% - 6px); /* ヘッダー/フッターと同じ幅 */
+  max-width: 800px; /* 最大幅 */
+  margin-left: auto; /* 中央揃え */
+  margin-right: auto; /* 中央揃え */
+  margin-bottom: 3px;
+  padding: 3px;
+  border-radius: 3px;
+  background-color: mintcream;
+}
+
 #playClicking {
   margin-bottom:3px;
   padding:3px;
