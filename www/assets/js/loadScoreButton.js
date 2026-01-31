@@ -5,6 +5,7 @@ import {
   readScoreFile,
   saveScoreDataToStore,
 } from "./scoreButtonUtils.js";
+import { showMessage } from "../lib/ShowMessageBox.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const loadButton = document.getElementById("loadScore");
@@ -43,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveScoreDataToStore(store, scoreData);
       }
       document.dispatchEvent(new CustomEvent("bclick:scoreloaded", { detail: { merged: useMerge } }));
+      showMessage("loadScoreMessage", 2000);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       window.alert(`${useMerge ? "追加" : "読み込み"}に失敗しました: ${message}`);

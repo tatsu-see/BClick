@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="/assets/css/tempoDial.css">
   <link rel="stylesheet" href="/assets/css/click.css">
   <link rel="stylesheet" href="/assets/css/editScore.css">
+  <link rel="stylesheet" href="/assets/lib/ShowMessageBox.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
@@ -43,6 +44,7 @@
   <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/abcjs@6.2.3/dist/abcjs-basic-min.js" as="script" crossorigin>
 
   <link rel="modulepreload" href="/assets/js/navigationGuard.js">
+  <link rel="modulepreload" href="/assets/lib/ShowMessageBox.js">
 
   <script type="module" src="/assets/lib/Language.js"></script>
 
@@ -227,6 +229,12 @@
     <input type="file" id="loadScoreFile" accept="application/json" hidden>
 
   </main>
+
+  <!--Spec メッセージ表示用の文字列 -->
+  <div id="loadScoreMessage" class="messageBox">
+    <span class="lang" data-lang="en">Loaded.</span>
+    <span class="lang" data-lang="ja">読み込みました。</span>
+  </div>
 
   <footer>
     <small>&copy; 2025 tatsu. All rights reserved.</small>
