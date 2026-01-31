@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const buildChord = (rootButton, qualityButton) => {
     const root = rootButton.dataset.root || rootButton.textContent.trim();
     const quality = qualityButton?.dataset.quality || "maj";
-    const suffix = quality === "min" ? "m" : "";
+    const suffix = quality === "min" ? "m" : quality === "dim" ? "dim" : "";
     return `${root}${suffix}`;
   };
 

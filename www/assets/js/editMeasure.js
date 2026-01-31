@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const buildChord = (rootButton, qualityButton) => {
     const root = rootButton?.dataset.root || rootButton?.textContent.trim() || "";
     const quality = qualityButton?.dataset.quality || "maj";
-    const suffix = quality === "min" ? "m" : "";
+    const suffix = quality === "min" ? "m" : quality === "dim" ? "dim" : "";
     return `${root}${suffix}`;
   };
 
@@ -176,9 +176,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const initialChord = selectedBeatChords.find((value) => value) || "";
 
   if (chordQualityButtons.length > 0) {
-    const matchedQuality = initialChord.endsWith("m")
-      ? chordQualityButtons.find((button) => button.dataset.quality === "min")
-      : chordQualityButtons.find((button) => button.dataset.quality === "maj");
+    const matchedQuality = initialChord.endsWith("dim")
+      ? chordQualityButtons.find((button) => button.dataset.quality === "dim")
+      : initialChord.endsWith("m")
+        ? chordQualityButtons.find((button) => button.dataset.quality === "min")
+        : chordQualityButtons.find((button) => button.dataset.quality === "maj");
     const activeQuality = matchedQuality || chordQualityButtons[0];
     if (activeQuality) {
       setActiveQuality(activeQuality);
@@ -186,9 +188,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (chordRootButtons.length > 0) {
-    const normalizedRoot = initialChord.endsWith("m")
-      ? initialChord.slice(0, -1)
-      : initialChord;
+    const normalizedRoot = initialChord.endsWith("dim")
+      ? initialChord.slice(0, -3)
+      : initialChord.endsWith("m")
+        ? initialChord.slice(0, -1)
+        : initialChord;
     const matchedRoot = chordRootButtons.find(
       (button) => (button.dataset.root || button.textContent.trim()) === normalizedRoot,
     );
