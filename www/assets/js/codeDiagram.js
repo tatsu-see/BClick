@@ -209,9 +209,9 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     Ddim: {
       positions: [
-        { string: 1, fret: 1, finger: 1 },
+        { string: 1, fret: 1, finger: 2 },
         { string: 2, fret: 0 },
-        { string: 3, fret: 1, finger: 2 },
+        { string: 3, fret: 1, finger: 1 },
         { string: 4, fret: 0 },
         { string: 5, fret: -1 },
         { string: 6, fret: -1 },
@@ -229,12 +229,12 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     Fdim: {
       positions: [
-        { string: 1, fret: 1, finger: 1 },
+        { string: 1, fret: 1, finger: 2 },
         { string: 2, fret: 0 },
-        { string: 3, fret: 1, finger: 2 },
+        { string: 3, fret: 1, finger: 1 },
         { string: 4, fret: 0 },
         { string: 5, fret: 0 },
-        { string: 6, fret: 1, finger: 3 },
+        { string: 6, fret: 1, finger: 5 },
       ],
     },
     Gdim: {
@@ -242,27 +242,33 @@ document.addEventListener("DOMContentLoaded", () => {
         { string: 1, fret: -1 },
         { string: 2, fret: 2, finger: 1 },
         { string: 3, fret: 3, finger: 3 },
-        { string: 4, fret: 2, finger: 2 },
+        { string: 4, fret: 2, finger: 1 },
         { string: 5, fret: -1 },
-        { string: 6, fret: 3, finger: 4 },
+        { string: 6, fret: 3, finger: 2 },
+      ],
+      barres: [
+        { fret: 2, fromString: 2, toString: 4 },
       ],
     },
     Adim: {
       positions: [
-        { string: 1, fret: 2, finger: 2 },
+        { string: 1, fret: 2, finger: 3 },
         { string: 2, fret: 1, finger: 1 },
-        { string: 3, fret: 2, finger: 4 },
-        { string: 4, fret: 1, finger: 3 },
+        { string: 3, fret: 2, finger: 2 },
+        { string: 4, fret: 1, finger: 1 },
         { string: 5, fret: 0 },
         { string: 6, fret: -1 },
+      ],
+      barres: [
+        { fret: 1, fromString: 2, toString: 4 },
       ],
     },
     Bdim: {
       positions: [
         { string: 1, fret: -1 },
-        { string: 2, fret: 3, finger: 3 },
+        { string: 2, fret: 3, finger: 4 },
         { string: 3, fret: 1, finger: 1 },
-        { string: 4, fret: 3, finger: 4 },
+        { string: 4, fret: 3, finger: 3 },
         { string: 5, fret: 2, finger: 2 },
         { string: 6, fret: -1 },
       ],
@@ -362,7 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateFretboardRange(chord);
     renderBarres(chord.barres);
     const fingerLabelMap = isLanguage("ja")
-      ? { 1: "人", 2: "中", 3: "薬", 4: "小" }
+      ? { 1: "人", 2: "中", 3: "薬", 4: "小", 5: "親" }
       : null;
     const barreFrets = new Set(
       (chord.barres || []).map((barre) => barre.fret),
@@ -393,10 +399,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const dot = document.createElement("span");
       dot.className = "finger";
       if (fret > 0 && Number.isFinite(finger) && finger > 0) {
-        if (finger === 1 && barreFrets.has(fret) && string !== 1) {
-          cell.appendChild(dot);
-          return;
-        }
         const label = document.createElement("span");
         label.className = "fingerLabel";
 
