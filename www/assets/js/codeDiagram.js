@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closePageButton = document.getElementById("closePage");
   const saveButton = document.getElementById("saveCodeDiagram");
   const fretboard = document.querySelector(".fretboard");
+  const MAX_FRET = 10;
   let currentChord = "";
 
   /**
@@ -20,6 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
   ・標準フォームで表示する。
   ・転回形や省略形（構成音の一部やオクターブ違い）で、鳴らす方法もあるけど基本は標準フォームで表示する。
   ・フレットは、「実際に使うフレット範囲＋前後1フレット」の表示にして、見やすさを確保する。
+  ・フレットは、（ひとまず）最大10フレットまで用意します。
+  ・開放弦は0フレット目に○を表示。ミュート弦は0フレット目に×を表示します。
+  ・例えば、使用するフレットが2~4フレットであったとしても、開放弦とミュート弦の表示は必ず表示します。
   */
 
   // メジャー
@@ -272,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
    * 指番号・ミュート表示をクリアする。
    */
   const clearFingers = () => {
-    document.querySelectorAll(".fretCell .finger, .fretCell .mute").forEach((mark) => mark.remove());
+    document.querySelectorAll(".fretCell .finger, .fretCell .mute, .fretCell .open").forEach((mark) => mark.remove());
     document.querySelectorAll(".fretboard .barre").forEach((barre) => barre.remove());
   };
 
@@ -306,6 +310,45 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /**
+   * フレットの表示範囲を更新する。
+   */
+  const updateFretboardRange = (chord) => {
+    if (!fretboard || !chord) return;
+    const frets = [];
+    chord.positions.forEach(({ fret }) => {
+      if (Number.isFinite(fret) && fret > 0) {
+        frets.push(fret);
+      }
+    });
+    (chord.barres || []).forEach(({ fret }) => {
+      if (Number.isFinite(fret) && fret > 0) {
+        frets.push(fret);
+      }
+    });
+    const minFret = frets.length > 0 ? Math.min(...frets) : 1;
+    const maxFret = frets.length > 0 ? Math.max(...frets) : 1;
+    const displayMin = Math.max(1, minFret - 1);
+    const displayMax = Math.min(MAX_FRET, maxFret + 1);
+    const visibleCount = displayMax - displayMin + 2; // 0フレットを必ず含める
+    fretboard.style.gridTemplateColumns = `repeat(${visibleCount}, 44px) 32px`;
+
+    const fretCellRegex = /-f(\d+)$/;
+    fretboard.querySelectorAll(".fretCell").forEach((cell) => {
+      const match = cell.id.match(fretCellRegex);
+      const fret = match ? Number.parseInt(match[1], 10) : null;
+      const isVisible = Number.isFinite(fret)
+        && (fret === 0 || (fret >= displayMin && fret <= displayMax));
+      cell.classList.toggle("isHidden", !isVisible);
+    });
+
+    fretboard.querySelectorAll(".fretNumber").forEach((label) => {
+      const fret = Number.parseInt(label.dataset.fret, 10);
+      const isVisible = Number.isFinite(fret) && fret >= displayMin && fret <= displayMax;
+      label.classList.toggle("isHidden", !isVisible);
+    });
+  };
+
+  /**
    * コードの押さえ方を描画する。
    */
   const renderChord = (chordName) => {
@@ -313,6 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const chord = chordPositions[chordName];
     if (!chord) return;
     currentChord = chordName;
+    updateFretboardRange(chord);
     renderBarres(chord.barres);
     const fingerLabelMap = isLanguage("ja")
       ? { 1: "人", 2: "中", 3: "薬", 4: "小" }
@@ -322,17 +366,29 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     chord.positions.forEach(({ string, fret, finger }) => {
-      const targetFret = fret < 0 ? 0 : fret;
-      const cell = document.getElementById(`fret-s${string}-f${targetFret}`);
-      if (!cell) return;
       if (fret < 0) {
         const mark = document.createElement("span");
         mark.className = "mute";
-        cell.appendChild(mark);
+        const cell = document.getElementById(`fret-s${string}-f0`);
+        if (cell) {
+          cell.appendChild(mark);
+        }
         return;
       }
+      if (fret === 0) {
+        const openMark = document.createElement("span");
+        openMark.className = "open";
+        const cell = document.getElementById(`fret-s${string}-f0`);
+        if (cell) {
+          cell.appendChild(openMark);
+        }
+        return;
+      }
+      const targetFret = fret;
+      const cell = document.getElementById(`fret-s${string}-f${targetFret}`);
+      if (!cell) return;
       const dot = document.createElement("span");
-      dot.className = fret === 0 ? "finger fingerOpen" : "finger";
+      dot.className = "finger";
       if (fret > 0 && Number.isFinite(finger) && finger > 0) {
         if (finger === 1 && barreFrets.has(fret) && string !== 1) {
           cell.appendChild(dot);

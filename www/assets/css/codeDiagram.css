@@ -70,11 +70,16 @@
 
 .fretboard {
   display: grid;
-  grid-template-columns: repeat(6, 44px) 32px;
+  grid-template-columns: repeat(11, 44px) 32px;
   grid-template-rows: repeat(6, 32px) 20px;
   gap: 0;
   justify-content: center;
   position: relative;
+}
+
+.fretCell.isHidden,
+.fretNumber.isHidden {
+  display: none;
 }
 
 .fretLabel,
@@ -223,6 +228,15 @@
 
 .mute::after {
   transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.open {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #111;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: inline-block;
 }
 
 .barre {
