@@ -199,6 +199,69 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /**
+   * JSON読込後の画面反映を行う。
+   */
+  const applyLoadedScoreToUI = () => {
+    const nextScoreData = loadSettings(false);
+    currentScoreData = nextScoreData;
+    if (Array.isArray(nextScoreData.bars)) {
+      lastSavedBarsJson = JSON.stringify(nextScoreData.bars);
+    }
+
+    if (store.getScoreEnabled() === false) {
+      if (scoreArea) {
+        scoreArea.hidden = true;
+      }
+      return;
+    }
+    if (scoreArea) {
+      scoreArea.hidden = false;
+    }
+    if (rhythmScore) {
+      rhythmScore.setTimeSignature(nextScoreData.timeSignature);
+      rhythmScore.setMeasures(nextScoreData.measures);
+      rhythmScore.setProgression(nextScoreData.progression);
+      rhythmScore.setBars(nextScoreData.bars);
+      rhythmScore.setBarsPerRow(nextScoreData.barsPerRow || 2);
+    } else if (scoreElement && window.alphaTab) {
+      window.bclickActiveChordIndex = -1;
+      rhythmScore = new RhythmScore("score", {
+        timeSignature: nextScoreData.timeSignature,
+        chord: "E",
+        measures: nextScoreData.measures,
+        progression: nextScoreData.progression,
+        bars: nextScoreData.bars,
+        barsPerRow: nextScoreData.barsPerRow || 2,
+      });
+      window.bclickRhythmScore = rhythmScore;
+      if (Array.isArray(nextScoreData.bars)) {
+        window.bclickScoreBarCount = nextScoreData.bars.length;
+      }
+    }
+
+    const savedTempo = store.getTempo();
+    if (savedTempo !== null) {
+      if (tempoDial) {
+        tempoDial.applyStoredValue(savedTempo);
+      } else if (tempoInput) {
+        tempoInput.value = savedTempo.toString();
+      }
+      notifyTempoChange(savedTempo);
+    }
+
+    if (barsPerRowRange) {
+      const savedBarsPerRow = store.getScoreBarsPerRow();
+      const nextBarsPerRow = savedBarsPerRow || 2;
+      barsPerRowRange.value = nextBarsPerRow.toString();
+      if (barsPerRowValue) {
+        barsPerRowValue.textContent = barsPerRowRange.value;
+      }
+    }
+  };
+
+  document.addEventListener("bclick:scoreloaded", applyLoadedScoreToUI);
+
   window.addEventListener("storage", (event) => {
     if (event.storageArea !== window.localStorage) return;
     if (event.key !== store.keys.ScoreBars) return;

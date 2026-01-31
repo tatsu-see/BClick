@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         saveScoreDataToStore(store, scoreData);
       }
-      window.location.reload();
+      document.dispatchEvent(new CustomEvent("bclick:scoreloaded", { detail: { merged: useMerge } }));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       window.alert(`${useMerge ? "追加" : "読み込み"}に失敗しました: ${message}`);

@@ -7,8 +7,54 @@ const DEFAULT_SETTINGS = {
   timeSignature: "4/4",
   progression: "",
   measures: 8,
-  scoreEnabled: false,
+  barsPerRow: 2,
+  scoreEnabled: true,
 };
+
+//##Spec
+// JSON保存形式のバージョン定義。
+const SCORE_JSON_VERSION = 0;
+
+//##Spec
+// JSON保存形式の仕様（v1） ※将来の予約用
+//
+// JSON保存形式の仕様（v0）
+// {
+//   "schemaVersion": 0,
+//   "score": {
+//     "tempo": 60,
+//     "clickCount": 4,
+//     "countIn": 4,
+//     "timeSignature": "4/4",
+//     "measures": 8,
+//     "progression": "G C Em",
+//     "barsPerRow": 2,
+//     "scoreEnabled": true,
+//     "beatPatterns": [
+//       { "division": 4, "pattern": ["note"] }
+//     ],
+//     "bars": [
+//       { "chord": ["G", "", "", ""], "rhythm": ["4", "4", "4", "4"] }
+//     ]
+//   }
+// }
+//
+// キーの説明
+// - schemaVersion: JSON保存形式のバージョン
+// - score: 楽譜データ本体
+//   - tempo: BPMテンポ
+//   - clickCount: クリック数（拍数）
+//   - countIn: カウントイン（拍数）
+//   - timeSignature: 拍子（例 "4/4"）
+//   - measures: 小節数
+//   - progression: コード進行（スペース区切り）
+//   - barsPerRow: 1段あたりの小節数
+//   - scoreEnabled: リズム表示のON/OFF
+//   - beatPatterns: リズム設定（拍ごとの分割/パターン配列）
+//   - bars: 小節配列（chord: 拍ごとのコード配列, rhythm: 音符トークン配列）
+//
+// 読込・保存に対応していない設定項目
+// - clickVolume: クリック音量
 
 /**
  * 初期設定値を取得する。
@@ -46,9 +92,15 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
   const defaults = getDefaultSettings();
   const timeSignature = store.getScoreTimeSignature() || defaults.timeSignature;
   const measures = store.getScoreMeasures() || defaults.measures;
+  const barsPerRow = store.getScoreBarsPerRow ? (store.getScoreBarsPerRow() || defaults.barsPerRow) : defaults.barsPerRow;
+  const storedScoreEnabled = store.getScoreEnabled ? store.getScoreEnabled() : null;
+  const scoreEnabled = typeof storedScoreEnabled === "boolean" ? storedScoreEnabled : defaults.scoreEnabled;
   const progression = typeof store.getScoreProgression() === "string"
     ? store.getScoreProgression()
     : defaults.progression;
+  const tempo = store.getTempo ? (store.getTempo() || defaults.tempo) : defaults.tempo;
+  const clickCount = store.getClickCount ? (store.getClickCount() || defaults.clickCount) : defaults.clickCount;
+  const countIn = store.getCountInSec ? (store.getCountInSec() || defaults.countIn) : defaults.countIn;
   const beatCount = getBeatCountFromTimeSignature(timeSignature);
   const storedBeatPatterns = store.getScoreBeatPatterns();
   const beatPatterns = Array.isArray(storedBeatPatterns) && storedBeatPatterns.length > 0
@@ -57,8 +109,13 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
   const bars = resetBars ? null : store.getScoreBars();
 
   return new ScoreData({
+    tempo,
+    clickCount,
+    countIn,
     timeSignature,
     measures,
+    barsPerRow,
+    scoreEnabled,
     progression,
     beatPatterns,
     bars,
@@ -72,22 +129,42 @@ export const buildScoreDataFromObject = (source) => {
   if (!source || typeof source !== "object") {
     throw new Error("JSONデータが不正です。");
   }
+  if (source.schemaVersion !== SCORE_JSON_VERSION || !source.score || typeof source.score !== "object") {
+    throw new Error("JSONデータが不正です。");
+  }
+  const normalized = source.score;
   const defaults = getDefaultSettings();
-  const timeSignature = typeof source.timeSignature === "string" && source.timeSignature.length > 0
-    ? source.timeSignature
+  const tempoRaw = Number.parseInt(normalized.tempo, 10);
+  const tempo = Number.isNaN(tempoRaw) ? defaults.tempo : tempoRaw;
+  const clickCountRaw = Number.parseInt(normalized.clickCount, 10);
+  const clickCount = Number.isNaN(clickCountRaw) ? defaults.clickCount : clickCountRaw;
+  const countInRaw = Number.parseInt(normalized.countIn, 10);
+  const countIn = Number.isNaN(countInRaw) ? defaults.countIn : countInRaw;
+  const timeSignature = typeof normalized.timeSignature === "string" && normalized.timeSignature.length > 0
+    ? normalized.timeSignature
     : defaults.timeSignature;
-  const measuresRaw = Number.parseInt(source.measures, 10);
+  const measuresRaw = Number.parseInt(normalized.measures, 10);
   const measures = Number.isNaN(measuresRaw) ? defaults.measures : measuresRaw;
-  const progression = typeof source.progression === "string" ? source.progression : defaults.progression;
+  const barsPerRowRaw = Number.parseInt(normalized.barsPerRow, 10);
+  const barsPerRow = Number.isNaN(barsPerRowRaw) ? defaults.barsPerRow : barsPerRowRaw;
+  const scoreEnabled = typeof normalized.scoreEnabled === "boolean"
+    ? normalized.scoreEnabled
+    : defaults.scoreEnabled;
+  const progression = typeof normalized.progression === "string" ? normalized.progression : defaults.progression;
   const beatCount = getBeatCountFromTimeSignature(timeSignature);
-  const beatPatterns = Array.isArray(source.beatPatterns) && source.beatPatterns.length > 0
-    ? source.beatPatterns
+  const beatPatterns = Array.isArray(normalized.beatPatterns) && normalized.beatPatterns.length > 0
+    ? normalized.beatPatterns
     : buildDefaultBeatPatterns(beatCount);
-  const bars = Array.isArray(source.bars) ? source.bars : null;
+  const bars = Array.isArray(normalized.bars) ? normalized.bars : null;
 
   return new ScoreData({
+    tempo,
+    clickCount,
+    countIn,
     timeSignature,
     measures,
+    barsPerRow,
+    scoreEnabled,
     progression,
     beatPatterns,
     bars,
@@ -98,9 +175,24 @@ export const buildScoreDataFromObject = (source) => {
  * ScoreDataをLocalStorageへ保存する。
  */
 export const saveScoreDataToStore = (store, scoreData) => {
+  if (typeof store.setTempo === "function") {
+    store.setTempo(scoreData.tempo);
+  }
+  if (typeof store.setClickCount === "function") {
+    store.setClickCount(scoreData.clickCount);
+  }
+  if (typeof store.setCountInSec === "function") {
+    store.setCountInSec(scoreData.countIn);
+  }
   store.setScoreTimeSignature(scoreData.timeSignature);
   store.setScoreProgression(scoreData.progression);
   store.setScoreMeasures(scoreData.measures);
+  if (typeof store.setScoreBarsPerRow === "function") {
+    store.setScoreBarsPerRow(scoreData.barsPerRow);
+  }
+  if (typeof store.setScoreEnabled === "function") {
+    store.setScoreEnabled(scoreData.scoreEnabled);
+  }
   if (Array.isArray(scoreData.beatPatterns)) {
     store.setScoreBeatPatterns(scoreData.beatPatterns);
   }
@@ -120,6 +212,9 @@ export const resetScoreSettings = (store) => {
   store.setScoreTimeSignature(defaults.timeSignature);
   store.setScoreProgression(defaults.progression);
   store.setScoreMeasures(defaults.measures);
+  if (typeof store.setScoreBarsPerRow === "function") {
+    store.setScoreBarsPerRow(defaults.barsPerRow);
+  }
   store.setScoreEnabled(defaults.scoreEnabled);
   store.setScoreBeatPatterns(
     buildDefaultBeatPatterns(getBeatCountFromTimeSignature(defaults.timeSignature)),
@@ -151,7 +246,11 @@ export const buildScoreFileName = () => {
  * ScoreDataをJSONとしてダウンロードする。
  */
 export const downloadScoreJson = (scoreData) => {
-  const data = JSON.stringify(scoreData, null, 2);
+  const payload = {
+    schemaVersion: SCORE_JSON_VERSION,
+    score: scoreData,
+  };
+  const data = JSON.stringify(payload, null, 2);
   const blob = new Blob([data], { type: "application/json" });
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -193,5 +292,3 @@ export const mergeBars = (currentBars, nextBars) => {
   const extra = Array.isArray(nextBars) ? nextBars : [];
   return base.concat(extra);
 };
-
-

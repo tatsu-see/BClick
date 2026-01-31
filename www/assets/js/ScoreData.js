@@ -2,7 +2,10 @@
  * オリジナルの簡易楽譜データオブジェクト
  */
 class ScoreData {
-  constructor({ timeSignature, measures, progression, bars, beatPatterns, barsPerRow } = {}) {
+  constructor({ tempo, clickCount, countIn, timeSignature, measures, progression, bars, beatPatterns, barsPerRow, scoreEnabled } = {}) {
+    this.tempo = Number.isNaN(Number.parseInt(tempo, 10)) ? 60 : Number.parseInt(tempo, 10);
+    this.clickCount = Number.isNaN(Number.parseInt(clickCount, 10)) ? 4 : Number.parseInt(clickCount, 10);
+    this.countIn = Number.isNaN(Number.parseInt(countIn, 10)) ? 4 : Number.parseInt(countIn, 10);
     this.timeSignature = timeSignature || "4/4";
     this.measures = Number.isNaN(Number.parseInt(measures, 10))
       ? 2
@@ -12,6 +15,7 @@ class ScoreData {
     this.barsPerRow = Number.isNaN(parsedBarsPerRow)
       ? 2
       : Math.max(1, Math.min(4, parsedBarsPerRow));
+    this.scoreEnabled = typeof scoreEnabled === "boolean" ? scoreEnabled : true;
     this.beatPatterns = Array.isArray(beatPatterns) ? beatPatterns : null;
     const normalizedBars = this.normalizeBars(bars);
     this.bars = normalizedBars || this.buildBars();
