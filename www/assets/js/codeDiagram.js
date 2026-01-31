@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
   ・フレットは、（ひとまず）最大10フレットまで用意します。
   ・開放弦は0フレット目に○を表示。ミュート弦は0フレット目に×を表示します。
   ・例えば、使用するフレットが2~4フレットであったとしても、開放弦とミュート弦の表示は必ず表示します。
+  ・finger は指の番号を表しフレットに表示するが、0は未指定で指番号(指文字)を表示しない。
+  ・指番号0の使い道は、セーハフレットで一番小さな弦番号にしか指の表示をしないために使用する。
   */
 
   // https://hikigatarisuto-labo.jp/category/guitar-code/
@@ -64,11 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
     F: {
       positions: [
         { string: 1, fret: 1, finger: 1 },
-        { string: 2, fret: 1, finger: 1 },
+        { string: 2, fret: 1, finger: 0 },
         { string: 3, fret: 2, finger: 2 },
         { string: 4, fret: 3, finger: 4 },
         { string: 5, fret: 3, finger: 3 },
-        { string: 6, fret: 1, finger: 1 },
+        { string: 6, fret: 1, finger: 0 },
       ],
       barres: [
         { fret: 1, fromString: 1, toString: 6 },
@@ -100,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { string: 2, fret: 4, finger: 4 },
         { string: 3, fret: 4, finger: 3 },
         { string: 4, fret: 4, finger: 2 },
-        { string: 5, fret: 2, finger: 1 },
+        { string: 5, fret: 2, finger: 0 },
         { string: 6, fret: -1 },
       ],
       barres: [
@@ -117,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { string: 2, fret: 4, finger: 2 },
         { string: 3, fret: 5, finger: 4 },
         { string: 4, fret: 5, finger: 3 },
-        { string: 5, fret: 3, finger: 1 },
+        { string: 5, fret: 3, finger: 0 },
         { string: 6, fret: -1 },
       ],
       barres: [
@@ -147,11 +149,11 @@ document.addEventListener("DOMContentLoaded", () => {
     Fm: {
       positions: [
         { string: 1, fret: 1, finger: 1 },
-        { string: 2, fret: 1, finger: 1 },
-        { string: 3, fret: 1, finger: 1 },
+        { string: 2, fret: 1, finger: 0 },
+        { string: 3, fret: 1, finger: 0 },
         { string: 4, fret: 3, finger: 4 },
         { string: 5, fret: 3, finger: 3 },
-        { string: 6, fret: 1, finger: 1 },
+        { string: 6, fret: 1, finger: 0 },
       ],
       barres: [
         { fret: 1, fromString: 1, toString: 6 },
@@ -160,11 +162,11 @@ document.addEventListener("DOMContentLoaded", () => {
     Gm: {
       positions: [
         { string: 1, fret: 3, finger: 1 },
-        { string: 2, fret: 3, finger: 1 },
-        { string: 3, fret: 3, finger: 1 },
+        { string: 2, fret: 3, finger: 0 },
+        { string: 3, fret: 3, finger: 0 },
         { string: 4, fret: 5, finger: 4 },
         { string: 5, fret: 5, finger: 3 },
-        { string: 6, fret: 3, finger: 1 },
+        { string: 6, fret: 3, finger: 0 },
       ],
       barres: [
         { fret: 3, fromString: 1, toString: 6 },
@@ -186,8 +188,8 @@ document.addEventListener("DOMContentLoaded", () => {
         { string: 2, fret: 3, finger: 3 },
         { string: 3, fret: 4, finger: 4 },
         { string: 4, fret: 4, finger: 2 },
-        { string: 5, fret: 2, finger: 1 },
-        { string: 6, fret: 2, finger: 1 },
+        { string: 5, fret: 2, finger: 0 },
+        { string: 6, fret: 2, finger: 0 },
       ],
       barres: [
         { fret: 2, fromString: 1, toString: 6 },
@@ -242,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { string: 1, fret: -1 },
         { string: 2, fret: 2, finger: 1 },
         { string: 3, fret: 3, finger: 3 },
-        { string: 4, fret: 2, finger: 1 },
+        { string: 4, fret: 2, finger: 0 },
         { string: 5, fret: -1 },
         { string: 6, fret: 3, finger: 2 },
       ],
@@ -255,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { string: 1, fret: 2, finger: 3 },
         { string: 2, fret: 1, finger: 1 },
         { string: 3, fret: 2, finger: 2 },
-        { string: 4, fret: 1, finger: 1 },
+        { string: 4, fret: 1, finger: 0 },
         { string: 5, fret: 0 },
         { string: 6, fret: -1 },
       ],
@@ -398,7 +400,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!cell) return;
       const dot = document.createElement("span");
       dot.className = "finger";
-      if (fret > 0 && Number.isFinite(finger) && finger > 0) {
+      // 指番号が0の場合はラベルを表示しない。
+      const hasFingerLabel = Number.isFinite(finger) && finger > 0;
+      if (fret > 0 && hasFingerLabel) {
         const label = document.createElement("span");
         label.className = "fingerLabel";
 
