@@ -16,6 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
   /**
    * 基本的なポジションデータを定義する。(簡易な抑え方法もあるけど、それは先生に教えてもらう。)
    */
+  /*Spec
+  ・標準フォームで表示する。
+  ・転回形や省略形（構成音の一部やオクターブ違い）で、鳴らす方法もあるけど基本は標準フォームで表示する。
+  ・フレットは、「実際に使うフレット範囲＋前後1フレット」の表示にして、見やすさを確保する。
+  */
 
   // メジャー
   const majorChordPositions = {
@@ -183,9 +188,84 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
+  // ディミニッシュ
+  const dimChordPositions = {
+    Cdim: {
+      positions: [
+        { string: 1, fret: -1 },
+        { string: 2, fret: 4, finger: 3 },
+        { string: 3, fret: 5, finger: 4 },
+        { string: 4, fret: 4, finger: 2 },
+        { string: 5, fret: 3, finger: 1 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    Ddim: {
+      positions: [
+        { string: 1, fret: -1 },
+        { string: 2, fret: 6, finger: 3 },
+        { string: 3, fret: 7, finger: 4 },
+        { string: 4, fret: 6, finger: 2 },
+        { string: 5, fret: 5, finger: 1 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    Edim: {
+      positions: [
+        { string: 1, fret: -1 },
+        { string: 2, fret: 8, finger: 3 },
+        { string: 3, fret: 9, finger: 4 },
+        { string: 4, fret: 8, finger: 2 },
+        { string: 5, fret: 7, finger: 1 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    Fdim: {
+      positions: [
+        { string: 1, fret: -1 },
+        { string: 2, fret: 9, finger: 3 },
+        { string: 3, fret: 10, finger: 4 },
+        { string: 4, fret: 9, finger: 2 },
+        { string: 5, fret: 8, finger: 1 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    Gdim: {
+      positions: [
+        { string: 1, fret: -1 },
+        { string: 2, fret: -1 },
+        { string: 3, fret: 4, finger: 1 },
+        { string: 4, fret: 5, finger: 2 },
+        { string: 5, fret: 4, finger: 1 },
+        { string: 6, fret: 3, finger: 1 },
+      ],
+    },
+    Adim: {
+      positions: [
+        { string: 1, fret: -1 },
+        { string: 2, fret: 1, finger: 1 },
+        { string: 3, fret: 2, finger: 2 },
+        { string: 4, fret: 1, finger: 1 },
+        { string: 5, fret: 0 },
+        { string: 6, fret: -1 },
+      ],
+    },
+    Bdim: {
+      positions: [
+        { string: 1, fret: -1 },
+        { string: 2, fret: 3, finger: 3 },
+        { string: 3, fret: 4, finger: 4 },
+        { string: 4, fret: 3, finger: 2 },
+        { string: 5, fret: 2, finger: 1 },
+        { string: 6, fret: -1 },
+      ],
+    },
+  };
+
   const chordPositions = {
     ...majorChordPositions,
     ...minorChordPositions,
+    ...dimChordPositions,
   };
 
   /**
