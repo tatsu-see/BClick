@@ -36,10 +36,13 @@
 - index.html 以外の画面は noindex を入れて、検索サイトに「そのページを検索結果に出さないで」と伝える
 
 - 英語と日本語の翻訳に関しては、以下のようにする。翻訳箇所に英語と日本語を用意する。
+- ただし、操作画面の Back / Done は翻訳不要です。
 
   例）
     <span class="lang" data-lang="en">Manual</span>
     <span class="lang" data-lang="ja">使い方</span>
+
+- HTML内の aria-label 属性は英語表記を使用する。
 
 ## ソースコード(*.js)
 - ES module で統一する。(圧縮時の処理安定も兼ねるための対策)

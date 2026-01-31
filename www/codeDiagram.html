@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="B.Click">
   <meta name="mobile-web-app-capable" content="yes">
 
-  <title>B.Click - コード表示</title>
+  <title>B.Click - Code Diagram / コード表示</title>
   <link rel="icon" type="image/png" sizes="16x16"   href="/assets/icons/BClick-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32"   href="/assets/icons/BClick-32x32.png">
   <link rel="icon" type="image/png" sizes="64x64"   href="/assets/icons/BClick-64x64.png">
@@ -42,12 +42,12 @@
 
 <body>
   <header>
-    <button type="button" id="saveCodeDiagram" class="okConfig" aria-label="戻る">
+    <button type="button" id="saveCodeDiagram" class="okConfig" aria-label="Back">
       <span class="navChevron" aria-hidden="true">&lsaquo;</span>
       <span class="navLabel">Back</span>
     </button>
     <div id="title">B.Click</div>
-    <button id="closePage" type="button" aria-label="保存して戻る">Done</button>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
   </header>
   <main>
     <div id="preference">
@@ -58,7 +58,7 @@
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
-        <div class="chipGroupSectionRow" role="group" aria-label="クオリティの選択">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select quality">
           <div class="chipGroup">
             <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
             <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
@@ -72,7 +72,7 @@
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
-        <div class="chipGroupSectionRow" role="group" aria-label="ルートの選択">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select root">
           <div class="chipGroup">
             <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
             <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
@@ -87,7 +87,7 @@
     </div>
 
     <div id="codeDiagram">
-      <div class="fretboard" aria-label="ギターフレット">
+      <div class="fretboard" aria-label="Guitar fretboard">
         <div class="fretCell stringTop" id="fret-s1-f0"><span class="nutLine"></span></div>
         <div class="fretCell stringTop" id="fret-s1-f1"></div>
         <div class="fretCell stringTop" id="fret-s1-f2"></div>

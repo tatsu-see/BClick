@@ -20,7 +20,7 @@
   <meta name="apple-mobile-web-app-title" content="B.Click">
   <meta name="mobile-web-app-capable" content="yes">
 
-  <title>B.Click - テンポ設定</title>
+  <title>B.Click - Tempo Settings / テンポ設定</title>
   <link rel="icon" type="image/png" sizes="16x16"   href="/assets/icons/BClick-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32"   href="/assets/icons/BClick-32x32.png">
   <link rel="icon" type="image/png" sizes="64x64"   href="/assets/icons/BClick-64x64.png">
@@ -46,19 +46,20 @@
 
 <body>
   <header>
-    <button type="button" id="saveConfigBeat" class="okConfig" aria-label="戻る">
+    <button type="button" id="saveConfigBeat" class="okConfig" aria-label="Back">
       <span class="navChevron" aria-hidden="true">&lsaquo;</span>
       <span class="navLabel">Back</span>
     </button>
     <div id="title">B.Click</div>
-    <button id="closePage" type="button" aria-label="保存して戻る">Done</button>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
   </header>
 
   <main>
 
     <div class="preferenceTitle">
       <span class="material-symbols-outlined" aria-hidden="true">speed</span>
-      テンポ（30～240）
+      <span class="lang" data-lang="en">Tempo (30–240)</span>
+      <span class="lang" data-lang="ja">テンポ（30～240）</span>
     </div>
 
     <div id="beatPreference" class="tempoControl tempoControlStack">
@@ -69,14 +70,14 @@
         </div>
       </div>
 
-      <div class="tempoDialRow" role="group" aria-label="テンポ変更モード">
+      <div class="tempoDialRow" role="group" aria-label="Tempo change mode">
         <button type="button" id="tempoStepCoarse" class="tempoStepButton" data-step="10" aria-pressed="false">±10</button>
         <button type="button"
           class="tempoDial"
           id="tempoDial"
           data-step="10"
           data-degrees-per-step="36"
-          aria-label="テンポを10ずつ変更">
+          aria-label="Change tempo by 10">
           <span class="tempoDialSide tempoDialMinus" aria-hidden="true">-</span>
           <span class="tempoDialIndicator" aria-hidden="true"></span>
           <span class="tempoDialLabel">10</span>
@@ -87,7 +88,8 @@
     </div>
 
     <div class="preferenceTitle">
-      拍数（1〜8）
+      <span class="lang" data-lang="en">Beats (1–8)</span>
+      <span class="lang" data-lang="ja">拍数（1〜8）</span>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
@@ -96,7 +98,8 @@
     </div>
 
     <div class="preferenceTitle">
-      カウントイン（0〜10）
+      <span class="lang" data-lang="en">Count-in (0–10)</span>
+      <span class="lang" data-lang="ja">カウントイン（0〜10）</span>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
@@ -109,7 +112,8 @@
     ・設定の見た目は、拍数やカウントインと同じCSSにする。
     -->
     <div class="preferenceTitle">
-      ボリューム（0〜10）
+      <span class="lang" data-lang="en">Volume (0–10)</span>
+      <span class="lang" data-lang="ja">ボリューム（0〜10）</span>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
@@ -118,7 +122,8 @@
     </div>
 
     <div class="preferenceTitle">
-      その他
+      <span class="lang" data-lang="en">Other</span>
+      <span class="lang" data-lang="ja">その他</span>
     </div>
 
     <!--Spec その他設定ボタン
@@ -130,7 +135,8 @@
     -->
     <div class="preferenceExec isRow4">
         <button id="initScore" type="button" class="okConfig makeScoreButton">
-          Init.
+          <span class="lang" data-lang="en">Init.</span>
+          <span class="lang" data-lang="ja">初期化</span>
         </button>
     </div>
 

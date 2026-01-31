@@ -20,7 +20,7 @@
   <meta name="apple-mobile-web-app-title" content="B.Click">
   <meta name="mobile-web-app-capable" content="yes">
 
-  <title>B.Click - コード表示</title>
+  <title>B.Click - Score Settings / 楽譜設定</title>
   <link rel="icon" type="image/png" sizes="16x16"   href="/assets/icons/BClick-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32"   href="/assets/icons/BClick-32x32.png">
   <link rel="icon" type="image/png" sizes="64x64"   href="/assets/icons/BClick-64x64.png">
@@ -45,20 +45,21 @@
 
 <body>
   <header>
-    <button type="button" id="saveConfigScore" class="okConfig" aria-label="戻る">
+    <button type="button" id="saveConfigScore" class="okConfig" aria-label="Back">
       <span class="navChevron" aria-hidden="true">&lsaquo;</span>
       <span class="navLabel">Back</span>
     </button>
     <div id="title">B.Click</div>
-    <button id="closePage" type="button" aria-label="保存して戻る">Done</button>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
   </header>
   <main>
     <div id="scorePreference">
       <div class="preferenceTitle">
-        拍子
+        <span class="lang" data-lang="en">Time Signature</span>
+        <span class="lang" data-lang="ja">拍子</span>
       </div>
 
-      <div class="preferenceValue preferenceValueCentered" role="group" aria-label="拍子の選択" id="timeSignature">
+      <div class="preferenceValue preferenceValueCentered" role="group" aria-label="Select time signature" id="timeSignature">
         <label>
           <input type="radio" name="timeSignature" value="2/4" checked>
           2/4
@@ -85,7 +86,7 @@
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
-        <div class="chipGroupSectionRow" role="group" aria-label="クオリティの選択">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select quality">
           <div class="chipGroup">
             <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
             <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
@@ -99,7 +100,7 @@
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
-        <div class="chipGroupSectionRow" role="group" aria-label="ルートの選択">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select root">
           <div class="chipGroup">
             <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
             <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
@@ -113,10 +114,11 @@
       </div>
 
       <div class="preferenceTitle">
-        進行
+        <span class="lang" data-lang="en">Progression</span>
+        <span class="lang" data-lang="ja">進行</span>
       </div>
 
-      <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="進行の入力">
+      <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="Enter progression">
       <!--Spec コード進行入力部分
         ここは、コード進行を入力する部分。ユーザにはテキストボックスとして見せる。
         テキストボックスには、コードをスペースで区切って入力する。
@@ -131,13 +133,20 @@
       -->
         <input type="text" id="codeProgression" value="" inputmode="latin">
 
-        <div class="chipGroupActions" role="group" aria-label="ランダム選択">
+        <div class="chipGroupActions" role="group" aria-label="Progression actions">
           <button type="button" id="clearCodeProgression">
             <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
-            Init.
+            <span class="lang" data-lang="en">Init.</span>
+            <span class="lang" data-lang="ja">初期化</span>
           </button>
-          <button type="button" id="addRandom3Chords">ランダム3</button>
-          <button type="button" id="addRandom4Chords">ランダム4</button>
+          <button type="button" id="addRandom3Chords">
+            <span class="lang" data-lang="en">Random 3</span>
+            <span class="lang" data-lang="ja">ランダム3</span>
+          </button>
+          <button type="button" id="addRandom4Chords">
+            <span class="lang" data-lang="en">Random 4</span>
+            <span class="lang" data-lang="ja">ランダム4</span>
+          </button>
           <button type="button" id="backCodeProgression">
             <span class="material-symbols-outlined" aria-hidden="true">undo</span>
             Back.
@@ -147,10 +156,11 @@
       </div>
 
       <div class="preferenceTitle">
-        リズム
+        <span class="lang" data-lang="en">Rhythm</span>
+        <span class="lang" data-lang="ja">リズム</span>
       </div>
 
-      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="リズムの選択">
+      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Select rhythm">
       <!--Spec 楽譜の１小節内のリズムパターン
         ここは、楽譜の１小節内のリズムパターンを設定する部分。ユーザには表のように見せる。
         表の１つずつの項目には "border:1px solid forestgreen" の境界線を付ける。
@@ -178,18 +188,27 @@
               4列目のABCJSによる音符の描画は、JS で class にまとめ、ファイルを分けることで、ソースコードを簡潔に保つ。
               ABCJSでは、ト音記号は表示しない。拍子は、この画面の <div id="timeSignature">で選択したものを表示する。
       -->
-        <div class="rhythmPatternTable" role="table" aria-label="リズムパターン">
+        <div class="rhythmPatternTable" role="table" aria-label="Rhythm pattern">
           <div class="rhythmPatternHeader" role="row">
             <div class="rhythmPatternCell rhythmPatternIndex" role="columnheader"></div>
 
             <!--Spec 分割は4分音符,8分音符,16分音符を選ぶ列 -->
-            <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">分割</div>
+            <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">
+              <span class="lang" data-lang="en">Div.</span>
+              <span class="lang" data-lang="ja">～分</span>
+            </div>
 
             <!--Spec 分割は4,8,16分で分割したときの演奏するか休符かを選ぶ列 -->
-            <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">パターン</div>
+            <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">
+              <span class="lang" data-lang="en">Pattern</span>
+              <span class="lang" data-lang="ja">パターン</span>
+            </div>
 
             <!--Spec 選んだ音符や休符による楽譜上での音符を描画する列 -->
-            <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">プレビュー</div>
+            <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">
+              <span class="lang" data-lang="en">Preview</span>
+              <span class="lang" data-lang="ja">プレビュー</span>
+            </div>
 
           </div>
           <div id="rhythmPatternBody" class="rhythmPatternBody"></div>
@@ -197,10 +216,11 @@
       </div>
 
       <div class="preferenceTitle">
-        小節数
+        <span class="lang" data-lang="en">Measures</span>
+        <span class="lang" data-lang="ja">小節数</span>
       </div>
 
-      <div class="preferenceValue preferenceValueCentered" role="group" aria-label="小節数の入力">
+      <div class="preferenceValue preferenceValueCentered" role="group" aria-label="Set measures">
         <input type="range" id="measuresRange" min="1" max="12" step="1" value="8">
         <output id="measuresValue" for="measuresRange">8</output>
       </div>

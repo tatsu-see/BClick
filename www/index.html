@@ -86,14 +86,15 @@
     -->
     <div class="preferenceTitle">
       <span class="material-symbols-outlined" aria-hidden="true">speed</span>
-      テンポ（30～240）
+      <span class="lang" data-lang="en">Tempo (30–240)</span>
+      <span class="lang" data-lang="ja">テンポ（30～240）</span>
     </div>
 
     <div id="beatPreference" class="tempoControl tempoControlStack">
       <div class="tempoValueGroup tempoValueTop">
         <div class="tempoStepSwitch">
           <span class="tempoInputNote">♪=</span>
-          <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric">
+          <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric" aria-label="Tempo">
         </div>
       </div>
 
@@ -132,22 +133,24 @@
     <!--Spec クリック再生エリア-開始 -->
     <div class="preferenceTitle">
       <span class="material-symbols-outlined" aria-hidden="true">play_circle</span>
-      Play
+      <span class="lang" data-lang="en">Play</span>
+      <span class="lang" data-lang="ja">再生</span>
     </div>
 
     <div id="playClicking">
-      <button id="startClick" type="button" aria-label="再生">
+      <button id="startClick" type="button" aria-label="Play">
         <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
       </button>
-      <button id="stopClickart" type="button" aria-label="一時停止">
+      <button id="stopClickart" type="button" aria-label="Pause">
         <span class="material-symbols-outlined" aria-hidden="true">pause</span>
       </button>
-      <button id="resetClickart" type="button" aria-label="リセット">
+      <button id="resetClickart" type="button" aria-label="Reset">
         <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
       </button>
       <button id="showCodeDiagram" type="button">
         <span class="material-symbols-outlined" aria-hidden="true">back_hand</span>
-        コード
+        <span class="lang" data-lang="en">Chords</span>
+        <span class="lang" data-lang="ja">コード</span>
       </button>
     </div>
 
@@ -164,9 +167,10 @@
 
     <div class="preferenceTitle">
       <span class="material-symbols-outlined" aria-hidden="true">queue_music</span>
-      リズム
+      <span class="lang" data-lang="en">Rhythm</span>
+      <span class="lang" data-lang="ja">リズム</span>
       <label class="scoreToggle">
-        <input type="checkbox" id="scoreToggle" aria-label="リズムの表示切り替え">
+        <input type="checkbox" id="scoreToggle" aria-label="Toggle rhythm display">
       </label>
     </div>
 
@@ -206,11 +210,13 @@
       <div class="preferenceExec isRow4">
         <div></div>
         <button id="setClick" type="button" class="okConfig makeScoreButton">
-          Create
+          <span class="lang" data-lang="en">Create</span>
+          <span class="lang" data-lang="ja">作成</span>
         </button>
 
         <button id="editScore" type="button" class="okConfig makeScoreButton">
-          Edit
+          <span class="lang" data-lang="en">Edit</span>
+          <span class="lang" data-lang="ja">編集</span>
         </button>
         <div></div>
       </div>

@@ -18,7 +18,7 @@
   <meta name="apple-mobile-web-app-title" content="B.Click">
   <meta name="mobile-web-app-capable" content="yes">
 
-  <title>B.Click - 小節編集</title>
+  <title>B.Click - Edit Measure / 小節編集</title>
   <link rel="icon" type="image/png" sizes="16x16"   href="/assets/icons/BClick-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32"   href="/assets/icons/BClick-32x32.png">
   <link rel="icon" type="image/png" sizes="64x64"   href="/assets/icons/BClick-64x64.png">
@@ -43,12 +43,12 @@
 
 <body>
   <header>
-    <button type="button" id="backEditMeasure" class="okConfig" aria-label="戻る">
+    <button type="button" id="backEditMeasure" class="okConfig" aria-label="Back">
       <span class="navChevron" aria-hidden="true">&lsaquo;</span>
       <span class="navLabel">Back</span>
     </button>
     <div id="title">B.Click</div>
-    <button id="closePage" type="button" aria-label="保存して戻る">Done</button>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
   </header>
   <main>
     <div id="scorePreference">
@@ -64,7 +64,7 @@
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
-        <div class="chipGroupSectionRow" role="group" aria-label="クオリティの選択">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select quality">
           <div class="chipGroup">
             <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
             <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
@@ -78,7 +78,7 @@
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
-        <div class="chipGroupSectionRow" role="group" aria-label="ルートの選択">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select root">
           <div class="chipGroup">
             <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
             <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
@@ -92,16 +92,18 @@
       </div>
 
       <div class="preferenceTitle">
-        進行
+        <span class="lang" data-lang="en">Progression</span>
+        <span class="lang" data-lang="ja">進行</span>
       </div>
 
-      <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="進行の入力">
+      <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="Enter progression">
         <input type="text" id="codeProgression" value="" inputmode="latin">
 
-        <div class="chipGroupActions" role="group" aria-label="進行の編集">
+        <div class="chipGroupActions" role="group" aria-label="Edit progression">
           <button type="button" id="clearCodeProgression">
             <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
-            Init.
+            <span class="lang" data-lang="en">Init.</span>
+            <span class="lang" data-lang="ja">初期化</span>
           </button>
           <button type="button" id="backCodeProgression">
             <span class="material-symbols-outlined" aria-hidden="true">undo</span>
@@ -111,23 +113,33 @@
       </div>
 
       <div class="preferenceTitle">
-        リズム
+        <span class="lang" data-lang="en">Rhythm</span>
+        <span class="lang" data-lang="ja">リズム</span>
       </div>
 
-      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="リズムの選択">
-        <div class="rhythmPatternTable" role="table" aria-label="リズムパターン">
+      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Select rhythm">
+        <div class="rhythmPatternTable" role="table" aria-label="Rhythm pattern">
           <div class="rhythmPatternHeader" role="row">
             <div class="rhythmPatternCell rhythmPatternIndex" role="columnheader"></div>
 
             <!--Spec 分割は4分音符,8分音符,16分音符を選ぶ列 -->
-            <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">分割</div>
+            <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">
+              <span class="lang" data-lang="en">Div.</span>
+              <span class="lang" data-lang="ja">～分</span>
+            </div>
 
             <!--Spec 分割は4,8,16分で分割したときの演奏するか休符かを選ぶ列
             -->
-            <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">パターン</div>
+            <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">
+              <span class="lang" data-lang="en">Pattern</span>
+              <span class="lang" data-lang="ja">パターン</span>
+            </div>
 
             <!--Spec 選んだ音符や休符による楽譜上での音符を描画する列 -->
-            <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">プレビュー</div>
+            <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">
+              <span class="lang" data-lang="en">Preview</span>
+              <span class="lang" data-lang="ja">プレビュー</span>
+            </div>
 
             <!--Spec コードは1行ごとの音符に設定するコードを選ぶ列
             ・選択するコードは、「進行」に設定したコード文字列（input欄にあるスペース区切りの文字）から選択する。
@@ -135,7 +147,10 @@
             ・例えば 4/4拍子、で４つの音符に G G C D とコードを選択したら、Done から editScore に戻ると、編集した小節の音符の上に
               コードが表示される。
             -->
-            <div class="rhythmPatternCell rhythmPatternChord" role="columnheader">コード</div>
+            <div class="rhythmPatternCell rhythmPatternChord" role="columnheader">
+              <span class="lang" data-lang="en">Chord</span>
+              <span class="lang" data-lang="ja">コード</span>
+            </div>
           </div>
           <div id="rhythmPatternBody" class="rhythmPatternBody"></div>
         </div>
