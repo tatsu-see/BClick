@@ -22,10 +22,10 @@
   <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
 
   <!--Spec 画面遷移の仕様（ preconnect / preload / modulepreload / prefetch 用）
-    * preload は index.html だけに入れる
   index.html → configBeat.html
   index.html → configScore.html
   index.html → editScore.html
+  index.html → codeDiagram.html
   -->
 
   <!-- Resource hints -->
@@ -59,6 +59,10 @@
   <link rel="prefetch" href="/assets/js/saveScoreButton.js" as="script">
   <link rel="prefetch" href="/assets/js/loadScoreButton.js" as="script">
   <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.min.js" as="script" crossorigin>
+
+  <link rel="prefetch" href="/codeDiagram.html" as="document">
+  <link rel="prefetch" href="/assets/css/codeDiagram.css" as="style">
+  <link rel="prefetch" href="/assets/js/codeDiagram.js" as="script">
 
   <link rel="stylesheet" href="/assets/css/app.css">
   <link rel="stylesheet" href="/assets/css/tempoDial.css">

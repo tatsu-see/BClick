@@ -9,7 +9,7 @@
     { "route": "/terms.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
 
     { "route": "/assets/*.js", "headers": { "Cache-Control": "max-age=0, must-revalidate" } },
-    { "route": "/assets/*", "headers": { "Cache-Control": "public, max-age=1800, immutable" } },
+    { "route": "/assets/*", "headers": { "Cache-Control": "public, max-age=900, immutable" } },
 
     { "route": "/*", "headers": { "Cache-Control": "public, max-age=1800, must-revalidate" } }
   ]
