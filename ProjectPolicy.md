@@ -128,7 +128,12 @@ https://docs.abcjs.net/
 - アプリのリリースにおいては、圧縮ツールは GitHub Actions の runner 上で実行する。
 - runner 上の作業ディレクトリからAzureにスクリプトを送りアプリを公開する。
 - このリリースのため *.yml と package.json などのファイルを用意する。
-- ファイルが用意出来たら ローカルで確認（ npm install → npm run build ）し、確認出来たら push してリリースする。
+- ファイルが用意出来たら ローカルで確認（ npm install → npm run build ）し、AIに指示を出して確認してもらう。
+  例）
+    www をミニファイした dist フォルダの中身が、意味は変えずにサイズだけ小さくなっているかチェックしてほしい。
+    フォルダ構成と存在するファイルが同一であることの他に、簡易チェックでいいので、チェック方法は任せる。
+    （今のところ、スクショ比較 や DOM比較は不要です。）
+
 - コマンド（npm install → npm run build）はrepoフォルダで実行するが、その際に生成される dist , node_modules フォルダは git 管理対象外。
 - AIは コマンド `npm run build` は 実行しない。(開発者が実行する)
 
