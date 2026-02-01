@@ -1,17 +1,10 @@
+import { ConfigStore } from "./store.js";
+import ScoreData from "./ScoreData.js";
+import { showMessage } from "../lib/ShowMessageBox.js";
+
 /**
  * RhythmScore.js
- * alphaTabでリズム譜を表示するクラス
- * 
- * alphaTabは以下のサイトで情報公開している。
- * 
- * 拍子について
- * https://www.alphatab.net/docs/alphatex/bar-metadata#ts。
- * 
- * 休符について
- * https://alphatab.net/docs/alphatex/document-structure#beat-content-required
- * 
- * 音符表現について
- * https://alphatab.net/docs/alphatex/document-structure#beats
+ * alphaTab（alphaTex）でリズム譜を表示するクラス
  */
 
 class RhythmScore {
@@ -24,6 +17,7 @@ class RhythmScore {
     bars = [],
   } = {}) {
     this.container = document.getElementById(containerId);
+    this.store = new ConfigStore();
     this.timeSignature = timeSignature;
     this.chord = chord;
     this.measures = measures;
@@ -31,6 +25,11 @@ class RhythmScore {
     this.progression = this.normalizeProgression(progression);
     this.bars = Array.isArray(bars) ? bars : [];
     this.overlayTimer = null;
+    this.contextMenu = null;
+    this.contextMenuItems = [];
+    this.contextMenuBarIndex = null;
+    this.contextMenuPointerId = null;
+    this.copiedBar = null;
     console.log("RhythmScore コンストラクタ実行:", {
       containerId,
       container: !!this.container,
@@ -40,6 +39,7 @@ class RhythmScore {
       barsLength: this.bars.length,
     });
     this.handleOverlayRefresh = () => {
+      this.closeContextMenu();
       this.clearOverlay();
       this.startOverlayPoll();
     };
@@ -48,7 +48,214 @@ class RhythmScore {
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", this.handleOverlayRefresh);
     }
+    window.addEventListener("pagehide", () => {
+      this.copiedBar = null;
+    });
     this.render();
+  }
+
+  getPreferredLang() {
+    const lang = navigator.language || navigator.userLanguage || "en";
+    return lang.startsWith("ja") ? "ja" : "en";
+  }
+
+  getMenuLabel(key) {
+    const isJa = this.getPreferredLang() === "ja";
+    const labels = {
+      edit: { ja: "編集", en: "Edit" },
+      copy: { ja: "コピー", en: "Copy" },
+      duplicate: { ja: "複製", en: "Duplicate" },
+      paste: { ja: "貼り付け", en: "Paste" },
+      delete: { ja: "削除", en: "Delete" },
+    };
+    return labels[key] ? labels[key][isJa ? "ja" : "en"] : key;
+  }
+
+  cloneBar(bar) {
+    if (!bar || typeof bar !== "object") {
+      return this.buildDefaultBar();
+    }
+    const chord = Array.isArray(bar.chord)
+      ? bar.chord.map((value) => (typeof value === "string" ? value : ""))
+      : typeof bar.chord === "string"
+        ? [bar.chord]
+        : [];
+    const rhythm = Array.isArray(bar.rhythm)
+      ? bar.rhythm.map((value) => (typeof value === "string" ? value : ""))
+      : [];
+    return { chord, rhythm };
+  }
+
+  buildDefaultBar() {
+    const beatPatterns = this.store?.getScoreBeatPatterns?.();
+    const scoreData = new ScoreData({
+      timeSignature: this.timeSignature,
+      measures: 1,
+      progression: this.progression.join(" "),
+      beatPatterns,
+      bars: null,
+    });
+    const bars = scoreData.buildBars();
+    return bars[0] ? this.cloneBar(bars[0]) : { chord: [], rhythm: [] };
+  }
+
+  applyBarsUpdate(nextBars) {
+    this.bars = Array.isArray(nextBars) ? nextBars : [];
+    this.measures = this.bars.length > 0 ? this.bars.length : 1;
+    this.store.setScoreBars(this.bars);
+    this.store.setScoreMeasures(this.measures);
+    window.bclickScoreBarCount = this.bars.length;
+    this.render();
+  }
+
+  ensureContextMenu() {
+    if (!this.container) return;
+    if (this.contextMenu && this.container.contains(this.contextMenu)) return;
+    const menu = document.createElement("div");
+    menu.className = "scoreContextMenu";
+    menu.setAttribute("role", "menu");
+
+    const list = document.createElement("div");
+    list.className = "scoreContextMenuList";
+
+    const actions = ["edit", "copy", "duplicate", "paste", "delete"];
+    actions.forEach((action) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "scoreContextMenuItem";
+      item.dataset.action = action;
+      item.setAttribute("role", "menuitem");
+      item.textContent = this.getMenuLabel(action);
+      list.appendChild(item);
+    });
+
+    menu.appendChild(list);
+    menu.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    });
+
+    this.container.appendChild(menu);
+    this.contextMenu = menu;
+    this.contextMenuItems = Array.from(menu.querySelectorAll(".scoreContextMenuItem"));
+  }
+
+  setActiveMenuItem(targetItem) {
+    this.contextMenuItems.forEach((item) => {
+      const isActive = item === targetItem;
+      item.classList.toggle("isActive", isActive);
+    });
+  }
+
+  updateActiveMenuFromPoint(clientX, clientY) {
+    const target = document.elementFromPoint(clientX, clientY);
+    const item = target ? target.closest(".scoreContextMenuItem") : null;
+    if (item && item.classList.contains("isDisabled")) {
+      this.setActiveMenuItem(null);
+      return;
+    }
+    this.setActiveMenuItem(item);
+  }
+
+  closeContextMenu() {
+    if (!this.contextMenu) return;
+    this.contextMenu.classList.remove("isVisible");
+    this.contextMenuBarIndex = null;
+    this.contextMenuPointerId = null;
+    this.setActiveMenuItem(null);
+    if (this.handleMenuPointerMove) {
+      window.removeEventListener("pointermove", this.handleMenuPointerMove);
+    }
+    if (this.handleMenuPointerUp) {
+      window.removeEventListener("pointerup", this.handleMenuPointerUp);
+      window.removeEventListener("pointercancel", this.handleMenuPointerUp);
+    }
+    if (this.handleOutsidePointerDown) {
+      window.removeEventListener("pointerdown", this.handleOutsidePointerDown, true);
+    }
+  }
+
+  openContextMenu({ left, top, barIndex }) {
+    if (!this.container) return;
+    this.ensureContextMenu();
+    if (!this.contextMenu) return;
+
+    this.contextMenuBarIndex = barIndex;
+    this.contextMenuItems.forEach((item) => {
+      const isPaste = item.dataset.action === "paste";
+      item.classList.toggle("isDisabled", isPaste && !this.copiedBar);
+    });
+
+    this.contextMenu.style.left = `${left}px`;
+    this.contextMenu.style.top = `${top}px`;
+    this.contextMenu.classList.add("isVisible");
+
+    const menuRect = this.contextMenu.getBoundingClientRect();
+    const containerRect = this.container.getBoundingClientRect();
+    const maxLeft = Math.max(0, containerRect.width - menuRect.width - 4);
+    const maxTop = Math.max(0, containerRect.height - menuRect.height - 4);
+    const clampedLeft = Math.max(4, Math.min(left, maxLeft));
+    const clampedTop = Math.max(4, Math.min(top, maxTop));
+    this.contextMenu.style.left = `${clampedLeft}px`;
+    this.contextMenu.style.top = `${clampedTop}px`;
+  }
+
+  handleMenuAction(action, barIndex) {
+    if (typeof barIndex !== "number" || barIndex < 0) return;
+    if (action === "edit") {
+      window.location.href = `/editMeasure.html?bar=${barIndex}`;
+      return;
+    }
+
+    const nextBars = this.bars.map((bar) => this.cloneBar(bar));
+    const ensureIndex = () => {
+      while (nextBars.length <= barIndex) {
+        nextBars.push(this.buildDefaultBar());
+      }
+    };
+
+    if (action === "copy") {
+      ensureIndex();
+      this.copiedBar = this.cloneBar(nextBars[barIndex]);
+      showMessage("barCopyMessage", 2000);
+      return;
+    }
+
+    if (action === "paste") {
+      if (!this.copiedBar) return;
+      ensureIndex();
+      nextBars[barIndex] = this.cloneBar(this.copiedBar);
+      this.applyBarsUpdate(nextBars);
+      showMessage("barPasteMessage", 2000);
+      return;
+    }
+
+    if (action === "duplicate") {
+      ensureIndex();
+      const source = nextBars[barIndex] || this.buildDefaultBar();
+      nextBars.splice(barIndex + 1, 0, this.cloneBar(source));
+      this.applyBarsUpdate(nextBars);
+      showMessage("barDuplicateMessage", 2000);
+      return;
+    }
+
+    if (action === "delete") {
+      const deleteHandler = () => {
+        ensureIndex();
+        if (nextBars.length > 1) {
+          nextBars.splice(barIndex, 1);
+        } else {
+          nextBars[0] = this.buildDefaultBar();
+        }
+        this.applyBarsUpdate(nextBars);
+      };
+      const fallbackMessage = this.getPreferredLang() === "ja"
+        ? "この小節を削除しますか？"
+        : "Delete this bar?";
+      if (window.confirm(fallbackMessage)) {
+        deleteHandler();
+      }
+    }
   }
 
   setTimeSignature(value) {
@@ -309,7 +516,10 @@ class RhythmScore {
 
   render() {
     if (!this.container || !window.alphaTab) return;
+    this.closeContextMenu();
     this.container.textContent = "";
+    this.contextMenu = null;
+    this.contextMenuItems = [];
     this.clearOverlay();
 
     const settings = {
@@ -404,12 +614,72 @@ class RhythmScore {
         if (window.bclickActiveChordIndex === resolvedIndex) {
           badge.classList.add("isActiveChord");
         }
+
+        /*Spec 小節番号のクリック・タップ操作イベント
+        ・マウスボタンダウン、またはタップダウン、でcontextMenuを表示する
+        ・表示されたcontextMenu内のメニューヘはドラッグ操作でメニューを選択する。
+        ・ドラッグ操作中は選択メニューをハイライトする。
+        ・マウスボタンアップ、またはタップアップ、で選択したメニューの決定となる。
+        ・contextMenuには、編集、コピー、複製、貼り付け、削除、のメニューが存在する。
+        ・contextMenuの表示位置は、選択した小節番号の右側とする。
+
+        ・「編集」は、editMeasure.html へ画面遷移して、小節の編集操作を行う。
+        ・「コピー」は、選択した小節（音符とコード）を内部的に記憶する。
+        ・「複製」は、選択した小節を複製して、選択した小節のすぐ後ろに追加する。
+        ・「貼り付け」は、「コピー」で内部的に記憶した小節（音符とコード）を、今選択した小節に上書きする。
+        ・「削除」は、選択した小節を削除する。削除時は、confirmで本当に削除していいか確認する。
+
+        ・「コピー」、「複製」、「貼り付け」後は、それぞれの操作が終わったメッセージを2秒表示する。
+        ・contextMenuの文字は適切に翻訳する。
+        ・editScore画面から別画面に移動したら、コピーや貼り付けの内部的データは消去してよい。
+        */
+        badge.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+        });
         badge.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
+        });
+        badge.addEventListener("pointerdown", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
 
-          // 小節編集画面を表示する。
-          window.location.href = `/editMeasure.html?bar=${resolvedIndex}`;
+          const badgeRect = badge.getBoundingClientRect();
+          const containerRect = this.container.getBoundingClientRect();
+          const left = badgeRect.right - containerRect.left + 6;
+          const top = badgeRect.top - containerRect.top;
+
+          this.openContextMenu({
+            left,
+            top,
+            barIndex: resolvedIndex,
+          });
+
+          this.contextMenuPointerId = event.pointerId;
+          this.handleMenuPointerMove = (moveEvent) => {
+            if (this.contextMenuPointerId !== moveEvent.pointerId) return;
+            this.updateActiveMenuFromPoint(moveEvent.clientX, moveEvent.clientY);
+          };
+          this.handleMenuPointerUp = (upEvent) => {
+            if (this.contextMenuPointerId !== upEvent.pointerId) return;
+            this.updateActiveMenuFromPoint(upEvent.clientX, upEvent.clientY);
+            const target = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
+            const item = target ? target.closest(".scoreContextMenuItem") : null;
+            if (item && !item.classList.contains("isDisabled")) {
+              const action = item.dataset.action;
+              this.handleMenuAction(action, resolvedIndex);
+            }
+            this.closeContextMenu();
+          };
+          this.handleOutsidePointerDown = (downEvent) => {
+            if (!this.contextMenu) return;
+            if (this.contextMenu.contains(downEvent.target)) return;
+            this.closeContextMenu();
+          };
+          window.addEventListener("pointermove", this.handleMenuPointerMove);
+          window.addEventListener("pointerup", this.handleMenuPointerUp);
+          window.addEventListener("pointercancel", this.handleMenuPointerUp);
+          window.addEventListener("pointerdown", this.handleOutsidePointerDown, true);
         });
 
         // タップできる小節番号のオーバーレイのサイズを求める。

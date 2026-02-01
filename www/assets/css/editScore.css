@@ -99,6 +99,52 @@ main {
   background-color: white;
 }
 
+.scoreContextMenu {
+  position: absolute;
+  z-index: 2;
+  display: none;
+  min-width: 88px;
+  padding: 4px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  border: 2px solid #1e7a4f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+}
+
+.scoreContextMenu.isVisible {
+  display: block;
+}
+
+.scoreContextMenuList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scoreContextMenuItem {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 6px 10px;
+  text-align: left;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #1a1a1a;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.scoreContextMenuItem.isActive {
+  background-color: #1e7a4f;
+  color: #ffffff;
+}
+
+.scoreContextMenuItem.isDisabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 #saveShowScore {
   left: auto;
   right: 6px;

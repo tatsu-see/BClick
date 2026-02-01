@@ -95,6 +95,16 @@ https://next.alphatab.net/docs/alphatex/beat-properties
 alphaTab/alphaTex の1段ごとの小節数の表記の例は下記から。
 https://alphatab.net/docs/alphatex/score-metadata#defaultsystemslayout
 
+拍子について
+https://www.alphatab.net/docs/alphatex/bar-metadata#ts
+ 
+休符について
+https://alphatab.net/docs/alphatex/document-structure#beat-content-required
+
+音符表現について
+https://alphatab.net/docs/alphatex/document-structure#beats
+
+
 - 内部で ABCJS を使用している個所は、仕様の参照は以下のサイトから行う。
 https://docs.abcjs.net/
 
