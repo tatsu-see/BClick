@@ -5,7 +5,7 @@
 
 import { ConfigStore } from "./store.js";
 import RhythmScore from "./RhythmScore.js";
-import ScoreData from "./ScoreData.js";
+import ScoreData from "./ScoreModel.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.alphaTab) return;

@@ -1,5 +1,5 @@
 import { ConfigStore } from "./store.js";
-import ScoreData from "./ScoreData.js";
+import ScoreData from "./ScoreModel.js";
 import AlphaTexBuilder from "./AlphaTexBuilder.js";
 import { showMessage } from "../lib/ShowMessageBox.js";
 

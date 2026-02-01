@@ -1,6 +1,6 @@
 import { ConfigStore } from "./store.js";
 import RhythmScore from "./RhythmScore.js";
-import ScoreData from "./ScoreData.js";
+import ScoreData from "./ScoreModel.js";
 import { TempoDialController } from "./tempoDial.js";
 import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
 

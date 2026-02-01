@@ -1,4 +1,4 @@
-import ScoreData from "./ScoreData.js";
+import ScoreData from "./ScoreModel.js";
 
 const DEFAULT_SETTINGS = {
   tempo: 60,

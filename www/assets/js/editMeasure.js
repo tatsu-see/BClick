@@ -1,6 +1,6 @@
 
 import { ConfigStore } from "./store.js";
-import ScoreData from "./ScoreData.js";
+import ScoreData from "./ScoreModel.js";
 import RhythmPreviewRenderer from "./RhythmPreviewRenderer.js";
 import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
 
