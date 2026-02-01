@@ -126,7 +126,7 @@
       </div>
 
       <div class="preferenceValue">
-        <button id="configBeatButton" type="button" class="makeScoreButton">
+        <button id="configBeatButton" type="button" class="makeScoreButton navButton">
           <span class="material-symbols-rounded" aria-hidden="true">tune</span>
         </button>
       </div>
@@ -141,16 +141,22 @@
     </div>
 
     <div id="playClicking">
-      <button id="startClick" type="button" aria-label="Play">
+      <button id="startClick" type="button" class="chipButton" aria-label="Play">
         <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span>
+        <span class="lang" data-lang="en">Play</span>
+        <span class="lang" data-lang="ja">再生</span>
       </button>
-      <button id="stopClickart" type="button" aria-label="Pause">
+      <button id="stopClickart" type="button" class="chipButton" aria-label="Pause">
         <span class="material-symbols-rounded" aria-hidden="true">pause</span>
+        <span class="lang" data-lang="en">Pause</span>
+        <span class="lang" data-lang="ja">停止</span>
       </button>
-      <button id="resetClickart" type="button" aria-label="Reset">
+      <button id="resetClickart" type="button" class="chipButton" aria-label="Reset">
         <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span>
+        <span class="lang" data-lang="en">Reset</span>
+        <span class="lang" data-lang="ja">リセット</span>
       </button>
-      <button id="showCodeDiagram" type="button" class="makeScoreButton makeScoreButtonCompact">
+      <button id="showCodeDiagram" type="button" class="makeScoreButton makeScoreButtonCompact navButton">
         <span class="material-symbols-rounded" aria-hidden="true">back_hand</span>
         <span class="lang" data-lang="en">Chords</span>
         <span class="lang" data-lang="ja">コード</span>
@@ -200,7 +206,7 @@
         </div>
 
         <div class="preferenceValue">
-          <button id="configScoreButton" type="button" class="makeScoreButton">
+          <button id="configScoreButton" type="button" class="makeScoreButton navButton">
             <span class="material-symbols-rounded" aria-hidden="true">tune</span>
           </button>
         </div>
@@ -228,12 +234,12 @@
       -->
       <div class="preferenceExec isRow4">
         <div></div>
-        <button id="setClick" type="button" class="okConfig makeScoreButton">
+        <button id="setClick" type="button" class="okConfig makeScoreButton navButton">
           <span class="lang" data-lang="en">Create</span>
           <span class="lang" data-lang="ja">作成</span>
         </button>
 
-        <button id="editScore" type="button" class="okConfig makeScoreButton">
+        <button id="editScore" type="button" class="okConfig makeScoreButton navButton">
           <span class="lang" data-lang="en">Edit</span>
           <span class="lang" data-lang="ja">編集</span>
         </button>

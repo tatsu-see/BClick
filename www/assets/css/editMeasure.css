@@ -68,16 +68,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 1px 6px;
+  padding: 6px 6px;
   min-height: 28px;
   min-width:  42px;
   border-radius: 3px;
   border: 1px solid #666;
   background-color: #f7f7f7;
   font-size: 0.85em;
-  color: #111;
+  color: #222;
   user-select: none;
   cursor: pointer;
+}
+
+.chipButton .material-symbols-rounded {
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+.chipButton .lang {
+  font-size: 0.6em;
+  line-height: 1;
+  align-self: flex-end;
+  padding-bottom: 1px;
 }
 
 .chipButton:focus-visible {
