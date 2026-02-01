@@ -6,6 +6,17 @@
  * ・A4紙の、上下には 30mm 程の余白を用意し、左右には 15mm 程の余白を用意する。
  * ・A4紙の、上詰めに楽譜を配置する。
  * ・リズム楽譜のSVGをPDFに載せる。
+ *
+ * 重要な技術的注記：alphaTab の font-size スケーリング補正について
+ * ・alphaTab は display.scale: 0.95 の設定により、テキト要素（ト音記号、拍子など）に
+ *   style="font-size: 95%" を適用する。これは相対単位である。
+ * ・SVG → Image → Canvas 変換時、相対単位の font-size は、親要素の font-size に依存する。
+ * ・ブラウザ表示時と PDF 出力時で親要素が異なるため、相対値の計算結果が異なり、
+ *   テキトサイズの齟齬が発生する。
+ * ・修正方法：SVG クローン時に、元の SVG 要素から window.getComputedStyle() で
+ *   計算済みのフォントサイズ（絶対値、px単位）を取得し、クローン要素の
+ *   style="font-size: 95%" をその絶対値に置き換える。これにより、PDF出力時に
+ *   ブラウザ表示と同じサイズが保証される。
  */
 import { buildScoreJsonString } from "./scoreSerialization.js";
 
@@ -204,6 +215,30 @@ const convertSvgToPngBytes = async (svgEl) => {
     cloned.setAttribute("width", String(width));
     cloned.setAttribute("height", String(height));
     inlineSvgFontStyles(svgEl, cloned);
+    
+    // テキト要素の相対 font-size: 95% を、計算済みの絶対値に変換
+    // これにより、PDF出力時にもブラウザ表示と同じサイズが保証される
+    const origTextElements = svgEl.querySelectorAll("text, tspan");
+    const clonedTextElements = cloned.querySelectorAll("text, tspan");
+    const count = Math.min(origTextElements.length, clonedTextElements.length);
+    for (let i = 0; i < count; i += 1) {
+      const origEl = origTextElements[i];
+      const clonedEl = clonedTextElements[i];
+      
+      // ブラウザで計算済みのスタイルを取得
+      const origComputed = window.getComputedStyle(origEl);
+      const origFontSize = origComputed.fontSize; // "34.2px" など
+      
+      if (origFontSize) {
+        // クローンの style を更新：相対値 95% を絶対値に置き換え
+        let style = clonedEl.getAttribute("style") || "";
+        if (style.includes("font-size")) {
+          style = style.replace(/font-size:\s*95%/gi, `font-size: ${origFontSize}`);
+          clonedEl.setAttribute("style", style);
+        }
+      }
+    }
+    
     const fontCss = [collectFontFaceCss(), alphaTabFontCss].filter(Boolean).join("\n");
     injectFontFaceCss(cloned, fontCss);
 
