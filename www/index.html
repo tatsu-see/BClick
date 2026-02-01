@@ -68,7 +68,7 @@
   <link rel="stylesheet" href="/assets/css/click.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
 
   <script type="module" src="/assets/lib/Language.js"></script>
 
@@ -88,7 +88,7 @@
     <!--Spec BPM テンポ設定（ダイアル操作）
     -->
     <div class="preferenceTitle">
-      <span class="material-symbols-outlined" aria-hidden="true">speed</span>
+      <span class="material-symbols-rounded" aria-hidden="true">speed</span>
       <span class="lang" data-lang="en">Tempo (30–240)</span>
       <span class="lang" data-lang="ja">テンポ（30～240）</span>
     </div>
@@ -126,8 +126,8 @@
       </div>
 
       <div class="preferenceValue">
-        <button id="configBeatButton" type="button">
-          <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+        <button id="configBeatButton" type="button" class="makeScoreButton">
+          <span class="material-symbols-rounded" aria-hidden="true">tune</span>
         </button>
       </div>
 
@@ -135,23 +135,23 @@
 
     <!--Spec クリック再生エリア-開始 -->
     <div class="preferenceTitle">
-      <span class="material-symbols-outlined" aria-hidden="true">play_circle</span>
+      <span class="material-symbols-rounded" aria-hidden="true">play_circle</span>
       <span class="lang" data-lang="en">Play</span>
       <span class="lang" data-lang="ja">再生</span>
     </div>
 
     <div id="playClicking">
       <button id="startClick" type="button" aria-label="Play">
-        <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span>
+        <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span>
       </button>
       <button id="stopClickart" type="button" aria-label="Pause">
-        <span class="material-symbols-outlined" aria-hidden="true">pause</span>
+        <span class="material-symbols-rounded" aria-hidden="true">pause</span>
       </button>
       <button id="resetClickart" type="button" aria-label="Reset">
-        <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+        <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span>
       </button>
-      <button id="showCodeDiagram" type="button">
-        <span class="material-symbols-outlined" aria-hidden="true">back_hand</span>
+      <button id="showCodeDiagram" type="button" class="makeScoreButton makeScoreButtonCompact">
+        <span class="material-symbols-rounded" aria-hidden="true">back_hand</span>
         <span class="lang" data-lang="en">Chords</span>
         <span class="lang" data-lang="ja">コード</span>
       </button>
@@ -169,7 +169,7 @@
     <!--Spec クリック再生エリア-終了 -->
 
     <div class="preferenceTitle">
-      <span class="material-symbols-outlined" aria-hidden="true">queue_music</span>
+      <span class="material-symbols-rounded" aria-hidden="true">queue_music</span>
       <span class="lang" data-lang="en">Rhythm</span>
       <span class="lang" data-lang="ja">リズム</span>
       <label class="scoreToggle">
@@ -200,15 +200,15 @@
         </div>
 
         <div class="preferenceValue">
-          <button id="configScoreButton" type="button">
-            <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+          <button id="configScoreButton" type="button" class="makeScoreButton">
+            <span class="material-symbols-rounded" aria-hidden="true">tune</span>
           </button>
         </div>
 
       </div>
 
     <div class="preferenceTitle">
-      <span class="material-symbols-outlined" aria-hidden="true">library_music</span>
+      <span class="material-symbols-rounded" aria-hidden="true">library_music</span>
       <span class="lang" data-lang="en">Score</span>
       <span class="lang" data-lang="ja">スコア</span>
     </div>
@@ -274,3 +274,6 @@
 
 </body>
 </html>
+
+
+
