@@ -1,7 +1,9 @@
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (!ensureInAppNavigation()) return;
+  if (document.referrer) {
+    if (!ensureInAppNavigation()) return;
+  }
 
   const closePageButton = document.getElementById("closePage");
 
