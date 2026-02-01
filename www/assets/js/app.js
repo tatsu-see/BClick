@@ -104,6 +104,37 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  const refreshFromStore = () => {
+    const savedTempo = store.getTempo();
+    if (savedTempo !== null) {
+      if (tempoDial) {
+        tempoDial.setValue(tempoDial.clamp(savedTempo));
+      } else {
+        setTempoDisplay(savedTempo);
+      }
+      notifyTempoChange(savedTempo);
+    }
+
+    const savedClickCount = store.getClickCount();
+    if (clickCountSelect && savedClickCount !== null) {
+      clickCountSelect.value = savedClickCount.toString();
+    }
+
+    const savedCountdown = store.getCountInSec();
+    if (countdownSelect && savedCountdown !== null) {
+      countdownSelect.value = savedCountdown.toString();
+    }
+
+    const savedScoreEnabled = store.getScoreEnabled();
+    if (scoreToggle && savedScoreEnabled !== null) {
+      scoreToggle.checked = savedScoreEnabled;
+      updateScoreToggle();
+    }
+
+    updateBeatSummary();
+    updateScoreSummary();
+  };
+
   const syncTempoFromStore = () => {
     const savedTempo = store.getTempo();
     if (savedTempo === null) return;
@@ -210,6 +241,10 @@ document.addEventListener("DOMContentLoaded", () => {
       store.setScoreEnabled(scoreToggle.checked);
     });
   }
+
+  window.addEventListener("pageshow", () => {
+    refreshFromStore();
+  });
 
   if (tempoDownButton) {
     tempoDownButton.addEventListener("click", () => adjustTempo(-1));

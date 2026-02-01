@@ -1,3 +1,8 @@
+/**
+ * editScore.js
+ * editScore画面の表示・操作を制御するスクリプト
+ */
+
 import { ConfigStore } from "./store.js";
 import RhythmScore from "./RhythmScore.js";
 import ScoreData from "./ScoreModel.js";
@@ -89,6 +94,15 @@ document.addEventListener("DOMContentLoaded", () => {
       progression: currentScoreData.progression,
       bars: currentScoreData.bars,
       barsPerRow: currentScoreData.barsPerRow || 2,
+      beatPatterns: currentScoreData.beatPatterns,
+      onBarsChange: (nextBars, nextMeasures) => {
+        store.setScoreBars(nextBars);
+        store.setScoreMeasures(nextMeasures);
+        if (currentScoreData) {
+          currentScoreData.bars = nextBars;
+          currentScoreData.measures = nextMeasures;
+        }
+      },
     });
     window.bclickRhythmScore = rhythmScore;
     if (Array.isArray(currentScoreData.bars)) {
@@ -224,6 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rhythmScore.setProgression(nextScoreData.progression);
       rhythmScore.setBars(nextScoreData.bars);
       rhythmScore.setBarsPerRow(nextScoreData.barsPerRow || 2);
+      rhythmScore.setBeatPatterns(nextScoreData.beatPatterns);
     } else if (scoreElement && window.alphaTab) {
       window.bclickActiveChordIndex = -1;
       rhythmScore = new RhythmScore("score", {
@@ -233,6 +248,15 @@ document.addEventListener("DOMContentLoaded", () => {
         progression: nextScoreData.progression,
         bars: nextScoreData.bars,
         barsPerRow: nextScoreData.barsPerRow || 2,
+        beatPatterns: nextScoreData.beatPatterns,
+        onBarsChange: (nextBars, nextMeasures) => {
+          store.setScoreBars(nextBars);
+          store.setScoreMeasures(nextMeasures);
+          if (currentScoreData) {
+            currentScoreData.bars = nextBars;
+            currentScoreData.measures = nextMeasures;
+          }
+        },
       });
       window.bclickRhythmScore = rhythmScore;
       if (Array.isArray(nextScoreData.bars)) {
