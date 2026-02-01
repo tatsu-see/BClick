@@ -45,6 +45,7 @@ class RhythmScore {
     this.progression = this.normalizeProgression(progression);
     this.bars = Array.isArray(bars) ? bars : [];
     this.beatPatterns = beatPatterns;
+    this.overlayRefreshTimer = null;
 
     console.log("RhythmScore コンストラクタ実行:", {
       containerId,
@@ -184,6 +185,22 @@ class RhythmScore {
     });
     this.renderer.render();
     this.ui.startOverlayPoll();
+  }
+
+  /**
+   * オーバーレイの再描画を遅延して実行する。
+   * @param {number} delayMs
+   */
+  requestOverlayRefresh(delayMs = 0) {
+    if (!this.ui) return;
+    if (this.overlayRefreshTimer) {
+      clearTimeout(this.overlayRefreshTimer);
+    }
+    //Spec alphaTab再描画後のタイミング差でズレるため、遅延して重ね直す
+    this.overlayRefreshTimer = window.setTimeout(() => {
+      this.ui.handleOverlayRefresh();
+      this.overlayRefreshTimer = null;
+    }, delayMs);
   }
 }
 

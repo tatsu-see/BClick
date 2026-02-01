@@ -17,6 +17,9 @@ class RhythmScoreUI {
     this.handleMenuPointerUp = null;
     this.handleOutsidePointerDown = null;
     this.activeMenuBarIndex = null;
+    this.overlayRenderPending = false;
+    this.overlayObserver = null;
+    this.overlayObserverTimer = null;
     this.handleOverlayRefresh = () => {
       this.clearOverlay();
       this.startOverlayPoll();
@@ -32,6 +35,17 @@ class RhythmScoreUI {
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", this.handleOverlayRefresh);
     }
+    if (this.container && window.MutationObserver && !this.overlayObserver) {
+      //Spec alphaTab の描画が遅れて追加されるため、DOM変化でオーバーレイを更新する
+      this.overlayObserver = new MutationObserver((mutations) => {
+        const shouldRefresh = mutations.some((mutation) => {
+          return Array.from(mutation.addedNodes).some((node) => !this.isOverlayUiNode(node));
+        });
+        if (!shouldRefresh) return;
+        this.requestOverlayRefreshFromMutation();
+      });
+      this.overlayObserver.observe(this.container, { childList: true, subtree: true });
+    }
   }
 
   /**
@@ -43,6 +57,39 @@ class RhythmScoreUI {
     if (window.visualViewport) {
       window.visualViewport.removeEventListener("resize", this.handleOverlayRefresh);
     }
+    if (this.overlayObserver) {
+      this.overlayObserver.disconnect();
+      this.overlayObserver = null;
+    }
+    if (this.overlayObserverTimer) {
+      clearTimeout(this.overlayObserverTimer);
+      this.overlayObserverTimer = null;
+    }
+  }
+
+  /**
+   * オーバーレイUI由来のDOM変化かを判定する。
+   * @param {Node} node
+   * @returns {boolean}
+   */
+  isOverlayUiNode(node) {
+    const element = node.nodeType === 1 ? node : node.parentElement;
+    if (!element || !element.closest) return false;
+    return !!element.closest(".scoreChordOverlayLayer, .scoreContextMenu");
+  }
+
+  /**
+   * DOM変化を検知した時のオーバーレイ再描画を予約する。
+   */
+  requestOverlayRefreshFromMutation() {
+    if (this.overlayObserverTimer) {
+      clearTimeout(this.overlayObserverTimer);
+    }
+    //Spec alphaTabの描画が落ち着くまで少し待ってから重ね直す
+    this.overlayObserverTimer = window.setTimeout(() => {
+      this.handleOverlayRefresh();
+      this.overlayObserverTimer = null;
+    }, 120);
   }
 
   /**
@@ -292,12 +339,38 @@ class RhythmScoreUI {
     let attempts = 0;
     this.overlayTimer = setInterval(() => {
       attempts += 1;
-      const done = this.renderOverlay();
-      if (done || attempts >= 30) {
-        clearInterval(this.overlayTimer);
-        this.overlayTimer = null;
-      }
+      if (this.overlayRenderPending) return;
+      this.overlayRenderPending = true;
+      //Spec 描画タイミングを少し遅らせてちらつきを抑える
+      this.renderOverlayAfterPaint()
+        .then((done) => {
+          if (done || attempts >= 30) {
+            clearInterval(this.overlayTimer);
+            this.overlayTimer = null;
+          }
+        })
+        .finally(() => {
+          this.overlayRenderPending = false;
+        });
     }, 50);
+  }
+
+  /**
+   * オーバーレイ描画を少し遅らせて実行する。
+   * @returns {Promise<boolean>}
+   */
+  async renderOverlayAfterPaint() {
+    //Spec alphaTab の描画・フォント反映後に重ねて描画する
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    if (document.fonts && document.fonts.ready) {
+      try {
+        await document.fonts.ready;
+      } catch {
+        // フォント待機に失敗しても描画は続行する
+      }
+    }
+    return this.renderOverlay();
   }
 
   /**

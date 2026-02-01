@@ -113,6 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (Array.isArray(currentScoreData.bars)) {
       window.bclickScoreBarCount = currentScoreData.bars.length;
     }
+    //Spec 初回描画直後はズレるため、遅延してオーバーレイを重ね直す
+    rhythmScore.requestOverlayRefresh(200);
     console.log("楽譜生成完了。小節数:", currentScoreData.bars?.length || currentScoreData.measures);
   } else {
     console.warn("楽譜生成条件エラー:", {
@@ -213,6 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
         store.setScoreBarsPerRow(parsed);
         if (rhythmScore) {
           rhythmScore.setBarsPerRow(parsed);
+          //Spec 小節数レイアウト変更後にオーバーレイを遅延して再描画する
+          rhythmScore.requestOverlayRefresh(120);
         }
       }
     });
@@ -267,6 +271,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (Array.isArray(nextScoreData.bars)) {
         window.bclickScoreBarCount = nextScoreData.bars.length;
       }
+      //Spec 楽譜の再生成直後はズレるため、遅延してオーバーレイを重ね直す
+      rhythmScore.requestOverlayRefresh(200);
     }
 
     const savedTempo = store.getTempo();
