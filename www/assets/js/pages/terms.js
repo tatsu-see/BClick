@@ -1,4 +1,4 @@
-import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
+import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;

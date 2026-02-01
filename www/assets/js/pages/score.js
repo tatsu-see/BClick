@@ -3,9 +3,9 @@
  * 画面側のスコア表示ロジック。
  */
 
-import { ConfigStore } from "./store.js";
-import RhythmScore from "./RhythmScore.js";
-import ScoreData from "./ScoreModel.js";
+import { ConfigStore } from "../utils/store.js";
+import RhythmScore from "../components/RhythmScore.js";
+import ScoreData from "../models/ScoreModel.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!window.alphaTab) return;

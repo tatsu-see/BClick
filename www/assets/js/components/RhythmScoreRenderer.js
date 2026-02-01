@@ -3,7 +3,7 @@
  * alphaTab 描画に特化したリズム譜レンダラー
  */
 
-import AlphaTexBuilder from "./AlphaTexBuilder.js";
+import AlphaTexBuilder from "../utils/AlphaTexBuilder.js";
 
 class RhythmScoreRenderer {
   constructor(containerId, { alphaTexBuilder = null } = {}) {

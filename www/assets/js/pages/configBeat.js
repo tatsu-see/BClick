@@ -1,6 +1,6 @@
-import { ConfigStore } from "./store.js";
-import { TempoDialController } from "./tempoDial.js";
-import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
+import { ConfigStore } from "../utils/store.js";
+import { TempoDialController } from "../components/tempoDial.js";
+import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;

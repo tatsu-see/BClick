@@ -1,8 +1,8 @@
 
-import { ConfigStore } from "./store.js";
-import ScoreData from "./ScoreModel.js";
-import RhythmPreviewRenderer from "./RhythmPreviewRenderer.js";
-import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
+import { ConfigStore } from "../utils/store.js";
+import ScoreData from "../models/ScoreModel.js";
+import RhythmPreviewRenderer from "../components/RhythmPreviewRenderer.js";
+import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;

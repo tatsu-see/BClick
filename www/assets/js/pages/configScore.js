@@ -1,7 +1,7 @@
-import { ConfigStore } from "./store.js";
-import RhythmPreviewRenderer from "./RhythmPreviewRenderer.js";
-import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
-import { cMajorDiatonicPool } from "../lib/guiterCode.js";
+import { ConfigStore } from "../utils/store.js";
+import RhythmPreviewRenderer from "../components/RhythmPreviewRenderer.js";
+import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
+import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;

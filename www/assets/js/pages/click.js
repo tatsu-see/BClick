@@ -1,6 +1,6 @@
 import { clickSound, getMaxVolume, warmUpAudioContext } from "/assets/lib/Sound.js";
 import { chordPool } from "/assets/lib/guiterCode.js";
-import { ConfigStore } from "./store.js";
+import { ConfigStore } from "../utils/store.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得

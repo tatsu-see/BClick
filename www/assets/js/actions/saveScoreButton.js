@@ -1,8 +1,8 @@
-import { ConfigStore } from "./store.js";
+import { ConfigStore } from "../utils/store.js";
 import {
   buildScoreDataFromStore,
   downloadScoreJson,
-} from "./scoreButtonUtils.js";
+} from "../utils/scoreButtonUtils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const saveButton = document.getElementById("saveScore");

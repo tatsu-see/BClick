@@ -1,5 +1,5 @@
 
-import { LocalStore } from '../lib/LocalStore.js';
+import { LocalStore } from '../../lib/LocalStore.js';
 
 /**
  * 設定の保存・読込用のclass

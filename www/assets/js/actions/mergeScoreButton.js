@@ -1,9 +1,9 @@
-import { ConfigStore } from "./store.js";
+import { ConfigStore } from "../utils/store.js";
 import {
   buildScoreDataFromObject,
   mergeBars,
   readScoreFile,
-} from "./scoreButtonUtils.js";
+} from "../utils/scoreButtonUtils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const mergeButton = document.getElementById("mergeScore");

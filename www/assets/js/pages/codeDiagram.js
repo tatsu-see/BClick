@@ -1,6 +1,6 @@
-import { ConfigStore } from "./store.js";
-import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
-import { isLanguage } from "../lib/Language.js";
+import { ConfigStore } from "../utils/store.js";
+import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
+import { isLanguage } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;

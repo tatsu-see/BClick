@@ -3,11 +3,11 @@
  * リズム譜の描画・UI・編集をまとめる統合クラス
  */
 
-import AlphaTexBuilder from "./AlphaTexBuilder.js";
+import AlphaTexBuilder from "../utils/AlphaTexBuilder.js";
 import RhythmScoreRenderer from "./RhythmScoreRenderer.js";
 import RhythmScoreUI from "./RhythmScoreUI.js";
 import ScoreBarEditor from "./ScoreBarEditor.js";
-import { showMessage } from "../lib/ShowMessageBox.js";
+import { showMessage } from "../../lib/ShowMessageBox.js";
 
 class RhythmScore {
   constructor(containerId, {

@@ -1,5 +1,5 @@
-import { ConfigStore } from "./store.js";
-import { resetScoreSettings } from "./scoreButtonUtils.js";
+import { ConfigStore } from "../utils/store.js";
+import { resetScoreSettings } from "../utils/scoreButtonUtils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const initButton = document.getElementById("initScore");

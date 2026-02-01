@@ -1,6 +1,6 @@
 
-import { ConfigStore } from "./store.js";
-import { TempoDialController } from "./tempoDial.js";
+import { ConfigStore } from "../utils/store.js";
+import { TempoDialController } from "../components/tempoDial.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();

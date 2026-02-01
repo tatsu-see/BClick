@@ -1,11 +1,11 @@
-import { ConfigStore } from "./store.js";
+import { ConfigStore } from "../utils/store.js";
 import {
   buildScoreDataFromObject,
   mergeBars,
   readScoreFile,
   saveScoreDataToStore,
-} from "./scoreButtonUtils.js";
-import { showMessage } from "../lib/ShowMessageBox.js";
+} from "../utils/scoreButtonUtils.js";
+import { showMessage } from "../../lib/ShowMessageBox.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const MERGE_TOGGLE_KEY = "bclick.score.merge";

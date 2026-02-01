@@ -1,4 +1,4 @@
-import { openEditScorePage } from "./scoreButtonUtils.js";
+import { openEditScorePage } from "../utils/scoreButtonUtils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const editButton = document.getElementById("editScore");

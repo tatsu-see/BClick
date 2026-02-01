@@ -3,7 +3,7 @@
  * 小節（バー）データの編集操作（コピー/複製/貼り付け/削除）を担当するクラス
  */
 
-import ScoreData from "./ScoreModel.js";
+import ScoreData from "../models/ScoreModel.js";
 
 class ScoreBarEditor {
   constructor({ timeSignature = "4/4", progression = "", beatPatterns = null } = {}) {

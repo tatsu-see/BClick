@@ -3,11 +3,11 @@
  * editScore画面の表示・操作を制御するスクリプト
  */
 
-import { ConfigStore } from "./store.js";
-import RhythmScore from "./RhythmScore.js";
-import ScoreData from "./ScoreModel.js";
-import { TempoDialController } from "./tempoDial.js";
-import { ensureInAppNavigation, goBackWithFallback } from "./navigationGuard.js";
+import { ConfigStore } from "../utils/store.js";
+import RhythmScore from "../components/RhythmScore.js";
+import ScoreData from "../models/ScoreModel.js";
+import { TempoDialController } from "../components/tempoDial.js";
+import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
