@@ -164,6 +164,8 @@
 
 .rhythmPatternPreview {
   justify-content: center;
+  /* Spec ABCJSプレビューは操作しないのでクリックを無効化する */
+  pointer-events: none;
 }
 
 .rhythmPatternChord {
