@@ -208,10 +208,27 @@ class RhythmScoreUI {
 
     const menuRect = this.contextMenu.getBoundingClientRect();
     const containerRect = this.container.getBoundingClientRect();
-    const maxLeft = Math.max(0, containerRect.width - menuRect.width - 4);
-    const maxTop = Math.max(0, containerRect.height - menuRect.height - 4);
+
+    //Spec contextMenu のサイズ調整（必要な場合にだけ拡大する）
+    const menuSizeAdjustX = 0;
+    const menuSizeAdjustY = 0;
+
+    const adjustedMenuWidth = menuRect.width + menuSizeAdjustX;
+    const adjustedMenuHeight = menuRect.height + menuSizeAdjustY;
+
+    if (menuSizeAdjustX !== 0) {
+      this.contextMenu.style.width = `${adjustedMenuWidth}px`;
+    }
+    if (menuSizeAdjustY !== 0) {
+      this.contextMenu.style.height = `${adjustedMenuHeight}px`;
+    }
+
+    const maxLeft = Math.max(0, containerRect.width - adjustedMenuWidth - 4);
+    const maxTop = Math.max(0, containerRect.height - adjustedMenuHeight - 4);
+
     const clampedLeft = Math.max(4, Math.min(left, maxLeft));
     const clampedTop = Math.max(4, Math.min(top, maxTop));
+
     this.contextMenu.style.left = `${clampedLeft}px`;
     this.contextMenu.style.top = `${clampedTop}px`;
   }
@@ -352,15 +369,21 @@ class RhythmScoreUI {
           window.addEventListener("pointerdown", this.handleOutsidePointerDown, true);
         });
 
-        const doubledHeight = entry.height * 2.5;
-        const expandedWidth = entry.width * 1.2;
+        //Spec 小節番号オーバーレイのサイズ調整（必要な場合にだけ拡大する）
+        const overlaySizeAdjustX = 0.1;
+        const overlaySizeAdjustY = 0.1;
+        //Spec 小節番号オーバーレイのフォント倍率（必要な場合にだけ拡大する）
+        const overlayFontScale = 1.5;
+
+        const doubledHeight = entry.height * (2.5 + overlaySizeAdjustY);
+        const expandedWidth = entry.width * (1.2 + overlaySizeAdjustX);
         const overlayShiftX = 4;
 
         badge.style.left = `${entry.left - (expandedWidth - entry.width) / 2 - overlayShiftX}px`;
         badge.style.top = `${entry.top - entry.height / 2}px`;
         badge.style.width = `${expandedWidth}px`;
         badge.style.height = `${doubledHeight}px`;
-        badge.style.fontSize = `${entry.fontSize}px`;
+        badge.style.fontSize = `${entry.fontSize * overlayFontScale}px`;
         overlay.appendChild(badge);
       });
 
