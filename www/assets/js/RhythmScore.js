@@ -1,5 +1,6 @@
 import { ConfigStore } from "./store.js";
 import ScoreData from "./ScoreData.js";
+import AlphaTexBuilder from "./AlphaTexBuilder.js";
 import { showMessage } from "../lib/ShowMessageBox.js";
 
 /**
@@ -18,6 +19,7 @@ class RhythmScore {
   } = {}) {
     this.container = document.getElementById(containerId);
     this.store = new ConfigStore();
+    this.alphaTexBuilder = new AlphaTexBuilder();
     this.timeSignature = timeSignature;
     this.chord = chord;
     this.measures = measures;
@@ -303,13 +305,6 @@ class RhythmScore {
     return trimmed.length > 0 ? trimmed.split(/\s+/) : [];
   }
 
-  sanitizeChordLabel(value) {
-    if (typeof value !== "string") return "";
-    const trimmed = value.trim();
-    if (!trimmed) return "";
-    return trimmed.replace(/["\\]/g, "");
-  }
-
   /**
    * SVG内のコード文字だけを拡大する。
    */
@@ -343,177 +338,6 @@ class RhythmScore {
     });
   }
 
-  // alphaTab に表示する楽譜用の文字列を作成する。
-  buildAlphaTex() {
-    const [numeratorRaw, denominatorRaw] = this.timeSignature.split("/");
-    const numeratorValue = Number.parseInt(numeratorRaw, 10);
-    const denominatorValue = Number.parseInt(denominatorRaw, 10);
-    const numerator = Number.isNaN(numeratorValue) || numeratorValue <= 0 ? 4 : numeratorValue;
-    const denominator = Number.isNaN(denominatorValue) || denominatorValue <= 0 ? 4 : denominatorValue;
-    const beats = numerator;
-    const bars = [];
-    const barSource = Array.isArray(this.bars) && this.bars.length > 0 ? this.bars : null;
-    const barCount = barSource ? barSource.length : this.measures;
-    const progression = this.progression.length > 0 ? this.progression : null;
-
-    // alphaTab に向けて小節毎に情報を組み立てていく。
-    let lastBeatDivision = 4;
-    for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
-      const notes = [];
-      const barData = barSource ? barSource[barIndex] : null;
-      const getBeatLength = (duration) => {
-        if (duration === "16") return 0.25;
-        if (duration === "8") return 0.5;
-        return 1;
-      };
-      const normalizeBeatChords = (value) => {
-        if (Array.isArray(value)) {
-          const normalized = value.map((item) => (typeof item === "string" ? item : ""));
-          while (normalized.length < beats) {
-            normalized.push("");
-          }
-          return normalized.slice(0, beats);
-        }
-        if (typeof value === "string" && value.length > 0) {
-          return Array.from({ length: beats }, (_, index) => (index === 0 ? value : ""));
-        }
-        return Array.from({ length: beats }, () => "");
-      };
-      const buildBeatChords = () => {
-        if (barData && barData.chord) {
-          return normalizeBeatChords(barData.chord);
-        }
-        const fallback = progression ? progression[barIndex % progression.length] : "";
-        return normalizeBeatChords(fallback);
-      };
-      const beatChords = buildBeatChords().map((value) => this.sanitizeChordLabel(value));
-      let beatIndex = 0;
-      let beatProgress = 0;
-      let currentBeatDivision = 4;
-      let chordAttached = false;
-      const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
-        ? barData.rhythm
-        : Array.from({ length: beats }, () => "4");
-      let lastNoteIndex = null;
-
-      // 4 / 8 / 16分音符ごとのループ
-      rhythm.forEach((value, index) => {
-        const duration = value.endsWith("16") ? "16" : value.endsWith("8") ? "8" : "4";
-        const isRest = value.startsWith("r");
-        const isTie = value.startsWith("t");
-        const isBarHead = beatIndex === 0 && beatProgress === 0;
-
-        if (beatProgress === 0) {
-          currentBeatDivision = Number.parseInt(duration, 10);
-        }
-        const beatChordLabel = beatChords[beatIndex] || "";
-        const beatLength = getBeatLength(duration);
-
-        let handledTie = false;
-        if (isTie) {
-          if (lastNoteIndex !== null) {
-            // タイの拍は「前の音符を伸ばす」だけにして、新しい音符を追加しない。1つ前の拍の文字列の最後に "-" を追加する。
-            // また、タイの後ろの音符は指定しないことで、リズム譜として タイを表示する。
-
-            // Spec
-            // 例1）4分音符から4分音符へのタイ（alphaTex）
-            //                             vここに C4.4 は挿入しない。
-            // :4 C4.4 { slashed ch "G" } - { slashed }
-            // 
-            // 例2）4分音符から8分音符へのタイ
-            //                             vここで8分音符に変更する。
-            // :4 C4.4 { slashed ch "G" } :8 - { slashed }
-            // タイ拍の分割が 4→8、8→16 と切り替わる時に、拍の先頭にコロンと共に数字が必要。
-            const divisionToken = currentBeatDivision !== lastBeatDivision
-              ? ` :${currentBeatDivision}`
-              : "";
-            notes[lastNoteIndex] = `${notes[lastNoteIndex]}${divisionToken} - { slashed }`;
-            beatProgress += beatLength;
-            handledTie = true;
-          } else if (isBarHead && barIndex > 0) {
-
-            // Spec 2小節名以降の先頭のタイは、先頭の拍を "- { slashed }" で始める。
-            // 例）（alphaTex）
-            // :4 C4{slashed} :8 -{slashed} r :4 C4{slashed} C4{slashed} |    ← 1小節目
-            // :4 - {slashed} C4{slashed} C4{slashed} C4{slashed} |           ← 2小節目（先頭タイ）
-
-            const divisionToken = currentBeatDivision !== lastBeatDivision
-              ? `:${currentBeatDivision} `
-              : "";
-            notes.push(`${divisionToken}- { slashed }`);
-            beatProgress += beatLength;
-            handledTie = true;
-          }
-        }
-
-        if (handledTie) {
-          if (beatProgress >= 0.999) {
-            beatIndex = Math.min(beatIndex + 1, beats - 1);
-            beatProgress = 0;
-            lastBeatDivision = currentBeatDivision;
-            chordAttached = false;
-          }
-          return;
-        }
-
-        if (isRest) {
-          // 休符の場合
-          const noteValue = duration === "16" ? "r.16" : duration === "8" ? "r.8" : "r.4";
-          const props = "slashed";
-          const noteText = `${noteValue} { ${props} }`;
-
-          notes.push(noteText);
-          lastNoteIndex = null;
-          beatProgress += beatLength;
-        }
-        else {
-          const noteValue = duration === "16" ? "C4.16" : duration === "8" ? "C4.8" : "C4.4";
-//          const noteValue = value === "8" ? ".8" : "(C4 D4).8"; // サンプル 8分音符
-//          const noteValue = value === "8" ? ".8" : "r.8";       // サンプル 8分休符
-//          const noteValue = value === "8" ? ".8" : "C4.16";     // サンプル 16分音符
-          let props = "slashed";
-          if (beatChordLabel && !chordAttached) {
-            props += ` ch "${beatChordLabel}"`;
-            chordAttached = true;
-          }
-          const noteText = `${noteValue} { ${props} }`;
-
-          /* Spec noteText の例）（alphaTex）
-          // コード無しの場合 > C4.4 { slashed }
-          // コード在りの場合 > C4.4 { slashed ch "C" }
-          */
-
-          notes.push(noteText);
-          lastNoteIndex = notes.length - 1;
-          beatProgress += beatLength;
-        }
-
-        if (beatProgress >= 0.999) {
-          beatIndex = Math.min(beatIndex + 1, beats - 1);
-          beatProgress = 0;
-          lastBeatDivision = currentBeatDivision;
-          chordAttached = false;
-        }
-        return;
-      });
-      bars.push(notes.join(" "));
-    }
-
-    // 文字列を確認する。
-    const layoutLine = Number.isFinite(this.barsPerRow) && this.barsPerRow > 0
-      ? `\\track { defaultSystemsLayout ${this.barsPerRow} }`
-      : null;
-    var check_alphaTex = 
-    [
-      layoutLine,
-      `\\ts ${numerator} ${denominator}`,
-      ".",
-      `:${denominator} ${bars.join(" | ")} |`,
-    ].filter(Boolean).join("\n");
-
-    return check_alphaTex;
-  }
-
   render() {
     if (!this.container || !window.alphaTab) return;
     this.closeContextMenu();
@@ -534,7 +358,13 @@ class RhythmScore {
       settings.display.systemsLayoutMode = layoutMode;
     }
 
-    this.container.textContent = this.buildAlphaTex();
+    this.container.textContent = this.alphaTexBuilder.buildAlphaTex({
+      timeSignature: this.timeSignature,
+      measures: this.measures,
+      barsPerRow: this.barsPerRow,
+      progression: this.progression,
+      bars: this.bars,
+    });
       new window.alphaTab.AlphaTabApi(this.container, settings);
     this.startOverlayPoll();
   }

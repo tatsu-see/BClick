@@ -1,5 +1,7 @@
 /**
  * オリジナルの簡易楽譜データオブジェクト
+ * - 楽譜の作成ボタンで、楽譜を生成する基データとして使っている。
+ * - この形式が、小節の編集にもデータ形式として使えるから、小節編集時にも使っているが、こちらはサブ目的。
  */
 class ScoreData {
   constructor({ tempo, clickCount, countIn, timeSignature, measures, progression, bars, beatPatterns, barsPerRow, scoreEnabled } = {}) {
