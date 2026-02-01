@@ -7,10 +7,15 @@ import { ConfigStore } from "../utils/store.js";
 import RhythmScore from "../components/RhythmScore.js";
 import ScoreData from "../models/ScoreModel.js";
 import { TempoDialController } from "../components/tempoDial.js";
+import { preloadAlphaTabFonts } from "../utils/scorePdf.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
+
+  preloadAlphaTabFonts().catch(() => {
+    ;
+  });
 
   const store = new ConfigStore();
   const scoreElement = document.getElementById("score");

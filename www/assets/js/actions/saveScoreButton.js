@@ -15,14 +15,14 @@ document.addEventListener("DOMContentLoaded", () => {
   /**
    * 表示中の譜面SVG要素を取得する。
    */
-  const getScoreSvgElement = () => document.querySelector("#scoreArea svg");
+  const getScoreSvgElements = () => Array.from(document.querySelectorAll("#scoreArea svg"));
 
   /**
    * 保存ボタンの処理。
    */
   const handleSave = async () => {
-    const scoreSvg = getScoreSvgElement();
-    if (!scoreSvg) {
+    const scoreSvgs = getScoreSvgElements();
+    if (scoreSvgs.length === 0) {
       window.alert("譜面の描画が見つかりませんでした。");
       return;
     }
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const scoreData = buildScoreDataFromStore(store);
     try {
       const pdfBlob = await buildScorePdfBlob({
-        svgEl: scoreSvg,
+        svgEls: scoreSvgs,
         scoreData,
         jsonFileName: JSON_FILE_NAME,
         title: "B.Click Score",
