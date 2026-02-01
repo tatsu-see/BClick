@@ -131,21 +131,27 @@ main {
 
 .scoreContextMenuList {
   display: flex;
-  flex-direction: column;
+  /* Spec 小節番号の上に横並び表示し、折り返しはしない */
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 4px;
 }
 
 .scoreContextMenuItem {
   appearance: none;
-  border: 0;
+  /* Spec メニューごとの境界を見えるようにする */
+  border: 1px solid #1e7a4f;
   background: transparent;
   padding: 6px 10px;
-  text-align: left;
+  text-align: center;
   font-size: 0.75em;
   font-weight: 600;
   color: #1a1a1a;
   border-radius: 4px;
   cursor: pointer;
+  /* Spec メニュー項目は縮めずに横並びを維持する */
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .scoreContextMenuItem.isActive {

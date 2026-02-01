@@ -16,6 +16,7 @@ class RhythmScoreUI {
     this.handleMenuPointerMove = null;
     this.handleMenuPointerUp = null;
     this.handleOutsidePointerDown = null;
+    this.activeMenuBarIndex = null;
     this.handleOverlayRefresh = () => {
       this.clearOverlay();
       this.startOverlayPoll();
@@ -132,16 +133,36 @@ class RhythmScoreUI {
       item.dataset.action = action;
       item.setAttribute("role", "menuitem");
       item.textContent = this.getMenuLabel(action);
+      item.addEventListener("click", () => {
+        if (item.classList.contains("isDisabled")) return;
+        const menuAction = item.dataset.action;
+        this.runMenuAction(menuAction, this.activeMenuBarIndex);
+        this.closeContextMenu();
+      });
       list.appendChild(item);
     });
     menu.appendChild(list);
     menu.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
       event.stopPropagation();
     });
     this.container.appendChild(menu);
     this.contextMenu = menu;
     this.contextMenuItems = Array.from(menu.querySelectorAll(".scoreContextMenuItem"));
+  }
+
+  /**
+   * contextMenu のアクションを実行する。
+   * @param {string} action
+   * @param {number|null} barIndex
+   */
+  runMenuAction(action, barIndex) {
+    if (!action || barIndex === null || barIndex === undefined) return;
+    if (action === "delete") {
+      if (!window.confirm(this.getDeleteConfirmMessage())) {
+        return;
+      }
+    }
+    this.onAction?.(action, barIndex);
   }
 
   /**
@@ -193,10 +214,11 @@ class RhythmScoreUI {
    * contextMenu を表示する。
    * @param {object} params
    */
-  openContextMenu({ left, top }) {
+  openContextMenu({ left, top, anchorRect, barIndex }) {
     if (!this.container) return;
     this.ensureContextMenu();
     if (!this.contextMenu) return;
+    this.activeMenuBarIndex = barIndex ?? null;
     const canPaste = typeof this.canPaste === "function" ? this.canPaste() : false;
     this.contextMenuItems.forEach((item) => {
       const isPaste = item.dataset.action === "paste";
@@ -226,8 +248,25 @@ class RhythmScoreUI {
     const maxLeft = Math.max(0, containerRect.width - adjustedMenuWidth - 4);
     const maxTop = Math.max(0, containerRect.height - adjustedMenuHeight - 4);
 
-    const clampedLeft = Math.max(4, Math.min(left, maxLeft));
-    const clampedTop = Math.max(4, Math.min(top, maxTop));
+    let desiredLeft = left;
+    let desiredTop = top;
+    if (anchorRect) {
+      const anchorCenterX = anchorRect.left + anchorRect.width / 2;
+      desiredLeft = anchorCenterX - containerRect.left - adjustedMenuWidth / 2;
+      //Spec contextMenu は小節番号の上に表示し、右端では左寄せで折り返さない
+      //Spec contextMenu の表示位置は少し上にずらして指で隠れにくくする
+      const menuOffsetY = 8;
+      desiredTop = anchorRect.top - containerRect.top - adjustedMenuHeight - menuOffsetY;
+    }
+
+    //Spec contextMenu が右端からはみ出す場合は左に寄せて文字の縦書きを防ぐ
+    const overflowRight = desiredLeft + adjustedMenuWidth - (containerRect.width - 4);
+    if (overflowRight > 0) {
+      desiredLeft -= overflowRight;
+    }
+
+    const clampedLeft = Math.max(4, Math.min(desiredLeft, maxLeft));
+    const clampedTop = Math.max(4, Math.min(desiredTop, maxTop));
 
     this.contextMenu.style.left = `${clampedLeft}px`;
     this.contextMenu.style.top = `${clampedTop}px`;
@@ -324,48 +363,23 @@ class RhythmScoreUI {
         badge.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
-        });
-        badge.addEventListener("pointerdown", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
 
           const badgeRect = badge.getBoundingClientRect();
           const containerRect = this.container.getBoundingClientRect();
           const left = badgeRect.right - containerRect.left + 6;
           const top = badgeRect.top - containerRect.top;
 
-          this.openContextMenu({ left, top });
-
-          this.contextMenuPointerId = event.pointerId;
-          this.handleMenuPointerMove = (moveEvent) => {
-            if (this.contextMenuPointerId !== moveEvent.pointerId) return;
-            this.updateActiveMenuFromPoint(moveEvent.clientX, moveEvent.clientY);
-          };
-          this.handleMenuPointerUp = (upEvent) => {
-            if (this.contextMenuPointerId !== upEvent.pointerId) return;
-            this.updateActiveMenuFromPoint(upEvent.clientX, upEvent.clientY);
-            const target = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
-            const item = target ? target.closest(".scoreContextMenuItem") : null;
-            if (item && !item.classList.contains("isDisabled")) {
-              const action = item.dataset.action;
-              if (action === "delete") {
-                if (!window.confirm(this.getDeleteConfirmMessage())) {
-                  this.closeContextMenu();
-                  return;
-                }
-              }
-              this.onAction?.(action, resolvedIndex);
-            }
-            this.closeContextMenu();
-          };
+          this.openContextMenu({
+            left,
+            top,
+            anchorRect: badgeRect,
+            barIndex: resolvedIndex,
+          });
           this.handleOutsidePointerDown = (downEvent) => {
             if (!this.contextMenu) return;
             if (this.contextMenu.contains(downEvent.target)) return;
             this.closeContextMenu();
           };
-          window.addEventListener("pointermove", this.handleMenuPointerMove);
-          window.addEventListener("pointerup", this.handleMenuPointerUp);
-          window.addEventListener("pointercancel", this.handleMenuPointerUp);
           window.addEventListener("pointerdown", this.handleOutsidePointerDown, true);
         });
 
