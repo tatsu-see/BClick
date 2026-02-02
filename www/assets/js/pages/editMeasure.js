@@ -3,6 +3,7 @@ import { ConfigStore } from "../utils/store.js";
 import ScoreData from "../models/ScoreModel.js";
 import RhythmPreviewRenderer from "../components/RhythmPreviewRenderer.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
+import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -10,11 +11,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const doneButton = document.getElementById("closePage");
   const backButton = document.getElementById("backEditMeasure");
   const chordRootButtons = Array.from(document.querySelectorAll(".chordRoot"));
+  const chordSlashToggle = document.querySelector(".chordSlashToggle");
   const chordQualityButtons = Array.from(document.querySelectorAll(".chordQuality"));
   const rhythmPatternBody = document.getElementById("rhythmPatternBody");
   const codeProgressionInput = document.getElementById("codeProgression");
   const backProgressionButton = document.getElementById("backCodeProgression");
   const clearProgressionButton = document.getElementById("clearCodeProgression");
+  const addRandom3ChordsButton = document.getElementById("addRandom3Chords");
+  const addRandom4ChordsButton = document.getElementById("addRandom4Chords");
   const majorChordSection = document.getElementById("majorChordSection");
   const minorChordSection = document.getElementById("minorChordSection");
   const toggleMajorChords = document.getElementById("toggleMajorChords");
@@ -185,6 +189,57 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshChordSelectOptions();
   };
 
+  /**
+   * コード進行の最後のアルファベットの直後に "/" を挿入する。
+   */
+  const appendSlashToProgression = () => {
+    if (!codeProgressionInput) return;
+    const rawValue = codeProgressionInput.value || "";
+    const trimmed = rawValue.replace(/\s+$/g, "");
+    if (!trimmed) {
+      codeProgressionInput.value = "/";
+      return;
+    }
+    if (trimmed.endsWith("/")) {
+      codeProgressionInput.value = trimmed;
+      return;
+    }
+    const lastLetterMatch = /[A-Za-z](?!.*[A-Za-z])/.exec(trimmed);
+    if (!lastLetterMatch || lastLetterMatch.index == null) {
+      codeProgressionInput.value = `${trimmed}/`;
+      return;
+    }
+    const insertIndex = lastLetterMatch.index + 1;
+    codeProgressionInput.value =
+      `${trimmed.slice(0, insertIndex)}/${trimmed.slice(insertIndex)}`;
+  };
+
+  /**
+   * "/" トグルの選択状態を切り替える。
+   */
+  const setSlashActive = (isActive) => {
+    if (!chordSlashToggle) return;
+    chordSlashToggle.classList.toggle("isActive", isActive);
+    chordSlashToggle.setAttribute("aria-pressed", isActive ? "true" : "false");
+  };
+
+  /**
+   * "/" トグルがONかどうかを返す。
+   */
+  const isSlashActive = () => Boolean(chordSlashToggle?.classList.contains("isActive"));
+
+  /**
+   * ランダムにコードを指定数追加する。
+   */
+  const appendRandomChords = (count) => {
+    if (!codeProgressionInput) return;
+    const pool = Array.isArray(cMajorDiatonicPool) ? cMajorDiatonicPool : [];
+    if (pool.length === 0) return;
+    const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+    const picks = shuffled.slice(0, Math.min(count, shuffled.length));
+    picks.forEach((chord) => appendChord(chord));
+  };
+
   const initialChord = selectedBeatChords.find((value) => value) || "";
 
   if (chordQualityButtons.length > 0) {
@@ -217,6 +272,17 @@ document.addEventListener("DOMContentLoaded", () => {
   chordRootButtons.forEach((button) => {
     button.addEventListener("click", () => {
       setActiveRoot(button);
+      if (isSlashActive()) {
+        const root = button.dataset.root || button.textContent.trim() || "";
+        if (!codeProgressionInput) return;
+        if (!codeProgressionInput.value.trim().endsWith("/")) {
+          appendSlashToProgression();
+        }
+        codeProgressionInput.value += root;
+        setSlashActive(false);
+        refreshChordSelectOptions();
+        return;
+      }
       const qualityButton = getActiveQuality() || chordQualityButtons[0];
       if (!qualityButton) return;
       const chord = buildChord(button, qualityButton);
@@ -229,6 +295,16 @@ document.addEventListener("DOMContentLoaded", () => {
       setActiveQuality(button);
     });
   });
+
+  if (chordSlashToggle) {
+    chordSlashToggle.addEventListener("click", () => {
+      const willBeActive = !isSlashActive();
+      setSlashActive(willBeActive);
+      if (willBeActive) {
+        appendSlashToProgression();
+      }
+    });
+  }
 
   const updateChordSections = () => {
     if (!toggleMajorChords || !toggleMinorChords) return;
@@ -514,6 +590,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!codeProgressionInput) return;
       codeProgressionInput.value = "";
       refreshChordSelectOptions();
+    });
+  }
+
+  if (addRandom3ChordsButton) {
+    addRandom3ChordsButton.addEventListener("click", () => {
+      appendRandomChords(3);
+    });
+  }
+
+  if (addRandom4ChordsButton) {
+    addRandom4ChordsButton.addEventListener("click", () => {
+      appendRandomChords(4);
     });
   }
 

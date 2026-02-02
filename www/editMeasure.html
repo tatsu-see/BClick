@@ -57,7 +57,7 @@
 
       <!--Spec ここに１小節を編集するパラメータを用意する。
       ・基本的には、configScore.html のクオリティ、ルート、進行、リズム、の設定入力項目がある。
-      ・少し違うのは「進行」は Back のボタンを用意する。（Init. と ランダムは不要）
+      ・少し違うのは「進行」は Back のボタンを用意する。（Reset と ランダムも用意する）
       ・リズムの設定項目は、選択した小節が 4/4 なら、４行の設定項目が現れ、3/4 なら３行の設定項目が現れます。
       -->
       <div class="preferenceTitle">
@@ -90,6 +90,14 @@
             <button type="button" class="chipButton chordRoot" data-root="G" aria-pressed="false">G</button>
             <button type="button" class="chipButton chordRoot" data-root="A" aria-pressed="false">A</button>
             <button type="button" class="chipButton chordRoot" data-root="B" aria-pressed="false">B</button>
+            <button type="button" class="chipButton chordSlashToggle" aria-pressed="false" aria-label='Toggle "/" input'>/</button>
+            <!--spec "/" トグルスイッチは分数コードのために用意する。
+            ・操作順は "/" をONして、C～Bのボタンをクリックする。
+            ・"/" をONしたら、maj/min/dim のモードによらず、分数コード入力となる。
+            ・分数コード入力は、コード進行の最後のアルファベットの文字に続けて"/"が入る。
+            ・例えば "Em/G" を入力する場合は、まず普通に "Em" を入力し、その後 /" トグルスイッチON、"G"をクリック、の順に操作する。
+            ・分数コード入力後は、トグルスイッチはOFFになる。また、画面操作開始時もトグルスイッチはOFFで始まる。
+            -->
           </div>
         </div>
       </div>
@@ -105,8 +113,18 @@
         <div class="chipGroupActions" role="group" aria-label="Edit progression">
           <button type="button" id="clearCodeProgression" class="chipButton">
             <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span>
-            <span class="lang" data-lang="en">Init.</span>
-            <span class="lang" data-lang="ja">初期化</span>
+            <span class="lang" data-lang="en">Reset</span>
+            <span class="lang" data-lang="ja">リセット</span>
+          </button>
+          <button type="button" id="addRandom3Chords" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">filter_3</span>
+            <span class="lang" data-lang="en">Chords</span>
+            <span class="lang" data-lang="ja">コード</span>
+          </button>
+          <button type="button" id="addRandom4Chords" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">filter_4</span>
+            <span class="lang" data-lang="en">Chords</span>
+            <span class="lang" data-lang="ja">コード</span>
           </button>
           <button type="button" id="backCodeProgression" class="chipButton">
             <span class="material-symbols-rounded" aria-hidden="true">undo</span>
