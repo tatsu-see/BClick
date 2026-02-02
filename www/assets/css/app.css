@@ -225,7 +225,7 @@ footer {
 }
 
 .preferenceExec.isRow4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1fr 2fr 2fr 1fr;
 }
 
 .scoreToggle {
