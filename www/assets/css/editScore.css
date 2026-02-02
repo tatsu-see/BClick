@@ -1,9 +1,9 @@
 /* editScore.html 専用スタイル */
 
-/* html 要素の高さを viewport に制限して、スクロールバーの表示を防止 */
+/* html 要素の高さを viewport に制限しつつ、スクロールは許可する */
 html {
   height: 100vh;
-  overflow: hidden;
+  overflow: auto;
 }
 
 body {
@@ -140,18 +140,37 @@ main {
 .scoreContextMenuItem {
   appearance: none;
   /* Spec メニューごとの境界を見えるようにする */
-  border: 1px solid #1e7a4f;
-  background: transparent;
-  padding: 6px 10px;
+  border: 1px solid #222;
+  background-color: #f7f7f7;
+  padding: 6px 6px;
   text-align: center;
-  font-size: 0.75em;
-  font-weight: 600;
-  color: #1a1a1a;
-  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: normal;
+  color: #222;
+  border-radius: 3px;
   cursor: pointer;
   /* Spec メニュー項目は縮めずに横並びを維持する */
   flex: 0 0 auto;
   white-space: nowrap;
+  min-height: 28px;
+  min-width: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.scoreContextMenuItem .material-symbols-rounded {
+  font-size: 1.0em;
+  line-height: 1;
+}
+
+/* chipButton のラベルに合わせて小さめにする */
+.scoreContextMenuItemLabel {
+  font-size: 0.6em;
+  line-height: 1;
+  align-self: flex-end;
+  padding-bottom: 1px;
 }
 
 .scoreContextMenuItem.isActive {

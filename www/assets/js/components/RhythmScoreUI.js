@@ -119,6 +119,22 @@ class RhythmScoreUI {
   }
 
   /**
+   * メニューアイコンの名前を取得する。
+   * @param {string} key
+   * @returns {string}
+   */
+  getMenuIconName(key) {
+    const icons = {
+      edit: "edit_note",
+      copy: "content_copy",
+      duplicate: "copy_all",
+      paste: "content_paste",
+      delete: "delete",
+    };
+    return icons[key] || "more_horiz";
+  }
+
+  /**
    * 確認ダイアログの文字列を取得する。
    * @returns {string}
    */
@@ -179,7 +195,14 @@ class RhythmScoreUI {
       item.className = "scoreContextMenuItem";
       item.dataset.action = action;
       item.setAttribute("role", "menuitem");
-      item.textContent = this.getMenuLabel(action);
+      const icon = document.createElement("span");
+      icon.className = "material-symbols-rounded";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = this.getMenuIconName(action);
+      const label = document.createElement("span");
+      label.className = "scoreContextMenuItemLabel";
+      label.textContent = this.getMenuLabel(action);
+      item.append(icon, label);
       item.addEventListener("click", () => {
         if (item.classList.contains("isDisabled")) return;
         const menuAction = item.dataset.action;
