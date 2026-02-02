@@ -123,11 +123,12 @@
 
       <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Select rhythm">
         <div class="rhythmPatternTable" role="table" aria-label="Rhythm pattern">
+          <!-- Header行 -->
           <div class="rhythmPatternHeader" role="row">
-            <!--Spec 分割は4分音符,8分音符,16分音符を選ぶ列 -->
+
+            <!--Spec 分割は全音符,2分音符,4分音符,8分音符,16分音符を選ぶ列 -->
             <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">
-              <span class="lang" data-lang="en">Div.</span>
-              <span class="lang" data-lang="ja">～分</span>
+              ♪
             </div>
 
             <!--Spec 分割は4,8,16分で分割したときの演奏するか休符かを選ぶ列
@@ -154,7 +155,10 @@
               <span class="lang" data-lang="ja">コード</span>
             </div>
           </div>
-          <div id="rhythmPatternBody" class="rhythmPatternBody"></div>
+
+          <!-- コンテンツ -->
+          <div id="rhythmPatternBody" class="rhythmPatternBody">
+          </div>
         </div>
       </div>
 

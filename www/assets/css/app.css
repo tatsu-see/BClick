@@ -48,7 +48,7 @@ select {
   -webkit-appearance: none;
   appearance: none;
   display: inline-block;
-  min-width: 40px;
+  min-width: 28px;
   padding: 4px 10px;
   margin: 0 2px;
   border: 1px solid #666;
