@@ -86,7 +86,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (value.endsWith("16")) return 0.25;
     if (value.endsWith("8")) return 0.5;
     if (value.endsWith("4")) return 1;
+    if (value.endsWith("2")) return 2;
+    if (value.endsWith("1")) return 4;
     return 0;
+  };
+
+  /**
+   * 拍子に応じた分割候補を取得する。
+   * @returns {number[]}
+   */
+  const getAllowedDivisions = () => {
+    const signature = scoreData.timeSignature || "4/4";
+    const disallowWhole = signature.startsWith("2/4") || signature.startsWith("3/4");
+    return disallowWhole ? [2, 4, 8, 16] : [1, 2, 4, 8, 16];
   };
 
   const setActiveQuality = (button) => {
@@ -274,10 +286,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const buildBeatPatternsFromRhythm = (rhythm) => {
     const beats = splitRhythmByBeat(rhythm);
     return beats.map((tokens) => {
+      const has1 = tokens.some((token) => token.endsWith("1"));
+      const has2 = tokens.some((token) => token.endsWith("2"));
       const has16 = tokens.some((token) => token.endsWith("16"));
       const has8 = tokens.some((token) => token.endsWith("8"));
-      const division = has16 ? 16 : has8 ? 8 : 4;
-      const patternLength = division === 4 ? 1 : division === 8 ? 2 : 4;
+      const division = has1 ? 1 : has2 ? 2 : has16 ? 16 : has8 ? 8 : 4;
+      const patternLength = division === 16 ? 4 : division === 8 ? 2 : 1;
       const pattern = [];
 
       for (let i = 0; i < patternLength; i += 1) {
@@ -324,7 +338,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const buildAbcTokens = (patternItem) => {
     const division = patternItem.division;
     const pattern = Array.isArray(patternItem.pattern) ? patternItem.pattern : ["note"];
-    const unit = division === 4 ? 4 : division === 8 ? 2 : 1;
+    const unit = division === 1 ? 16
+      : division === 2 ? 8
+        : division === 4 ? 4
+          : division === 8 ? 2
+            : 1;
     const tokens = [];
     pattern.forEach((value, index) => {
       if (value === "tie") {
@@ -359,7 +377,11 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedBeatPatterns = buildBeatPatternsFromRhythm(currentRhythm);
     const chordOptions = getProgressionOptions();
 
+    const allowedDivisions = getAllowedDivisions();
     selectedBeatPatterns.forEach((patternItem, index) => {
+      if (!allowedDivisions.includes(patternItem.division)) {
+        patternItem.division = allowedDivisions[0] || 4;
+      }
       const row = document.createElement("div");
       row.className = "rhythmPatternRow";
       row.setAttribute("role", "row");
@@ -368,7 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
       divisionCell.className = "rhythmPatternCell rhythmPatternDivision";
       const divisionSelect = document.createElement("select");
       divisionSelect.className = "rhythmDivisionSelect";
-      [4, 8, 16].forEach((value) => {
+      allowedDivisions.forEach((value) => {
         const option = document.createElement("option");
         option.value = value.toString();
         option.textContent = value.toString();
@@ -409,7 +431,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const rebuildPatternSelectors = () => {
         patternCell.textContent = "";
-        const patternLength = patternItem.division === 4 ? 1 : patternItem.division === 8 ? 2 : 4;
+        const patternLength = patternItem.division === 16 ? 4 : patternItem.division === 8 ? 2 : 1;
         while (patternItem.pattern.length < patternLength) {
           patternItem.pattern.push("note");
         }
@@ -469,7 +491,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       divisionSelect.addEventListener("change", () => {
         const parsed = Number.parseInt(divisionSelect.value, 10);
-        patternItem.division = [4, 8, 16].includes(parsed) ? parsed : 4;
+        patternItem.division = allowedDivisions.includes(parsed)
+          ? parsed
+          : allowedDivisions[0] || 4;
         rebuildPatternSelectors();
       });
 

@@ -58,8 +58,8 @@ class ScoreData {
         return { division: 4, pattern: ["note"] };
       }
       const divisionRaw = Number.parseInt(item.division, 10);
-      const division = [4, 8, 16].includes(divisionRaw) ? divisionRaw : 4;
-      const expectedLength = division === 4 ? 1 : division === 8 ? 2 : 4;
+      const division = [1, 2, 4, 8, 16].includes(divisionRaw) ? divisionRaw : 4;
+      const expectedLength = division === 16 ? 4 : division === 8 ? 2 : 1;
       const rawPattern = Array.isArray(item.pattern) ? item.pattern : [];
       const normalized = rawPattern
         .map((value) =>
@@ -93,6 +93,24 @@ class ScoreData {
   buildRhythmFromPattern(patternItem) {
     const division = patternItem.division;
     const pattern = Array.isArray(patternItem.pattern) ? patternItem.pattern : ["note"];
+    if (division === 1) {
+      if (pattern[0] === "rest") {
+        return ["r1"];
+      }
+      if (pattern[0] === "tieNote") {
+        return ["t1"];
+      }
+      return ["1"];
+    }
+    if (division === 2) {
+      if (pattern[0] === "rest") {
+        return ["r2"];
+      }
+      if (pattern[0] === "tieNote") {
+        return ["t2"];
+      }
+      return ["2"];
+    }
     if (division === 4) {
       if (pattern[0] === "rest") {
         return ["r4"];
@@ -190,6 +208,8 @@ class ScoreData {
         if (value.endsWith("16")) return total + 0.25;
         if (value.endsWith("8")) return total + 0.5;
         if (value.endsWith("4")) return total + 1;
+        if (value.endsWith("2")) return total + 2;
+        if (value.endsWith("1")) return total + 4;
         return total;
       }, 0);
       return {

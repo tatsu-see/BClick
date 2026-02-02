@@ -61,6 +61,9 @@ class AlphaTexBuilder {
       const getBeatLength = (duration) => {
         if (duration === "16") return 0.25;
         if (duration === "8") return 0.5;
+        if (duration === "4") return 1;
+        if (duration === "2") return 2;
+        if (duration === "1") return 4;
         return 1;
       };
       const normalizeBeatChords = (value) => {
@@ -94,7 +97,17 @@ class AlphaTexBuilder {
       let lastNoteIndex = null;
 
       rhythm.forEach((value) => {
-        const duration = value.endsWith("16") ? "16" : value.endsWith("8") ? "8" : "4";
+        const duration = value.endsWith("16")
+          ? "16"
+          : value.endsWith("8")
+            ? "8"
+            : value.endsWith("4")
+              ? "4"
+              : value.endsWith("2")
+                ? "2"
+                : value.endsWith("1")
+                  ? "1"
+                  : "4";
         const isRest = value.startsWith("r");
         const isTie = value.startsWith("t");
         const isBarHead = beatIndex === 0 && beatProgress === 0;
@@ -125,23 +138,43 @@ class AlphaTexBuilder {
         }
 
         if (handledTie) {
-          if (beatProgress >= 0.999) {
+          while (beatProgress >= 0.999) {
             beatIndex = Math.min(beatIndex + 1, beats - 1);
-            beatProgress = 0;
+            beatProgress -= 1;
             lastBeatDivision = currentBeatDivision;
             chordAttached = false;
+            if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+              beatProgress = 0;
+              break;
+            }
           }
           return;
         }
 
         if (isRest) {
-          const noteValue = duration === "16" ? "r.16" : duration === "8" ? "r.8" : "r.4";
+          const noteValue = duration === "16"
+            ? "r.16"
+            : duration === "8"
+              ? "r.8"
+              : duration === "4"
+                ? "r.4"
+                : duration === "2"
+                  ? "r.2"
+                  : "r.1";
           const noteText = `${noteValue} { slashed }`;
           notes.push(noteText);
           lastNoteIndex = null;
           beatProgress += beatLength;
         } else {
-          const noteValue = duration === "16" ? "C4.16" : duration === "8" ? "C4.8" : "C4.4";
+          const noteValue = duration === "16"
+            ? "C4.16"
+            : duration === "8"
+              ? "C4.8"
+              : duration === "4"
+                ? "C4.4"
+                : duration === "2"
+                  ? "C4.2"
+                  : "C4.1";
           let props = "slashed";
           if (beatChordLabel && !chordAttached) {
             props += ` ch "${beatChordLabel}"`;
@@ -153,11 +186,15 @@ class AlphaTexBuilder {
           beatProgress += beatLength;
         }
 
-        if (beatProgress >= 0.999) {
+        while (beatProgress >= 0.999) {
           beatIndex = Math.min(beatIndex + 1, beats - 1);
-          beatProgress = 0;
+          beatProgress -= 1;
           lastBeatDivision = currentBeatDivision;
           chordAttached = false;
+          if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+            beatProgress = 0;
+            break;
+          }
         }
       });
       barTokens.push(notes.join(" "));
