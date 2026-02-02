@@ -182,7 +182,8 @@
         表の１つずつの項目の中の文字列や選択要素は、セルの中央に表示する。
         表は、選択した拍子に応じて、2/4なら2つ、4/4なら4つ、3/4なら3つの行を表示する。行ごとに2～4列目の選択操作が可能。
               拍の文字は小さくてよい。列名も不要。列も細く表示する。
-        1列目：4/8/16を選ぶ。4なら4分音符という意味、8なら8分音符、16なら16分音符。
+        1列目：1/2/4/8/16を選ぶ。1なら全音符、2なら2分音符、4なら4分音符、8なら8分音符、16なら16分音符。
+              ただし 2/4,3/4 の場合は全音符は選べない。
         2列目：リズムパターンを選択する。選択項目では ●は音符、○は休符、－ はタイ（直前の音符が続く意味）を表す。
               1列目で 4分音符を選択していたら、選択項目は 1つだけ表示され、● or ○ を選択する。
               1列目で 8分音符を選択していたら、選択項目は 2つだけ現れて、それぞれ ● or ○ を選択する。
@@ -204,13 +205,14 @@
       -->
         <div class="rhythmPatternTable" role="table" aria-label="Rhythm pattern">
           <div class="rhythmPatternHeader" role="row">
-            <!--Spec 分割は4分音符,8分音符,16分音符を選ぶ列 -->
+            <!--Spec 分割は全音符,2分音符,4分音符,8分音符,16分音符を選ぶ列
+            ただし 2/4,3/4 の場合は全音符は選べない -->
             <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">
               <span class="lang" data-lang="en">Div.</span>
               <span class="lang" data-lang="ja">～分</span>
             </div>
 
-            <!--Spec 分割は4,8,16分で分割したときの演奏するか休符かを選ぶ列 -->
+            <!--Spec 分割は1,2,4,8,16分で分割したときの演奏するか休符かを選ぶ列 -->
             <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">
               <span class="lang" data-lang="en">Pattern</span>
               <span class="lang" data-lang="ja">パターン</span>

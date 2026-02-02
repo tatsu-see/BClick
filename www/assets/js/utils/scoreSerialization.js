@@ -19,8 +19,6 @@ const DEFAULT_SETTINGS = {
 export const SCORE_JSON_VERSION = 0;
 
 //##Spec
-// JSON保存形式の仕様（v1） ※将来の予約用
-//
 // JSON保存形式の仕様（v0）
 // {
 //   "schemaVersion": 0,
@@ -33,9 +31,7 @@ export const SCORE_JSON_VERSION = 0;
 //     "progression": "G C Em",
 //     "barsPerRow": 2,
 //     "scoreEnabled": true,
-//     "beatPatterns": [
-//       { "division": 4, "pattern": ["note"] }
-//     ],
+//     "rhythmPattern": ["4", "4", "4", "4"],
 //     "bars": [
 //       { "chord": ["G", "", "", ""], "rhythm": ["4", "4", "4", "4"] }
 //     ]
@@ -53,7 +49,7 @@ export const SCORE_JSON_VERSION = 0;
 //   - progression: コード進行（スペース区切り）
 //   - barsPerRow: 1段あたりの小節数
 //   - scoreEnabled: リズム表示のON/OFF
-//   - beatPatterns: リズム設定（拍ごとの分割/パターン配列）
+//   - rhythmPattern: 小節内の音価トークン配列
 //   - bars: 小節配列（chord: 拍ごとのコード配列, rhythm: 音符トークン配列）
 //
 // 読込・保存に対応していない設定項目
@@ -74,10 +70,10 @@ export const getBeatCountFromTimeSignature = (timeSignature) => {
 };
 
 /**
- * 1拍ごとのデフォルトリズムパターンを生成する。
+ * 1小節分のデフォルトリズムパターンを生成する。
  */
-export const buildDefaultBeatPatterns = (beatCount) =>
-  Array.from({ length: beatCount }, () => ({ division: 4, pattern: ["note"] }));
+export const buildDefaultRhythmPattern = (beatCount) =>
+  Array.from({ length: beatCount }, () => "4");
 
 /**
  * JSON読み込み用にScoreDataを生成する。
@@ -109,9 +105,9 @@ export const buildScoreDataFromObject = (source) => {
     : defaults.scoreEnabled;
   const progression = typeof normalized.progression === "string" ? normalized.progression : defaults.progression;
   const beatCount = getBeatCountFromTimeSignature(timeSignature);
-  const beatPatterns = Array.isArray(normalized.beatPatterns) && normalized.beatPatterns.length > 0
-    ? normalized.beatPatterns
-    : buildDefaultBeatPatterns(beatCount);
+  const rhythmPattern = Array.isArray(normalized.rhythmPattern) && normalized.rhythmPattern.length > 0
+    ? normalized.rhythmPattern
+    : buildDefaultRhythmPattern(beatCount);
   const bars = Array.isArray(normalized.bars) ? normalized.bars : null;
 
   return new ScoreData({
@@ -123,7 +119,7 @@ export const buildScoreDataFromObject = (source) => {
     barsPerRow,
     scoreEnabled,
     progression,
-    beatPatterns,
+    rhythmPattern,
     bars,
   });
 };

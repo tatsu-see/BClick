@@ -122,6 +122,13 @@
   gap: 1px;
 }
 
+.rhythmPatternRow.isCovered .rhythmPatternDivision,
+.rhythmPatternRow.isCovered .rhythmPatternSymbols,
+.rhythmPatternRow.isCovered .rhythmPatternPreview {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 .rhythmPatternCell {
   min-height: 28px;
   display: flex;

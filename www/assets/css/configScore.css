@@ -178,6 +178,11 @@
   gap: 1px;
 }
 
+.rhythmPatternRow.isCovered {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 /* リズムパターンのセル */
 .rhythmPatternCell {
   min-height: 28px;

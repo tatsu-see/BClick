@@ -17,7 +17,7 @@ class RhythmScore {
     barsPerRow = null,
     progression = "",
     bars = [],
-    beatPatterns = null,
+    rhythmPattern = null,
     onBarsChange = null,
   } = {}) {
     this.container = typeof containerId === "string"
@@ -35,7 +35,7 @@ class RhythmScore {
     this.editor = new ScoreBarEditor({
       timeSignature,
       progression,
-      beatPatterns,
+      rhythmPattern,
     });
     this.onBarsChange = onBarsChange;
     this.timeSignature = timeSignature;
@@ -44,7 +44,7 @@ class RhythmScore {
     this.barsPerRow = Number.isFinite(barsPerRow) ? barsPerRow : null;
     this.progression = this.normalizeProgression(progression);
     this.bars = Array.isArray(bars) ? bars : [];
-    this.beatPatterns = beatPatterns;
+    this.rhythmPattern = rhythmPattern;
     this.overlayRefreshTimer = null;
 
     console.log("RhythmScore コンストラクタ実行:", {
@@ -89,11 +89,11 @@ class RhythmScore {
       return;
     }
 
-    this.editor.setContext({
-      timeSignature: this.timeSignature,
-      progression: this.progression,
-      beatPatterns: this.beatPatterns,
-    });
+      this.editor.setContext({
+        timeSignature: this.timeSignature,
+        progression: this.progression,
+        rhythmPattern: this.rhythmPattern,
+      });
 
     let result = null;
     if (action === "copy") {
@@ -165,8 +165,8 @@ class RhythmScore {
     this.render();
   }
 
-  setBeatPatterns(value) {
-    this.beatPatterns = Array.isArray(value) ? value : null;
+  setRhythmPattern(value) {
+    this.rhythmPattern = Array.isArray(value) ? value : null;
   }
 
   /**

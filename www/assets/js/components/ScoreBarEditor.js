@@ -6,10 +6,10 @@
 import ScoreData from "../models/ScoreModel.js";
 
 class ScoreBarEditor {
-  constructor({ timeSignature = "4/4", progression = "", beatPatterns = null } = {}) {
+  constructor({ timeSignature = "4/4", progression = "", rhythmPattern = null } = {}) {
     this.timeSignature = timeSignature;
     this.progression = progression;
-    this.beatPatterns = beatPatterns;
+    this.rhythmPattern = rhythmPattern;
     this.copiedBar = null;
   }
 
@@ -17,15 +17,15 @@ class ScoreBarEditor {
    * 編集対象の前提データを更新する。
    * @param {object} params
    */
-  setContext({ timeSignature, progression, beatPatterns } = {}) {
+  setContext({ timeSignature, progression, rhythmPattern } = {}) {
     if (typeof timeSignature === "string" && timeSignature.length > 0) {
       this.timeSignature = timeSignature;
     }
     if (typeof progression === "string" || Array.isArray(progression)) {
       this.progression = progression;
     }
-    if (Array.isArray(beatPatterns) || beatPatterns === null) {
-      this.beatPatterns = beatPatterns;
+    if (Array.isArray(rhythmPattern) || rhythmPattern === null) {
+      this.rhythmPattern = rhythmPattern;
     }
   }
 
@@ -73,7 +73,7 @@ class ScoreBarEditor {
       timeSignature: this.timeSignature,
       measures: 1,
       progression: Array.isArray(this.progression) ? this.progression.join(" ") : this.progression,
-      beatPatterns: this.beatPatterns,
+      rhythmPattern: this.rhythmPattern,
       bars: null,
     });
     const bars = scoreData.buildBars();

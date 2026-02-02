@@ -97,17 +97,18 @@ class AlphaTexBuilder {
       let lastNoteIndex = null;
 
       rhythm.forEach((value) => {
-        const duration = value.endsWith("16")
-          ? "16"
-          : value.endsWith("8")
-            ? "8"
-            : value.endsWith("4")
-              ? "4"
-              : value.endsWith("2")
-                ? "2"
-                : value.endsWith("1")
-                  ? "1"
-                  : "4";
+        let duration = "4";
+        if (value.endsWith("16")) {
+          duration = "16";
+        } else if (value.endsWith("8")) {
+          duration = "8";
+        } else if (value.endsWith("4")) {
+          duration = "4";
+        } else if (value.endsWith("2")) {
+          duration = "2";
+        } else if (value.endsWith("1")) {
+          duration = "1";
+        }
         const isRest = value.startsWith("r");
         const isTie = value.startsWith("t");
         const isBarHead = beatIndex === 0 && beatProgress === 0;
@@ -152,29 +153,35 @@ class AlphaTexBuilder {
         }
 
         if (isRest) {
-          const noteValue = duration === "16"
-            ? "r.16"
-            : duration === "8"
-              ? "r.8"
-              : duration === "4"
-                ? "r.4"
-                : duration === "2"
-                  ? "r.2"
-                  : "r.1";
+          let noteValue = "r.4";
+          if (duration === "16") {
+            noteValue = "r.16";
+          } else if (duration === "8") {
+            noteValue = "r.8";
+          } else if (duration === "4") {
+            noteValue = "r.4";
+          } else if (duration === "2") {
+            noteValue = "r.2";
+          } else if (duration === "1") {
+            noteValue = "r.1";
+          }
           const noteText = `${noteValue} { slashed }`;
           notes.push(noteText);
           lastNoteIndex = null;
           beatProgress += beatLength;
         } else {
-          const noteValue = duration === "16"
-            ? "C4.16"
-            : duration === "8"
-              ? "C4.8"
-              : duration === "4"
-                ? "C4.4"
-                : duration === "2"
-                  ? "C4.2"
-                  : "C4.1";
+          let noteValue = "C4.4";
+          if (duration === "16") {
+            noteValue = "C4.16";
+          } else if (duration === "8") {
+            noteValue = "C4.8";
+          } else if (duration === "4") {
+            noteValue = "C4.4";
+          } else if (duration === "2") {
+            noteValue = "C4.2";
+          } else if (duration === "1") {
+            noteValue = "C4.1";
+          }
           let props = "slashed";
           if (beatChordLabel && !chordAttached) {
             props += ` ch "${beatChordLabel}"`;

@@ -17,7 +17,7 @@ export class ConfigStore extends LocalStore {
       ScoreMeasures: 'bclick.score.measures',
       ScoreBarsPerRow: 'bclick.score.barsPerRow',
       ScoreBars: 'bclick.score.bars',
-      ScoreBeatPatterns: 'bclick.score.beatPatterns',
+      ScoreRhythmPattern: 'bclick.score.rhythmPattern',
       ScoreEnabled: 'bclick.score.enabled',
       CodeDiagramChord: 'bclick.codeDiagram.chord',
     };
@@ -175,14 +175,14 @@ export class ConfigStore extends LocalStore {
     this.setNumberSetting(this.keys.ScoreBarsPerRow, clamped);
   }
 
-  getScoreBeatPatterns() {
-    const saved = this.getSettings(this.keys.ScoreBeatPatterns);
+  getScoreRhythmPattern() {
+    const saved = this.getSettings(this.keys.ScoreRhythmPattern);
     return Array.isArray(saved) ? saved : null;
   }
 
-  setScoreBeatPatterns(value) {
+  setScoreRhythmPattern(value) {
     if (!Array.isArray(value)) return;
-    this.saveSettings(this.keys.ScoreBeatPatterns, value);
+    this.saveSettings(this.keys.ScoreRhythmPattern, value);
   }
 
   getScoreBars() {

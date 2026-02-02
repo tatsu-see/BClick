@@ -4,7 +4,7 @@
  * - この形式が、小節の編集にもデータ形式として使えるから、小節編集時にも使っているが、こちらはサブ目的。
  */
 class ScoreData {
-  constructor({ tempo, clickCount, countIn, timeSignature, measures, progression, bars, beatPatterns, barsPerRow, scoreEnabled } = {}) {
+  constructor({ tempo, clickCount, countIn, timeSignature, measures, progression, bars, rhythmPattern, barsPerRow, scoreEnabled } = {}) {
     this.tempo = Number.isNaN(Number.parseInt(tempo, 10)) ? 60 : Number.parseInt(tempo, 10);
     this.clickCount = Number.isNaN(Number.parseInt(clickCount, 10)) ? 4 : Number.parseInt(clickCount, 10);
     this.countIn = Number.isNaN(Number.parseInt(countIn, 10)) ? 4 : Number.parseInt(countIn, 10);
@@ -18,7 +18,7 @@ class ScoreData {
       ? 2
       : Math.max(1, Math.min(4, parsedBarsPerRow));
     this.scoreEnabled = typeof scoreEnabled === "boolean" ? scoreEnabled : true;
-    this.beatPatterns = Array.isArray(beatPatterns) ? beatPatterns : null;
+    this.rhythmPattern = Array.isArray(rhythmPattern) ? rhythmPattern : null;
     const normalizedBars = this.normalizeBars(bars);
     this.bars = normalizedBars || this.buildBars();
   }
@@ -30,138 +30,31 @@ class ScoreData {
   }
 
   /**
-   * リズムパターンを正規化する。
+   * 小節内リズムパターンを正規化する。
    */
-  normalizeBeatPatterns() {
+  normalizeRhythmPattern() {
     const beats = this.getBeatCount();
-    const source = Array.isArray(this.beatPatterns) ? this.beatPatterns : [];
-    const mapLegacyPattern = (value) => {
-      switch (value) {
-        case "restQuarter":
-          return { division: 4, pattern: ["rest"] };
-        case "eighths":
-          return { division: 8, pattern: ["note", "note"] };
-        case "eighthRest":
-          return { division: 8, pattern: ["note", "rest"] };
-        case "restEighth":
-          return { division: 8, pattern: ["rest", "note"] };
-        case "quarter":
-        default:
-          return { division: 4, pattern: ["note"] };
-      }
-    };
-    const normalizeItem = (item) => {
-      if (typeof item === "string") {
-        return mapLegacyPattern(item);
-      }
-      if (!item || typeof item !== "object") {
-        return { division: 4, pattern: ["note"] };
-      }
-      const divisionRaw = Number.parseInt(item.division, 10);
-      const division = [1, 2, 4, 8, 16].includes(divisionRaw) ? divisionRaw : 4;
-      const expectedLength = division === 16 ? 4 : division === 8 ? 2 : 1;
-      const rawPattern = Array.isArray(item.pattern) ? item.pattern : [];
-      const normalized = rawPattern
-        .map((value) =>
-          value === "rest" || value === "tie" || value === "tieNote" ? value : "note",
-        )
-        .slice(0, expectedLength);
-      while (normalized.length < expectedLength) {
-        normalized.push("note");
-      }
-      if (division !== 16) {
-        return {
-          division,
-          pattern: normalized.map((value, index) => {
-            if (value === "rest") return "rest";
-            if (value === "tieNote" && index === 0) return "tieNote";
-            return "note";
-          }),
-        };
-      }
-      if (normalized[0] === "tie") {
-        normalized[0] = "note";
-      }
-      return { division, pattern: normalized };
-    };
-    return Array.from({ length: beats }, (_, index) => normalizeItem(source[index]));
-  }
-
-  /**
-   * 1拍分のリズム配列を生成する。
-   */
-  buildRhythmFromPattern(patternItem) {
-    const division = patternItem.division;
-    const pattern = Array.isArray(patternItem.pattern) ? patternItem.pattern : ["note"];
-    if (division === 1) {
-      if (pattern[0] === "rest") {
-        return ["r1"];
-      }
-      if (pattern[0] === "tieNote") {
-        return ["t1"];
-      }
-      return ["1"];
+    const source = Array.isArray(this.rhythmPattern) ? this.rhythmPattern : [];
+    const tokens = source
+      .filter((value) => typeof value === "string" && value.length > 0)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+    const total = tokens.reduce((sum, value) => {
+      if (value.endsWith("16")) return sum + 0.25;
+      if (value.endsWith("8")) return sum + 0.5;
+      if (value.endsWith("4")) return sum + 1;
+      if (value.endsWith("2")) return sum + 2;
+      if (value.endsWith("1")) return sum + 4;
+      return sum;
+    }, 0);
+    if (tokens.length === 0 || Math.abs(total - beats) > 0.001) {
+      return Array.from({ length: beats }, () => "4");
     }
-    if (division === 2) {
-      if (pattern[0] === "rest") {
-        return ["r2"];
-      }
-      if (pattern[0] === "tieNote") {
-        return ["t2"];
-      }
-      return ["2"];
-    }
-    if (division === 4) {
-      if (pattern[0] === "rest") {
-        return ["r4"];
-      }
-      if (pattern[0] === "tieNote") {
-        return ["t4"];
-      }
-      return ["4"];
-    }
-    if (division === 8) {
-      return pattern.slice(0, 2).map((value, index) => {
-        if (value === "rest") return "r8";
-        if (index === 0 && value === "tieNote") return "t8";
-        return "8";
-      });
-    }
-    const converted = [];
-    let lastType = null;
-    pattern.slice(0, 4).forEach((value, index) => {
-      if (value === "tie") {
-        // 休符の後ろにタイが来た場合は休符が続く扱いにする。
-        if (lastType === "rest") {
-          converted.push("r16");
-          lastType = "rest";
-          return;
-        }
-        converted.push("t16");
-        lastType = "tie";
-        return;
-      }
-      const nextValue = value === "rest" ? "r16" : "16";
-      if (index === 0 && value === "tieNote") {
-        converted.push("t16");
-        lastType = "tie";
-        return;
-      }
-      converted.push(nextValue);
-      lastType = value === "rest" ? "rest" : "note";
-    });
-    return converted;
+    return tokens;
   }
 
   buildDefaultRhythm() {
-    const beats = this.getBeatCount();
-    const patterns = this.normalizeBeatPatterns();
-    const rhythm = [];
-    for (let i = 0; i < beats; i += 1) {
-      const patternItem = patterns[i] || { division: 4, pattern: ["note"] };
-      rhythm.push(...this.buildRhythmFromPattern(patternItem));
-    }
-    return rhythm;
+    return this.normalizeRhythmPattern();
   }
 
   buildBars() {

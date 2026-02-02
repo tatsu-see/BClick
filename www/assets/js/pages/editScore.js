@@ -48,14 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
-    const savedBeatPatterns = store.getScoreBeatPatterns();
+    const savedRhythmPattern = store.getScoreRhythmPattern();
     const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
     return new ScoreData({
       timeSignature: savedTimeSignature || "4/4",
       measures: savedMeasures || 8,
       progression: savedProgression || "",
-      beatPatterns: savedBeatPatterns || null,
+      rhythmPattern: savedRhythmPattern || null,
       bars: savedBars || null,
       barsPerRow: savedBarsPerRow || 2,
     });
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
       progression: currentScoreData.progression,
       bars: currentScoreData.bars,
       barsPerRow: currentScoreData.barsPerRow || 2,
-      beatPatterns: currentScoreData.beatPatterns,
+      rhythmPattern: currentScoreData.rhythmPattern,
       onBarsChange: (nextBars, nextMeasures) => {
         store.setScoreBars(nextBars);
         store.setScoreMeasures(nextMeasures);
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rhythmScore.setProgression(nextScoreData.progression);
       rhythmScore.setBars(nextScoreData.bars);
       rhythmScore.setBarsPerRow(nextScoreData.barsPerRow || 2);
-      rhythmScore.setBeatPatterns(nextScoreData.beatPatterns);
+      rhythmScore.setRhythmPattern(nextScoreData.rhythmPattern);
     } else if (scoreElement && window.alphaTab) {
       window.bclickActiveChordIndex = -1;
       rhythmScore = new RhythmScore("score", {
@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
         progression: nextScoreData.progression,
         bars: nextScoreData.bars,
         barsPerRow: nextScoreData.barsPerRow || 2,
-        beatPatterns: nextScoreData.beatPatterns,
+        rhythmPattern: nextScoreData.rhythmPattern,
         onBarsChange: (nextBars, nextMeasures) => {
           store.setScoreBars(nextBars);
           store.setScoreMeasures(nextMeasures);

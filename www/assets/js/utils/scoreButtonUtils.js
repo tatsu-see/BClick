@@ -3,7 +3,7 @@
  */
 import ScoreData from "../models/ScoreModel.js";
 import {
-  buildDefaultBeatPatterns,
+  buildDefaultRhythmPattern,
   buildScoreDataFromObject,
   buildScoreJsonString,
   getBeatCountFromTimeSignature,
@@ -37,10 +37,10 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
   const clickCount = store.getClickCount ? (store.getClickCount() || defaults.clickCount) : defaults.clickCount;
   const countIn = store.getCountInSec ? (store.getCountInSec() || defaults.countIn) : defaults.countIn;
   const beatCount = getBeatCountFromTimeSignature(timeSignature);
-  const storedBeatPatterns = store.getScoreBeatPatterns();
-  const beatPatterns = Array.isArray(storedBeatPatterns) && storedBeatPatterns.length > 0
-    ? storedBeatPatterns
-    : buildDefaultBeatPatterns(beatCount);
+  const storedRhythmPattern = store.getScoreRhythmPattern();
+  const rhythmPattern = Array.isArray(storedRhythmPattern) && storedRhythmPattern.length > 0
+    ? storedRhythmPattern
+    : buildDefaultRhythmPattern(beatCount);
   const bars = resetBars ? null : store.getScoreBars();
 
   return new ScoreData({
@@ -52,7 +52,7 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
     barsPerRow,
     scoreEnabled,
     progression,
-    beatPatterns,
+    rhythmPattern,
     bars,
   });
 };
@@ -81,8 +81,8 @@ export const saveScoreDataToStore = (store, scoreData) => {
   if (typeof store.setScoreEnabled === "function") {
     store.setScoreEnabled(scoreData.scoreEnabled);
   }
-  if (Array.isArray(scoreData.beatPatterns)) {
-    store.setScoreBeatPatterns(scoreData.beatPatterns);
+  if (Array.isArray(scoreData.rhythmPattern)) {
+    store.setScoreRhythmPattern(scoreData.rhythmPattern);
   }
   if (Array.isArray(scoreData.bars)) {
     store.setScoreBars(scoreData.bars);
@@ -104,8 +104,8 @@ export const resetScoreSettings = (store) => {
     store.setScoreBarsPerRow(defaults.barsPerRow);
   }
   store.setScoreEnabled(defaults.scoreEnabled);
-  store.setScoreBeatPatterns(
-    buildDefaultBeatPatterns(getBeatCountFromTimeSignature(defaults.timeSignature)),
+  store.setScoreRhythmPattern(
+    buildDefaultRhythmPattern(getBeatCountFromTimeSignature(defaults.timeSignature)),
   );
   if (typeof store.removeSettings === "function" && store.keys?.ScoreBars) {
     store.removeSettings(store.keys.ScoreBars);
