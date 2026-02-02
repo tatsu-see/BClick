@@ -28,6 +28,22 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+}
+
+.chipGroupSectionRow[aria-label="Select root"] .chipGroup {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.chipGroupSectionRow[aria-label="Select quality"] .chipGroup {
+  justify-content: center;
+}
+
+.chipGroupSectionRow[aria-label="Select root"] .chipButton {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 0;
 }
 
 .chipGroupColumn {
