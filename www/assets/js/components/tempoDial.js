@@ -1,9 +1,16 @@
 export class TempoDialController {
-  constructor({ inputEl, dialEls = [], defaultValue = 0, onValueChange = null }) {
+  constructor({
+    inputEl,
+    dialEls = [],
+    defaultValue = 0,
+    onValueChange = null,
+    onValueCommit = null,
+  }) {
     this.inputEl = inputEl;
     this.dialEls = dialEls.filter(Boolean);
     this.defaultValue = defaultValue;
     this.onValueChange = typeof onValueChange === "function" ? onValueChange : null;
+    this.onValueCommit = typeof onValueCommit === "function" ? onValueCommit : null;
   }
 
   getNumberAttribute(attrName, fallback) {
@@ -52,12 +59,19 @@ export class TempoDialController {
     }
   }
 
+  notifyCommit(value) {
+    if (this.onValueCommit) {
+      this.onValueCommit(value);
+    }
+  }
+
   attach() {
     if (!this.inputEl) return;
 
     this.inputEl.addEventListener("change", () => {
       const clamped = this.clamp(this.getInputValue());
       this.setValue(clamped, { notify: true });
+      this.notifyCommit(clamped);
     });
 
     this.dialEls.forEach((dialEl) => this.setupDial(dialEl));
@@ -121,6 +135,9 @@ export class TempoDialController {
       isActive = false;
       carry = 0;
       dialEl.classList.remove("isTurningPositive", "isTurningNegative");
+      const clamped = this.clamp(this.getInputValue());
+      this.setValue(clamped, { notify: false });
+      this.notifyCommit(clamped);
     };
 
     dialEl.addEventListener("pointerup", releaseDial);

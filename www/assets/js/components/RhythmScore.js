@@ -18,6 +18,7 @@ class RhythmScore {
     progression = "",
     bars = [],
     rhythmPattern = null,
+    tempo = null,
     onBarsChange = null,
   } = {}) {
     this.container = typeof containerId === "string"
@@ -45,6 +46,7 @@ class RhythmScore {
     this.progression = this.normalizeProgression(progression);
     this.bars = Array.isArray(bars) ? bars : [];
     this.rhythmPattern = rhythmPattern;
+    this.tempo = tempo;
     this.overlayRefreshTimer = null;
 
     console.log("RhythmScore コンストラクタ実行:", {
@@ -165,6 +167,13 @@ class RhythmScore {
     this.render();
   }
 
+  setTempo(value) {
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isNaN(parsed) || parsed <= 0) return;
+    this.tempo = parsed;
+    this.render();
+  }
+
   setRhythmPattern(value) {
     this.rhythmPattern = Array.isArray(value) ? value : null;
   }
@@ -177,6 +186,7 @@ class RhythmScore {
     this.ui.closeContextMenu();
     this.ui.clearOverlay();
     this.renderer.setData({
+      tempo: this.tempo,
       timeSignature: this.timeSignature,
       measures: this.measures,
       barsPerRow: this.barsPerRow,

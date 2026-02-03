@@ -40,7 +40,7 @@ class AlphaTexBuilder {
    * @param {Array} params.bars
    * @returns {string}
    */
-  buildAlphaTex({ timeSignature, measures, barsPerRow, progression, bars } = {}) {
+  buildAlphaTex({ timeSignature, measures, barsPerRow, progression, bars, tempo } = {}) {
     const signature = typeof timeSignature === "string" ? timeSignature : "4/4";
     const [numeratorRaw, denominatorRaw] = signature.split("/");
     const numeratorValue = Number.parseInt(numeratorRaw, 10);
@@ -210,9 +210,14 @@ class AlphaTexBuilder {
     const layoutLine = Number.isFinite(barsPerRow) && barsPerRow > 0
       ? `\\track { defaultSystemsLayout ${barsPerRow} }`
       : null;
+    const tempoValue = Number.parseInt(tempo, 10);
+    const tempoLine = Number.isFinite(tempoValue) && tempoValue > 0
+      ? `\\tempo ${tempoValue}`
+      : null;
 
     return [
       layoutLine,
+      tempoLine,
       `\\ts ${numerator} ${denominator}`,
       ".",
       `:${denominator} ${barTokens.join(" | ")} |`,

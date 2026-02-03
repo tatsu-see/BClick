@@ -12,6 +12,7 @@ class RhythmScoreRenderer {
       : containerId;
     this.alphaTexBuilder = alphaTexBuilder || new AlphaTexBuilder();
     this.data = {
+      tempo: null,
       timeSignature: "4/4",
       measures: 2,
       barsPerRow: null,

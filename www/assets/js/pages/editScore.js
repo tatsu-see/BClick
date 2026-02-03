@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const loadSettings = (resetBars = false) => {
+    const savedTempo = store.getTempo();
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
@@ -60,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
     return new ScoreData({
+      tempo: savedTempo,
       timeSignature: savedTimeSignature || "4/4",
       measures: savedMeasures || 8,
       progression: savedProgression || "",
@@ -101,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("alphaTab ロード完了。楽譜を生成します...");
     window.bclickActiveChordIndex = -1;
     rhythmScore = new RhythmScore("score", {
+      tempo: store.getTempo(),
       timeSignature: currentScoreData.timeSignature,
       chord: "E",
       measures: currentScoreData.measures,
@@ -140,6 +143,11 @@ document.addEventListener("DOMContentLoaded", () => {
         onValueChange: (value) => {
           store.setTempo(value);
           notifyTempoChange(value);
+        },
+        onValueCommit: (value) => {
+          if (rhythmScore) {
+            rhythmScore.setTempo(value);
+          }
         },
       })
     : null;
@@ -259,6 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (scoreElement && window.alphaTab) {
       window.bclickActiveChordIndex = -1;
       rhythmScore = new RhythmScore("score", {
+        tempo: store.getTempo(),
         timeSignature: nextScoreData.timeSignature,
         chord: "E",
         measures: nextScoreData.measures,
@@ -291,6 +300,9 @@ document.addEventListener("DOMContentLoaded", () => {
         tempoInput.value = savedTempo.toString();
       }
       notifyTempoChange(savedTempo);
+      if (rhythmScore) {
+        rhythmScore.setTempo(savedTempo);
+      }
     }
 
     if (barsPerRowRange) {

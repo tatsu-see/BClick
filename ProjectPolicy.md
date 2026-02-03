@@ -120,6 +120,8 @@ https://alphatab.net/docs/alphatex/document-structure#beat-content-required
 音符表現について
 https://alphatab.net/docs/alphatex/document-structure#beats
 
+テンポについて（tempoで検索）
+https://alphatab.net/docs/alphatex/bar-metadata
 
 - 内部で ABCJS を使用している個所は、仕様の参照は以下のサイトから行う。
 https://docs.abcjs.net/

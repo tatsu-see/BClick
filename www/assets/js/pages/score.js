@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
 
   const loadSettings = (resetBars = false) => {
+    const savedTempo = store.getTempo();
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
     return new ScoreData({
+      tempo: savedTempo,
       timeSignature: savedTimeSignature || "4/4",
       measures: savedMeasures || 8,
       progression: savedProgression || "",
@@ -40,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const applyScoreData = (data) => {
     if (!data) return;
+    score.setTempo(data.tempo);
     score.setTimeSignature(data.timeSignature);
     score.setMeasures(data.measures);
     score.setProgression(data.progression);
@@ -50,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const initialSettings = loadSettings();
   const score = new RhythmScore("score", {
+    tempo: initialSettings.tempo,
     timeSignature: initialSettings.timeSignature,
     chord: "E",
     measures: initialSettings.measures,
