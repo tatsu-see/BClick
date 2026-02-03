@@ -78,10 +78,24 @@
     <!-- ここに テンポ（30～240）のBPMダイアルを用意する
     ・クリック音の再生中にテンポを変更すると、クリック音の再生スピードが、変更したテンポになる。
     -->
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">speed</span>
-      <span class="lang" data-lang="en">Tempo (30–240)</span>
-      <span class="lang" data-lang="ja">テンポ（30～240）</span>
+    <div class="preferenceTitle tempoTitle">
+      <div class="tempoTitleText">
+        <span class="material-symbols-rounded" aria-hidden="true">speed</span>
+        <span class="lang" data-lang="en">Tempo (30–240)</span>
+        <span class="lang" data-lang="ja">テンポ（30～240）</span>
+      </div>
+
+      <!--Spec editScore.htmlのテンポの特殊仕様
+      ・ここに <div class="tempoDialRow"> の表示をON/OFF切り替えられるスイッチを用意する。初期値はOFFで表示しない。
+      ・スイッチの見た目は、index.html の <input type="checkbox" id="scoreToggle"> と同じ見た目。
+      ・文字は OFF と DIAL （ONの代わり） を表示して。ON場合は少し濃い緑色を使う。
+      -->
+      <div class="preferenceValue preferenceValueCentered tempoDialToggleControl">
+        <label class="scoreToggle">
+          <input type="checkbox" id="tempoDialToggle" aria-label="Toggle tempo dial">
+        </label>
+      </div>
+
     </div>
 
     <div id="beatPreference" class="tempoControl tempoControlStack">
@@ -89,17 +103,6 @@
         <div class="tempoStepSwitch">
           <span class="tempoInputNote">♪=</span>
           <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric">
-
-          <!--Spec editScore.htmlのテンポの特殊仕様
-          ・ここに <div class="tempoDialRow"> の表示をON/OFF切り替えられるスイッチを用意する。初期値はOFFで表示しない。
-          ・スイッチの見た目は、index.html の <input type="checkbox" id="scoreToggle"> と同じ見た目。
-          ・文字は OFF と DIAL （ONの代わり） を表示して。ON場合は少し濃い緑色を使う。
-          -->
-          <div class="preferenceValue preferenceValueCentered tempoDialToggleControl">
-            <label class="scoreToggle">
-              <input type="checkbox" id="tempoDialToggle" aria-label="Toggle tempo dial">
-            </label>
-          </div>
 
         </div>
       </div>
@@ -119,6 +122,20 @@
         </button>
         <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
       </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Bars per row (1–4)</span>
+        <span class="lang" data-lang="ja">一段当たりの小節数（1〜4）</span>
+      </div>
+      <!--Spec 1段当たりの小節通
+      ・スライドバーを配置して1段当たりの小節数を設定する。設定範囲は（1～4）。初期値は2。
+      -->
+
+      <div class="preferenceValue preferenceValueCentered barsPerRowValue">
+        <input type="range" id="barsPerRowRange" min="1" max="4" step="1" value="2" aria-label="Bars per row">
+        <output id="barsPerRowValue" for="barsPerRowRange">2</output>
+      </div>
+
     </div>
 
     <!--Spec クリック再生エリア-開始 -->
@@ -177,19 +194,6 @@
         -->
         <div id="score" aria-label="Two-measure score"></div>
       </div>
-    </div>
-
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Bars per row (1–4)</span>
-      <span class="lang" data-lang="ja">一段当たりの小節数（1〜4）</span>
-    </div>
-    <!--Spec 1段当たりの小節通
-    ・スライドバーを配置して1段当たりの小節数を設定する。設定範囲は（1～4）。初期値は2。
-    -->
-
-    <div class="preferenceValue preferenceValueCentered barsPerRowValue">
-      <input type="range" id="barsPerRowRange" min="1" max="4" step="1" value="2" aria-label="Bars per row">
-      <output id="barsPerRowValue" for="barsPerRowRange">2</output>
     </div>
 
     <div class="preferenceTitle">

@@ -28,8 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoDialEl = document.getElementById("tempoDial");
   const tempoStepCoarse = document.getElementById("tempoStepCoarse");
   const tempoStepFine = document.getElementById("tempoStepFine");
-  const tempoDialToggle = document.getElementById("tempoDialToggle");
-  const tempoDialRow = document.getElementById("tempoDialRow");
+    const tempoDialToggle = document.getElementById("tempoDialToggle");
+    const beatPreference = document.getElementById("beatPreference");
   const barsPerRowRange = document.getElementById("barsPerRowRange");
   const barsPerRowValue = document.getElementById("barsPerRowValue");
   let currentScoreData = null;
@@ -181,17 +181,17 @@ document.addEventListener("DOMContentLoaded", () => {
     tempoDial.attach();
   }
 
-  if (tempoDialToggle && tempoDialRow) {
-    const applyDialVisibility = () => {
-      const shouldShow = tempoDialToggle.checked;
-      tempoDialRow.hidden = !shouldShow;
-      tempoDialRow.style.display = shouldShow ? "" : "none";
-      tempoDialRow.setAttribute("aria-hidden", String(!shouldShow));
-    };
-    applyDialVisibility();
-    tempoDialToggle.addEventListener("change", applyDialVisibility);
-    tempoDialToggle.addEventListener("input", applyDialVisibility);
-  }
+    if (tempoDialToggle && beatPreference) {
+      const applyPreferenceVisibility = () => {
+        const shouldShow = tempoDialToggle.checked;
+        beatPreference.hidden = !shouldShow;
+        beatPreference.style.display = shouldShow ? "" : "none";
+        beatPreference.setAttribute("aria-hidden", String(!shouldShow));
+      };
+      applyPreferenceVisibility();
+      tempoDialToggle.addEventListener("change", applyPreferenceVisibility);
+      tempoDialToggle.addEventListener("input", applyPreferenceVisibility);
+    }
 
   if (scoreArea && rhythmScore) {
     scoreArea.addEventListener("scroll", () => {

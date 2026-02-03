@@ -197,6 +197,33 @@ main {
   gap: 2px;
   align-items: flex-start;
   justify-content: center;
+  background-color: transparent;
+}
+
+#beatPreference .preferenceTitle {
+  width: 100%;
+}
+
+main.pageFrame > .preferenceTitle {
+  width: 100%;
+}
+
+.preferenceTitle.tempoTitle {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.tempoTitleText {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  grid-column: 2;
+}
+
+.tempoTitle .tempoDialToggleControl {
+  justify-self: end;
 }
 
 .scoreToggle input#tempoDialToggle::after {
