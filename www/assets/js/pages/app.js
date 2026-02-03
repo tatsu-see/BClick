@@ -1,6 +1,7 @@
 
 import { ConfigStore } from "../utils/store.js";
 import { TempoDialController } from "../components/tempoDial.js";
+import { isLanguage } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
@@ -45,6 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number.isNaN(parsed) ? fallback : parsed;
   };
 
+  const isJapanese = () => isLanguage("ja");
+
   const notifyTempoChange = (value) => {
     document.dispatchEvent(new CustomEvent("bclick:tempochange", { detail: { tempo: value } }));
   };
@@ -62,7 +65,13 @@ document.addEventListener("DOMContentLoaded", () => {
       : store.getCountInSec();
     const safeClickCount = Number.isFinite(clickCountValue) ? clickCountValue : 4;
     const safeCountdown = Number.isFinite(countdownValue) ? countdownValue : 4;
-    beatSummary.textContent = `BPM ${tempoValue}、クリック数 ${safeClickCount}、カウントイン ${safeCountdown}`;
+    if (isJapanese()) {
+      beatSummary.textContent =
+        `BPM ${tempoValue}、クリック数 ${safeClickCount}、カウントイン ${safeCountdown}`;
+    } else {
+      beatSummary.textContent =
+        `BPM ${tempoValue}, Clicks ${safeClickCount}, Count-in ${safeCountdown}`;
+    }
   };
 
   const updateScoreSummary = () => {
@@ -70,8 +79,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const timeSignature = store.getScoreTimeSignature() || "4/4";
     const progression = store.getScoreProgression() || "";
     const measures = store.getScoreMeasures() || 8;
-    const displayProgression = progression.length > 0 ? progression : "(未設定)";
-    scoreSummary.textContent = `拍子 ${timeSignature}、進行 ${displayProgression}、小節数 ${measures}`;
+    const displayProgression = progression.length > 0
+      ? progression
+      : (isJapanese() ? "(未設定)" : "(Not set)");
+    if (isJapanese()) {
+      scoreSummary.textContent =
+        `拍子 ${timeSignature}、進行 ${displayProgression}、小節数 ${measures}`;
+    } else {
+      scoreSummary.textContent =
+        `Time ${timeSignature}, Progression ${displayProgression}, Bars ${measures}`;
+    }
   };
 
   if (scoreToggle) {
