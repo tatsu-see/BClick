@@ -13,6 +13,14 @@ import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGu
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
 
+  // スマホ初回表示で勝手にスクロールされる事象の対策。
+  // ブラウザのスクロール復元とレイアウト計算の影響を抑えるため、
+  // 明示的に先頭へ戻す。
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
   preloadAlphaTabFonts().catch(() => {
     ;
   });
