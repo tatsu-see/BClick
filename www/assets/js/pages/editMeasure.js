@@ -278,6 +278,36 @@ document.addEventListener("DOMContentLoaded", () => {
     picks.forEach((chord) => appendChord(chord));
   };
 
+  /**
+   * コード進行入力を仕様に沿って正規化する。
+   * NGなトークンは除外し、正しいものだけを半角スペース区切りで返す。
+   * @param {string} raw
+   * @returns {string}
+   */
+  const normalizeProgressionInput = (raw) => {
+    if (typeof raw !== "string") return "";
+    const chordRegex = /^([A-Ga-g])([#b]?)([a-z0-9]*)(?:\/([A-Ga-g])([#b]?))?$/;
+    return raw
+      .trim()
+      .split(/\s+/)
+      .map((token) => {
+        if (token.length === 0) return "";
+        const match = chordRegex.exec(token);
+        if (!match) return "";
+        const root = match[1].toUpperCase();
+        const accidental = match[2] || "";
+        const suffix = match[3] || "";
+        if (!match[4]) {
+          return `${root}${accidental}${suffix}`;
+        }
+        const bassRoot = match[4].toUpperCase();
+        const bassAccidental = match[5] || "";
+        return `${root}${accidental}${suffix}/${bassRoot}${bassAccidental}`;
+      })
+      .filter((token) => token.length > 0)
+      .join(" ");
+  };
+
   const initialChord = selectedBeatChords.find((value) => value) || "";
 
   if (chordQualityButtons.length > 0) {
@@ -870,6 +900,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       store.setScoreBars(bars);
       store.setScoreMeasures(bars.length);
+      if (codeProgressionInput) {
+        const normalized = normalizeProgressionInput(codeProgressionInput.value);
+        codeProgressionInput.value = normalized;
+        store.setScoreProgression(normalized);
+      }
       goBack();
     });
   }

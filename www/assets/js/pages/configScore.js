@@ -659,6 +659,36 @@ document.addEventListener("DOMContentLoaded", () => {
     picks.forEach((chord) => appendChord(chord));
   };
 
+  /**
+   * コード進行入力を仕様に沿って正規化する。
+   * NGなトークンは除外し、正しいものだけを半角スペース区切りで返す。
+   * @param {string} raw
+   * @returns {string}
+   */
+  const normalizeProgressionInput = (raw) => {
+    if (typeof raw !== "string") return "";
+    const chordRegex = /^([A-Ga-g])([#b]?)([a-z0-9]*)(?:\/([A-Ga-g])([#b]?))?$/;
+    return raw
+      .trim()
+      .split(/\s+/)
+      .map((token) => {
+        if (token.length === 0) return "";
+        const match = chordRegex.exec(token);
+        if (!match) return "";
+        const root = match[1].toUpperCase();
+        const accidental = match[2] || "";
+        const suffix = match[3] || "";
+        if (!match[4]) {
+          return `${root}${accidental}${suffix}`;
+        }
+        const bassRoot = match[4].toUpperCase();
+        const bassAccidental = match[5] || "";
+        return `${root}${accidental}${suffix}/${bassRoot}${bassAccidental}`;
+      })
+      .filter((token) => token.length > 0)
+      .join(" ");
+  };
+
   if (addRandom3ChordsButton) {
     addRandom3ChordsButton.addEventListener("click", () => {
       appendRandomChords(3);
@@ -709,8 +739,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const progressionRaw = codeProgressionInput ? codeProgressionInput.value : "";
-      const trimmedProgression = progressionRaw.trim();
-      store.setScoreProgression(trimmedProgression);
+      const normalizedProgression = normalizeProgressionInput(progressionRaw);
+      if (codeProgressionInput) {
+        codeProgressionInput.value = normalizedProgression;
+      }
+      store.setScoreProgression(normalizedProgression);
 
       if (measuresRange) {
         const parsed = Number.parseInt(measuresRange.value, 10);
