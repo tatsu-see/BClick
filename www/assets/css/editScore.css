@@ -241,7 +241,7 @@ main.pageFrame > .preferenceTitle {
 }
 
 .scoreToggle input#tempoDialToggle:checked::after {
-  content: "DIAL";
+  content: "ON";
   right: 18px;
   color: #0f6a3d;
 }

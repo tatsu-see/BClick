@@ -54,6 +54,7 @@ export const SCORE_JSON_VERSION = 0;
 //
 // 読込・保存に対応していない設定項目
 // - clickVolume: クリック音量
+// - editScore のトグルスイッチ
 
 /**
  * 初期設定値を取得する。

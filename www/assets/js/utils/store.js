@@ -7,21 +7,22 @@ import { LocalStore } from '../../lib/LocalStore.js';
 export class ConfigStore extends LocalStore {
   constructor() {
     super();
-    this.keys = {
-      Tempo: 'bclick.tempo',
-      ClickCount: 'bclick.clickCount',
-      Countdown: 'bclick.countdown',
-      ClickVolume: 'bclick.clickVolume',
-      ScoreTimeSignature: 'bclick.score.timeSignature',
-      ScoreProgression: 'bclick.score.progression',
-      ScoreMeasures: 'bclick.score.measures',
-      ScoreBarsPerRow: 'bclick.score.barsPerRow',
-      ScoreBars: 'bclick.score.bars',
+      this.keys = {
+        Tempo: 'bclick.tempo',
+        ClickCount: 'bclick.clickCount',
+        Countdown: 'bclick.countdown',
+        ClickVolume: 'bclick.clickVolume',
+        TempoDialEnabled: 'bclick.tempoDial.enabled',
+        ScoreTimeSignature: 'bclick.score.timeSignature',
+        ScoreProgression: 'bclick.score.progression',
+        ScoreMeasures: 'bclick.score.measures',
+        ScoreBarsPerRow: 'bclick.score.barsPerRow',
+        ScoreBars: 'bclick.score.bars',
       ScoreRhythmPattern: 'bclick.score.rhythmPattern',
       ScoreEnabled: 'bclick.score.enabled',
-      CodeDiagramChord: 'bclick.codeDiagram.chord',
-    };
-  }
+        CodeDiagramChord: 'bclick.codeDiagram.chord',
+      };
+    }
 
   getNumberSetting(key) {
     const saved = this.getSettings(key);
@@ -94,6 +95,19 @@ export class ConfigStore extends LocalStore {
     const clamped = Math.min(2, Math.max(0, value));
     const rounded = Math.round(clamped * 10) / 10;
     this.saveSettings(this.keys.ClickVolume, rounded);
+  }
+
+  /**
+   * editScore の調節トグルのI/O
+   */
+  getTempoDialEnabled() {
+    const saved = this.getSettings(this.keys.TempoDialEnabled);
+    return typeof saved === 'boolean' ? saved : null;
+  }
+
+  setTempoDialEnabled(value) {
+    if (typeof value !== 'boolean') return;
+    this.saveSettings(this.keys.TempoDialEnabled, value);
   }
 
   /**

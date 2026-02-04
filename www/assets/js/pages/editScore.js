@@ -51,10 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
     window.requestAnimationFrame(waitForHighlight);
   }
 
+  // PDF/alphaTab用フォントを先に読み込む。
   preloadAlphaTabFonts().catch(() => {
     ;
   });
 
+  // 画面で使うDOM要素の取得
   const store = new ConfigStore();
   const scoreElement = document.getElementById("score");
   const scoreArea = document.getElementById("scoreArea");
@@ -82,6 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.dispatchEvent(new CustomEvent("bclick:tempochange", { detail: { tempo: value } }));
   };
 
+  /**
+   * ストアから楽譜設定を読み込んでScoreDataを作る。
+   * @param {boolean} resetBars
+   * @returns {ScoreData}
+   */
   const loadSettings = (resetBars = false) => {
     const savedTempo = store.getTempo();
     const savedTimeSignature = store.getScoreTimeSignature();
@@ -101,6 +108,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  /**
+   * editScore から戻る。
+   */
   const closePage = () => {
     goBackWithFallback();
   };
@@ -118,6 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 初期表示のスコア生成
   const hasSavedBars = Array.isArray(store.getScoreBars());
   currentScoreData = loadSettings(!hasSavedBars);
   if (Array.isArray(currentScoreData.bars)) {
@@ -165,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // テンポ入力・ダイヤルの初期化
   const tempoDial = tempoInput
     ? new TempoDialController({
         inputEl: tempoInput,
@@ -227,24 +239,32 @@ document.addEventListener("DOMContentLoaded", () => {
     tempoDial.attach();
   }
 
-    if (tempoDialToggle && beatPreference) {
-      const applyPreferenceVisibility = () => {
-        const shouldShow = tempoDialToggle.checked;
-        beatPreference.hidden = !shouldShow;
-        beatPreference.style.display = shouldShow ? "" : "none";
-        beatPreference.setAttribute("aria-hidden", String(!shouldShow));
-      };
-      applyPreferenceVisibility();
-      tempoDialToggle.addEventListener("change", applyPreferenceVisibility);
-      tempoDialToggle.addEventListener("input", applyPreferenceVisibility);
+  // 調節（再生設定）ブロックの表示トグル
+  if (tempoDialToggle && beatPreference) {
+    const savedTempoDialEnabled = store.getTempoDialEnabled();
+    if (savedTempoDialEnabled !== null) {
+      tempoDialToggle.checked = savedTempoDialEnabled;
     }
+    const applyPreferenceVisibility = () => {
+      const shouldShow = tempoDialToggle.checked;
+      store.setTempoDialEnabled(shouldShow);
+      beatPreference.hidden = !shouldShow;
+      beatPreference.style.display = shouldShow ? "" : "none";
+      beatPreference.setAttribute("aria-hidden", String(!shouldShow));
+    };
+    applyPreferenceVisibility();
+    tempoDialToggle.addEventListener("change", applyPreferenceVisibility);
+    tempoDialToggle.addEventListener("input", applyPreferenceVisibility);
+  }
 
+  // 楽譜エリアのスクロールでオーバーレイを更新する
   if (scoreArea && rhythmScore) {
     scoreArea.addEventListener("scroll", () => {
       rhythmScore.handleOverlayRefresh();
     }, { passive: true });
   }
 
+  // 1段あたりの小節数スライダー
   if (barsPerRowRange) {
     const savedBarsPerRow = store.getScoreBarsPerRow();
     const initialBarsPerRow = savedBarsPerRow || 2;
@@ -347,6 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("bclick:scoreloaded", applyLoadedScoreToUI);
 
+  // 別タブでの編集を検知して反映する
   window.addEventListener("storage", (event) => {
     if (event.storageArea !== window.localStorage) return;
     if (event.key !== store.keys.ScoreBars) return;
@@ -362,6 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // 操作ボタンのイベント
   if (saveButton) {
     saveButton.addEventListener("click", () => {
       if (currentScoreData) {
