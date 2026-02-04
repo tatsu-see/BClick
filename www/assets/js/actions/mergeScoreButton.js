@@ -4,6 +4,7 @@ import {
   mergeBars,
   readScoreFile,
 } from "../utils/scoreButtonUtils.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const mergeButton = document.getElementById("mergeScore");
@@ -38,7 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.reload();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      window.alert(`追加に失敗しました: ${message}`);
+      window.alert(
+        getLangMsg(
+          `追加に失敗しました: ${message}`,
+          `Failed to merge: ${message}`,
+        ),
+      );
     }
   };
 

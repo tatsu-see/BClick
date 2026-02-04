@@ -2,6 +2,7 @@
  * スコアのJSON保存形式に関する変換処理をまとめる。
  */
 import ScoreData from "../models/ScoreModel.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 const DEFAULT_SETTINGS = {
   tempo: 60,
@@ -81,10 +82,10 @@ export const buildDefaultRhythmPattern = (beatCount) =>
  */
 export const buildScoreDataFromObject = (source) => {
   if (!source || typeof source !== "object") {
-    throw new Error("JSONデータが不正です。");
+    throw new Error(getLangMsg("JSONデータが不正です。", "Invalid JSON data."));
   }
   if (source.schemaVersion !== SCORE_JSON_VERSION || !source.score || typeof source.score !== "object") {
-    throw new Error("JSONデータが不正です。");
+    throw new Error(getLangMsg("JSONデータが不正です。", "Invalid JSON data."));
   }
   const normalized = source.score;
   const defaults = getDefaultSettings();
@@ -151,7 +152,10 @@ const readJsonFileAsObject = (file) =>
       }
     };
     reader.onerror = () => {
-      reject(reader.error || new Error("ファイルの読み込みに失敗しました。"));
+      reject(
+        reader.error
+          || new Error(getLangMsg("ファイルの読み込みに失敗しました。", "Failed to read the file.")),
+      );
     };
     reader.readAsText(file);
   });
@@ -205,7 +209,9 @@ const readPdfAttachmentJson = async (file) => {
    * ================================================
    */
   if (!window.PDFLib || !window.PDFLib.PDFDocument) {
-    throw new Error("PDFライブラリの読み込みに失敗しました。");
+    throw new Error(
+      getLangMsg("PDFライブラリの読み込みに失敗しました。", "Failed to load the PDF library."),
+    );
   }
   const { PDFDocument, PDFName, PDFDict, PDFArray, decodePDFRawStream } = window.PDFLib;
   const pdfBytes = await file.arrayBuffer();
@@ -215,18 +221,28 @@ const readPdfAttachmentJson = async (file) => {
   let pdfDoc;
   try {
     pdfDoc = await PDFDocument.load(pdfBytes);
-  } catch (error) {
-    console.error("[PDF] PDF読み込みエラー:", error);
-    throw new Error(`PDF読み込み失敗: ${error instanceof Error ? error.message : String(error)}`);
-  }
+    } catch (error) {
+      console.error("[PDF] PDF読み込みエラー:", error);
+      throw new Error(
+        getLangMsg(
+          `PDF読み込み失敗: ${error instanceof Error ? error.message : String(error)}`,
+          `Failed to load PDF: ${error instanceof Error ? error.message : String(error)}`,
+        ),
+      );
+    }
 
   console.log("[PDF] PDF読み込み成功");
   
   const catalog = pdfDoc.catalog;
-  if (!catalog) {
-    console.error("[PDF] カタログが見つかりません");
-    throw new Error("PDF内の構造を読み込めませんでした。");
-  }
+    if (!catalog) {
+      console.error("[PDF] カタログが見つかりません");
+      throw new Error(
+        getLangMsg(
+          "PDF内の構造を読み込めませんでした。",
+          "Could not read the PDF internal structure.",
+        ),
+      );
+    }
   console.log("[PDF] PDFカタログ取得成功");
 
   const normalizeToUint8Array = (value) => {
@@ -631,7 +647,10 @@ const readPdfAttachmentJson = async (file) => {
 
   if (attachments.length === 0) {
     throw new Error(
-      "PDF内に添付ファイルが見つかりませんでした。複数の方法で検索を試みましたが、JSON形式のデータを取得できませんでした。"
+      getLangMsg(
+        "PDF内に添付ファイルが見つかりませんでした。複数の方法で検索を試みましたが、JSON形式のデータを取得できませんでした。",
+        "No attachments were found in the PDF. Multiple search methods were tried, but JSON data could not be retrieved.",
+      ),
     );
   }
 
@@ -642,7 +661,12 @@ const readPdfAttachmentJson = async (file) => {
   }) || attachments[0];
 
   if (!jsonAttachment) {
-    throw new Error("添付ファイルが見つかりましたが、処理できません。");
+    throw new Error(
+      getLangMsg(
+        "添付ファイルが見つかりましたが、処理できません。",
+        "An attachment was found but could not be processed.",
+      ),
+    );
   }
 
   console.log("[PDF] 処理対象の添付ファイル:", jsonAttachment.name, "サイズ:", jsonAttachment.bytes.length);
@@ -658,7 +682,10 @@ const readPdfAttachmentJson = async (file) => {
     console.error("[PDF] JSON解析失敗:", error);
     console.log("[PDF] テキスト先頭 500 文字:", (new TextDecoder().decode(jsonAttachment.bytes)).substring(0, 500));
     throw new Error(
-      `JSON解析エラー: ${error instanceof Error ? error.message : String(error)}`
+      getLangMsg(
+        `JSON解析エラー: ${error instanceof Error ? error.message : String(error)}`,
+        `JSON parse error: ${error instanceof Error ? error.message : String(error)}`,
+      ),
     );
   }
 };

@@ -2,6 +2,7 @@ import { ConfigStore } from "../utils/store.js";
 import RhythmPreviewRenderer from "../components/RhythmPreviewRenderer.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -754,7 +755,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error(`configScore: OK保存中にエラーが発生しました。 ${message}`, error);
-      window.alert(`保存に失敗しました: ${message}`);
+      window.alert(
+        getLangMsg(
+          `保存に失敗しました: ${message}`,
+          `Failed to save: ${message}`,
+        ),
+      );
       return;
     }
 

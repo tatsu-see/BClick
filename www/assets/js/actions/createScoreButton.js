@@ -4,6 +4,7 @@ import {
   openEditScorePage,
   saveScoreDataToStore,
 } from "../utils/scoreButtonUtils.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const createButton = document.getElementById("setClick");
@@ -13,7 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
    * 新規作成ボタンの処理。
    */
   const handleCreate = () => {
-    const confirmed = window.confirm("現在の楽譜は保存せずに破棄されます。新規作成しますか？");
+    const confirmed = window.confirm(
+      getLangMsg(
+        "現在の楽譜は保存せずに破棄されます。新規作成しますか？",
+        "The current score will be discarded without saving. Create a new score?",
+      ),
+    );
     if (!confirmed) return;
     const store = new ConfigStore();
     const scoreData = buildScoreDataFromStore(store, { resetBars: true });

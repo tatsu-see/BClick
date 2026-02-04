@@ -6,6 +6,7 @@ import {
   saveScoreDataToStore,
 } from "../utils/scoreButtonUtils.js";
 import { showMessage } from "../../lib/ShowMessageBox.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const MERGE_TOGGLE_KEY = "bclick.score.merge";
@@ -83,7 +84,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error("スコア読み込みエラー詳細:", error);
-      window.alert(`${useMerge ? "追加" : "読み込み"}に失敗しました:\n\n${message}\n\nコンソールをご確認ください。`);
+      window.alert(
+        getLangMsg(
+          `${useMerge ? "追加" : "読み込み"}に失敗しました:\n\n${message}\n\nコンソールをご確認ください。`,
+          `Failed to ${useMerge ? "merge" : "load"}:\n\n${message}\n\nPlease check the console.`,
+        ),
+      );
     }
   };
 

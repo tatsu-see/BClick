@@ -1,6 +1,7 @@
 import { ConfigStore } from "../utils/store.js";
 import { TempoDialController } from "../components/tempoDial.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -36,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dialLabelEl) {
       dialLabelEl.textContent = parsedStep.toString();
     }
-    tempoDialEl.setAttribute("aria-label", `テンポを${parsedStep}ずつ変更`);
+    tempoDialEl.setAttribute("aria-label", `Change tempo by ${parsedStep}`);
     tempoStepButtons.forEach((button) => {
       const isActive = button === activeButton;
       button.classList.toggle("isActive", isActive);
@@ -155,7 +156,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error(`configBeat: OK保存中にエラーが発生しました。 ${message}`, error);
-      window.alert(`保存に失敗しました: ${message}`);
+      window.alert(
+        getLangMsg(
+          `保存に失敗しました: ${message}`,
+          `Failed to save: ${message}`,
+        ),
+      );
       return;
     }
 

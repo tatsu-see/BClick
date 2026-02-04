@@ -4,6 +4,7 @@ import ScoreData from "../models/ScoreModel.js";
 import RhythmPreviewRenderer from "../components/RhythmPreviewRenderer.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -191,9 +192,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const applyChordOptions = (selectEl, value, options) => {
     selectEl.textContent = "";
-    const emptyOption = document.createElement("option");
-    emptyOption.value = "";
-    emptyOption.textContent = "なし";
+      const emptyOption = document.createElement("option");
+      emptyOption.value = "";
+      emptyOption.textContent = getLangMsg("なし", "None");
     selectEl.appendChild(emptyOption);
     options.forEach((optionValue) => {
       const option = document.createElement("option");
@@ -874,9 +875,11 @@ document.addEventListener("DOMContentLoaded", () => {
         targetBar.rhythm = nextRhythm;
       }
 
-      const copyValue = getSelectedCopyValue();
-      if (copyValue === "del") {
-        const shouldDelete = window.confirm("この小節を削除しますか？");
+        const copyValue = getSelectedCopyValue();
+        if (copyValue === "del") {
+        const shouldDelete = window.confirm(
+          getLangMsg("この小節を削除しますか？", "Delete this bar?"),
+        );
         if (!shouldDelete) return;
         if (bars.length > 1) {
           bars.splice(safeBarIndex, 1);

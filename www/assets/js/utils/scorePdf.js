@@ -19,6 +19,7 @@
  *   ブラウザ表示と同じサイズが保証される。
  */
 import { buildScoreJsonString } from "./scoreSerialization.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 // A4縦（mm）→ PDFポイント換算用
 const MM_TO_PT = 72 / 25.4;
@@ -261,26 +262,47 @@ const convertSvgToPngBytes = async (svgEl) => {
       canvas.width = Math.max(1, Math.floor(width * scale));
       canvas.height = Math.max(1, Math.floor(height * scale));
       const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        reject(new Error("キャンバスの初期化に失敗しました。"));
-        return;
-      }
+        if (!ctx) {
+          reject(
+            new Error(
+              getLangMsg(
+                "キャンバスの初期化に失敗しました。",
+                "Failed to initialize the canvas.",
+              ),
+            ),
+          );
+          return;
+        }
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
       ctx.drawImage(image, 0, 0, width, height);
       canvas.toBlob((pngBlob) => {
-        if (!pngBlob) {
-          reject(new Error("PNG生成に失敗しました。"));
-          return;
-        }
+          if (!pngBlob) {
+            reject(
+              new Error(
+                getLangMsg(
+                  "PNG生成に失敗しました。",
+                  "Failed to generate PNG.",
+                ),
+              ),
+            );
+            return;
+          }
         pngBlob.arrayBuffer().then((buffer) => {
           resolve(new Uint8Array(buffer));
         }).catch(reject);
       }, "image/png");
     };
-    image.onerror = () => {
-      window.URL.revokeObjectURL(svgUrl);
-      reject(new Error("SVGの読み込みに失敗しました。"));
-    };
+      image.onerror = () => {
+        window.URL.revokeObjectURL(svgUrl);
+        reject(
+          new Error(
+            getLangMsg(
+              "SVGの読み込みに失敗しました。",
+              "Failed to load the SVG.",
+            ),
+          ),
+        );
+      };
     image.src = svgUrl;
   });
 };
@@ -311,15 +333,25 @@ export const buildScorePdfBlob = async ({
   jsonFileName,
   title,
 } = {}) => {
-  if (!window.PDFLib || !window.PDFLib.PDFDocument) {
-    throw new Error("PDFライブラリの読み込みに失敗しました。");
-  }
+    if (!window.PDFLib || !window.PDFLib.PDFDocument) {
+      throw new Error(
+        getLangMsg(
+          "PDFライブラリの読み込みに失敗しました。",
+          "Failed to load the PDF library.",
+        ),
+      );
+    }
   const svgList = Array.isArray(svgEls) && svgEls.length > 0
     ? svgEls
     : (svgEl ? [svgEl] : []);
-  if (svgList.length === 0) {
-    throw new Error("譜面の描画が見つかりませんでした。");
-  }
+    if (svgList.length === 0) {
+      throw new Error(
+        getLangMsg(
+          "譜面の描画が見つかりませんでした。",
+          "The score rendering was not found.",
+        ),
+      );
+    }
   const jsonText = buildScoreJsonString(scoreData);
   const jsonBytes = new TextEncoder().encode(jsonText);
 

@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dialLabelEl) {
         dialLabelEl.textContent = parsedStep.toString();
       }
-      tempoDialEl.setAttribute("aria-label", `テンポを${parsedStep}ずつ変更`);
+      tempoDialEl.setAttribute("aria-label", `Change tempo by ${parsedStep}`);
       tempoStepButtons.forEach((button) => {
         const isActive = button === activeButton;
         button.classList.toggle("isActive", isActive);

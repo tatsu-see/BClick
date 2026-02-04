@@ -4,7 +4,7 @@
 import { ConfigStore } from "../utils/store.js";
 import { buildScoreDataFromStore } from "../utils/scoreButtonUtils.js";
 import { buildScorePdfBlob } from "../utils/scorePdf.js";
-import { isLanguage } from "../../lib/Language.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 const PDF_FILE_NAME = "BClick-Score.pdf";
 const JSON_FILE_NAME = "BClick-Score.json";
@@ -24,17 +24,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const handleSave = async () => {
     const scoreSvgs = getScoreSvgElements();
     if (scoreSvgs.length === 0) {
-      window.alert("譜面の描画が見つかりませんでした。");
+      window.alert(
+        getLangMsg(
+          "譜面の描画が見つかりませんでした。",
+          "The score rendering was not found.",
+        ),
+      );
       return;
     }
-    if (isLanguage("ja")) {
-      window.alert("PDFが表示されるので保存してください。");
-    } else {
-      window.alert("A PDF will be shown. Please save it.");
-    }
+    window.alert(
+      getLangMsg(
+        "PDFが表示されるので保存してください。",
+        "A PDF will be shown. Please save it.",
+      ),
+    );
     const previewWindow = window.open("about:blank", "_blank");
     if (!previewWindow) {
-      window.alert("PDFを開けませんでした。ポップアップブロックを確認してください。");
+      window.alert(
+        getLangMsg(
+          "PDFを開けませんでした。ポップアップブロックを確認してください。",
+          "Could not open the PDF. Please check your popup blocker.",
+        ),
+      );
       return;
     }
     const store = new ConfigStore();
@@ -55,7 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       previewWindow.close();
       const message = error instanceof Error ? error.message : String(error);
-      window.alert(`PDFの生成に失敗しました: ${message}`);
+      window.alert(
+        getLangMsg(
+          `PDFの生成に失敗しました: ${message}`,
+          `Failed to generate the PDF: ${message}`,
+        ),
+      );
     }
   };
 

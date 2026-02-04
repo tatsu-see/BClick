@@ -1,7 +1,7 @@
 
 import { ConfigStore } from "../utils/store.js";
 import { TempoDialController } from "../components/tempoDial.js";
-import { isLanguage } from "../../lib/Language.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
@@ -46,8 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number.isNaN(parsed) ? fallback : parsed;
   };
 
-  const isJapanese = () => isLanguage("ja");
-
   const notifyTempoChange = (value) => {
     document.dispatchEvent(new CustomEvent("bclick:tempochange", { detail: { tempo: value } }));
   };
@@ -65,13 +63,10 @@ document.addEventListener("DOMContentLoaded", () => {
       : store.getCountInSec();
     const safeClickCount = Number.isFinite(clickCountValue) ? clickCountValue : 4;
     const safeCountdown = Number.isFinite(countdownValue) ? countdownValue : 4;
-    if (isJapanese()) {
-      beatSummary.textContent =
-        `BPM ${tempoValue}、クリック数 ${safeClickCount}、カウントイン ${safeCountdown}`;
-    } else {
-      beatSummary.textContent =
-        `BPM ${tempoValue}, Clicks ${safeClickCount}, Count-in ${safeCountdown}`;
-    }
+    beatSummary.textContent = getLangMsg(
+      `BPM ${tempoValue}、クリック数 ${safeClickCount}、カウントイン ${safeCountdown}`,
+      `BPM ${tempoValue}, Clicks ${safeClickCount}, Count-in ${safeCountdown}`,
+    );
   };
 
   const updateScoreSummary = () => {
@@ -81,14 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const measures = store.getScoreMeasures() || 8;
     const displayProgression = progression.length > 0
       ? progression
-      : (isJapanese() ? "(未設定)" : "(Not set)");
-    if (isJapanese()) {
-      scoreSummary.textContent =
-        `拍子 ${timeSignature}、進行 ${displayProgression}、小節数 ${measures}`;
-    } else {
-      scoreSummary.textContent =
-        `Time ${timeSignature}, Progression ${displayProgression}, Bars ${measures}`;
-    }
+      : getLangMsg("(未設定)", "(Not set)");
+    scoreSummary.textContent = getLangMsg(
+      `拍子 ${timeSignature}、進行 ${displayProgression}、小節数 ${measures}`,
+      `Time ${timeSignature}, Progression ${displayProgression}, Bars ${measures}`,
+    );
   };
 
   if (scoreToggle) {
@@ -214,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dialLabelEl) {
         dialLabelEl.textContent = parsedStep.toString();
       }
-      tempoDialEl.setAttribute("aria-label", `テンポを${parsedStep}ずつ変更`);
+    tempoDialEl.setAttribute("aria-label", `Change tempo by ${parsedStep}`);
       tempoStepButtons.forEach((button) => {
         const isActive = button === activeButton;
         button.classList.toggle("isActive", isActive);

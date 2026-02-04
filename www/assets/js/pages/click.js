@@ -1,6 +1,7 @@
 import { clickSound, getMaxVolume, warmUpAudioContext } from "/assets/lib/Sound.js";
 import { chordPool } from "/assets/lib/guiterCode.js";
 import { ConfigStore } from "../utils/store.js";
+import { getLangMsg } from "/assets/lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得
@@ -111,9 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateCountdownDisplay = (seconds) => {
     if (!countdownText) return;
     if (seconds > 0) {
-      countdownText.textContent = `開始まで ${seconds}`;
+      countdownText.textContent = getLangMsg(
+        `開始まで ${seconds}`,
+        `Starting in ${seconds}`,
+      );
     } else {
-      countdownText.textContent = "開始";
+      countdownText.textContent = getLangMsg("開始", "Start");
     }
   };
 
@@ -391,6 +395,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("bclick:tempochange", (event) => {
     const nextTempo = getNumberValue(event?.detail?.tempo, getTempo());
     updateTempo(nextTempo);
+  });
+
+  document.addEventListener("bclick:scoreloaded", () => {
+    syncClickCountFromStore();
+    setClickBoxes();
   });
 
   window.addEventListener("storage", (event) => {
