@@ -149,6 +149,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  /**
+   * クリック音を拍に応じて鳴らす。
+   * @param {boolean} isFirstBeat
+   */
+  const playClickSound = (isFirstBeat) => {
+    const key = isFirstBeat ? "A5" : "A4";
+    clickSound(currentClickVolume ?? undefined, key);
+  };
+
   const startCycleTimer = () => {
     if (cycleBoxes.length === 0 || currentBeatMs === null) return;
     clearCycleTimer();
@@ -160,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // 1周ごとに次の小節番号へスクロールする。
         scrollToNextBar();
       }
-      clickSound(currentClickVolume ?? undefined);
+      playClickSound(cycleIndex === 0);
     }, currentBeatMs);
   };
 
@@ -234,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cycleBoxes.forEach((box) => box.classList.remove("active"));
     cycleBoxes[0].classList.add("active");
     scrollToNextBar();
-    clickSound(currentClickVolume ?? undefined);
+    playClickSound(true);
 
     startCycleTimer();
   };
