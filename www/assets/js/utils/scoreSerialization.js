@@ -156,6 +156,9 @@ const readJsonFileAsObject = (file) =>
     reader.readAsText(file);
   });
 
+//##Spec
+// PDF内部の名前オブジェクトは PDF独自形式になることがあるため、
+// decodeText/asString に対応している場合はそれを優先し、最後は文字列化する。
 const decodePdfString = (value) => {
   if (!value) return "";
   if (typeof value.decodeText === "function") {
@@ -168,6 +171,9 @@ const decodePdfString = (value) => {
 };
 
 const readPdfAttachmentJson = async (file) => {
+  //##Spec
+  // 保存時にPDFへ添付したJSONを復元するための「正」の実装。
+  // 添付の格納場所はPDFによって差があるため、複数経路で探索する。
   /**
    * PDF添付ファイル抽出処理
    * 
@@ -661,6 +667,10 @@ const readPdfAttachmentJson = async (file) => {
  * JSONまたはPDF内添付JSONを読み込む。
  */
 export const readScoreFileAsJson = async (file) => {
+  //##Spec
+  // PDF: 添付JSONを抽出して解析する。
+  // JSON: そのまま読み込む。
+  // 判定は拡張子(.pdf)とMIME(application/pdf)の両方を見る。
   const name = typeof file?.name === "string" ? file.name.toLowerCase() : "";
   const isPdf = file?.type === "application/pdf" || name.endsWith(".pdf");
   if (isPdf) {

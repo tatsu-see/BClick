@@ -1,4 +1,4 @@
-// Ver. 2.0.0
+// Ver. 3.0.0
 
 /**
  * 現在の言語が指定の言語かチェックする。
@@ -8,6 +8,16 @@ export function isLanguage( lang ) {
   const userLang = navigator.language || navigator.userLanguage;
 
   return userLang.startsWith( lang );
+}
+
+/**
+ * 言語設定に応じたメッセージを返す。
+ * @param {string} ja - 日本語メッセージ
+ * @param {string} en - 英語メッセージ
+ * @returns {string}
+ */
+export function getLangMsg( ja, en ) {
+  return isLanguage( 'ja' ) ? ja : en;
 }
 
 /**
