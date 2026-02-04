@@ -133,7 +133,7 @@ https://alphatab.net/docs/alphatex/bar-metadata
 https://docs.abcjs.net/
 
 
-- 内部で PDFlib を使用している個所は、仕様の参照は以下のサイトから行う。
+- 内部で pdf-lib を使用している個所は、仕様の参照は以下のサイトから行う。
 
 
 

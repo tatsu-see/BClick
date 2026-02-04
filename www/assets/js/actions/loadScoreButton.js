@@ -82,7 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
       showMessage("loadScoreMessage", 2000);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      window.alert(`${useMerge ? "追加" : "読み込み"}に失敗しました: ${message}`);
+      console.error("スコア読み込みエラー詳細:", error);
+      window.alert(`${useMerge ? "追加" : "読み込み"}に失敗しました:\n\n${message}\n\nコンソールをご確認ください。`);
     }
   };
 
