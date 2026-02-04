@@ -13,13 +13,43 @@ import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGu
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
 
-  // スマホ初回表示で勝手にスクロールされる事象の対策。
-  // ブラウザのスクロール復元とレイアウト計算の影響を抑えるため、
-  // 明示的に先頭へ戻す。
-  if ("scrollRestoration" in window.history) {
-    window.history.scrollRestoration = "manual";
+  // editMeasure から戻った直後だけ、最後に編集した小節を一時強調表示する。
+  const lastEditedBarRaw = sessionStorage.getItem("bclick.lastEditedBarIndex");
+  const lastEditedBarIndex = Number.parseInt(lastEditedBarRaw, 10);
+  if (Number.isFinite(lastEditedBarIndex) && lastEditedBarIndex >= 0) {
+    // Overlay描画時に対象バッジへclassを付与するための共有フラグ。
+    window.bclickLastEditedBarIndex = lastEditedBarIndex;
+    const clearLastEditedHighlight = () => {
+      // 期限が過ぎたらハイライト情報を破棄する。
+      window.bclickLastEditedBarIndex = null;
+      sessionStorage.removeItem("bclick.lastEditedBarIndex");
+      const label = document.querySelector(
+        `.scoreChordOverlayLabel[data-bar-index="${lastEditedBarIndex}"]`,
+      );
+      if (label) {
+        label.classList.remove("isLastEdited");
+      }
+    };
+    let highlightAttempts = 0;
+    const waitForHighlight = () => {
+      // overlay生成タイミングまで待ってからハイライトを適用する。
+      highlightAttempts += 1;
+      const label = document.querySelector(
+        `.scoreChordOverlayLabel[data-bar-index="${lastEditedBarIndex}"]`,
+      );
+      if (label) {
+        window.setTimeout(clearLastEditedHighlight, 3000);
+        return;
+      }
+      if (highlightAttempts >= 180) {
+        // 一定時間見つからなければ破棄する。
+        clearLastEditedHighlight();
+        return;
+      }
+      window.requestAnimationFrame(waitForHighlight);
+    };
+    window.requestAnimationFrame(waitForHighlight);
   }
-  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 
   preloadAlphaTabFonts().catch(() => {
     ;

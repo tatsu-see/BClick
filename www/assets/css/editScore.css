@@ -114,6 +114,14 @@ main {
   background-color: white;
 }
 
+.scoreChordOverlayLabel.isLastEdited {
+  /* editMeasure から戻った直後の最終編集小節の強調表示 */
+  color: #2e8b57;
+  background-color: #ffffff;
+  border: 2px solid #2e8b57;
+  box-shadow: 0 0 12px rgba(46, 139, 87, 0.5);
+}
+
 .scoreContextMenu {
   position: absolute;
   z-index: 2;

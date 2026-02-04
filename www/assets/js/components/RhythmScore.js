@@ -87,6 +87,8 @@ class RhythmScore {
   handleMenuAction(action, barIndex) {
     if (typeof barIndex !== "number" || barIndex < 0) return;
     if (action === "edit") {
+      // editMeasure から戻ったときに最後に編集した小節をハイライトするため保存する。
+      sessionStorage.setItem("bclick.lastEditedBarIndex", String(barIndex));
       window.location.href = `/editMeasure.html?bar=${barIndex}`;
       return;
     }

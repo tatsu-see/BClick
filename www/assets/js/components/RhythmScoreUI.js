@@ -452,6 +452,10 @@ class RhythmScoreUI {
         if (window.bclickActiveChordIndex === resolvedIndex) {
           badge.classList.add("isActiveChord");
         }
+        // editMeasure から戻った直後に、最後に編集した小節を一時的に強調する。
+        if (window.bclickLastEditedBarIndex === resolvedIndex) {
+          badge.classList.add("isLastEdited");
+        }
 
         badge.addEventListener("contextmenu", (event) => {
           event.preventDefault();
