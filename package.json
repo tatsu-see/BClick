@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "lint": "node scripts/lint.js dist"
   },
   "devDependencies": {
     "acorn": "^8.15.0",

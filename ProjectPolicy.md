@@ -77,9 +77,10 @@
 - 各種属性にはコメントを追加して、後から手動で編集しやすくしておく。
 
 - 縦長の画面は svh/dvh を html / body に適用することを検討する。（勝手にスクロールす現象が抑えれます。）
+- 横長の画面で editScore の画面で、スマホ横持ち時の対応として、min-height を指定する。
   例）
-    height: 100svh;
-    height: 100dvh;
+    min-height: 100svh;
+    min-height: 100dvh;
 
 
 ### コメント
@@ -136,7 +137,6 @@ https://docs.abcjs.net/
 - 内部で pdf-lib を使用している個所は、仕様の参照は以下のサイトから行う。
 
 
-
 ## リリース時の圧縮（と難読化）に関して
 
 - アプリのリリースにおいては、圧縮ツールは GitHub Actions の runner 上で実行する。
@@ -151,7 +151,19 @@ https://docs.abcjs.net/
 - コマンド（npm install → npm run build）はrepoフォルダで実行するが、その際に生成される dist , node_modules フォルダは git 管理対象外。
 - AIは コマンド `npm run build` は 実行しない。(開発者が実行する)
 
+- 手動で npm run build した後は、npm run lint で、静的チェックする。
+
 - 難読化は将来に対応する予定。
+
+
+## リリース前の静的チェックに関して
+
+- npm run lint
+
+一行入力時は以下のコマンド
+
+- npm run build && npm run lint
+
 
 ## サーバー設定
 - キャッシュを有効にする。（時々設定を見直すこと）
@@ -159,3 +171,8 @@ https://docs.abcjs.net/
 
 - WEB検索から index.html 以外の画面を直接開いたら inded.html へ転送する。
 
+
+## 検討段階（いずれ使っていきたい）
+
+- npm run ci
+- Playwright

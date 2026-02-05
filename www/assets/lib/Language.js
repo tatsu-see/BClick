@@ -28,9 +28,8 @@ export let LANG_PRE_FIX = null;
 export function setLanguage() {
   LANG_PRE_FIX = isLanguage('ja') ? 'ja' : 'en';
 
-  document.querySelectorAll('.lang').forEach(el => {
-    el.style.display = (el.dataset.lang === LANG_PRE_FIX) ? 'inline' : 'none';
-  });
+  // CSS 側の data-lang 切り替えで表示制御する
+  document.documentElement.dataset.lang = LANG_PRE_FIX;
 }
 
 /**
