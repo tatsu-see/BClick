@@ -339,7 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
             restToken.length += unit;
           } else {
             tokens.push({ type: "rest", length: unit });
-          }
+        }
         }
         return;
       }

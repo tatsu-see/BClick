@@ -609,11 +609,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       unit = 1;
     }
-    const tokens = [];
-    pattern.forEach((value, index) => {
-      if (value === "tie") {
+      const tokens = [];
+      pattern.forEach((value, index) => {
+        if (value === "tie") {
         const lastToken = tokens[tokens.length - 1];
-        if (lastToken && lastToken.type === "note") {
+          if (lastToken && lastToken.type === "note") {
           lastToken.length += unit;
         } else {
           const restToken = lastToken && lastToken.type === "rest"
@@ -624,16 +624,16 @@ document.addEventListener("DOMContentLoaded", () => {
           } else {
             tokens.push({ type: "rest", length: unit });
           }
+          }
+          return;
         }
-        return;
-      }
-      if (value === "tieNote" && index === 0) {
+        if (value === "tieNote" && index === 0) {
         tokens.push({ type: "note", length: unit });
-        return;
-      }
-      const type = value === "rest" ? "rest" : "note";
+          return;
+        }
+        const type = value === "rest" ? "rest" : "note";
       tokens.push({ type, length: unit });
-    });
+      });
     return tokens;
   };
 
