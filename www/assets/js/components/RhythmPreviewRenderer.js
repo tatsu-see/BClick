@@ -22,7 +22,8 @@ class RhythmPreviewRenderer {
       if (token.type === "rest") {
         return `z${length}`;
       }
-      return `B${length}`;
+      const tie = token.tieToNext ? "-" : "";
+      return `B${length}${tie}`;
     };
 
     const groups = [];
