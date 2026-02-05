@@ -457,6 +457,22 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < baseTokens.length; i += 1) {
           const current = baseTokens[i];
           const next = baseTokens[i + 1];
+          const next2 = baseTokens[i + 2];
+          const next3 = baseTokens[i + 3];
+          if (
+            current.type === "rest" &&
+            next?.type === "rest" &&
+            next2?.type === "rest" &&
+            next3?.type === "rest" &&
+            current.length === unit &&
+            next.length === unit &&
+            next2.length === unit &&
+            next3.length === unit
+          ) {
+            merged.push({ type: "rest", length: unit * 4 });
+            i += 3;
+            continue;
+          }
           if (
             current.type === "rest" &&
             next?.type === "rest" &&
@@ -749,9 +765,9 @@ document.addEventListener("DOMContentLoaded", () => {
           if (subIndex === 0) {
             options.push({ value: "tieNote", label: "⌒●" });
           }
-          if (patternItem.division === 16 && subIndex > 0) {
-            options.push({ value: "tie", label: "－" });
-          }
+            if (patternItem.division === 16 && subIndex > 0) {
+              options.push({ value: "tie", label: "⌒" });
+            }
           options.forEach((optionItem) => {
             const option = document.createElement("option");
             option.value = optionItem.value;
