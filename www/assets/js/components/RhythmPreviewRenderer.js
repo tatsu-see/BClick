@@ -30,7 +30,8 @@ class RhythmPreviewRenderer {
     let currentGroup = [];
 
     tokens.forEach((token) => {
-      const isBeamCandidate = token.type === "note" && token.length <= 2;
+      // 16分(1)、8分(2)、付点8分(3)は連桁対象にする
+      const isBeamCandidate = token.type === "note" && token.length <= 3;
       if (isBeamCandidate) {
         currentGroup.push(token);
         return;

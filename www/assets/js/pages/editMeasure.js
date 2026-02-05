@@ -725,16 +725,23 @@ document.addEventListener("DOMContentLoaded", () => {
               { type: "note", length: unit * 3 },
             ];
             break;
-          case "notenotenotetie":
-            replaced = [
-              { type: "note", length: unit, tieFromPrev: firstTieFromPrev },
-              { type: "note", length: unit },
-              { type: "note", length: unit * 2 },
-            ];
-            break;
-          default:
-            break;
-        }
+        case "notenotenotetie":
+          replaced = [
+            { type: "note", length: unit, tieFromPrev: firstTieFromPrev },
+            { type: "note", length: unit },
+            { type: "note", length: unit * 2 },
+          ];
+          break;
+        case "notenotetienote":
+          replaced = [
+            { type: "note", length: unit, tieFromPrev: firstTieFromPrev },
+            { type: "note", length: unit * 2 },
+            { type: "note", length: unit },
+          ];
+          break;
+        default:
+          break;
+      }
       }
 
       const baseTokens = replaced || step1;
@@ -786,7 +793,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     };
 
-    switch (division) {
+      // 全音符/2分/4分は同じ処理、8分も分岐内で共通処理する
+      switch (division) {
       case 1:
       case 2:
       case 4:
