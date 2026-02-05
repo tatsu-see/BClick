@@ -2,14 +2,14 @@
 
 /* html 要素の高さを viewport に制限しつつ、スクロールは許可する */
 html {
-  height: 100svh;
-  height: 100dvh;
+  min-height: 100svh;
+  min-height: 100dvh;
   overflow: auto;
 }
 
 body {
-  height: 100svh;
-  height: 100dvh;
+  min-height: 100svh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
