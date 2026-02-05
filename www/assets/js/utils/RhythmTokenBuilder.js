@@ -206,7 +206,50 @@ class RhythmTokenBuilder {
       });
     };
 
-    // 全音符/2分/4分は同じ処理、8分も分岐内で共通処理する
+    /**
+     * 8分音符のパターンからABCJS用のトークンを生成する。
+     * @param {string[]} patternValues
+     */
+    const buildEighthTokens = (patternValues) => {
+      const baseTokens = [];
+      patternValues.forEach((value, index) => {
+        if (index === 0 && value === "tieNote") {
+          baseTokens.push({ type: "note", length: unit, tieFromPrev: true });
+          return;
+        }
+        if (value === "rest") {
+          baseTokens.push({ type: "rest", length: unit });
+          return;
+        }
+        baseTokens.push({ type: "note", length: unit });
+      });
+
+      // 8分休符が2つ連続する場合は4分休符に置換する（タイ情報は削除）
+      const merged = [];
+      for (let i = 0; i < baseTokens.length; i += 1) {
+        const current = baseTokens[i];
+        const next = baseTokens[i + 1];
+        if (
+          current.type === "rest" &&
+          next?.type === "rest" &&
+          current.length === unit &&
+          next.length === unit
+        ) {
+          merged.push({ type: "rest", length: unit * 2 });
+          i += 1;
+          continue;
+        }
+        merged.push(current);
+      }
+
+      merged.forEach((token) => {
+        const nextToken = pushToken(token.type, token.length);
+        if (token.tieFromPrev) nextToken.tieFromPrev = true;
+        if (token.tieToNext) nextToken.tieToNext = true;
+      });
+    };
+
+    // 全音符/2分/4分は同じ処理、8分は専用関数で処理する
     switch (division) {
       case 1:
       case 2:
@@ -214,17 +257,7 @@ class RhythmTokenBuilder {
         handleSingleToken(pattern[0]);
         break;
       case 8:
-        pattern.slice(0, 2).forEach((value, index) => {
-          if (index === 0 && value === "tieNote") {
-            pushTieNote();
-            return;
-          }
-          if (value === "rest") {
-            pushToken("rest", unit);
-            return;
-          }
-          pushToken("note", unit);
-        });
+        buildEighthTokens(pattern.slice(0, 2));
         break;
       case 16:
       default:
