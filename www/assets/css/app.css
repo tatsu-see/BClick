@@ -33,10 +33,15 @@ button {
   font-size: 0.6em; /* 親サイズの70% */
   line-height: 1.2;
   cursor: pointer;
+  /* ボタンに立体感を付ける影 */
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
 }
 
 button:active {
   background-color: #e7e7e7;
+  /* 押下時は影を弱めて沈み込みを表現 */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+  transform: translateY(1px);
 }
 
 button:focus-visible {
@@ -509,6 +514,8 @@ main.pageFrame {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* ボタンに立体感を付ける影 */
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
 }
 
 .makeScoreButton.navButton {
@@ -525,6 +532,9 @@ main.pageFrame {
 
 .makeScoreButton:active {
   background-color: #d6efe0;
+  /* 押下時は影を弱めて沈み込みを表現 */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+  transform: translateY(1px);
 }
 
 .chipButton {
@@ -542,6 +552,8 @@ main.pageFrame {
   color: #222;
   user-select: none;
   cursor: pointer;
+  /* ボタンに立体感を付ける影 */
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
 }
 
 .chipButton .material-symbols-rounded {
@@ -560,6 +572,12 @@ main.pageFrame {
   background-color: #1e7a4f;
   border-color: #1e7a4f;
   color: #ffffff;
+}
+
+.chipButton:active {
+  /* 押下時は影を弱めて沈み込みを表現 */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+  transform: translateY(1px);
 }
 
 .chipButton:focus-visible {
