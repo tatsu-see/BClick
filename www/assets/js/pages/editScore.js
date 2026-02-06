@@ -154,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
       rhythmPattern: currentScoreData.rhythmPattern,
       onBarsChange: (nextBars, nextMeasures) => {
         store.setScoreBars(nextBars);
-        store.setScoreMeasures(nextMeasures);
         if (currentScoreData) {
           currentScoreData.bars = nextBars;
           currentScoreData.measures = nextMeasures;
@@ -327,7 +326,6 @@ document.addEventListener("DOMContentLoaded", () => {
         rhythmPattern: nextScoreData.rhythmPattern,
         onBarsChange: (nextBars, nextMeasures) => {
           store.setScoreBars(nextBars);
-          store.setScoreMeasures(nextMeasures);
           if (currentScoreData) {
             currentScoreData.bars = nextBars;
             currentScoreData.measures = nextMeasures;

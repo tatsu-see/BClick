@@ -849,7 +849,6 @@ document.addEventListener("DOMContentLoaded", () => {
           targetBar.rhythm = scoreData.buildDefaultRhythm();
         }
         store.setScoreBars(bars);
-        store.setScoreMeasures(bars.length);
         goBack();
         return;
       }
@@ -863,7 +862,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       store.setScoreBars(bars);
-      store.setScoreMeasures(bars.length);
       if (codeProgressionInput) {
         const normalized = normalizeProgressionInput(codeProgressionInput.value);
         codeProgressionInput.value = normalized;
