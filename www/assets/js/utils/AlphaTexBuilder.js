@@ -116,7 +116,7 @@ class AlphaTexBuilder {
         if (beatProgress === 0) {
           currentBeatDivision = Number.parseInt(duration, 10);
         }
-          const beatChordLabel = beatChords[beatIndex] || "";
+        const beatChordLabel = beatChords[beatIndex] || "";
         const beatLength = getBeatLength(duration);
 
         let handledTie = false;
@@ -147,8 +147,8 @@ class AlphaTexBuilder {
             if (beatIndex >= beats - 1 && beatProgress > 0.999) {
               beatProgress = 0;
               break;
-            }
           }
+        }
           return;
         }
 
@@ -164,7 +164,7 @@ class AlphaTexBuilder {
             noteValue = "r.2";
           } else if (duration === "1") {
             noteValue = "r.1";
-          }
+        }
           const noteText = `${noteValue} { slashed }`;
           notes.push(noteText);
           lastNoteIndex = null;
@@ -181,16 +181,16 @@ class AlphaTexBuilder {
             noteValue = "C4.2";
           } else if (duration === "1") {
             noteValue = "C4.1";
-          }
+        }
           let props = "slashed";
             if (beatChordLabel && !chordAttached) {
             props += ` ch "${beatChordLabel}"`;
-              chordAttached = true;
-            }
+            chordAttached = true;
+          }
           const noteText = `${noteValue} { ${props} }`;
-            notes.push(noteText);
+          notes.push(noteText);
             lastNoteIndex = notes.length - 1;
-            beatProgress += beatLength;
+          beatProgress += beatLength;
           }
 
           while (beatProgress >= 0.999) {
@@ -203,7 +203,7 @@ class AlphaTexBuilder {
               break;
             }
           }
-        });
+      });
       barTokens.push(notes.join(" "));
     }
 
@@ -215,13 +215,46 @@ class AlphaTexBuilder {
       ? `\\tempo ${tempoValue}`
       : null;
 
-    return [
+    const alphaTex = [
       layoutLine,
       tempoLine,
       `\\ts ${numerator} ${denominator}`,
       ".",
       `:${denominator} ${barTokens.join(" | ")} |`,
     ].filter(Boolean).join("\n");
+
+    // ●DEBUG: alphaTabへ渡す最終alphaTex
+    console.log("AlphaTexBuilder alphaTex:", alphaTex);
+
+/*Spec（このコメントは消さないこと）
+  alphaTex に渡す文字列の例）4/4拍の場合、１小節部のみ
+
+  ・4部音符4つ
+  :4 C4.4 { slashed ch "D" } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・4部音符4つ、2拍目にタイ
+  ::4 C4.4 { slashed ch "D" } - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4部音符、後は8分音符
+  :4 C4.4 { slashed ch "D" } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
+
+  ・先頭4部音符、2拍目にタイを付けるて後は8分音符
+  :4 C4.4 { slashed ch "D" } :8 - { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
+
+  ・先頭16分音符、後は4部音符で2拍目にタイを付ける
+  :4 C4.16 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭16分音符（音符内2番目は⌒）、後は4部音符。
+  :4 C4.8 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭16分音符（音符内2番目と4番目は⌒）、後は4部音符。
+  :4 C4.16 { slashed ch "D" } - { slashed } C4.16 { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  下記は console から入力するために使う。
+  alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' + ''
+*/
+
+    return alphaTex;
   }
 }
 

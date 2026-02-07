@@ -48,6 +48,9 @@ https://alphatab.net/docs/alphatex/document-structure#beat-content-required
 音符表現について
 https://alphatab.net/docs/alphatex/document-structure#beats
 
+付点表現については、以下から { d } や { dd } を検索。
+https://alphatab.net/docs/alphatex/beat-properties
+
 テンポについて（tempoで検索）
 https://alphatab.net/docs/alphatex/bar-metadata
 
