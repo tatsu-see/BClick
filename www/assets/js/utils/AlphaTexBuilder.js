@@ -53,6 +53,164 @@ class AlphaTexBuilder {
     const progressionList = this.normalizeProgression(progression);
     const progressionSource = progressionList.length > 0 ? progressionList : null;
 
+    /**
+     * 16分パターンから表示用トークンを作る。
+     * Step1/Step2 の仕様（Specコメント）に合わせて変換する。
+     * @param {string[]} pattern
+     * @returns {{type: string, len: number, tieFromPrev?: boolean, tieToNext?: boolean}[]}
+     */
+    const buildSixteenthDisplayTokens = (pattern) => {
+      // Step1: 16分音符(休符)＋タイ付きで情報を作成する。
+      const step1 = [];
+      let prevType = null;
+      pattern.forEach((value, index) => {
+        if (value === "rest") {
+          step1.push({ type: "rest", len: 1 });
+          prevType = "rest";
+          return;
+        }
+        if (value === "tie") {
+          if (prevType === "rest") {
+            // 休符の後ろにタイが来た場合は休符が続く扱いにする。
+            step1.push({ type: "rest", len: 1 });
+            prevType = "rest";
+            return;
+          }
+          if (step1.length > 0 && step1[step1.length - 1].type === "note") {
+            step1[step1.length - 1].tieToNext = true;
+          }
+          step1.push({ type: "note", len: 1, tieFromPrev: true });
+          prevType = "note";
+          return;
+        }
+        if (index === 0 && value === "tieNote") {
+          step1.push({ type: "note", len: 1, tieFromPrev: true });
+          prevType = "note";
+          return;
+        }
+        step1.push({ type: "note", len: 1 });
+        prevType = "note";
+      });
+
+      // Step2: 特定パターンは8分音符へ置換する。
+      const normalized = pattern.map((value, index) => {
+        if (value === "rest") return "rest";
+        if (index === 0 && value === "tieNote") return "note";
+        return value === "tie" ? "tie" : "note";
+      });
+
+      let replaced = null;
+      const key = normalized.join("");
+      if (!normalized.includes("rest")) {
+        const firstTieFromPrev = step1[0]?.tieFromPrev === true;
+        switch (key) {
+          case "notetienotenote":
+            replaced = [
+              { type: "note", len: 2, tieFromPrev: firstTieFromPrev },
+              { type: "note", len: 1 },
+              { type: "note", len: 1 },
+            ];
+            break;
+          case "notetietienote":
+            replaced = [
+              { type: "note", len: 3, tieFromPrev: firstTieFromPrev },
+              { type: "note", len: 1 },
+            ];
+            break;
+          case "notenotetietie":
+            replaced = [
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev },
+              { type: "note", len: 3 },
+            ];
+            break;
+          case "notenotenotetie":
+            replaced = [
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev },
+              { type: "note", len: 1 },
+              { type: "note", len: 2 },
+            ];
+            break;
+          case "notenotetienote":
+            replaced = [
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev },
+              { type: "note", len: 2 },
+              { type: "note", len: 1 },
+            ];
+            break;
+          default:
+            break;
+        }
+      }
+
+      const baseTokens = replaced || step1;
+      const merged = [];
+      for (let i = 0; i < baseTokens.length; i += 1) {
+        const current = baseTokens[i];
+        const next = baseTokens[i + 1];
+        const next2 = baseTokens[i + 2];
+        const next3 = baseTokens[i + 3];
+        if (
+          current?.type === "rest" &&
+          next?.type === "rest" &&
+          next2?.type === "rest" &&
+          next3?.type === "rest" &&
+          current.len === 1 &&
+          next.len === 1 &&
+          next2.len === 1 &&
+          next3.len === 1
+        ) {
+          merged.push({ type: "rest", len: 4 });
+          i += 3;
+          continue;
+        }
+        if (
+          current?.type === "rest" &&
+          next?.type === "rest" &&
+          current.len === 1 &&
+          next.len === 1
+        ) {
+          merged.push({ type: "rest", len: 2 });
+          i += 1;
+          continue;
+        }
+        merged.push(current);
+      }
+
+      // tieFromPrev を前の音符の tieToNext に反映する。
+      for (let i = 0; i < merged.length; i += 1) {
+        const current = merged[i];
+        const prev = merged[i - 1];
+        if (current?.tieFromPrev && prev?.type === "note") {
+          prev.tieToNext = true;
+        }
+      }
+      return merged;
+    };
+
+    /**
+     * 16分表示用トークンを alphaTex 文字列へ変換する。
+     * @param {object} token
+     * @param {string} chordLabel
+     * @param {boolean} attachChord
+     * @returns {string}
+     */
+    const toSixteenthAlphaTex = (token, chordLabel, attachChord) => {
+      const duration = token.len === 1 ? 16
+        : token.len === 2 ? 8
+          : token.len === 3 ? 8
+            : token.len === 4 ? 4
+              : 16;
+      const dotted = token.len === 3;
+      const props = [
+        "slashed",
+        dotted ? "d" : null,
+        attachChord && chordLabel ? `ch "${chordLabel}"` : null,
+      ].filter(Boolean).join(" ");
+      return token.type === "rest"
+        ? `r.${duration} { ${props} }`
+        : `C4.${duration} { ${props} }`;
+    };
+
     const barTokens = [];
     let lastBeatDivision = 4;
     for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
@@ -96,7 +254,9 @@ class AlphaTexBuilder {
         : Array.from({ length: beats }, () => "4");
       let lastNoteIndex = null;
 
-      rhythm.forEach((value) => {
+      // 小節内のリズム配列を順に走査して alphaTex の音符列を構築する。
+      for (let rhythmIndex = 0; rhythmIndex < rhythm.length; rhythmIndex += 1) {
+        const value = rhythm[rhythmIndex];
         let duration = "4";
         if (value.endsWith("16")) {
           duration = "16";
@@ -118,6 +278,58 @@ class AlphaTexBuilder {
         }
         const beatChordLabel = beatChords[beatIndex] || "";
         const beatLength = getBeatLength(duration);
+
+        if (duration === "16" && beatProgress === 0) {
+          const slice = rhythm.slice(rhythmIndex, rhythmIndex + 4);
+          const pattern = slice.map((raw, index) => {
+            if (typeof raw !== "string") return "note";
+            if (raw.startsWith("r")) return "rest";
+            if (raw.startsWith("t")) return index === 0 ? "tieNote" : "tie";
+            return "note";
+          });
+          const displayTokens = buildSixteenthDisplayTokens(pattern);
+          displayTokens.forEach((token) => {
+            const isBarHead = beatIndex === 0 && beatProgress === 0;
+            const noteText = toSixteenthAlphaTex(
+              token,
+              beatChordLabel,
+              !chordAttached,
+            );
+            if (token.type === "note" && beatChordLabel && !chordAttached) {
+              chordAttached = true;
+            }
+            if (token.tieFromPrev && isBarHead && barIndex > 0) {
+              const needsDivision = currentBeatDivision !== lastBeatDivision;
+              const tieToken = needsDivision
+                ? `:${currentBeatDivision} - { slashed }`
+                : "- { slashed }";
+              notes.push(tieToken);
+            }
+            notes.push(noteText);
+            if (token.tieToNext) {
+              const needsDivision = currentBeatDivision !== lastBeatDivision;
+              const tieToken = needsDivision
+                ? `:${currentBeatDivision} - { slashed }`
+                : "- { slashed }";
+              notes.push(tieToken);
+            }
+            lastNoteIndex = token.type === "note" ? notes.length - 1 : null;
+            beatProgress += token.len / 4;
+
+            while (beatProgress >= 0.999) {
+              beatIndex = Math.min(beatIndex + 1, beats - 1);
+              beatProgress -= 1;
+              lastBeatDivision = currentBeatDivision;
+              chordAttached = false;
+              if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+                beatProgress = 0;
+                break;
+              }
+            }
+          });
+          rhythmIndex += 3;
+          continue;
+        }
 
         let handledTie = false;
         if (isTie) {
@@ -149,7 +361,7 @@ class AlphaTexBuilder {
               break;
           }
         }
-          return;
+          continue;
         }
 
         if (isRest) {
@@ -183,27 +395,27 @@ class AlphaTexBuilder {
             noteValue = "C4.1";
         }
           let props = "slashed";
-            if (beatChordLabel && !chordAttached) {
+          if (beatChordLabel && !chordAttached) {
             props += ` ch "${beatChordLabel}"`;
             chordAttached = true;
           }
           const noteText = `${noteValue} { ${props} }`;
           notes.push(noteText);
-            lastNoteIndex = notes.length - 1;
+          lastNoteIndex = notes.length - 1;
           beatProgress += beatLength;
-          }
+        }
 
-          while (beatProgress >= 0.999) {
-            beatIndex = Math.min(beatIndex + 1, beats - 1);
-            beatProgress -= 1;
-            lastBeatDivision = currentBeatDivision;
-            chordAttached = false;
-            if (beatIndex >= beats - 1 && beatProgress > 0.999) {
-              beatProgress = 0;
-              break;
-            }
+        while (beatProgress >= 0.999) {
+          beatIndex = Math.min(beatIndex + 1, beats - 1);
+          beatProgress -= 1;
+          lastBeatDivision = currentBeatDivision;
+          chordAttached = false;
+          if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+            beatProgress = 0;
+            break;
           }
-      });
+        }
+      }
       barTokens.push(notes.join(" "));
     }
 
@@ -229,19 +441,19 @@ class AlphaTexBuilder {
 /*Spec（このコメントは消さないこと）
   alphaTex に渡す文字列の例）4/4拍の場合、１小節部のみ
 
-  ・4部音符4つ
+  ・4部音符4つ。
   :4 C4.4 { slashed ch "D" } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
 
-  ・4部音符4つ、2拍目にタイ
+  ・4部音符4つ、2拍目にタイ。
   ::4 C4.4 { slashed ch "D" } - { slashed } C4.4 { slashed } C4.4 { slashed } |
 
-  ・先頭4部音符、後は8分音符
+  ・先頭4部音符、後は8分音符。
   :4 C4.4 { slashed ch "D" } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
 
-  ・先頭4部音符、2拍目にタイを付けるて後は8分音符
+  ・先頭4部音符、2拍目にタイを付けて後は8分音符。
   :4 C4.4 { slashed ch "D" } :8 - { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
 
-  ・先頭16分音符、後は4部音符で2拍目にタイを付ける
+  ・先頭16分音符、後は4部音符で2拍目にタイを付ける。
   :4 C4.16 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |
 
   ・先頭16分音符（音符内2番目は⌒）、後は4部音符。
@@ -250,7 +462,8 @@ class AlphaTexBuilder {
   ・先頭16分音符（音符内2番目と4番目は⌒）、後は4部音符。
   :4 C4.16 { slashed ch "D" } - { slashed } C4.16 { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
 
-  下記は console から入力するために使う。
+
+  下記は console から変数値を更新するために使う。
   alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' + ''
 */
 
