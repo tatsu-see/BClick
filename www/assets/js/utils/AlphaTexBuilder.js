@@ -460,6 +460,9 @@ class AlphaTexBuilder {
   ・先頭4部音符、2拍目は16分音符(音符内2番目と4番目は⌒)、3,4拍目は4部音符
   :4 C4.4 { slashed ch "D" } C4.16 { slashed } - { slashed } C4.16 { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } |
 
+  ・先頭4部音符、2拍目は16分音符(音符内1番目は休符、2番目は⌒、3,4番目は16分音符)、3,4拍目は4部音符
+  :4 C4.4 { slashed ch "D" } r.8 { slashed } C4.16 { slashed } :16 - { slashed } r.4 { slashed } C4.4 { slashed } |
+
   ・先頭4部音符、2拍目にタイを付けて後は8分音符。
   :4 C4.4 { slashed ch "D" } :8 - { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
 

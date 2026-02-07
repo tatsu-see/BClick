@@ -71,7 +71,10 @@ const minifyJsFile = async (srcPath, destPath, isModule) => {
   const result = await minify(code, {
     module: isModule,
     ecma: 2022,
-    compress: true,
+    compress: {
+      drop_console: true,
+      passes: 2
+    },
     mangle: true,
     format: {
       comments: false
