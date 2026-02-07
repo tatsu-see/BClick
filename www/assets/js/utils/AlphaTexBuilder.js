@@ -288,32 +288,39 @@ class AlphaTexBuilder {
             return "note";
           });
           const displayTokens = buildSixteenthDisplayTokens(pattern);
-          displayTokens.forEach((token) => {
+          displayTokens.forEach((token, tokenIndex) => {
             const isBarHead = beatIndex === 0 && beatProgress === 0;
-            const noteText = toSixteenthAlphaTex(
-              token,
-              beatChordLabel,
-              !chordAttached,
-            );
-            if (token.type === "note" && beatChordLabel && !chordAttached) {
-              chordAttached = true;
+            const nextToken = displayTokens[tokenIndex + 1];
+            if (token.tieFromPrev) {
+              // タイ継続は音符を出さず、タイだけを出す（Specの正解文字列に合わせる）
+              const tieDuration = token.len === 1 ? 16
+                : token.len === 2 ? 8
+                  : token.len === 3 ? 8
+                    : token.len === 4 ? 4
+                      : 16;
+              const tieDotted = token.len === 3;
+              const tieProps = tieDotted ? "slashed d" : "slashed";
+              const tiePrefix = currentBeatDivision !== lastBeatDivision
+                ? `:${tieDuration} `
+                : "";
+              notes.push(`${tiePrefix}- { ${tieProps} }`);
+              lastNoteIndex = null;
+            } else {
+              const noteText = toSixteenthAlphaTex(
+                token,
+                beatChordLabel,
+                !chordAttached,
+              );
+              if (token.type === "note" && beatChordLabel && !chordAttached) {
+                chordAttached = true;
+              }
+              notes.push(noteText);
+              lastNoteIndex = token.type === "note" ? notes.length - 1 : null;
+              if (token.tieToNext && !nextToken?.tieFromPrev) {
+                // 16分内のタイは分割トークンを付けない（Specの正解文字列に合わせる）
+                notes.push("- { slashed }");
+              }
             }
-            if (token.tieFromPrev && isBarHead && barIndex > 0) {
-              const needsDivision = currentBeatDivision !== lastBeatDivision;
-              const tieToken = needsDivision
-                ? `:${currentBeatDivision} - { slashed }`
-                : "- { slashed }";
-              notes.push(tieToken);
-            }
-            notes.push(noteText);
-            if (token.tieToNext) {
-              const needsDivision = currentBeatDivision !== lastBeatDivision;
-              const tieToken = needsDivision
-                ? `:${currentBeatDivision} - { slashed }`
-                : "- { slashed }";
-              notes.push(tieToken);
-            }
-            lastNoteIndex = token.type === "note" ? notes.length - 1 : null;
             beatProgress += token.len / 4;
 
             while (beatProgress >= 0.999) {
@@ -450,8 +457,20 @@ class AlphaTexBuilder {
   ・先頭4部音符、後は8分音符。
   :4 C4.4 { slashed ch "D" } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
 
+  ・先頭4部音符、2拍目は16分音符(音符内2番目と4番目は⌒)、3,4拍目は4部音符
+  :4 C4.4 { slashed ch "D" } C4.16 { slashed } - { slashed } C4.16 { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
   ・先頭4部音符、2拍目にタイを付けて後は8分音符。
   :4 C4.4 { slashed ch "D" } :8 - { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
+
+  ・先頭4分音符、2拍目にタイを付けて16分音符（音符内2,3,4番目は⌒）、後は4部音符。
+  :4 C4.4 { slashed ch "D" } :16 - { slashed } - { slashed } - { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4分音符、2拍目は16分音符（付点8分音符と16分音符）、後は4部音符。
+  :4 C4.4 { slashed ch "D" } C4.8 { slashed d } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4分音符、2拍目にタイを付けて16分音符（付点8分音符と16分音符）、後は4部音符。
+  :4 C4.4 { slashed ch "D" } :8 - { slashed d } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } |
 
   ・先頭16分音符、後は4部音符で2拍目にタイを付ける。
   :4 C4.16 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |
@@ -466,7 +485,6 @@ class AlphaTexBuilder {
   下記は console から変数値を更新するために使う。
   alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' + ''
 */
-
     return alphaTex;
   }
 }
