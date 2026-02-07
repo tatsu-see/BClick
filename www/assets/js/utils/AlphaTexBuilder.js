@@ -116,7 +116,7 @@ class AlphaTexBuilder {
         if (beatProgress === 0) {
           currentBeatDivision = Number.parseInt(duration, 10);
         }
-        const beatChordLabel = beatChords[beatIndex] || "";
+          const beatChordLabel = beatChords[beatIndex] || "";
         const beatLength = getBeatLength(duration);
 
         let handledTie = false;
@@ -183,27 +183,27 @@ class AlphaTexBuilder {
             noteValue = "C4.1";
           }
           let props = "slashed";
-          if (beatChordLabel && !chordAttached) {
+            if (beatChordLabel && !chordAttached) {
             props += ` ch "${beatChordLabel}"`;
-            chordAttached = true;
-          }
+              chordAttached = true;
+            }
           const noteText = `${noteValue} { ${props} }`;
-          notes.push(noteText);
-          lastNoteIndex = notes.length - 1;
-          beatProgress += beatLength;
-        }
-
-        while (beatProgress >= 0.999) {
-          beatIndex = Math.min(beatIndex + 1, beats - 1);
-          beatProgress -= 1;
-          lastBeatDivision = currentBeatDivision;
-          chordAttached = false;
-          if (beatIndex >= beats - 1 && beatProgress > 0.999) {
-            beatProgress = 0;
-            break;
+            notes.push(noteText);
+            lastNoteIndex = notes.length - 1;
+            beatProgress += beatLength;
           }
-        }
-      });
+
+          while (beatProgress >= 0.999) {
+            beatIndex = Math.min(beatIndex + 1, beats - 1);
+            beatProgress -= 1;
+            lastBeatDivision = currentBeatDivision;
+            chordAttached = false;
+            if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+              beatProgress = 0;
+              break;
+            }
+          }
+        });
       barTokens.push(notes.join(" "));
     }
 
