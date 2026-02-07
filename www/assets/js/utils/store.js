@@ -1,5 +1,13 @@
 
 import { LocalStore } from '../../lib/LocalStore.js';
+import { APP_LIMITS, ALLOWED_TIME_SIGNATURES } from "../constants/appConstraints.js";
+import { isIntegerInRange, isNumberInRange } from "./validators.js";
+
+const getProgressionChordCount = (value) => {
+  if (typeof value !== "string") return 0;
+  const tokens = value.trim().split(/\s+/).filter((token) => token.length > 0);
+  return tokens.length;
+};
 
 /**
  * 設定の保存・読込用のclass
@@ -38,11 +46,13 @@ export class ConfigStore extends LocalStore {
    * BPMテンポのI/O
    */
   getTempo() {
-    return this.getNumberSetting(this.keys.Tempo);
+    const saved = this.getNumberSetting(this.keys.Tempo);
+    return isIntegerInRange(saved, APP_LIMITS.tempo.min, APP_LIMITS.tempo.max) ? saved : null;
   }
 
   setTempo(value) {
-    if (!Number.isFinite(value) || value < 0) return;
+    const normalized = Math.trunc(value);
+    if (!isIntegerInRange(normalized, APP_LIMITS.tempo.min, APP_LIMITS.tempo.max)) return;
     this.setNumberSetting(this.keys.Tempo, value);
   }
 
@@ -62,11 +72,13 @@ export class ConfigStore extends LocalStore {
    * クリック数のI/O
    */
   getClickCount() {
-    return this.getNumberSetting(this.keys.ClickCount);
+    const saved = this.getNumberSetting(this.keys.ClickCount);
+    return isIntegerInRange(saved, APP_LIMITS.clickCount.min, APP_LIMITS.clickCount.max) ? saved : null;
   }
 
   setClickCount(value) {
-    if (!Number.isFinite(value) || value < 0) return;
+    const normalized = Math.trunc(value);
+    if (!isIntegerInRange(normalized, APP_LIMITS.clickCount.min, APP_LIMITS.clickCount.max)) return;
     this.setNumberSetting(this.keys.ClickCount, value);
   }
 
@@ -87,12 +99,12 @@ export class ConfigStore extends LocalStore {
    */
   getClickVolume() {
     const saved = this.getNumberSetting(this.keys.ClickVolume);
-    return typeof saved === 'number' && saved >= 0 ? saved : null;
+    return isNumberInRange(saved, APP_LIMITS.clickVolume.min, APP_LIMITS.clickVolume.max) ? saved : null;
   }
 
   setClickVolume(value) {
     if (!Number.isFinite(value)) return;
-    const clamped = Math.min(2, Math.max(0, value));
+    const clamped = Math.min(APP_LIMITS.clickVolume.max, Math.max(APP_LIMITS.clickVolume.min, value));
     const rounded = Math.round(clamped * 10) / 10;
     this.saveSettings(this.keys.ClickVolume, rounded);
   }
@@ -115,11 +127,13 @@ export class ConfigStore extends LocalStore {
    * @returns 
    */
   getCountInSec() {
-    return this.getNumberSetting(this.keys.Countdown);
+    const saved = this.getNumberSetting(this.keys.Countdown);
+    return isIntegerInRange(saved, APP_LIMITS.countIn.min, APP_LIMITS.countIn.max) ? saved : null;
   }
 
   setCountInSec(value) {
-    if (!Number.isFinite(value) || value < 0) return;
+    const normalized = Math.trunc(value);
+    if (!isIntegerInRange(normalized, APP_LIMITS.countIn.min, APP_LIMITS.countIn.max)) return;
     this.setNumberSetting(this.keys.Countdown, value);
   }
 
@@ -140,21 +154,24 @@ export class ConfigStore extends LocalStore {
    */
   getScoreTimeSignature() {
     const saved = this.getSettings(this.keys.ScoreTimeSignature);
-    return typeof saved === 'string' ? saved : null;
+    if (typeof saved !== "string") return null;
+    return ALLOWED_TIME_SIGNATURES.includes(saved) ? saved : null;
   }
 
   setScoreTimeSignature(value) {
-    if (typeof value !== 'string' || value.length === 0) return;
+    if (typeof value !== "string" || !ALLOWED_TIME_SIGNATURES.includes(value)) return;
     this.saveSettings(this.keys.ScoreTimeSignature, value);
   }
 
   getScoreProgression() {
     const saved = this.getSettings(this.keys.ScoreProgression);
-    return typeof saved === 'string' ? saved : '';
+    if (typeof saved !== "string") return "";
+    return getProgressionChordCount(saved) <= APP_LIMITS.progressionMaxChords ? saved : "";
   }
 
   setScoreProgression(value) {
-    if (typeof value !== 'string') return;
+    if (typeof value !== "string") return;
+    if (getProgressionChordCount(value) > APP_LIMITS.progressionMaxChords) return;
     this.saveSettings(this.keys.ScoreProgression, value);
   }
 
@@ -170,22 +187,23 @@ export class ConfigStore extends LocalStore {
 
   getScoreMeasures() {
     const saved = this.getNumberSetting(this.keys.ScoreMeasures);
-    return typeof saved === 'number' ? saved : null;
+    return isIntegerInRange(saved, APP_LIMITS.scoreMeasures.min, APP_LIMITS.scoreMeasures.max) ? saved : null;
   }
 
   setScoreMeasures(value) {
-    if (!Number.isFinite(value) || value <= 0) return;
+    const normalized = Math.trunc(value);
+    if (!isIntegerInRange(normalized, APP_LIMITS.scoreMeasures.min, APP_LIMITS.scoreMeasures.max)) return;
     this.setNumberSetting(this.keys.ScoreMeasures, value);
   }
 
   getScoreBarsPerRow() {
     const saved = this.getNumberSetting(this.keys.ScoreBarsPerRow);
-    return typeof saved === 'number' ? saved : null;
+    return isIntegerInRange(saved, APP_LIMITS.barsPerRow.min, APP_LIMITS.barsPerRow.max) ? saved : null;
   }
 
   setScoreBarsPerRow(value) {
     if (!Number.isFinite(value)) return;
-    const clamped = Math.max(1, Math.min(4, value));
+    const clamped = Math.max(APP_LIMITS.barsPerRow.min, Math.min(APP_LIMITS.barsPerRow.max, value));
     this.setNumberSetting(this.keys.ScoreBarsPerRow, clamped);
   }
 
@@ -201,11 +219,14 @@ export class ConfigStore extends LocalStore {
 
   getScoreBars() {
     const saved = this.getSettings(this.keys.ScoreBars);
-    return Array.isArray(saved) ? saved : null;
+    if (!Array.isArray(saved)) return null;
+    if (saved.length > APP_LIMITS.scoreMeasures.max) return null;
+    return saved;
   }
 
   setScoreBars(value) {
     if (!Array.isArray(value)) return;
+    if (value.length > APP_LIMITS.scoreMeasures.max) return;
     this.saveSettings(this.keys.ScoreBars, value);
   }
 

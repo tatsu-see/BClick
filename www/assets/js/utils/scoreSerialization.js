@@ -3,6 +3,12 @@
  */
 import ScoreData from "../models/ScoreModel.js";
 import { getLangMsg } from "../../lib/Language.js";
+import {
+  APP_LIMITS,
+  ALLOWED_TIME_SIGNATURES,
+  RHYTHM_TOKEN_REGEX,
+} from "../constants/appConstraints.js";
+import { isIntegerInRange } from "./validators.js";
 
 const DEFAULT_SETTINGS = {
   tempo: 60,
@@ -78,39 +84,180 @@ export const buildDefaultRhythmPattern = (beatCount) =>
   Array.from({ length: beatCount }, () => "4");
 
 /**
+ * 不正なJSONデータ用の例外を生成する。
+ * @returns {Error}
+ */
+const buildInvalidJsonError = () =>
+  new Error(getLangMsg("JSONデータが不正です。", "Invalid JSON data."));
+
+/**
+ * 値を整数として評価し、範囲内なら返す。
+ * @param {unknown} value
+ * @param {number} min
+ * @param {number} max
+ * @returns {number|null}
+ */
+const parseIntegerInRange = (value, min, max) => {
+  const parsed = Number(value);
+  return isIntegerInRange(parsed, min, max) ? parsed : null;
+};
+
+/**
+ * boolean値のみを許可して返す。
+ * @param {unknown} value
+ * @returns {boolean|null}
+ */
+const parseBooleanStrict = (value) => (typeof value === "boolean" ? value : null);
+
+/**
+ * コード進行文字列のコード数を数える。
+ * @param {string} progression
+ * @returns {number}
+ */
+const countProgressionChords = (progression) =>
+  progression.trim().split(/\s+/).filter((token) => token.length > 0).length;
+
+/**
+ * コード進行を仕様に沿って厳格に正規化する。
+ * @param {unknown} value
+ * @returns {string|null}
+ */
+const normalizeProgressionStrict = (value) => {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return "";
+  const chordRegex = /^([A-Ga-g])([#b]?)([a-z0-9]*)(?:\/([A-Ga-g])([#b]?))?$/;
+  const tokens = trimmed.split(/\s+/);
+  if (tokens.length > APP_LIMITS.progressionMaxChords) return null;
+
+  const normalizedTokens = [];
+  for (const token of tokens) {
+    const match = chordRegex.exec(token);
+    if (!match) return null;
+    const root = match[1].toUpperCase();
+    const accidental = match[2] || "";
+    const suffix = match[3] || "";
+    if (!match[4]) {
+      normalizedTokens.push(`${root}${accidental}${suffix}`);
+      continue;
+    }
+    const bassRoot = match[4].toUpperCase();
+    const bassAccidental = match[5] || "";
+    normalizedTokens.push(`${root}${accidental}${suffix}/${bassRoot}${bassAccidental}`);
+  }
+  return normalizedTokens.join(" ");
+};
+
+/**
+ * 音価トークンを拍数へ変換する。
+ * @param {string} token
+ * @returns {number|null}
+ */
+const getTokenBeats = (token) => {
+  if (typeof token !== "string" || !RHYTHM_TOKEN_REGEX.test(token)) return null;
+  if (token.endsWith("16")) return 0.25;
+  if (token.endsWith("8")) return 0.5;
+  if (token.endsWith("4")) return 1;
+  if (token.endsWith("2")) return 2;
+  if (token.endsWith("1")) return 4;
+  return null;
+};
+
+/**
+ * リズムパターンが拍子に対して妥当か検証する。
+ * @param {string[]} tokens
+ * @param {number} beatCount
+ * @returns {boolean}
+ */
+const isValidRhythmPattern = (tokens, beatCount) => {
+  if (!Array.isArray(tokens) || tokens.length === 0) return false;
+  const total = tokens.reduce((sum, token) => {
+    const beat = getTokenBeats(token);
+    return beat === null ? Number.NaN : sum + beat;
+  }, 0);
+  return Number.isFinite(total) && Math.abs(total - beatCount) < 0.001;
+};
+
+/**
+ * リズムパターン配列を厳格に正規化する。
+ * @param {unknown} value
+ * @param {number} beatCount
+ * @returns {string[]|null}
+ */
+const normalizeRhythmPatternStrict = (value, beatCount) => {
+  if (!Array.isArray(value)) return null;
+  const normalized = value.filter((token) => typeof token === "string" && token.length > 0);
+  return isValidRhythmPattern(normalized, beatCount) ? normalized : null;
+};
+
+/**
+ * 小節データ1件を厳格に正規化する。
+ * @param {unknown} bar
+ * @param {number} beatCount
+ * @returns {{ chord: string[], rhythm: string[] }|null}
+ */
+const normalizeBarStrict = (bar, beatCount) => {
+  if (!bar || typeof bar !== "object") return null;
+  if (!Array.isArray(bar.chord) || !Array.isArray(bar.rhythm)) return null;
+  if (bar.chord.length !== beatCount) return null;
+  if (!bar.chord.every((value) => typeof value === "string")) return null;
+  if (!isValidRhythmPattern(bar.rhythm, beatCount)) return null;
+  return {
+    chord: bar.chord.slice(),
+    rhythm: bar.rhythm.slice(),
+  };
+};
+
+/**
  * JSON読み込み用にScoreDataを生成する。
  */
 export const buildScoreDataFromObject = (source) => {
   if (!source || typeof source !== "object") {
-    throw new Error(getLangMsg("JSONデータが不正です。", "Invalid JSON data."));
+    throw buildInvalidJsonError();
   }
   if (source.schemaVersion !== SCORE_JSON_VERSION || !source.score || typeof source.score !== "object") {
-    throw new Error(getLangMsg("JSONデータが不正です。", "Invalid JSON data."));
+    throw buildInvalidJsonError();
   }
   const normalized = source.score;
-  const defaults = getDefaultSettings();
-  const tempoRaw = Number.parseInt(normalized.tempo, 10);
-  const tempo = Number.isNaN(tempoRaw) ? defaults.tempo : tempoRaw;
-  const clickCountRaw = Number.parseInt(normalized.clickCount, 10);
-  const clickCount = Number.isNaN(clickCountRaw) ? defaults.clickCount : clickCountRaw;
-  const countInRaw = Number.parseInt(normalized.countIn, 10);
-  const countIn = Number.isNaN(countInRaw) ? defaults.countIn : countInRaw;
-  const timeSignature = typeof normalized.timeSignature === "string" && normalized.timeSignature.length > 0
-    ? normalized.timeSignature
-    : defaults.timeSignature;
-  const measuresRaw = Number.parseInt(normalized.measures, 10);
-  const measures = Number.isNaN(measuresRaw) ? defaults.measures : measuresRaw;
-  const barsPerRowRaw = Number.parseInt(normalized.barsPerRow, 10);
-  const barsPerRow = Number.isNaN(barsPerRowRaw) ? defaults.barsPerRow : barsPerRowRaw;
-  const scoreEnabled = typeof normalized.scoreEnabled === "boolean"
-    ? normalized.scoreEnabled
-    : defaults.scoreEnabled;
-  const progression = typeof normalized.progression === "string" ? normalized.progression : defaults.progression;
+  const tempo = parseIntegerInRange(normalized.tempo, APP_LIMITS.tempo.min, APP_LIMITS.tempo.max);
+  const clickCount = parseIntegerInRange(normalized.clickCount, APP_LIMITS.clickCount.min, APP_LIMITS.clickCount.max);
+  const countIn = parseIntegerInRange(normalized.countIn, APP_LIMITS.countIn.min, APP_LIMITS.countIn.max);
+  const timeSignature = typeof normalized.timeSignature === "string" ? normalized.timeSignature : null;
+  const measures = parseIntegerInRange(normalized.measures, APP_LIMITS.scoreMeasures.min, APP_LIMITS.scoreMeasures.max);
+  const barsPerRow = parseIntegerInRange(normalized.barsPerRow, APP_LIMITS.barsPerRow.min, APP_LIMITS.barsPerRow.max);
+  const scoreEnabled = parseBooleanStrict(normalized.scoreEnabled);
+  const progression = normalizeProgressionStrict(normalized.progression);
+
+  if (
+    tempo === null ||
+    clickCount === null ||
+    countIn === null ||
+    timeSignature === null ||
+    !ALLOWED_TIME_SIGNATURES.includes(timeSignature) ||
+    measures === null ||
+    barsPerRow === null ||
+    scoreEnabled === null ||
+    progression === null
+  ) {
+    throw buildInvalidJsonError();
+  }
+  if (countProgressionChords(progression) > APP_LIMITS.progressionMaxChords) {
+    throw buildInvalidJsonError();
+  }
+
   const beatCount = getBeatCountFromTimeSignature(timeSignature);
-  const rhythmPattern = Array.isArray(normalized.rhythmPattern) && normalized.rhythmPattern.length > 0
-    ? normalized.rhythmPattern
-    : buildDefaultRhythmPattern(beatCount);
-  const bars = Array.isArray(normalized.bars) ? normalized.bars : null;
+  const rhythmPattern = normalizeRhythmPatternStrict(normalized.rhythmPattern, beatCount);
+  if (!rhythmPattern) {
+    throw buildInvalidJsonError();
+  }
+
+  if (!Array.isArray(normalized.bars) || normalized.bars.length !== measures) {
+    throw buildInvalidJsonError();
+  }
+  const bars = normalized.bars.map((bar) => normalizeBarStrict(bar, beatCount));
+  if (bars.some((bar) => bar === null)) {
+    throw buildInvalidJsonError();
+  }
 
   return new ScoreData({
     tempo,

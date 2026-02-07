@@ -6,8 +6,10 @@ import RhythmPreviewRenderer from "../components/RhythmPreviewRenderer.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
 import { getLangMsg } from "../../lib/Language.js";
+import { APP_LIMITS } from "../constants/appConstraints.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  const MAX_MEASURES = APP_LIMITS.scoreMeasures.max;
   if (!ensureInAppNavigation()) return;
 
   const doneButton = document.getElementById("closePage");
@@ -855,6 +857,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const copyCount = Number.parseInt(copyValue, 10);
       if (Number.isFinite(copyCount) && copyCount > 0 && targetBar) {
+        if (bars.length + copyCount > MAX_MEASURES) {
+          window.alert(
+            getLangMsg(
+              `小節数は最大${MAX_MEASURES}です。`,
+              `Maximum number of bars is ${MAX_MEASURES}.`,
+            ),
+          );
+          return;
+        }
         const baseBar = cloneBar(targetBar);
         for (let i = 0; i < copyCount; i += 1) {
           bars.splice(safeBarIndex + 1 + i, 0, cloneBar(baseBar));
