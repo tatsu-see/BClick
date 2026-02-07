@@ -288,6 +288,7 @@ class AlphaTexBuilder {
             return "note";
           });
           const displayTokens = buildSixteenthDisplayTokens(pattern);
+          let divisionTokenEmitted = false;
           displayTokens.forEach((token, tokenIndex) => {
             const isBarHead = beatIndex === 0 && beatProgress === 0;
             const nextToken = displayTokens[tokenIndex + 1];
@@ -300,10 +301,13 @@ class AlphaTexBuilder {
                       : 16;
               const tieDotted = token.len === 3;
               const tieProps = tieDotted ? "slashed d" : "slashed";
-              const tiePrefix = currentBeatDivision !== lastBeatDivision
+              const tiePrefix = !divisionTokenEmitted && currentBeatDivision !== lastBeatDivision
                 ? `:${tieDuration} `
                 : "";
               notes.push(`${tiePrefix}- { ${tieProps} }`);
+              if (tiePrefix) {
+                divisionTokenEmitted = true;
+              }
               lastNoteIndex = null;
             } else {
               const noteText = toSixteenthAlphaTex(
@@ -313,6 +317,10 @@ class AlphaTexBuilder {
               );
               if (token.type === "note" && beatChordLabel && !chordAttached) {
                 chordAttached = true;
+              }
+              if (!divisionTokenEmitted && currentBeatDivision !== lastBeatDivision) {
+                notes.push(`:${currentBeatDivision}`);
+                divisionTokenEmitted = true;
               }
               notes.push(noteText);
               lastNoteIndex = token.type === "note" ? notes.length - 1 : null;
@@ -335,6 +343,33 @@ class AlphaTexBuilder {
             }
           });
           rhythmIndex += 3;
+          continue;
+        }
+
+        if (duration === "8" && isTie && beatProgress === 0) {
+          const nextValue = rhythm[rhythmIndex + 1];
+          const isNextTie = typeof nextValue === "string" && nextValue.startsWith("t") && nextValue.endsWith("8");
+          if (currentBeatDivision !== lastBeatDivision) {
+            notes.push(`:${currentBeatDivision} - { slashed }`);
+          } else {
+            notes.push("- { slashed }");
+          }
+          beatProgress += getBeatLength(duration);
+          if (isNextTie) {
+            notes.push("- { slashed }");
+            beatProgress += getBeatLength(duration);
+            rhythmIndex += 1;
+          }
+          while (beatProgress >= 0.999) {
+            beatIndex = Math.min(beatIndex + 1, beats - 1);
+            beatProgress -= 1;
+            lastBeatDivision = currentBeatDivision;
+            chordAttached = false;
+            if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+              beatProgress = 0;
+              break;
+            }
+          }
           continue;
         }
 
@@ -474,6 +509,9 @@ class AlphaTexBuilder {
 
   ・先頭4分音符、2拍目にタイを付けて16分音符（付点8分音符と16分音符）、後は4部音符。
   :4 C4.4 { slashed ch "D" } :8 - { slashed d } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4分音符、2拍目にタイを付けて16分音符（16分音符x4で音符内2,3,4番目は⌒）、3拍目にタイを付けて8分音符、最後は4部音符。
+  :4 C4.4 { slashed ch "D" } :16 - { slashed } - { slashed } - { slashed } - { slashed } :8 - { slashed } - { slashed } C4.4 { slashed } |
 
   ・先頭16分音符、後は4部音符で2拍目にタイを付ける。
   :4 C4.16 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |
