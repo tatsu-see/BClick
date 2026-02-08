@@ -193,7 +193,7 @@
 .rhythmPatternHeader,
 .rhythmPatternRow {
   display: grid;
-  grid-template-columns: 28px 1fr 160px;
+  grid-template-columns: 56px 1fr 160px; /* 列幅を調整する場合はここを変更する */
   align-items: stretch;
   gap: 1px;
 }
@@ -213,8 +213,8 @@
   padding:0px;
   margin-bottom:3px;
 
-  border: 0px solid forestgreen;
-  border-radius: 3px;
+  border: 1px solid #d0d0d044;
+  border-radius: 4px;
 }
 
 .rhythmPatternHeader .rhythmPatternCell {
