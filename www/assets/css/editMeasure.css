@@ -111,7 +111,7 @@
 }
 
 .rhythmPatternCell {
-  min-height: 28px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -127,6 +127,11 @@
   font-weight: 600;
   color: #333;
   justify-content: center;
+  min-height: 28px;
+}
+
+.rhythmPatternHeader .rhythmPatternSymbols {
+  align-items: center;
 }
 
 
@@ -140,6 +145,7 @@
   flex-direction: column;
   gap: 2px;
   width: 100%;
+  height: 100%;
 }
 
 .rhythmPatternSymbolRow {
@@ -147,13 +153,17 @@
   flex-wrap: nowrap;
   gap: 2px;
   justify-content: center;
+  align-items: center;
   width: 100%;
+  flex: 1 1 0;
 }
 
 .rhythmPatternChordRow {
   display: flex;
   justify-content: center;
+  align-items: center;
   width: 100%;
+  flex: 1 1 0;
 }
 
 .rhythmPatternSymbolRow .rhythmSymbolSelect {
