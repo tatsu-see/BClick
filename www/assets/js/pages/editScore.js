@@ -351,6 +351,28 @@ document.addEventListener("DOMContentLoaded", () => {
   /**
    * JSON読込後の画面反映を行う。
    */
+  let lastAppliedKey = null;
+  /**
+   * 反映済みデータかどうかを判定するためのキーを作る。
+   * @param {ScoreData} data
+   * @returns {string}
+   */
+  const buildApplyKey = (data) => {
+    const safeBars = Array.isArray(data?.bars) ? data.bars : [];
+    const safeRhythm = Array.isArray(data?.rhythmPattern) ? data.rhythmPattern : [];
+    const scoreEnabled = store.getScoreEnabled();
+    return JSON.stringify({
+      tempo: data?.tempo,
+      timeSignature: data?.timeSignature,
+      measures: data?.measures,
+      progression: data?.progression,
+      barsPerRow: data?.barsPerRow,
+      rhythmPattern: safeRhythm,
+      bars: safeBars,
+      scoreEnabled,
+    });
+  };
+
   const applyLoadedScoreToUI = () => {
     const nextDraft = loadEditScoreDraft();
     if (nextDraft && typeof nextDraft === "object") {
@@ -367,6 +389,11 @@ document.addEventListener("DOMContentLoaded", () => {
           barsPerRow: nextDraft.barsPerRow || 2,
         })
       : loadSettings(false);
+    const nextApplyKey = buildApplyKey(nextScoreData);
+    if (nextApplyKey === lastAppliedKey) {
+      return;
+    }
+    lastAppliedKey = nextApplyKey;
     currentScoreData = nextScoreData;
     if (store.getScoreEnabled() === false) {
       if (scoreArea) {
@@ -436,19 +463,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("bclick:scoreloaded", applyLoadedScoreToUI);
 
+  // 再描画の多重発火を防ぐために短いデバウンスを入れる。
+  let reloadTimer = null;
+  const requestApplyLoadedScore = () => {
+    if (reloadTimer) {
+      window.clearTimeout(reloadTimer);
+    }
+    reloadTimer = window.setTimeout(() => {
+      reloadTimer = null;
+      applyLoadedScoreToUI();
+    }, 150);
+  };
+
   // モバイルの履歴復帰やタブ復帰で再描画されないケースに備えて再適用する。
   window.addEventListener("pageshow", () => {
-    applyLoadedScoreToUI();
+    requestApplyLoadedScore();
   });
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
-      applyLoadedScoreToUI();
+      requestApplyLoadedScore();
     }
   });
 
   window.addEventListener("focus", () => {
-    applyLoadedScoreToUI();
+    requestApplyLoadedScore();
   });
 
   // 操作ボタンのイベント
