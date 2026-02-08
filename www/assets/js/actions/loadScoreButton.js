@@ -7,6 +7,7 @@ import {
 } from "../utils/scoreButtonUtils.js";
 import { showMessage } from "../../lib/ShowMessageBox.js";
 import { getLangMsg } from "../../lib/Language.js";
+import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const MERGE_TOGGLE_KEY = "bclick.score.merge";
@@ -68,16 +69,40 @@ document.addEventListener("DOMContentLoaded", () => {
       const rawData = await readScoreFile(file);
       const scoreData = buildScoreDataFromObject(rawData);
       const store = new ConfigStore();
+      const draft = loadEditScoreDraft();
       if (useMerge) {
-        const currentBars = store.getScoreBars();
+        const currentBars = Array.isArray(draft?.bars) ? draft.bars : store.getScoreBars();
         const mergedBars = mergeBars(currentBars, scoreData.bars);
         const mergedMeasures = mergedBars.length > 0
           ? mergedBars.length
-          : store.getScoreMeasures() || scoreData.measures;
-        store.setScoreBars(mergedBars);
-        store.setScoreMeasures(mergedMeasures);
+          : (typeof draft?.measures === "number" ? draft.measures : (store.getScoreMeasures() || scoreData.measures));
+        if (draft && typeof draft === "object") {
+          const nextDraft = {
+            ...draft,
+            bars: mergedBars,
+            measures: mergedMeasures,
+          };
+          saveEditScoreDraft(nextDraft);
+        } else {
+          store.setScoreBars(mergedBars);
+          store.setScoreMeasures(mergedMeasures);
+        }
       } else {
-        saveScoreDataToStore(store, scoreData);
+        if (draft && typeof draft === "object") {
+          const nextDraft = {
+            ...draft,
+            tempo: scoreData.tempo,
+            timeSignature: scoreData.timeSignature,
+            progression: scoreData.progression,
+            rhythmPattern: scoreData.rhythmPattern,
+            bars: scoreData.bars,
+            measures: scoreData.measures,
+            barsPerRow: scoreData.barsPerRow,
+          };
+          saveEditScoreDraft(nextDraft);
+        } else {
+          saveScoreDataToStore(store, scoreData);
+        }
       }
       document.dispatchEvent(new CustomEvent("bclick:scoreloaded", { detail: { merged: useMerge } }));
       showMessage("loadScoreMessage", 2000);

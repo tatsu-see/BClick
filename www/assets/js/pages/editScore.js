@@ -9,6 +9,11 @@ import ScoreData from "../models/ScoreModel.js";
 import { TempoDialController } from "../components/tempoDial.js";
 import { preloadAlphaTabFonts } from "../utils/scorePdf.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
+import {
+  clearEditScoreDraft,
+  loadEditScoreDraft,
+  saveEditScoreDraft,
+} from "../utils/editScoreDraft.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -74,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const barsPerRowValue = document.getElementById("barsPerRowValue");
   let currentScoreData = null;
   let rhythmScore = null;
-  let lastSavedBarsJson = "";
+  let editDraft = null;
 
   /**
    * テンポ変更をクリック再生へ通知する。
@@ -109,6 +114,39 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /**
+   * 小節配列をドラフト保存用に複製する。
+   * @param {object[] | null} bars
+   * @returns {object[] | null}
+   */
+  const cloneBars = (bars) => {
+    if (!Array.isArray(bars)) return null;
+    return bars.map((bar) => ({
+      chord: Array.isArray(bar?.chord) ? bar.chord.slice() : [],
+      rhythm: Array.isArray(bar?.rhythm) ? bar.rhythm.slice() : [],
+    }));
+  };
+
+  /**
+   * 現在の編集内容を一時ドラフトへ保存する。
+   */
+  const syncDraftFromCurrent = () => {
+    if (!currentScoreData) return;
+    editDraft = {
+      tempo: currentScoreData.tempo,
+      timeSignature: currentScoreData.timeSignature,
+      measures: currentScoreData.measures,
+      progression: currentScoreData.progression,
+      rhythmPattern: Array.isArray(currentScoreData.rhythmPattern)
+        ? currentScoreData.rhythmPattern.slice()
+        : null,
+      bars: cloneBars(currentScoreData.bars),
+      barsPerRow: currentScoreData.barsPerRow || 2,
+      tempoDialEnabled: Boolean(tempoDialToggle?.checked),
+    };
+    saveEditScoreDraft(editDraft);
+  };
+
+  /**
    * editScore から戻る。
    */
   const closePage = () => {
@@ -116,9 +154,10 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /**
-   * 戻るボタンの処理。(現状は未実装のため空にしておく。)
+   * 戻るボタンの処理。
    */
   const handleBack = () => {
+    clearEditScoreDraft();
     closePage();
   };
 
@@ -129,10 +168,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 初期表示のスコア生成
-  const hasSavedBars = Array.isArray(store.getScoreBars());
-  currentScoreData = loadSettings(!hasSavedBars);
-  if (Array.isArray(currentScoreData.bars)) {
-    lastSavedBarsJson = JSON.stringify(currentScoreData.bars);
+  const loadedDraft = loadEditScoreDraft();
+  if (loadedDraft) {
+    editDraft = loadedDraft;
+    currentScoreData = new ScoreData({
+      tempo: loadedDraft.tempo,
+      timeSignature: loadedDraft.timeSignature || "4/4",
+      measures: loadedDraft.measures || 8,
+      progression: loadedDraft.progression || "",
+      rhythmPattern: Array.isArray(loadedDraft.rhythmPattern) ? loadedDraft.rhythmPattern : null,
+      bars: Array.isArray(loadedDraft.bars) ? loadedDraft.bars : null,
+      barsPerRow: loadedDraft.barsPerRow || 2,
+    });
+  } else {
+    const hasSavedBars = Array.isArray(store.getScoreBars());
+    currentScoreData = loadSettings(!hasSavedBars);
+    syncDraftFromCurrent();
   }
   if (store.getScoreEnabled() === false) {
     // 仕様: リズム表示がOFFならクリックUIのみ表示し、楽譜エリアは隠す。
@@ -144,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("alphaTab ロード完了。楽譜を生成します...");
     window.bclickActiveChordIndex = -1;
     rhythmScore = new RhythmScore("score", {
-      tempo: store.getTempo(),
+      tempo: currentScoreData.tempo,
       timeSignature: currentScoreData.timeSignature,
       chord: "E",
       measures: currentScoreData.measures,
@@ -153,10 +204,10 @@ document.addEventListener("DOMContentLoaded", () => {
       barsPerRow: currentScoreData.barsPerRow || 2,
       rhythmPattern: currentScoreData.rhythmPattern,
       onBarsChange: (nextBars, nextMeasures) => {
-        store.setScoreBars(nextBars);
         if (currentScoreData) {
           currentScoreData.bars = nextBars;
           currentScoreData.measures = nextMeasures;
+          syncDraftFromCurrent();
         }
       },
     });
@@ -182,7 +233,10 @@ document.addEventListener("DOMContentLoaded", () => {
         dialEls: [tempoDialEl],
         defaultValue: 60,
         onValueChange: (value) => {
-          store.setTempo(value);
+          if (currentScoreData) {
+            currentScoreData.tempo = value;
+          }
+          syncDraftFromCurrent();
           notifyTempoChange(value);
         },
         onValueCommit: (value) => {
@@ -229,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    const savedTempo = store.getTempo();
+    const savedTempo = Number.isFinite(editDraft?.tempo) ? editDraft.tempo : store.getTempo();
     if (savedTempo !== null) {
       tempoDial.applyStoredValue(savedTempo);
     } else {
@@ -240,16 +294,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 調節（再生設定）ブロックの表示トグル
   if (tempoDialToggle && beatPreference) {
-    const savedTempoDialEnabled = store.getTempoDialEnabled();
+    const savedTempoDialEnabled = typeof editDraft?.tempoDialEnabled === "boolean"
+      ? editDraft.tempoDialEnabled
+      : store.getTempoDialEnabled();
     if (savedTempoDialEnabled !== null) {
       tempoDialToggle.checked = savedTempoDialEnabled;
     }
     const applyPreferenceVisibility = () => {
       const shouldShow = tempoDialToggle.checked;
-      store.setTempoDialEnabled(shouldShow);
       beatPreference.hidden = !shouldShow;
       beatPreference.style.display = shouldShow ? "" : "none";
       beatPreference.setAttribute("aria-hidden", String(!shouldShow));
+      syncDraftFromCurrent();
     };
     applyPreferenceVisibility();
     tempoDialToggle.addEventListener("change", applyPreferenceVisibility);
@@ -265,7 +321,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 1段あたりの小節数スライダー
   if (barsPerRowRange) {
-    const savedBarsPerRow = store.getScoreBarsPerRow();
+    const savedBarsPerRow = Number.isFinite(editDraft?.barsPerRow)
+      ? editDraft.barsPerRow
+      : store.getScoreBarsPerRow();
     const initialBarsPerRow = savedBarsPerRow || 2;
     barsPerRowRange.value = initialBarsPerRow.toString();
     if (barsPerRowValue) {
@@ -277,7 +335,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const parsed = Number.parseInt(barsPerRowRange.value, 10);
       if (!Number.isNaN(parsed)) {
-        store.setScoreBarsPerRow(parsed);
+        if (currentScoreData) {
+          currentScoreData.barsPerRow = parsed;
+        }
+        syncDraftFromCurrent();
         if (rhythmScore) {
           rhythmScore.setBarsPerRow(parsed);
           //Spec 小節数レイアウト変更後にオーバーレイを遅延して再描画する
@@ -291,12 +352,22 @@ document.addEventListener("DOMContentLoaded", () => {
    * JSON読込後の画面反映を行う。
    */
   const applyLoadedScoreToUI = () => {
-    const nextScoreData = loadSettings(false);
-    currentScoreData = nextScoreData;
-    if (Array.isArray(nextScoreData.bars)) {
-      lastSavedBarsJson = JSON.stringify(nextScoreData.bars);
+    const nextDraft = loadEditScoreDraft();
+    if (nextDraft && typeof nextDraft === "object") {
+      editDraft = nextDraft;
     }
-
+    const nextScoreData = nextDraft
+      ? new ScoreData({
+          tempo: nextDraft.tempo,
+          timeSignature: nextDraft.timeSignature || "4/4",
+          measures: nextDraft.measures || 8,
+          progression: nextDraft.progression || "",
+          rhythmPattern: Array.isArray(nextDraft.rhythmPattern) ? nextDraft.rhythmPattern : null,
+          bars: Array.isArray(nextDraft.bars) ? nextDraft.bars : null,
+          barsPerRow: nextDraft.barsPerRow || 2,
+        })
+      : loadSettings(false);
+    currentScoreData = nextScoreData;
     if (store.getScoreEnabled() === false) {
       if (scoreArea) {
         scoreArea.hidden = true;
@@ -316,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (scoreElement && window.alphaTab) {
       window.bclickActiveChordIndex = -1;
       rhythmScore = new RhythmScore("score", {
-        tempo: store.getTempo(),
+        tempo: nextScoreData.tempo,
         timeSignature: nextScoreData.timeSignature,
         chord: "E",
         measures: nextScoreData.measures,
@@ -325,10 +396,10 @@ document.addEventListener("DOMContentLoaded", () => {
         barsPerRow: nextScoreData.barsPerRow || 2,
         rhythmPattern: nextScoreData.rhythmPattern,
         onBarsChange: (nextBars, nextMeasures) => {
-          store.setScoreBars(nextBars);
           if (currentScoreData) {
             currentScoreData.bars = nextBars;
             currentScoreData.measures = nextMeasures;
+            syncDraftFromCurrent();
           }
         },
       });
@@ -340,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rhythmScore.requestOverlayRefresh(200);
     }
 
-    const savedTempo = store.getTempo();
+    const savedTempo = Number.isFinite(nextScoreData.tempo) ? nextScoreData.tempo : null;
     if (savedTempo !== null) {
       if (tempoDial) {
         tempoDial.applyStoredValue(savedTempo);
@@ -354,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (barsPerRowRange) {
-      const savedBarsPerRow = store.getScoreBarsPerRow();
+      const savedBarsPerRow = nextScoreData.barsPerRow;
       const nextBarsPerRow = savedBarsPerRow || 2;
       barsPerRowRange.value = nextBarsPerRow.toString();
       if (barsPerRowValue) {
@@ -365,30 +436,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("bclick:scoreloaded", applyLoadedScoreToUI);
 
-  // 別タブでの編集を検知して反映する
-  window.addEventListener("storage", (event) => {
-    if (event.storageArea !== window.localStorage) return;
-    if (event.key !== store.keys.ScoreBars) return;
-    const savedBars = store.getScoreBars();
-    if (!Array.isArray(savedBars)) return;
-    const nextJson = JSON.stringify(savedBars);
-    if (nextJson === lastSavedBarsJson) return;
-    lastSavedBarsJson = nextJson;
-    if (!currentScoreData) return;
-    currentScoreData.bars = savedBars;
-    if (rhythmScore) {
-      rhythmScore.setBars(savedBars);
-    }
-  });
-
   // 操作ボタンのイベント
   if (saveButton) {
     saveButton.addEventListener("click", () => {
       if (currentScoreData) {
-        const latestBars = store.getScoreBars();
-        const barsToSave = Array.isArray(latestBars) ? latestBars : currentScoreData.bars;
+        const barsToSave = Array.isArray(currentScoreData.bars) ? currentScoreData.bars : [];
+        const measuresToSave = barsToSave.length > 0 ? barsToSave.length : currentScoreData.measures;
+        store.setTempo(currentScoreData.tempo);
+        store.setScoreTimeSignature(currentScoreData.timeSignature);
+        store.setScoreProgression(currentScoreData.progression);
+        if (Array.isArray(currentScoreData.rhythmPattern)) {
+          store.setScoreRhythmPattern(currentScoreData.rhythmPattern);
+        }
+        store.setScoreBarsPerRow(currentScoreData.barsPerRow || 2);
         store.setScoreBars(barsToSave);
+        store.setScoreMeasures(measuresToSave);
+        if (tempoDialToggle) {
+          store.setTempoDialEnabled(Boolean(tempoDialToggle.checked));
+        }
       }
+      clearEditScoreDraft();
       closePage();
     });
   }

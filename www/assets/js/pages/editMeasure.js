@@ -7,6 +7,7 @@ import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGu
 import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
 import { getLangMsg } from "../../lib/Language.js";
 import { APP_LIMITS } from "../constants/appConstraints.js";
+import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const MAX_MEASURES = APP_LIMITS.scoreMeasures.max;
@@ -41,16 +42,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedProgression = store.getScoreProgression();
   const savedRhythmPattern = store.getScoreRhythmPattern();
   const savedBars = store.getScoreBars();
+  const draft = loadEditScoreDraft();
   const scoreData = new ScoreData({
-    timeSignature: savedTimeSignature || "4/4",
-    measures: savedMeasures || 8,
-    progression: savedProgression || "",
-    rhythmPattern: savedRhythmPattern || null,
-    bars: savedBars || null,
+    timeSignature: typeof draft?.timeSignature === "string" ? draft.timeSignature : (savedTimeSignature || "4/4"),
+    measures: typeof draft?.measures === "number" ? draft.measures : (savedMeasures || 8),
+    progression: typeof draft?.progression === "string" ? draft.progression : (savedProgression || ""),
+    rhythmPattern: Array.isArray(draft?.rhythmPattern) ? draft.rhythmPattern : (savedRhythmPattern || null),
+    bars: Array.isArray(draft?.bars) ? draft.bars : (savedBars || null),
   });
 
-  if (codeProgressionInput && typeof savedProgression === "string") {
-    codeProgressionInput.value = savedProgression;
+  if (codeProgressionInput && typeof scoreData.progression === "string") {
+    codeProgressionInput.value = scoreData.progression;
   }
 
   const bars = scoreData.bars;
@@ -850,7 +852,15 @@ document.addEventListener("DOMContentLoaded", () => {
           targetBar.chord = normalizeBeatChords("");
           targetBar.rhythm = scoreData.buildDefaultRhythm();
         }
-        store.setScoreBars(bars);
+        if (draft && typeof draft === "object") {
+          saveEditScoreDraft({
+            ...draft,
+            bars,
+            measures: bars.length > 0 ? bars.length : 1,
+          });
+        } else {
+          store.setScoreBars(bars);
+        }
         goBack();
         return;
       }
@@ -872,11 +882,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      store.setScoreBars(bars);
-      if (codeProgressionInput) {
-        const normalized = normalizeProgressionInput(codeProgressionInput.value);
-        codeProgressionInput.value = normalized;
-        store.setScoreProgression(normalized);
+      if (draft && typeof draft === "object") {
+        const normalized = codeProgressionInput
+          ? normalizeProgressionInput(codeProgressionInput.value)
+          : (typeof draft.progression === "string" ? draft.progression : "");
+        if (codeProgressionInput) {
+          codeProgressionInput.value = normalized;
+        }
+        saveEditScoreDraft({
+          ...draft,
+          bars,
+          measures: bars.length > 0 ? bars.length : 1,
+          progression: normalized,
+        });
+      } else {
+        store.setScoreBars(bars);
+        if (codeProgressionInput) {
+          const normalized = normalizeProgressionInput(codeProgressionInput.value);
+          codeProgressionInput.value = normalized;
+          store.setScoreProgression(normalized);
+        }
       }
       goBack();
     });
