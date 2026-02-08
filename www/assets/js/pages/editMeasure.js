@@ -8,6 +8,7 @@ import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
 import { getLangMsg } from "../../lib/Language.js";
 import { APP_LIMITS } from "../constants/appConstraints.js";
 import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
+import { buildCenteredSelectWrap, syncCenteredSelectLabel } from "../utils/centeredSelect.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const MAX_MEASURES = APP_LIMITS.scoreMeasures.max;
@@ -32,47 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const measuresDownButton = document.getElementById("measuresDown");
   const measuresUpButton = document.getElementById("measuresUp");
   const store = new ConfigStore();
-
-  /**
-   * iOSのselectはoption中央寄せが効きにくいので、
-   * 表示用ラベルを重ねて疑似的に中央寄せする。
-   */
-  const syncCenteredSelectLabel = (select) => {
-    if (!select) return;
-    const wrap = select.closest(".rhythmSelectWrap");
-    const label = wrap ? wrap.querySelector(".rhythmSelectLabel") : null;
-    if (!label) return;
-    const selected = select.options[select.selectedIndex];
-    label.textContent = selected ? selected.textContent : "";
-  };
-
-  /**
-   * select + 表示用ラベルのラッパーを作る。
-   * @param {HTMLSelectElement} select
-   * @returns {HTMLDivElement}
-   */
-  const buildCenteredSelectWrap = (select) => {
-    const wrap = document.createElement("div");
-    wrap.className = "rhythmSelectWrap";
-    // 表示用ラベルは見た目のみ。操作はネイティブselectに委ねる。
-    const label = document.createElement("span");
-    const isSymbol = select.classList.contains("rhythmSymbolSelect");
-    const isChord = select.classList.contains("rhythmChordSelect");
-    const labelClass = isSymbol
-      ? " rhythmSelectLabelSymbol"
-      : isChord
-        ? " rhythmSelectLabelChord"
-        : "";
-    label.className = `rhythmSelectLabel${labelClass}`;
-    select.classList.add("rhythmSelectInput");
-    select.addEventListener("change", () => {
-      syncCenteredSelectLabel(select);
-    });
-    wrap.appendChild(label);
-    wrap.appendChild(select);
-    syncCenteredSelectLabel(select);
-    return wrap;
-  };
 
   const params = new URLSearchParams(window.location.search);
   const barParam = Number.parseInt(params.get("bar"), 10);
@@ -717,7 +677,9 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedBeatChords[index] = chordSelect.value;
       });
       // iOS向けの中央寄せ表示にするため、表示ラベルを重ねる。
-      chordCell.appendChild(buildCenteredSelectWrap(chordSelect));
+      chordCell.appendChild(
+        buildCenteredSelectWrap(chordSelect, { labelClass: "rhythmSelectLabelChord" }),
+      );
 
       const rebuildPatternSelectors = () => {
         if (coveredBeats[index]) {
@@ -779,7 +741,9 @@ document.addEventListener("DOMContentLoaded", () => {
             previewRenderer.render(patternItem);
           });
           // iOS向けの中央寄せ表示にするため、表示ラベルを重ねる。
-          patternCell.appendChild(buildCenteredSelectWrap(symbolSelect));
+          patternCell.appendChild(
+            buildCenteredSelectWrap(symbolSelect, { labelClass: "rhythmSelectLabelSymbol" }),
+          );
         }
 
         previewRenderer.render(patternItem);
