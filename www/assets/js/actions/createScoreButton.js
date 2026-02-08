@@ -23,6 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!confirmed) return;
     const store = new ConfigStore();
     const scoreData = buildScoreDataFromStore(store, { resetBars: true });
+    if (typeof store.setEditScoreSettingsEnabled === "function") {
+      // 新規作成時は調節トグルを初期値(OFF)へ戻す
+      store.setEditScoreSettingsEnabled(false);
+    }
     saveScoreDataToStore(store, scoreData);
     openEditScorePage();
   };

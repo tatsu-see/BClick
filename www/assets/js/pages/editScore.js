@@ -141,7 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
         : null,
       bars: cloneBars(currentScoreData.bars),
       barsPerRow: currentScoreData.barsPerRow || 2,
-      tempoDialEnabled: Boolean(tempoDialToggle?.checked),
     };
     saveEditScoreDraft(editDraft);
   };
@@ -294,9 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 調節（再生設定）ブロックの表示トグル
   if (tempoDialToggle && beatPreference) {
-    const savedTempoDialEnabled = typeof editDraft?.tempoDialEnabled === "boolean"
-      ? editDraft.tempoDialEnabled
-      : store.getTempoDialEnabled();
+    const savedTempoDialEnabled = store.getEditScoreSettingsEnabled();
     if (savedTempoDialEnabled !== null) {
       tempoDialToggle.checked = savedTempoDialEnabled;
     }
@@ -305,6 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
       beatPreference.hidden = !shouldShow;
       beatPreference.style.display = shouldShow ? "" : "none";
       beatPreference.setAttribute("aria-hidden", String(!shouldShow));
+      store.setEditScoreSettingsEnabled(shouldShow);
       syncDraftFromCurrent();
     };
     applyPreferenceVisibility();
@@ -523,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
         store.setScoreBars(barsToSave);
         store.setScoreMeasures(measuresToSave);
         if (tempoDialToggle) {
-          store.setTempoDialEnabled(Boolean(tempoDialToggle.checked));
+          store.setEditScoreSettingsEnabled(Boolean(tempoDialToggle.checked));
         }
       }
       clearEditScoreDraft();

@@ -15,20 +15,39 @@ const getProgressionChordCount = (value) => {
 export class ConfigStore extends LocalStore {
   constructor() {
     super();
+
+      //Spec 下記のkeysは同一画面の項目を近接配置する。画面が切り替わる場合は空行を入れる。
       this.keys = {
+        // index / configBeat / editScore: テンポ
         Tempo: 'bclick.tempo',
+        // index: 楽譜表示ON/OFF
+        ScoreEnabled: 'bclick.score.enabled',
+
+        // configBeat: クリック拍数
         ClickCount: 'bclick.clickCount',
+        // configBeat: カウントイン
         Countdown: 'bclick.countdown',
+        // configBeat: ボリューム(UI)
         ClickVolume: 'bclick.clickVolume',
-        TempoDialEnabled: 'bclick.tempoDial.enabled',
+
+        // configScore: 拍子
         ScoreTimeSignature: 'bclick.score.timeSignature',
-        ScoreProgression: 'bclick.score.progression',
+        // configScore: 小節数
         ScoreMeasures: 'bclick.score.measures',
-        ScoreBarsPerRow: 'bclick.score.barsPerRow',
-        ScoreBars: 'bclick.score.bars',
-      ScoreRhythmPattern: 'bclick.score.rhythmPattern',
-      ScoreEnabled: 'bclick.score.enabled',
+        // configScore: リズムパターン
+        ScoreRhythmPattern: 'bclick.score.rhythmPattern',
+        // configScore / editMeasure: コード進行
+        ScoreProgression: 'bclick.score.progression',
+
+        // editMeasure: コードダイアグラム表示用コード
         CodeDiagramChord: 'bclick.codeDiagram.chord',
+
+        // editScore: 調節トグル（テンポ設定の表示ON/OFF）
+        EditScoreSettingsEnabled: 'bclick.editScore.settings.enabled',
+        // editScore: 1段当たり表示小節数
+        ScoreBarsPerRow: 'bclick.score.barsPerRow',
+        // editScore: 小節配列
+        ScoreBars: 'bclick.score.bars',
       };
     }
 
@@ -112,14 +131,14 @@ export class ConfigStore extends LocalStore {
   /**
    * editScore の調節トグルのI/O
    */
-  getTempoDialEnabled() {
-    const saved = this.getSettings(this.keys.TempoDialEnabled);
+  getEditScoreSettingsEnabled() {
+    const saved = this.getSettings(this.keys.EditScoreSettingsEnabled);
     return typeof saved === 'boolean' ? saved : null;
   }
 
-  setTempoDialEnabled(value) {
+  setEditScoreSettingsEnabled(value) {
     if (typeof value !== 'boolean') return;
-    this.saveSettings(this.keys.TempoDialEnabled, value);
+    this.saveSettings(this.keys.EditScoreSettingsEnabled, value);
   }
 
   /**

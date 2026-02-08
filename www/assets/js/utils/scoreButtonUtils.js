@@ -104,6 +104,10 @@ export const resetScoreSettings = (store) => {
     store.setScoreBarsPerRow(defaults.barsPerRow);
   }
   store.setScoreEnabled(defaults.scoreEnabled);
+  if (typeof store.setEditScoreSettingsEnabled === "function") {
+    // editScore の調節トグルは初期値(OFF)へ戻す
+    store.setEditScoreSettingsEnabled(false);
+  }
   store.setScoreRhythmPattern(
     buildDefaultRhythmPattern(getBeatCountFromTimeSignature(defaults.timeSignature)),
   );
