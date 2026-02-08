@@ -4,6 +4,7 @@
  */
 
 import ScoreData from "../models/ScoreModel.js";
+import { APP_LIMITS } from "../constants/appConstraints.js";
 
 class ScoreBarEditor {
   constructor({ timeSignature = "4/4", progression = "", rhythmPattern = null } = {}) {
@@ -53,11 +54,47 @@ class ScoreBarEditor {
     if (!bar || typeof bar !== "object") {
       return this.buildDefaultBar();
     }
-    const chord = Array.isArray(bar.chord)
-      ? bar.chord.map((value) => (typeof value === "string" ? value : ""))
-      : typeof bar.chord === "string"
-        ? [bar.chord]
-        : [];
+    const MAX_SUBDIV = APP_LIMITS.beatSubdivMax;
+    /**
+     * 空の拍内コード配列を生成する。
+     * @returns {string[]}
+     */
+    const buildEmptyChordRow = () => Array.from({ length: MAX_SUBDIV }, () => "");
+    /**
+     * 拍内コード配列を正規化する。
+     * @param {unknown} row
+     * @returns {string[]}
+     */
+    const normalizeChordRow = (row) => {
+      if (Array.isArray(row)) {
+        const normalized = row.map((value) => (typeof value === "string" ? value : ""));
+        while (normalized.length < MAX_SUBDIV) {
+          normalized.push("");
+        }
+        return normalized.slice(0, MAX_SUBDIV);
+      }
+      if (typeof row === "string" && row.length > 0) {
+        return [row, ...Array.from({ length: MAX_SUBDIV - 1 }, () => "")];
+      }
+      return buildEmptyChordRow();
+    };
+    /**
+     * 拍ごとのコード配列を正規化する。
+     * @param {unknown} value
+     * @returns {string[][]}
+     */
+    const normalizeBeatChords = (value) => {
+      if (!Array.isArray(value)) {
+        return typeof value === "string" && value.length > 0
+          ? [normalizeChordRow(value)]
+          : [];
+      }
+      const isMatrix = value.some((item) => Array.isArray(item));
+      return isMatrix
+        ? value.map((row) => normalizeChordRow(row))
+        : value.map((item) => normalizeChordRow(item));
+    };
+    const chord = normalizeBeatChords(bar.chord);
     const rhythm = Array.isArray(bar.rhythm)
       ? bar.rhythm.map((value) => (typeof value === "string" ? value : ""))
       : [];

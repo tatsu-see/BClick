@@ -121,7 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const cloneBars = (bars) => {
     if (!Array.isArray(bars)) return null;
     return bars.map((bar) => ({
-      chord: Array.isArray(bar?.chord) ? bar.chord.slice() : [],
+      chord: Array.isArray(bar?.chord)
+        ? bar.chord.map((row) => (Array.isArray(row) ? row.slice() : []))
+        : [],
       rhythm: Array.isArray(bar?.rhythm) ? bar.rhythm.slice() : [],
     }));
   };

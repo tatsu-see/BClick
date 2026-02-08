@@ -11,6 +11,7 @@ export const APP_LIMITS = {
   scoreMeasures: { min: 1, max: 50 },
   barsPerRow: { min: 1, max: 4 },
   progressionMaxChords: 10,
+  beatSubdivMax: 4,
 };
 
 export const ALLOWED_TIME_SIGNATURES = ["2/4", "3/4", "4/4"];

@@ -64,6 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
     : [];
   let selectedBeatChords = [];
   let selectedBeatPatterns = [];
+  // 拍内の最大分割数（16分まで）
+  const MAX_SUBDIV = APP_LIMITS.beatSubdivMax;
 
   const [numeratorRaw] = scoreData.timeSignature.split("/");
   const numerator = Number.parseInt(numeratorRaw, 10);
@@ -74,20 +76,55 @@ document.addEventListener("DOMContentLoaded", () => {
    * @param {string[]|string} value
    * @returns {string[]}
    */
-  const normalizeBeatChords = (value) => {
-    if (Array.isArray(value)) {
-      const normalized = value.map((item) => (typeof item === "string" ? item : ""));
-      while (normalized.length < beatCount) {
+  /**
+   * 空の拍内コード配列を生成する。
+   * @returns {string[]}
+   */
+  const buildEmptyChordRow = () => Array.from({ length: MAX_SUBDIV }, () => "");
+
+  /**
+   * 拍内コード配列を正規化する。
+   * @param {unknown} row
+   * @returns {string[]}
+   */
+  const normalizeChordRow = (row) => {
+    if (Array.isArray(row)) {
+      const normalized = row.map((item) => (typeof item === "string" ? item : ""));
+      while (normalized.length < MAX_SUBDIV) {
         normalized.push("");
       }
-      return normalized.slice(0, beatCount);
+      return normalized.slice(0, MAX_SUBDIV);
     }
-    if (typeof value === "string" && value.length > 0) {
-      return Array.from({ length: beatCount }, (_, index) => (index === 0 ? value : ""));
+    if (typeof row === "string" && row.length > 0) {
+      return [row, ...Array.from({ length: MAX_SUBDIV - 1 }, () => "")];
     }
-    return Array.from({ length: beatCount }, () => "");
+    return buildEmptyChordRow();
   };
 
+  /**
+   * 拍ごとのコード配列を正規化する。
+   * @param {string[][]|string[]|string} value
+   * @returns {string[][]}
+   */
+  const normalizeBeatChords = (value) => {
+    const normalized = [];
+    if (Array.isArray(value)) {
+      const isMatrix = value.some((item) => Array.isArray(item));
+      if (isMatrix) {
+        value.forEach((row) => normalized.push(normalizeChordRow(row)));
+      } else {
+        value.forEach((item) => normalized.push(normalizeChordRow(item)));
+      }
+    } else if (typeof value === "string" && value.length > 0) {
+      normalized.push(normalizeChordRow(value));
+    }
+    while (normalized.length < beatCount) {
+      normalized.push(buildEmptyChordRow());
+    }
+    return normalized.slice(0, beatCount);
+  };
+
+  // 拍ごとのコード配列をロード（拍内4分割の配列へ正規化）
   selectedBeatChords = normalizeBeatChords(currentBarChords);
 
   /**
@@ -213,15 +250,22 @@ document.addEventListener("DOMContentLoaded", () => {
     return nextValue;
   };
 
+  /**
+   * 進行入力に合わせてコード選択肢を再構築する。
+   */
   const refreshChordSelectOptions = () => {
     const options = getProgressionOptions();
     const selects = Array.from(document.querySelectorAll(".rhythmChordSelect"));
     selects.forEach((selectEl) => {
       const beatIndex = Number.parseInt(selectEl.dataset.beatIndex, 10);
+      const subIndex = Number.parseInt(selectEl.dataset.subIndex, 10);
       const index = Number.isNaN(beatIndex) ? 0 : beatIndex;
-      const currentValue = selectedBeatChords[index] || "";
+      const sub = Number.isNaN(subIndex) ? 0 : subIndex;
+      const currentValue = selectedBeatChords[index]?.[sub] || "";
       const nextValue = applyChordOptions(selectEl, currentValue, options);
-      selectedBeatChords[index] = nextValue;
+      if (selectedBeatChords[index]) {
+        selectedBeatChords[index][sub] = nextValue;
+      }
       syncCenteredSelectLabel(selectEl);
     });
   };
@@ -316,7 +360,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .join(" ");
   };
 
-  const initialChord = selectedBeatChords.find((value) => value) || "";
+  const initialChord =
+    selectedBeatChords.flat().find((value) => typeof value === "string" && value.length > 0)
+    || "";
 
   if (chordQualityButtons.length > 0) {
     const matchedQuality = initialChord.endsWith("dim")
@@ -521,6 +567,8 @@ document.addEventListener("DOMContentLoaded", () => {
             rhythm.push("r8");
           } else if (index === 0 && value === "tieNote") {
             rhythm.push("t8");
+          } else if (value === "tie") {
+            rhythm.push("t8");
           } else {
             rhythm.push("8");
           }
@@ -579,6 +627,17 @@ document.addEventListener("DOMContentLoaded", () => {
       while (normalized.length < patternLength) {
         normalized.push("note");
       }
+      if (division === 8) {
+        return {
+          division,
+          pattern: normalized.map((value, index) => {
+            if (value === "rest") return "rest";
+            if (value === "tieNote" && index === 0) return "tieNote";
+            if (value === "tie" && index > 0) return "tie";
+            return "note";
+          }),
+        };
+      }
       if (division !== 16) {
         return {
           division,
@@ -604,6 +663,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const tokenBuilder = new RhythmTokenBuilder();
   const buildAbcTokens = (patternItem) => tokenBuilder.buildAbcTokens(patternItem);
 
+  /**
+   * リズム/コードのUIを描画する。
+   */
   const renderBeatSelectors = () => {
     if (!rhythmPatternBody) return;
     rhythmPatternBody.textContent = "";
@@ -611,7 +673,6 @@ document.addEventListener("DOMContentLoaded", () => {
       selectedBeatPatterns = buildBeatPatternsFromRhythm(currentRhythm);
     }
     selectedBeatPatterns = normalizeBeatPatternList(selectedBeatPatterns, beatCount);
-    const chordOptions = getProgressionOptions();
     const coveredBeats = buildCoveredBeats(selectedBeatPatterns);
     selectedBeatPatterns.forEach((patternItem, index) => {
       const row = document.createElement("div");
@@ -671,38 +732,41 @@ document.addEventListener("DOMContentLoaded", () => {
         buildAbcTokens,
       );
 
-      const chordSelect = document.createElement("select");
-      chordSelect.className = "rhythmChordSelect";
-      chordSelect.dataset.beatIndex = index.toString();
-      const nextValue = applyChordOptions(
-        chordSelect,
-        selectedBeatChords[index] || "",
-        chordOptions,
-      );
-      selectedBeatChords[index] = nextValue;
-      chordSelect.addEventListener("change", () => {
-        selectedBeatChords[index] = chordSelect.value;
-      });
-      // iOS向けの中央寄せ表示にするため、表示ラベルを重ねる。
-      chordRow.appendChild(
-        buildCenteredSelectWrap(chordSelect, { labelClass: "rhythmSelectLabelChord" }),
-      );
+      /**
+       * 拍内コード選択セレクトを生成する。
+       * @param {number} beatIndex
+       * @param {number} subIndex
+       * @param {string[]} options
+       */
+      const createChordSelect = (beatIndex, subIndex, options) => {
+        const chordSelect = document.createElement("select");
+        chordSelect.className = "rhythmChordSelect";
+        chordSelect.dataset.beatIndex = beatIndex.toString();
+        chordSelect.dataset.subIndex = subIndex.toString();
+        const currentValue = selectedBeatChords[beatIndex]?.[subIndex] || "";
+        const nextValue = applyChordOptions(chordSelect, currentValue, options);
+        if (selectedBeatChords[beatIndex]) {
+          selectedBeatChords[beatIndex][subIndex] = nextValue;
+        }
+        chordSelect.addEventListener("change", () => {
+          if (selectedBeatChords[beatIndex]) {
+            selectedBeatChords[beatIndex][subIndex] = chordSelect.value;
+          }
+        });
+        const wrap = buildCenteredSelectWrap(chordSelect, { labelClass: "rhythmSelectLabelChord" });
+        wrap.classList.add("rhythmChordWrap");
+        return { select: chordSelect, wrap };
+      };
 
       const rebuildPatternSelectors = () => {
         const patternLength = getPatternLengthFromDivision(patternItem.division);
+        // パターン数に合わせてコード欄も同数表示する
         chordRow.textContent = "";
         chordRow.style.gridTemplateColumns = `repeat(${patternLength}, 1fr)`;
-        chordRow.appendChild(
-          buildCenteredSelectWrap(chordSelect, { labelClass: "rhythmSelectLabelChord" }),
-        );
-        for (let spacerIndex = 0; spacerIndex < patternLength - 1; spacerIndex += 1) {
-          const spacer = document.createElement("div");
-          spacer.className = "rhythmPatternChordSpacer";
-          chordRow.appendChild(spacer);
-        }
 
         if (coveredBeats[index]) {
           symbolRow.textContent = "";
+          chordRow.textContent = "";
           previewRenderer.render({ division: 4, pattern: ["note"] });
           return;
         }
@@ -718,7 +782,14 @@ document.addEventListener("DOMContentLoaded", () => {
           if (value === "tieNote" && index === 0) return value;
           return "note";
         });
-        if (patternItem.division !== 16) {
+        if (patternItem.division === 8) {
+          patternItem.pattern = patternItem.pattern.map((value, index) => {
+            if (value === "rest") return "rest";
+            if (value === "tieNote" && index === 0) return "tieNote";
+            if (value === "tie" && index > 0) return "tie";
+            return "note";
+          });
+        } else if (patternItem.division !== 16) {
           patternItem.pattern = patternItem.pattern.map((value, index) => {
             if (value === "rest") return "rest";
             if (value === "tieNote" && index === 0) return "tieNote";
@@ -729,6 +800,7 @@ document.addEventListener("DOMContentLoaded", () => {
           patternItem.pattern[0] = "note";
         }
 
+        const chordOptions = getProgressionOptions();
         for (let subIndex = 0; subIndex < patternLength; subIndex += 1) {
           const value = patternItem.pattern[subIndex] || "note";
           const symbolSelect = document.createElement("select");
@@ -740,7 +812,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (subIndex === 0) {
             options.push({ value: "tieNote", label: "⌒●" });
           }
-            if (patternItem.division === 16 && subIndex > 0) {
+            if ((patternItem.division === 16 || patternItem.division === 8) && subIndex > 0) {
               options.push({ value: "tie", label: "⌒" });
             }
           options.forEach((optionItem) => {
@@ -756,12 +828,29 @@ document.addEventListener("DOMContentLoaded", () => {
               patternItem.pattern[0] = "note";
               symbolSelect.value = patternItem.pattern[subIndex];
             }
-            previewRenderer.render(patternItem);
+            rebuildPatternSelectors();
           });
           // iOS向けの中央寄せ表示にするため、表示ラベルを重ねる。
           symbolRow.appendChild(
             buildCenteredSelectWrap(symbolSelect, { labelClass: "rhythmSelectLabelSymbol" }),
           );
+
+          const { select: chordSelect, wrap: chordWrap } = createChordSelect(
+            index,
+            subIndex,
+            chordOptions,
+          );
+          const isChordSelectable = value === "note" || value === "tieNote";
+          if (!isChordSelectable) {
+            chordSelect.disabled = true;
+            chordWrap.classList.add("isDisabled");
+            if (selectedBeatChords[index]) {
+              selectedBeatChords[index][subIndex] = "";
+            }
+            chordSelect.value = "";
+            syncCenteredSelectLabel(chordSelect);
+          }
+          chordRow.appendChild(chordWrap);
         }
 
         previewRenderer.render(patternItem);
@@ -816,9 +905,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const cloneBar = (bar) => ({
-    chord: Array.isArray(bar?.chord)
-      ? bar.chord.slice()
-      : normalizeBeatChords(bar?.chord),
+    chord: normalizeBeatChords(bar?.chord).map((row) => row.slice()),
     rhythm: Array.isArray(bar?.rhythm) && bar.rhythm.length > 0
       ? bar.rhythm.slice()
       : scoreData.buildDefaultRhythm(),
@@ -867,7 +954,9 @@ document.addEventListener("DOMContentLoaded", () => {
     doneButton.addEventListener("click", () => {
       const targetBar = bars[safeBarIndex];
       if (targetBar) {
-        targetBar.chord = selectedBeatChords.slice(0, beatCount);
+        targetBar.chord = selectedBeatChords
+          .slice(0, beatCount)
+          .map((row) => row.slice());
       }
       if (targetBar) {
         const nextRhythm = buildRhythmFromBeatPatterns(selectedBeatPatterns);

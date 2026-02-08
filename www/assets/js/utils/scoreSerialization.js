@@ -43,7 +43,7 @@ export const SCORE_JSON_VERSION = 0;
 //     "scoreEnabled": true,
 //     "rhythmPattern": ["4", "4", "4", "4"],
 //     "bars": [
-//       { "chord": ["G", "", "", ""], "rhythm": ["4", "4", "4", "4"] }
+//       { "chord": [["G", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]], "rhythm": ["4", "4", "4", "4"] }
 //     ]
 //   }
 // }
@@ -60,7 +60,7 @@ export const SCORE_JSON_VERSION = 0;
 //   - barsPerRow: 1段あたりの小節数
 //   - scoreEnabled: リズム表示のON/OFF
 //   - rhythmPattern: 小節内の音価トークン配列
-//   - bars: 小節配列（chord: 拍ごとのコード配列, rhythm: 音符トークン配列）
+//   - bars: 小節配列（chord: 拍内分割ごとのコード配列, rhythm: 音符トークン配列）
 //
 // 楽譜の読込・保存に対応していない設定項目
 // - clickVolume: クリック音量
@@ -197,16 +197,23 @@ const normalizeRhythmPatternStrict = (value, beatCount) => {
  * 小節データ1件を厳格に正規化する。
  * @param {unknown} bar
  * @param {number} beatCount
- * @returns {{ chord: string[], rhythm: string[] }|null}
+ * @returns {{ chord: string[][], rhythm: string[] }|null}
  */
 const normalizeBarStrict = (bar, beatCount) => {
   if (!bar || typeof bar !== "object") return null;
   if (!Array.isArray(bar.chord) || !Array.isArray(bar.rhythm)) return null;
   if (bar.chord.length !== beatCount) return null;
-  if (!bar.chord.every((value) => typeof value === "string")) return null;
+  const MAX_SUBDIV = APP_LIMITS.beatSubdivMax;
+  if (!bar.chord.every((row) =>
+    Array.isArray(row)
+    && row.length === MAX_SUBDIV
+    && row.every((value) => typeof value === "string"),
+  )) {
+    return null;
+  }
   if (!isValidRhythmPattern(bar.rhythm, beatCount)) return null;
   return {
-    chord: bar.chord.slice(),
+    chord: bar.chord.map((row) => row.slice()),
     rhythm: bar.rhythm.slice(),
   };
 };

@@ -1,3 +1,5 @@
+import { APP_LIMITS } from "../constants/appConstraints.js";
+
 /**
  * AlphaTexBuilder.js
  * スコアデータから alphaTex 文字列を生成するクラス
@@ -44,8 +46,49 @@ class AlphaTexBuilder {
   buildCacheKey({ timeSignature, measures, barsPerRow, progression, bars, tempo } = {}) {
     const progressionList = this.normalizeProgression(progression);
     const safeBars = Array.isArray(bars) ? bars : [];
+    // 拍内の最大分割数（16分まで=4）
+    const MAX_SUBDIV = APP_LIMITS.beatSubdivMax;
+    /**
+     * 空の拍内コード配列を生成する。
+     * @returns {string[]}
+     */
+    const buildEmptyChordRow = () => Array.from({ length: MAX_SUBDIV }, () => "");
+    /**
+     * 拍内コード配列を正規化する。
+     * @param {unknown} row
+     * @returns {string[]}
+     */
+    const normalizeChordRow = (row) => {
+      if (Array.isArray(row)) {
+        const normalized = row.map((item) => (typeof item === "string" ? item : ""));
+        while (normalized.length < MAX_SUBDIV) {
+          normalized.push("");
+        }
+        return normalized.slice(0, MAX_SUBDIV);
+      }
+      if (typeof row === "string" && row.length > 0) {
+        return [row, ...Array.from({ length: MAX_SUBDIV - 1 }, () => "")];
+      }
+      return buildEmptyChordRow();
+    };
+    /**
+     * 拍ごとのコード配列を正規化する。
+     * @param {unknown} value
+     * @returns {string[][]}
+     */
+    const normalizeBeatChords = (value) => {
+      if (!Array.isArray(value)) {
+        return typeof value === "string" && value.length > 0
+          ? [normalizeChordRow(value)]
+          : [];
+      }
+      const isMatrix = value.some((item) => Array.isArray(item));
+      return isMatrix
+        ? value.map((row) => normalizeChordRow(row))
+        : value.map((item) => normalizeChordRow(item));
+    };
     const normalizedBars = safeBars.map((bar) => ({
-      chord: Array.isArray(bar?.chord) ? bar.chord : bar?.chord || "",
+      chord: normalizeBeatChords(bar?.chord),
       rhythm: Array.isArray(bar?.rhythm) ? bar.rhythm : bar?.rhythm || "",
     }));
     return JSON.stringify({
@@ -98,30 +141,30 @@ class AlphaTexBuilder {
       let prevType = null;
       pattern.forEach((value, index) => {
         if (value === "rest") {
-          step1.push({ type: "rest", len: 1 });
+          step1.push({ type: "rest", len: 1, sourceIndex: index });
           prevType = "rest";
           return;
         }
         if (value === "tie") {
           if (prevType === "rest") {
             // 休符の後ろにタイが来た場合は休符が続く扱いにする。
-            step1.push({ type: "rest", len: 1 });
+            step1.push({ type: "rest", len: 1, sourceIndex: index });
             prevType = "rest";
             return;
           }
           if (step1.length > 0 && step1[step1.length - 1].type === "note") {
             step1[step1.length - 1].tieToNext = true;
           }
-          step1.push({ type: "note", len: 1, tieFromPrev: true });
+          step1.push({ type: "note", len: 1, tieFromPrev: true, sourceIndex: index });
           prevType = "note";
           return;
         }
         if (index === 0 && value === "tieNote") {
-          step1.push({ type: "note", len: 1, tieFromPrev: true });
+          step1.push({ type: "note", len: 1, tieFromPrev: true, sourceIndex: index });
           prevType = "note";
           return;
         }
-        step1.push({ type: "note", len: 1 });
+        step1.push({ type: "note", len: 1, sourceIndex: index });
         prevType = "note";
       });
 
@@ -139,35 +182,35 @@ class AlphaTexBuilder {
         switch (key) {
           case "notetienotenote":
             replaced = [
-              { type: "note", len: 2, tieFromPrev: firstTieFromPrev },
-              { type: "note", len: 1 },
-              { type: "note", len: 1 },
+              { type: "note", len: 2, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 1, sourceIndex: 2 },
+              { type: "note", len: 1, sourceIndex: 3 },
             ];
             break;
           case "notetietienote":
             replaced = [
-              { type: "note", len: 3, tieFromPrev: firstTieFromPrev },
-              { type: "note", len: 1 },
+              { type: "note", len: 3, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 1, sourceIndex: 3 },
             ];
             break;
           case "notenotetietie":
             replaced = [
-              { type: "note", len: 1, tieFromPrev: firstTieFromPrev },
-              { type: "note", len: 3 },
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 3, sourceIndex: 1 },
             ];
             break;
           case "notenotenotetie":
             replaced = [
-              { type: "note", len: 1, tieFromPrev: firstTieFromPrev },
-              { type: "note", len: 1 },
-              { type: "note", len: 2 },
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 1, sourceIndex: 1 },
+              { type: "note", len: 2, sourceIndex: 2 },
             ];
             break;
           case "notenotetienote":
             replaced = [
-              { type: "note", len: 1, tieFromPrev: firstTieFromPrev },
-              { type: "note", len: 2 },
-              { type: "note", len: 1 },
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 2, sourceIndex: 1 },
+              { type: "note", len: 1, sourceIndex: 3 },
             ];
             break;
           default:
@@ -192,7 +235,7 @@ class AlphaTexBuilder {
           next2.len === 1 &&
           next3.len === 1
         ) {
-          merged.push({ type: "rest", len: 4 });
+          merged.push({ type: "rest", len: 4, sourceIndex: current.sourceIndex });
           i += 3;
           continue;
         }
@@ -202,7 +245,7 @@ class AlphaTexBuilder {
           current.len === 1 &&
           next.len === 1
         ) {
-          merged.push({ type: "rest", len: 2 });
+          merged.push({ type: "rest", len: 2, sourceIndex: current.sourceIndex });
           i += 1;
           continue;
         }
@@ -227,18 +270,18 @@ class AlphaTexBuilder {
      * @param {boolean} attachChord
      * @returns {string}
      */
-    const toSixteenthAlphaTex = (token, chordLabel, attachChord) => {
+    const toSixteenthAlphaTex = (token, chordLabel) => {
       const duration = token.len === 1 ? 16
         : token.len === 2 ? 8
           : token.len === 3 ? 8
             : token.len === 4 ? 4
               : 16;
       const dotted = token.len === 3;
-      const shouldAttachChord = token.type === "note" && attachChord && chordLabel;
+      const shouldAttachChord = token.type === "note" && chordLabel;
       const props = [
         "slashed",
         dotted ? "d" : null,
-        // 休符にコードを付けない（先頭がタイでも最初の音符にだけ付与する）
+        // 休符にコードを付けない
         shouldAttachChord ? `ch "${chordLabel}"` : null,
       ].filter(Boolean).join(" ");
       return token.type === "rest"
@@ -251,6 +294,12 @@ class AlphaTexBuilder {
     for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
       const notes = [];
       const barData = barSource ? barSource[barIndex] : null;
+      const MAX_SUBDIV = APP_LIMITS.beatSubdivMax;
+      /**
+       * 空の拍内コード配列を生成する。
+       * @returns {string[]}
+       */
+      const buildEmptyChordRow = () => Array.from({ length: MAX_SUBDIV }, () => "");
       const getBeatLength = (duration) => {
         if (duration === "16") return 0.25;
         if (duration === "8") return 0.5;
@@ -259,18 +308,45 @@ class AlphaTexBuilder {
         if (duration === "1") return 4;
         return 1;
       };
-      const normalizeBeatChords = (value) => {
-        if (Array.isArray(value)) {
-          const normalized = value.map((item) => (typeof item === "string" ? item : ""));
-          while (normalized.length < beats) {
+      /**
+       * 拍内コード配列を正規化する。
+       * @param {unknown} row
+       * @returns {string[]}
+       */
+      const normalizeChordRow = (row) => {
+        if (Array.isArray(row)) {
+          const normalized = row.map((item) => (typeof item === "string" ? item : ""));
+          while (normalized.length < MAX_SUBDIV) {
             normalized.push("");
           }
-          return normalized.slice(0, beats);
+          return normalized.slice(0, MAX_SUBDIV);
         }
-        if (typeof value === "string" && value.length > 0) {
-          return Array.from({ length: beats }, (_, index) => (index === 0 ? value : ""));
+        if (typeof row === "string" && row.length > 0) {
+          return [row, ...Array.from({ length: MAX_SUBDIV - 1 }, () => "")];
         }
-        return Array.from({ length: beats }, () => "");
+        return buildEmptyChordRow();
+      };
+      /**
+       * 拍ごとのコード配列を正規化する。
+       * @param {unknown} value
+       * @returns {string[][]}
+       */
+      const normalizeBeatChords = (value) => {
+        const normalized = [];
+        if (Array.isArray(value)) {
+          const isMatrix = value.some((item) => Array.isArray(item));
+          if (isMatrix) {
+            value.forEach((row) => normalized.push(normalizeChordRow(row)));
+          } else {
+            value.forEach((item) => normalized.push(normalizeChordRow(item)));
+          }
+        } else if (typeof value === "string" && value.length > 0) {
+          normalized.push(normalizeChordRow(value));
+        }
+        while (normalized.length < beats) {
+          normalized.push(buildEmptyChordRow());
+        }
+        return normalized.slice(0, beats);
       };
       const buildBeatChords = () => {
         if (barData && barData.chord) {
@@ -279,11 +355,13 @@ class AlphaTexBuilder {
         const fallback = progressionSource ? progressionSource[barIndex % progressionSource.length] : "";
         return normalizeBeatChords(fallback);
       };
-      const beatChords = buildBeatChords().map((value) => this.sanitizeChordLabel(value));
+      // 拍内コード配列をサニタイズして利用する
+      const beatChords = buildBeatChords().map((row) =>
+        row.map((value) => this.sanitizeChordLabel(value)),
+      );
       let beatIndex = 0;
       let beatProgress = 0;
       let currentBeatDivision = 4;
-      let chordAttached = false;
       const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
         ? barData.rhythm
         : Array.from({ length: beats }, () => "4");
@@ -311,7 +389,7 @@ class AlphaTexBuilder {
         if (beatProgress === 0) {
           currentBeatDivision = Number.parseInt(duration, 10);
         }
-        const beatChordLabel = beatChords[beatIndex] || "";
+        const beatChordRow = beatChords[beatIndex] || [];
         const beatLength = getBeatLength(duration);
 
         if (duration === "16" && beatProgress === 0) {
@@ -325,8 +403,10 @@ class AlphaTexBuilder {
           const displayTokens = buildSixteenthDisplayTokens(pattern);
           let divisionTokenEmitted = false;
           displayTokens.forEach((token, tokenIndex) => {
-            const isBarHead = beatIndex === 0 && beatProgress === 0;
             const nextToken = displayTokens[tokenIndex + 1];
+            const chordLabel = typeof token.sourceIndex === "number"
+              ? (beatChordRow[token.sourceIndex] || "")
+              : "";
             if (token.tieFromPrev) {
               // タイ継続は音符を出さず、タイだけを出す（Specの正解文字列に合わせる）
               const tieDuration = token.len === 1 ? 16
@@ -335,12 +415,11 @@ class AlphaTexBuilder {
                     : token.len === 4 ? 4
                       : 16;
               const tieDotted = token.len === 3;
-              const shouldAttachChord = !chordAttached && beatChordLabel;
               const tieProps = [
                 "slashed",
                 tieDotted ? "d" : null,
                 // 先頭がタイ継続の場合はここでコードを付与する
-                shouldAttachChord ? `ch "${beatChordLabel}"` : null,
+                chordLabel ? `ch "${chordLabel}"` : null,
               ].filter(Boolean).join(" ");
               const tiePrefix = !divisionTokenEmitted && currentBeatDivision !== lastBeatDivision
                 ? `:${tieDuration} `
@@ -349,20 +428,12 @@ class AlphaTexBuilder {
               if (tiePrefix) {
                 divisionTokenEmitted = true;
               }
-              if (shouldAttachChord) {
-                chordAttached = true;
-              }
               lastNoteIndex = null;
             } else {
-              const shouldAttachChord = token.type === "note" && beatChordLabel && !chordAttached;
               const noteText = toSixteenthAlphaTex(
                 token,
-                beatChordLabel,
-                shouldAttachChord,
+                chordLabel,
               );
-              if (shouldAttachChord) {
-                chordAttached = true;
-              }
               if (!divisionTokenEmitted && currentBeatDivision !== lastBeatDivision) {
                 notes.push(`:${currentBeatDivision}`);
                 divisionTokenEmitted = true;
@@ -380,7 +451,6 @@ class AlphaTexBuilder {
               beatIndex = Math.min(beatIndex + 1, beats - 1);
               beatProgress -= 1;
               lastBeatDivision = currentBeatDivision;
-              chordAttached = false;
               if (beatIndex >= beats - 1 && beatProgress > 0.999) {
                 beatProgress = 0;
                 break;
@@ -391,13 +461,24 @@ class AlphaTexBuilder {
           continue;
         }
 
+        // 8分の2つ目ならsubIndex=1、それ以外は0（4分/2分/1分は先頭のみ）
+        const subIndex = duration === "8"
+          ? (beatProgress >= 0.5 ? 1 : 0)
+          : 0;
+        const chordLabel = beatChordRow[subIndex] || "";
+
+        // 8分の先頭がタイ継続の場合は、タイ記号のみ出す
         if (duration === "8" && isTie && beatProgress === 0) {
           const nextValue = rhythm[rhythmIndex + 1];
           const isNextTie = typeof nextValue === "string" && nextValue.startsWith("t") && nextValue.endsWith("8");
+          const tieProps = [
+            "slashed",
+            chordLabel ? `ch "${chordLabel}"` : null,
+          ].filter(Boolean).join(" ");
           if (currentBeatDivision !== lastBeatDivision) {
-            notes.push(`:${currentBeatDivision} - { slashed }`);
+            notes.push(`:${currentBeatDivision} - { ${tieProps} }`);
           } else {
-            notes.push("- { slashed }");
+            notes.push(`- { ${tieProps} }`);
           }
           beatProgress += getBeatLength(duration);
           if (isNextTie) {
@@ -409,7 +490,6 @@ class AlphaTexBuilder {
             beatIndex = Math.min(beatIndex + 1, beats - 1);
             beatProgress -= 1;
             lastBeatDivision = currentBeatDivision;
-            chordAttached = false;
             if (beatIndex >= beats - 1 && beatProgress > 0.999) {
               beatProgress = 0;
               break;
@@ -431,10 +511,34 @@ class AlphaTexBuilder {
             const divisionToken = currentBeatDivision !== lastBeatDivision
               ? `:${currentBeatDivision} `
               : "";
-            notes.push(`${divisionToken}- { slashed }`);
+            const tieProps = [
+              "slashed",
+              chordLabel ? `ch "${chordLabel}"` : null,
+            ].filter(Boolean).join(" ");
+            notes.push(`${divisionToken}- { ${tieProps} }`);
             beatProgress += beatLength;
             handledTie = true;
           }
+        }
+
+        // タイ単独で接続先が無い場合は休符扱いにする
+        if (isTie && !handledTie) {
+          let restValue = "r.4";
+          if (duration === "16") {
+            restValue = "r.16";
+          } else if (duration === "8") {
+            restValue = "r.8";
+          } else if (duration === "4") {
+            restValue = "r.4";
+          } else if (duration === "2") {
+            restValue = "r.2";
+          } else if (duration === "1") {
+            restValue = "r.1";
+          }
+          notes.push(`${restValue} { slashed }`);
+          lastNoteIndex = null;
+          beatProgress += beatLength;
+          handledTie = true;
         }
 
         if (handledTie) {
@@ -442,12 +546,11 @@ class AlphaTexBuilder {
             beatIndex = Math.min(beatIndex + 1, beats - 1);
             beatProgress -= 1;
             lastBeatDivision = currentBeatDivision;
-            chordAttached = false;
             if (beatIndex >= beats - 1 && beatProgress > 0.999) {
               beatProgress = 0;
               break;
+            }
           }
-        }
           continue;
         }
 
@@ -482,9 +585,8 @@ class AlphaTexBuilder {
             noteValue = "C4.1";
         }
           let props = "slashed";
-          if (beatChordLabel && !chordAttached) {
-            props += ` ch "${beatChordLabel}"`;
-            chordAttached = true;
+          if (chordLabel) {
+            props += ` ch "${chordLabel}"`;
           }
           const noteText = `${noteValue} { ${props} }`;
           notes.push(noteText);
@@ -496,7 +598,6 @@ class AlphaTexBuilder {
           beatIndex = Math.min(beatIndex + 1, beats - 1);
           beatProgress -= 1;
           lastBeatDivision = currentBeatDivision;
-          chordAttached = false;
           if (beatIndex >= beats - 1 && beatProgress > 0.999) {
             beatProgress = 0;
             break;
