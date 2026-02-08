@@ -154,11 +154,36 @@ header {
   background-color: mintcream;
 }
 
+/* タイトル全体（2行構成） */
+#title.titleStack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;             /* タイトル - サブタイトル間の隙間  */
+  line-height: 1.0;
+}
+
+/* タイトル主文 */
+.titleMain {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* タイトル副文 */
+.titleSubtitle {
+  font-size: 0.45em;
+  font-weight: 50;
+  letter-spacing: 0.02em;
+  color: darkslategray
+}
+
 /* タイトル内のBアイコン */
 .titleIcon {
   height: 0.8em; /* 文字サイズに合わせる */
   width: 0.8em; /* 正方形に揃える */
-  vertical-align: -0.1em; /* ベースライン調整 */
+  vertical-align: middle; /* ベースライン調整 */
+  transform: translateY(0.02em); /* アイコンと文字の見た目揃え */
 }
 
 /* 閉じるボタン */
