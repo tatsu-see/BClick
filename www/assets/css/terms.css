@@ -17,5 +17,6 @@ body {
 }
 
 #clicking li {
-  margin-bottom: 0.4em; /* 箇条書きの間隔 */
+  margin-bottom: 0.2em; /* 箇条書きの間隔を少し詰める */
+  line-height: 1.35; /* li間の縦密度を上げる */
 }
