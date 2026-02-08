@@ -98,13 +98,13 @@
 .rhythmPatternHeader,
 .rhythmPatternRow {
   display: grid;
-  grid-template-columns: 36px 1fr 160px 52px; /* 列幅を調整する場合はここを変更する */
+  grid-template-columns: 44px 1fr 160px; /* 列幅を調整する場合はここを変更する */
   align-items: stretch;
   gap: 1px;
 }
 
 .rhythmPatternRow.isCovered .rhythmPatternDivision,
-.rhythmPatternRow.isCovered .rhythmPatternSymbols,
+.rhythmPatternRow.isCovered .rhythmPatternSymbolRow,
 .rhythmPatternRow.isCovered .rhythmPatternPreview {
   opacity: 0.45;
   pointer-events: none;
@@ -132,12 +132,31 @@
 
 .rhythmPatternSymbols {
   display: flex;
+  align-items: stretch;
+}
+
+.rhythmPatternStack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.rhythmPatternSymbolRow {
+  display: flex;
   flex-wrap: nowrap;
   gap: 2px;
   justify-content: center;
+  width: 100%;
 }
 
-.rhythmPatternSymbols .rhythmSymbolSelect {
+.rhythmPatternChordRow {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.rhythmPatternSymbolRow .rhythmSymbolSelect {
   min-width: 0;
   text-align: center;
   font-size: 0.7em;
@@ -160,10 +179,6 @@
   justify-content: center;
   /* Spec ABCJSプレビューは操作しないのでクリックを無効化する */
   pointer-events: none;
-}
-
-.rhythmPatternChord {
-  justify-content: center;
 }
 
 .rhythmChordSelect {

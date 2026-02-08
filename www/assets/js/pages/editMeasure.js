@@ -650,6 +650,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const patternCell = document.createElement("div");
       patternCell.className = "rhythmPatternCell rhythmPatternSymbols";
+      const patternStack = document.createElement("div");
+      patternStack.className = "rhythmPatternStack";
+      const symbolRow = document.createElement("div");
+      symbolRow.className = "rhythmPatternSymbolRow";
+      const chordRow = document.createElement("div");
+      chordRow.className = "rhythmPatternChordRow";
+      patternStack.appendChild(symbolRow);
+      patternStack.appendChild(chordRow);
+      patternCell.appendChild(patternStack);
 
       const previewCell = document.createElement("div");
       previewCell.className = "rhythmPatternCell rhythmPatternPreview";
@@ -662,8 +671,6 @@ document.addEventListener("DOMContentLoaded", () => {
         buildAbcTokens,
       );
 
-      const chordCell = document.createElement("div");
-      chordCell.className = "rhythmPatternCell rhythmPatternChord";
       const chordSelect = document.createElement("select");
       chordSelect.className = "rhythmChordSelect";
       chordSelect.dataset.beatIndex = index.toString();
@@ -677,17 +684,22 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedBeatChords[index] = chordSelect.value;
       });
       // iOS向けの中央寄せ表示にするため、表示ラベルを重ねる。
-      chordCell.appendChild(
+      chordRow.appendChild(
         buildCenteredSelectWrap(chordSelect, { labelClass: "rhythmSelectLabelChord" }),
       );
 
       const rebuildPatternSelectors = () => {
         if (coveredBeats[index]) {
-          patternCell.textContent = "";
+          symbolRow.textContent = "";
           previewRenderer.render({ division: 4, pattern: ["note"] });
           return;
         }
-        patternCell.textContent = "";
+        symbolRow.textContent = "";
+        if (chordRow.childElementCount === 0) {
+          chordRow.appendChild(
+            buildCenteredSelectWrap(chordSelect, { labelClass: "rhythmSelectLabelChord" }),
+          );
+        }
         const patternLength = getPatternLengthFromDivision(patternItem.division);
         while (patternItem.pattern.length < patternLength) {
           patternItem.pattern.push("note");
@@ -741,7 +753,7 @@ document.addEventListener("DOMContentLoaded", () => {
             previewRenderer.render(patternItem);
           });
           // iOS向けの中央寄せ表示にするため、表示ラベルを重ねる。
-          patternCell.appendChild(
+          symbolRow.appendChild(
             buildCenteredSelectWrap(symbolSelect, { labelClass: "rhythmSelectLabelSymbol" }),
           );
         }
@@ -754,7 +766,6 @@ document.addEventListener("DOMContentLoaded", () => {
       row.appendChild(divisionCell);
       row.appendChild(patternCell);
       row.appendChild(previewCell);
-      row.appendChild(chordCell);
       rhythmPatternBody.appendChild(row);
     });
   };
