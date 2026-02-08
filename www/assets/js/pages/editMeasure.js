@@ -230,7 +230,8 @@ document.addEventListener("DOMContentLoaded", () => {
       seen.add(value);
       options.push(value);
     });
-    return options;
+    // コード選択肢は辞書順で並べる
+    return options.sort((a, b) => a.localeCompare(b));
   };
 
   const applyChordOptions = (selectEl, value, options) => {
