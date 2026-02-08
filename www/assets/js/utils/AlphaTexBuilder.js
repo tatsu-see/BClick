@@ -4,6 +4,12 @@
  */
 
 class AlphaTexBuilder {
+  constructor() {
+    // 同じ入力のときはalphaTexを再利用する。
+    this._lastCacheKey = null;
+    this._lastAlphaTex = null;
+  }
+
   /**
    * コード表記から危険文字を取り除く。
    * @param {string} value
@@ -31,6 +37,28 @@ class AlphaTexBuilder {
   }
 
   /**
+   * alphaTex キャッシュ用のキーを生成する。
+   * @param {object} params
+   * @returns {string}
+   */
+  buildCacheKey({ timeSignature, measures, barsPerRow, progression, bars, tempo } = {}) {
+    const progressionList = this.normalizeProgression(progression);
+    const safeBars = Array.isArray(bars) ? bars : [];
+    const normalizedBars = safeBars.map((bar) => ({
+      chord: Array.isArray(bar?.chord) ? bar.chord : bar?.chord || "",
+      rhythm: Array.isArray(bar?.rhythm) ? bar.rhythm : bar?.rhythm || "",
+    }));
+    return JSON.stringify({
+      timeSignature: typeof timeSignature === "string" ? timeSignature : "",
+      measures: Number.isFinite(measures) ? measures : null,
+      barsPerRow: Number.isFinite(barsPerRow) ? barsPerRow : null,
+      tempo: Number.isFinite(Number.parseInt(tempo, 10)) ? Number.parseInt(tempo, 10) : null,
+      progression: progressionList,
+      bars: normalizedBars,
+    });
+  }
+
+  /**
    * alphaTab に表示する楽譜用の文字列を作成する。
    * @param {object} params
    * @param {string} params.timeSignature
@@ -41,6 +69,11 @@ class AlphaTexBuilder {
    * @returns {string}
    */
   buildAlphaTex({ timeSignature, measures, barsPerRow, progression, bars, tempo } = {}) {
+    const cacheKey = this.buildCacheKey({ timeSignature, measures, barsPerRow, progression, bars, tempo });
+    if (cacheKey === this._lastCacheKey && typeof this._lastAlphaTex === "string") {
+      return this._lastAlphaTex;
+    }
+
     const signature = typeof timeSignature === "string" ? timeSignature : "4/4";
     const [numeratorRaw, denominatorRaw] = signature.split("/");
     const numeratorValue = Number.parseInt(numeratorRaw, 10);
@@ -201,10 +234,12 @@ class AlphaTexBuilder {
             : token.len === 4 ? 4
               : 16;
       const dotted = token.len === 3;
+      const shouldAttachChord = token.type === "note" && attachChord && chordLabel;
       const props = [
         "slashed",
         dotted ? "d" : null,
-        attachChord && chordLabel ? `ch "${chordLabel}"` : null,
+        // 休符にコードを付けない（先頭がタイでも最初の音符にだけ付与する）
+        shouldAttachChord ? `ch "${chordLabel}"` : null,
       ].filter(Boolean).join(" ");
       return token.type === "rest"
         ? `r.${duration} { ${props} }`
@@ -300,7 +335,13 @@ class AlphaTexBuilder {
                     : token.len === 4 ? 4
                       : 16;
               const tieDotted = token.len === 3;
-              const tieProps = tieDotted ? "slashed d" : "slashed";
+              const shouldAttachChord = !chordAttached && beatChordLabel;
+              const tieProps = [
+                "slashed",
+                tieDotted ? "d" : null,
+                // 先頭がタイ継続の場合はここでコードを付与する
+                shouldAttachChord ? `ch "${beatChordLabel}"` : null,
+              ].filter(Boolean).join(" ");
               const tiePrefix = !divisionTokenEmitted && currentBeatDivision !== lastBeatDivision
                 ? `:${tieDuration} `
                 : "";
@@ -308,14 +349,18 @@ class AlphaTexBuilder {
               if (tiePrefix) {
                 divisionTokenEmitted = true;
               }
+              if (shouldAttachChord) {
+                chordAttached = true;
+              }
               lastNoteIndex = null;
             } else {
+              const shouldAttachChord = token.type === "note" && beatChordLabel && !chordAttached;
               const noteText = toSixteenthAlphaTex(
                 token,
                 beatChordLabel,
-                !chordAttached,
+                shouldAttachChord,
               );
-              if (token.type === "note" && beatChordLabel && !chordAttached) {
+              if (shouldAttachChord) {
                 chordAttached = true;
               }
               if (!divisionTokenEmitted && currentBeatDivision !== lastBeatDivision) {
@@ -522,6 +567,9 @@ class AlphaTexBuilder {
   ・先頭16分音符、後は4部音符で2拍目にタイを付ける。
   :4 C4.16 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |
 
+  ・先頭16分音符（16分音符の先頭は⌒、2番目は休符、3,4番目は●、コードはD）、後は4部音符（コード無し）。
+  :16 - { slashed ch "D" } r.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
   ・先頭16分音符（音符内2番目は⌒）、後は4部音符。
   :4 C4.8 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
 
@@ -531,7 +579,13 @@ class AlphaTexBuilder {
 
   下記は console から変数値を更新するために使う。
   alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' + ''
+
+  例）
+  alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' +
+  ':16 - { slashed ch "D" } r.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |'
 */
+    this._lastCacheKey = cacheKey;
+    this._lastAlphaTex = alphaTex;
     return alphaTex;
   }
 }
