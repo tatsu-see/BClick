@@ -94,6 +94,13 @@ document.addEventListener("DOMContentLoaded", () => {
     return (clamped / 2) * maxVolume;
   };
 
+  /**
+   * 保存済みのクリック音量を再読み込みして再生用の値を更新する。
+   */
+  const refreshClickVolume = () => {
+    currentClickVolume = toDeviceVolume(getClickVolume());
+  };
+
   // UI更新
   const setOperationEnabled = (enabled) => {
     if (setClickButton) setClickButton.disabled = !enabled;
@@ -286,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentBeatMs = beatMs;
     const clickCount = getClickCount();
     let countdown = getCountdown();
-    currentClickVolume = toDeviceVolume(getClickVolume());
+    refreshClickVolume();
 
     renderClickBoxes(clickCount);
     isRunning = true;
@@ -402,11 +409,21 @@ document.addEventListener("DOMContentLoaded", () => {
     setClickBoxes();
   });
 
+  window.addEventListener("pageshow", () => {
+    refreshClickVolume();
+  });
+
   window.addEventListener("storage", (event) => {
     if (event.storageArea !== window.localStorage) return;
     if (event.key === "bclick.clickCount") {
       syncClickCountFromStore();
       setClickBoxes();
+      return;
+    }
+    
+    // ボリュームの更新は次に再生するクリック音のボリュームに反映する。
+    if (event.key === "bclick.clickVolume") {
+      refreshClickVolume();
     }
   });
 });
