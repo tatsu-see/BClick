@@ -133,7 +133,7 @@
 .rhythmPatternHeader,
 .rhythmPatternRow {
   display: grid;
-  grid-template-columns: 56px 1fr 160px 64px; /* 列幅を調整する場合はここを変更する */
+  grid-template-columns: 48px 1fr 160px 56px; /* 列幅を調整する場合はここを変更する */
   align-items: stretch;
   gap: 1px;
 }

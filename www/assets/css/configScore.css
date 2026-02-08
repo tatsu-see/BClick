@@ -193,7 +193,7 @@
 .rhythmPatternHeader,
 .rhythmPatternRow {
   display: grid;
-  grid-template-columns: 56px 1fr 160px; /* 列幅を調整する場合はここを変更する */
+  grid-template-columns: 48px 1fr 160px; /* 列幅を調整する場合はここを変更する */
   align-items: stretch;
   gap: 1px;
 }
@@ -243,6 +243,48 @@
 .rhythmDivisionSelect,
 .rhythmPatternSymbols .rhythmSymbolSelect {
   height: 100%;
+}
+
+.rhythmSelectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* iOS でも中央寄せに見せるための表示用ラベル */
+.rhythmSelectLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  line-height: 1;
+  color: inherit;
+}
+
+/* シンボル表示は少し小さめにする */
+.rhythmSelectLabelSymbol {
+  font-size: 0.7em;
+}
+
+/* ネイティブ select は透明で上に載せて操作だけ残す */
+.rhythmSelectInput {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background: transparent;
+}
+
+.rhythmSelectWrap:focus-within {
+  outline: 2px solid #333;
+  outline-offset: 2px;
 }
 
 .rhythmDivisionSelect {

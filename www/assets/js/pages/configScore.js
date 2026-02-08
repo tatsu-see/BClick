@@ -463,6 +463,43 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedBeatPatterns = normalizeBeatPatternList(selectedBeatPatterns, beatCount);
     rhythmPatternBody.textContent = "";
     const coveredBeats = buildCoveredBeats(selectedBeatPatterns, beatCount);
+
+    /**
+     * iOSのselectはoption中央寄せが効きにくいので、
+     * 表示用ラベルを重ねて疑似的に中央寄せする。
+     */
+    const syncSelectLabel = (select, label) => {
+      if (!select || !label) return;
+      const selected = select.options[select.selectedIndex];
+      label.textContent = selected ? selected.textContent : "";
+    };
+
+    /**
+     * select + 表示用ラベルのラッパーを作る。
+     * @param {HTMLSelectElement} select
+     * @param {string} labelClass
+     * @returns {HTMLDivElement}
+     */
+    const buildSelectWrap = (select, labelClass = "") => {
+      const wrap = document.createElement("div");
+      wrap.className = "rhythmSelectWrap";
+      // 表示用ラベルは見た目のみ。操作はネイティブselectに委ねる。
+      const label = document.createElement("span");
+      const symbolLabelClass = select.classList.contains("rhythmSymbolSelect")
+        ? " rhythmSelectLabelSymbol"
+        : "";
+      label.className =
+        `rhythmSelectLabel${symbolLabelClass}${labelClass ? ` ${labelClass}` : ""}`;
+      select.classList.add("rhythmSelectInput");
+      syncSelectLabel(select, label);
+      select.addEventListener("change", () => {
+        syncSelectLabel(select, label);
+      });
+      wrap.appendChild(label);
+      wrap.appendChild(select);
+      return wrap;
+    };
+
     selectedBeatPatterns.forEach((patternItem, index) => {
       const row = document.createElement("div");
       row.className = "rhythmPatternRow";
@@ -494,7 +531,8 @@ document.addEventListener("DOMContentLoaded", () => {
             : allowedDivisions[0] || 4;
           renderBeatSelectors();
         });
-        divisionCell.appendChild(divisionSelect);
+        // iOS向けの中央寄せ表示にするため、表示ラベルを重ねる。
+        divisionCell.appendChild(buildSelectWrap(divisionSelect));
       }
 
       const patternCell = document.createElement("div");
@@ -570,7 +608,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             previewRenderer.render(patternItem);
           });
-          patternCell.appendChild(symbolSelect);
+          // iOS向けの中央寄せ表示にするため、表示ラベルを重ねる。
+          patternCell.appendChild(buildSelectWrap(symbolSelect));
         }
 
         previewRenderer.render(patternItem);

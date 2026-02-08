@@ -469,12 +469,18 @@ class AlphaTexBuilder {
       ? `\\tempo ${tempoValue}`
       : null;
 
+    // 先頭小節が「:8 - { slashed }」のような分割トークン始まりだと、
+    // 先頭に「:4」を重ねると alphaTex の構文エラーになるため回避する。
+    const firstBarText = barTokens[0] || "";
+    const needsDefaultDivision = !firstBarText.trim().startsWith(":");
+    const rhythmLinePrefix = needsDefaultDivision ? `:${denominator} ` : "";
+
     const alphaTex = [
       layoutLine,
       tempoLine,
       `\\ts ${numerator} ${denominator}`,
       ".",
-      `:${denominator} ${barTokens.join(" | ")} |`,
+      `${rhythmLinePrefix}${barTokens.join(" | ")} |`,
     ].filter(Boolean).join("\n");
 
     // ●DEBUG: alphaTabへ渡す最終alphaTex
