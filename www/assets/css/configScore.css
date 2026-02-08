@@ -213,7 +213,7 @@
   padding:0px;
   margin-bottom:3px;
 
-  border: 1px solid #d0d0d044;
+  border: 1px solid #d0d0d044;  /* セルに薄い枠を表示する */
   border-radius: 4px;
 }
 

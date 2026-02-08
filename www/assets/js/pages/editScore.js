@@ -436,6 +436,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("bclick:scoreloaded", applyLoadedScoreToUI);
 
+  // モバイルの履歴復帰やタブ復帰で再描画されないケースに備えて再適用する。
+  window.addEventListener("pageshow", () => {
+    applyLoadedScoreToUI();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      applyLoadedScoreToUI();
+    }
+  });
+
+  window.addEventListener("focus", () => {
+    applyLoadedScoreToUI();
+  });
+
   // 操作ボタンのイベント
   if (saveButton) {
     saveButton.addEventListener("click", () => {
