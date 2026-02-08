@@ -689,18 +689,24 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       const rebuildPatternSelectors = () => {
+        const patternLength = getPatternLengthFromDivision(patternItem.division);
+        chordRow.textContent = "";
+        chordRow.style.gridTemplateColumns = `repeat(${patternLength}, 1fr)`;
+        chordRow.appendChild(
+          buildCenteredSelectWrap(chordSelect, { labelClass: "rhythmSelectLabelChord" }),
+        );
+        for (let spacerIndex = 0; spacerIndex < patternLength - 1; spacerIndex += 1) {
+          const spacer = document.createElement("div");
+          spacer.className = "rhythmPatternChordSpacer";
+          chordRow.appendChild(spacer);
+        }
+
         if (coveredBeats[index]) {
           symbolRow.textContent = "";
           previewRenderer.render({ division: 4, pattern: ["note"] });
           return;
         }
         symbolRow.textContent = "";
-        if (chordRow.childElementCount === 0) {
-          chordRow.appendChild(
-            buildCenteredSelectWrap(chordSelect, { labelClass: "rhythmSelectLabelChord" }),
-          );
-        }
-        const patternLength = getPatternLengthFromDivision(patternItem.division);
         while (patternItem.pattern.length < patternLength) {
           patternItem.pattern.push("note");
         }
