@@ -576,6 +576,10 @@ class AlphaTexBuilder {
   ・先頭16分音符（音符内2番目と4番目は⌒）、後は4部音符。
   :4 C4.16 { slashed ch "D" } - { slashed } C4.16 { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
 
+  ・音符とコードの対応を説明します。（部分的に説明します。）
+    音符にコードが付く場合は      { slashed ch "D" }  のように、{}括弧内の slashed の後ろに ch "D" と追加して表現します。
+    音符にコードが付かない場合は  { slashed }         のように、{}括弧内は slashed だけで表現します。
+  
 
   下記は console から変数値を更新するために使う。
   alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' + ''
