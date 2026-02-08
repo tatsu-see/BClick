@@ -1,22 +1,11 @@
 
-#preference {
-  margin-bottom:3px;
-  padding:3px;
-  width:calc(100%-6px);
-
-  border:0px solid green;
-  border-radius: 3px;
-  background-color: mintcream;
-
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: stretch;
-  text-align: left;
-}
-
 .preferenceValueCentered {
   justify-content: center;
+}
+
+/* 縦方向の間隔をconfigBeatに寄せる */
+.preferenceValue {
+  margin-bottom: 3px;
 }
 
 .chipGroup {

@@ -1,21 +1,11 @@
 
-#scorePreference {
-  margin-bottom:3px;
-  padding:3px;
-  width:calc(100%-6px);
-
-  border:0px solid green;
-  border-radius: 3px;
-  background-color: mintcream;
-
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  text-align: left;
-}
-
 .preferenceValueCentered {
   justify-content: center;
+}
+
+/* 縦方向の間隔をconfigBeatに寄せる */
+.preferenceValue {
+  margin-bottom: 3px;
 }
 
 .chipGroup {
@@ -46,37 +36,12 @@
   padding: 4px 0;
 }
 
-.chipGroupColumn {
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.chipGroupToggleRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .chipGroupActions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
   width: 100%;
-}
-
-.chipGroupTitle {
-  font-size: 0.85em;
-  font-weight: 600;
-  color: #333;
-}
-
-.chipGroupTitle input[type="checkbox"] {
-  margin-right: 6px;
-}
-
-.chipGroupSectionRow.isHidden .chipGroup {
-  display: none;
 }
 
 .chipButton {
