@@ -23,6 +23,7 @@
   <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
 
   <link rel="stylesheet" href="/assets/lib/Language.css">
+  <link rel="stylesheet" href="/assets/lib/consentManager.css">
   <link rel="stylesheet" href="/assets/css/app.css">
   <link rel="stylesheet" href="/assets/css/terms.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
@@ -30,6 +31,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
 
   <link rel="modulepreload" href="/assets/js/utils/navigationGuard.js">
+  <link rel="modulepreload" href="/assets/lib/consentManager.js">
 
   <script type="module" src="/assets/lib/Language.js"></script>
 
@@ -170,6 +172,12 @@
             <span class="lang" data-lang="ja">問い合わせ先: アプリの先頭画面のフッターにある「メッセージ」リンクからご連絡ください。</span>
           </li>
         </ul>
+        <div class="consentSettings">
+          <button type="button" id="openConsentDialog" class="consentSettingsButton" aria-label="Open consent settings">
+            <span class="lang" data-lang="en">Consent settings</span>
+            <span class="lang" data-lang="ja">同意設定</span>
+          </button>
+        </div>
 
         <h3>
           <span class="lang" data-lang="en">8. Third-Party Software</span>
@@ -215,6 +223,26 @@
       </div>
     </div>
   </main>
+
+  <dialog id="consentDialog" class="consentDialog" aria-label="Consent settings">
+    <div class="consentDialogBody">
+      <h4 class="consentDialogTitle">
+        <span class="lang" data-lang="en">Consent settings</span>
+        <span class="lang" data-lang="ja">同意設定</span>
+      </h4>
+      <p id="consentStatus" class="consentDialogStatus"></p>
+      <div class="consentDialogActions">
+        <button type="button" id="consentAccept" class="makeScoreButton" aria-label="Accept analytics cookies">
+          <span class="lang" data-lang="en">Accept</span>
+          <span class="lang" data-lang="ja">同意する</span>
+        </button>
+        <button type="button" id="consentDecline" class="makeScoreButton" aria-label="Decline analytics cookies">
+          <span class="lang" data-lang="en">Decline</span>
+          <span class="lang" data-lang="ja">拒否する</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
 
   <footer>
     <small>&copy; 2025 tatsu. All rights reserved.</small>

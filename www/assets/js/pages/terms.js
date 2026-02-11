@@ -1,4 +1,8 @@
+/**
+ * 利用規約画面の戻る操作と同意設定ダイアログを制御する。
+ */
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
+import { initConsentDialog } from "../../lib/consentManager.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (document.referrer) {
@@ -12,4 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
       goBackWithFallback();
     });
   }
+
+  initConsentDialog({
+    openButtonId: "openConsentDialog",
+    dialogId: "consentDialog",
+    acceptId: "consentAccept",
+    declineId: "consentDecline",
+    statusId: "consentStatus",
+  });
 });

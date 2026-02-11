@@ -30,6 +30,32 @@
 - 利用規約・プライバシーポリシーに、収集目的・第三者提供・Cookie・保管期間・問い合わせ先を明記する
   (問い合わせ先は、index画面のフッターに用意した "メッセージ" からメッセージをもらう)
 
+GDPR対応の仕様
+
+１：同意バナーの選択肢をどうするか？ → 「 同意する / 拒否する」 の2択とする。
+２：バナーの文言（AIにお任せで。特段おかしな文でなければOK ）
+  EN: "We use analytics cookies to improve this app. You can accept or decline. You can change your choice anytime in Terms."
+  JA: "本アプリの改善のため解析用Cookieを使用します。同意または拒否が可能です。設定は利用規約ページからいつでも変更できます。"
+３：表示タイミングは、初回アクセス時のみ表示（同意/拒否が未保存のときに出す）、とする。
+  表示バナーの位置は、アプリ画面(index.html)の最下部にでる。
+４：同意保存の仕様
+  キー名: bclick.consent.analytics
+  値:     granted / denied
+  期限:   12か月
+５：Consent Mode v2 の初期値と更新値
+  初期（同意前）: ad_storage: denied, analytics_storage: denied, ad_user_data: denied, ad_personalization: denied
+  同意後: 上記をすべて granted
+６：同意撤回/再選択の導線（terms 画面内）
+  terms.html の「プライバシーポリシー」章に Consent settings / 同意設定 のリンク（ボタン）を追加し、クリックで dialog を開き、
+  同意する / 拒否する の2ボタンのみ（現在状態も表示）
+７：GAコードの読み込み場所・タイミング
+  同意前は gtag.js を読み込まない
+  同意が granted のときのみ動的に gtag.js を読み込み、gtag('config', 'G-...') を実行
+  index.html のみに設置（他ページは遷移時に index.html 経由）
+８：その他
+  Android, iPhone, Windows11, Mac のブラウザ画面で見ても適切な位置やサイズ、文言であることは実装後に確認する。
+
+
 ## 見た目のデザイン
 
 - 緑を基調とした色遣いとする。
