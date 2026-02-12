@@ -228,9 +228,10 @@ class RhythmScoreUI {
   runMenuAction(action, barIndex) {
     if (!action || barIndex === null || barIndex === undefined) return;
     if (action === "delete") {
-      if (!window.confirm(this.getDeleteConfirmMessage())) {
-        return;
-      }
+      // 確認操作は不要かもしれないので、コメントアウトする。
+//      if (!window.confirm(this.getDeleteConfirmMessage())) {
+//        return;
+//      }
     }
     this.onAction?.(action, barIndex);
   }

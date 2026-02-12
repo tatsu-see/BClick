@@ -270,7 +270,7 @@ class AlphaTexBuilder {
      * @param {boolean} attachChord
      * @returns {string}
      */
-    const toSixteenthAlphaTex = (token, chordLabel) => {
+    const toSixteenthAlphaTex = (token, chordLabel, addBeamSplit) => {
       const duration = token.len === 1 ? 16
         : token.len === 2 ? 8
           : token.len === 3 ? 8
@@ -280,6 +280,7 @@ class AlphaTexBuilder {
       const shouldAttachChord = token.type === "note" && chordLabel;
       const props = [
         "slashed",
+        addBeamSplit ? "beam split" : null,
         dotted ? "d" : null,
         // 休符にコードを付けない
         shouldAttachChord ? `ch "${chordLabel}"` : null,
@@ -430,9 +431,11 @@ class AlphaTexBuilder {
               }
               lastNoteIndex = null;
             } else {
+              const addBeamSplit = token.type === "note" && nextToken?.type === "rest";
               const noteText = toSixteenthAlphaTex(
                 token,
                 chordLabel,
+                addBeamSplit,
               );
               if (!divisionTokenEmitted && currentBeatDivision !== lastBeatDivision) {
                 notes.push(`:${currentBeatDivision}`);
@@ -677,6 +680,14 @@ class AlphaTexBuilder {
   ・先頭16分音符（音符内2番目と4番目は⌒）、後は4部音符。
   :4 C4.16 { slashed ch "D" } - { slashed } C4.16 { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
 
+  ・先頭16分音符（音符内2番目と3番目は○（2つ合わせて8分休符））、後は4部音符。
+  :16 C4.16 { slashed beam split } r.8 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+  (16分音符の2番目以降に休符がある場合は、休符前に beam split を入れて、16分音符の連桁を解除する。)
+
+  ・先頭16分音符（音符内3番目は○）、後は4部音符。
+  :16 C4.16 { slashed } C4.16 { slashed beam split } r.16 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+  (16分音符の2番目以降に休符がある場合は、休符前に beam split を入れて、16分音符の連桁を解除する。)
+
   ・音符とコードの対応を説明します。（部分的に説明します。）
     音符にコードが付く場合は      { slashed ch "D" }  のように、{}括弧内の slashed の後ろに ch "D" と追加して表現します。
     音符にコードが付かない場合は  { slashed }         のように、{}括弧内は slashed だけで表現します。
@@ -687,7 +698,7 @@ class AlphaTexBuilder {
 
   例）
   alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' +
-  ':16 - { slashed ch "D" } r.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |'
+  ':16 C4.16 { slashed } C4.16 { slashed beam split } r.16 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |'
 */
     this._lastCacheKey = cacheKey;
     this._lastAlphaTex = alphaTex;

@@ -31,6 +31,7 @@
 .consentBannerActions .makeScoreButton {
   width: auto; /* バナー内では固定幅にしない */
   min-width: 120px; /* 最低幅 */
+  font-size: 11pt; /* terms.html 相当の文字サイズに揃える */
 }
 
 @media (max-width: 720px) {
