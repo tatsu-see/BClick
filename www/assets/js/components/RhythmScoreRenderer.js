@@ -47,11 +47,16 @@ class RhythmScoreRenderer {
   render() {
     if (!this.container || !window.alphaTab) return;
     this.container.textContent = "";
+
+    // alphaTab の初期化設定一式（描画・レイアウトの基本挙動を指定）
     const settings = {
       tex: true,
       display: {
+        // alphaTab 初期化設定（描画見た目に関わる基本設定）
         staveProfile: window.alphaTab.StaveProfile.Score,
         scale: 0.95,
+        // 最終段も横幅いっぱいに揃える（最後の段だけ詰まる挙動を抑制）
+        justifyLastSystem: true,
       },
     };
     if (Number.isFinite(this.data.barsPerRow) && this.data.barsPerRow > 0) {
@@ -59,6 +64,8 @@ class RhythmScoreRenderer {
       settings.display.systemsLayoutMode = layoutMode;
     }
     this.container.textContent = this.alphaTexBuilder.buildAlphaTex(this.data);
+
+    // alphaTab 初期化設定を反映して描画を開始する
     new window.alphaTab.AlphaTabApi(this.container, settings);
   }
 }
