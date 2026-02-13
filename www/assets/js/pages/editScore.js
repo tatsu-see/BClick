@@ -18,6 +18,51 @@ import {
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
 
+  let overlayScrollTimerId = null;
+  //Spec editMeasureから戻った直後に編集した小節番号が見えるよう、オーバーレイ位置でスクロールする
+  /**
+   * 編集した小節のオーバーレイ位置へスクロールする。
+   * @param {number} attempt
+   */
+  const scrollToEditedBarByOverlay = (attempt = 0) => {
+    const lastEditedRaw = sessionStorage.getItem("bclick.lastEditedBarIndex");
+    const barIndex = Number.parseInt(lastEditedRaw, 10);
+    if (!Number.isFinite(barIndex) || barIndex < 0) return;
+    const scoreArea = document.getElementById("scoreArea");
+    if (!scoreArea) return;
+    const target = document.querySelector(
+      `.scoreChordOverlayLabel[data-bar-index="${barIndex}"]`,
+    );
+    if (!target) return false;
+    const containerRect = scoreArea.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const offset = targetRect.top - containerRect.top + scoreArea.scrollTop;
+    const maxScroll = scoreArea.scrollHeight - scoreArea.clientHeight;
+    const clamped = Math.max(0, Math.min(offset, maxScroll));
+    scoreArea.scrollTo({ top: clamped, behavior: "auto" });
+    return true;
+  };
+
+  //Spec 描画タイミング差に備えて200msごとに最大5回スクロールを試す（誤削除防止）
+  /**
+   * editMeasure から戻った直後だけ、200msごとに最大5回スクロールを試す。
+   */
+  const scheduleScrollToEditedBar = () => {
+    if (overlayScrollTimerId !== null) return;
+    if (!sessionStorage.getItem("bclick.lastEditedBarIndex")) return;
+    let retryCount = 0;
+    const tryScroll = () => {
+      retryCount += 1;
+      const done = scrollToEditedBarByOverlay();
+      if (done || retryCount >= 5) {
+        overlayScrollTimerId = null;
+        return;
+      }
+      overlayScrollTimerId = window.setTimeout(tryScroll, 200);
+    };
+    overlayScrollTimerId = window.setTimeout(tryScroll, 200);
+  };
+
   // editMeasure から戻った直後だけ、最後に編集した小節を一時強調表示する。
   const lastEditedBarRaw = sessionStorage.getItem("bclick.lastEditedBarIndex");
   const lastEditedBarIndex = Number.parseInt(lastEditedBarRaw, 10);
@@ -54,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.requestAnimationFrame(waitForHighlight);
     };
     window.requestAnimationFrame(waitForHighlight);
+    scheduleScrollToEditedBar();
   }
 
   // PDF/alphaTab用フォントを先に読み込む。
@@ -218,6 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     //Spec 初回描画直後はズレるため、遅延してオーバーレイを重ね直す
     rhythmScore.requestOverlayRefresh(200);
+    scheduleScrollToEditedBar();
     console.log("楽譜生成完了。小節数:", currentScoreData.bars?.length || currentScoreData.measures);
   } else {
     console.warn("楽譜生成条件エラー:", {
@@ -411,6 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rhythmScore.setBars(nextScoreData.bars);
       rhythmScore.setBarsPerRow(nextScoreData.barsPerRow || 2);
       rhythmScore.setRhythmPattern(nextScoreData.rhythmPattern);
+      scheduleScrollToEditedBar();
     } else if (scoreElement && window.alphaTab) {
       window.bclickActiveChordIndex = -1;
       rhythmScore = new RhythmScore("score", {
@@ -436,6 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       //Spec 楽譜の再生成直後はズレるため、遅延してオーバーレイを重ね直す
       rhythmScore.requestOverlayRefresh(200);
+      scheduleScrollToEditedBar();
     }
 
     const savedTempo = Number.isFinite(nextScoreData.tempo) ? nextScoreData.tempo : null;
