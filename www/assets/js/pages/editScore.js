@@ -37,8 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const containerRect = scoreArea.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
     const offset = targetRect.top - containerRect.top + scoreArea.scrollTop;
+    const centered = offset - (scoreArea.clientHeight - targetRect.height) / 2;
     const maxScroll = scoreArea.scrollHeight - scoreArea.clientHeight;
-    const clamped = Math.max(0, Math.min(offset, maxScroll));
+    const clamped = Math.max(0, Math.min(centered, maxScroll));
     scoreArea.scrollTo({ top: clamped, behavior: "auto" });
     return true;
   };
