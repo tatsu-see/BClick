@@ -51,6 +51,10 @@ class RhythmScoreRenderer {
     // alphaTab の初期化設定一式（描画・レイアウトの基本挙動を指定）
     const settings = {
       tex: true,
+      // Spec 小節数が多くない前提のため、遅延描画は無効化する
+      // この 設定は editScore 画面で、小節編集後に編集したスクロール位置を
+      // 復元するのに使われる可能性があるので、変更する場合には注意すること。
+      enableLazyLoading: false,
       display: {
         // alphaTab 初期化設定（描画見た目に関わる基本設定）
         staveProfile: window.alphaTab.StaveProfile.Score,
