@@ -238,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
     selectEl.textContent = "";
       const emptyOption = document.createElement("option");
       emptyOption.value = "";
-      emptyOption.textContent = getLangMsg("なし", "None");
+      emptyOption.textContent = "—";
     selectEl.appendChild(emptyOption);
     options.forEach((optionValue) => {
       const option = document.createElement("option");
