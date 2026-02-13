@@ -214,7 +214,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const containerRect = scrollContainer.getBoundingClientRect();
       const targetRect = target.getBoundingClientRect();
       const offset = targetRect.top - containerRect.top + scrollContainer.scrollTop;
-      const scrollTop = Math.max(0, offset);
+      const centered = offset - (scrollContainer.clientHeight - targetRect.height) / 2;
+      const scrollTop = Math.max(0, centered);
       scrollContainer.scrollTo({ top: scrollTop, behavior: "smooth" });
       if (window.bclickRhythmScore?.handleOverlayRefresh) {
         window.bclickRhythmScore.handleOverlayRefresh();
@@ -237,7 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const containerRect = scrollContainer.getBoundingClientRect();
       const targetRect = retry.getBoundingClientRect();
       const offset = targetRect.top - containerRect.top + scrollContainer.scrollTop;
-      const scrollTop = Math.max(0, offset);
+      const centered = offset - (scrollContainer.clientHeight - targetRect.height) / 2;
+      const scrollTop = Math.max(0, centered);
       scrollContainer.scrollTo({ top: scrollTop, behavior: "smooth" });
     }, 60);
   };

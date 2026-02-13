@@ -141,8 +141,10 @@ main {
 
 .scoreChordOverlayLabel.isActiveChord {
   /* 自動スクロール対象のコードを強調表示する。 */
-  color: green;
-  background-color: white;
+  color: #2e8b57;
+  background-color: #ffffff;
+  border: 2px solid #2e8b57;
+  outline: 10px solid rgba(46, 139, 87, 0.4);
 }
 
 .scoreChordOverlayLabel.isLastEdited {
@@ -150,7 +152,9 @@ main {
   color: #2e8b57;
   background-color: #ffffff;
   border: 2px solid #2e8b57;
-  box-shadow: 0 0 12px rgba(46, 139, 87, 0.5);
+  outline: 10px solid rgba(46, 139, 87, 0.4);
+/*  outline-offset: 0px;	*/
+/*  box-shadow: 0 0 12px rgba(46, 139, 87, 0.5);	*/
 }
 
 .scoreContextMenu {
