@@ -93,11 +93,11 @@ class RhythmScore {
       return;
     }
 
-      this.editor.setContext({
-        timeSignature: this.timeSignature,
-        progression: this.progression,
-        rhythmPattern: this.rhythmPattern,
-      });
+    this.editor.setContext({
+      timeSignature: this.timeSignature,
+      progression: this.progression,
+      rhythmPattern: this.rhythmPattern,
+    });
 
     let result = null;
     if (action === "copy") {

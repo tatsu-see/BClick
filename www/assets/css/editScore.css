@@ -2,18 +2,29 @@
 
 /* html 要素の高さを viewport に制限しつつ、スクロールは許可する */
 html {
+  height: 100svh;
+  height: 100dvh;
   min-height: 100svh;
   min-height: 100dvh;
-  overflow: auto;
+  /* Spec editScoreは画面内スクロールに統一するため、ページスクロールを無効化する */
+  overflow: hidden;
+  /* Spec alphaTabの再描画でページ全体がスクロールされる現象を抑制する */
+  overflow-anchor: none;
 }
 
 body {
+  height: 100svh;
+  height: 100dvh;
   min-height: 100svh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   /* padding-bottom を削除：footer は flex:1 した main の下に配置するため不要 */
+  /* Spec editScoreは画面内スクロールに統一するため、ページスクロールを無効化する */
+  overflow: hidden;
+  /* Spec alphaTabの再描画でページ全体がスクロールされる現象を抑制する */
+  overflow-anchor: none;
 }
 
 main {
@@ -71,6 +82,26 @@ main {
   background-color: mintcream;
 
   border:0px solid black;
+}
+
+/* Spec editScore内のスクロールバーを細くして表示領域を広くする */
+#scoreArea {
+  scrollbar-width: thin;
+  scrollbar-color: #5a9b77 #e7f4ec;
+}
+
+#scoreArea::-webkit-scrollbar {
+  width: 6px;
+}
+
+#scoreArea::-webkit-scrollbar-track {
+  background: #e7f4ec;
+}
+
+#scoreArea::-webkit-scrollbar-thumb {
+  background: #5a9b77;
+  border-radius: 999px;
+  border: 1px solid #e7f4ec;
 }
 
 #score {
