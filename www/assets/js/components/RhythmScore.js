@@ -48,6 +48,10 @@ class RhythmScore {
     this.rhythmPattern = rhythmPattern;
     this.tempo = tempo;
     this.overlayRefreshTimer = null;
+    this.postRenderTimerId = null;
+    this.postRenderRunId = 0;
+    this.menuHighlightTimerId = null;
+    this.menuHighlightRunId = 0;
 
     console.log("RhythmScore コンストラクタ実行:", {
       containerId,
@@ -80,6 +84,189 @@ class RhythmScore {
   }
 
   /**
+   * 楽譜のスクロールコンテナを取得する。
+   * @returns {HTMLElement|null}
+   */
+  getScrollContainer() {
+    if (!this.container) return null;
+    const byId = this.container.closest("#scoreArea");
+    if (byId) return byId;
+    return this.container.parentElement;
+  }
+
+  /**
+   * オーバーレイの小節ラベルを取得する。
+   * @param {number} barIndex
+   * @returns {HTMLElement|null}
+   */
+  getOverlayLabel(barIndex) {
+    if (!this.container) return null;
+    if (!Number.isFinite(barIndex) || barIndex < 0) return null;
+    return this.container.querySelector(`.scoreChordOverlayLabel[data-bar-index="${barIndex}"]`);
+  }
+
+  /**
+   * スクロール復元用のスナップショットを作成する。
+   * @param {number} barIndex
+   * @returns {object|null}
+   */
+  buildScrollSnapshot(barIndex) {
+    const scrollContainer = this.getScrollContainer();
+    if (!scrollContainer) return null;
+    const snapshot = {
+      scrollContainer,
+      scrollTop: scrollContainer.scrollTop,
+      barIndex: Number.isFinite(barIndex) && barIndex >= 0 ? barIndex : null,
+      anchorOffset: null,
+    };
+    if (snapshot.barIndex === null) {
+      return snapshot;
+    }
+    const label = this.getOverlayLabel(snapshot.barIndex);
+    if (!label) return snapshot;
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const labelRect = label.getBoundingClientRect();
+    snapshot.anchorOffset = labelRect.top - containerRect.top;
+    return snapshot;
+  }
+
+  /**
+   * スクロール位置の復元を試行する。
+   * @param {object} snapshot
+   * @param {boolean} applyBase
+   * @returns {boolean}
+   */
+  restoreScrollSnapshot(snapshot, applyBase = false) {
+    if (!snapshot || !snapshot.scrollContainer) return true;
+    const { scrollContainer, scrollTop, anchorOffset, barIndex } = snapshot;
+    const maxScroll = Math.max(0, scrollContainer.scrollHeight - scrollContainer.clientHeight);
+    if (applyBase) {
+      const baseScroll = Math.max(0, Math.min(scrollTop, maxScroll));
+      if (scrollContainer.scrollTop !== baseScroll) {
+        scrollContainer.scrollTop = baseScroll;
+      }
+    }
+    if (anchorOffset === null || barIndex === null) {
+      return true;
+    }
+    const label = this.getOverlayLabel(barIndex);
+    if (!label) return false;
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const labelRect = label.getBoundingClientRect();
+    const newOffset = labelRect.top - containerRect.top;
+    const adjusted = scrollContainer.scrollTop + (newOffset - anchorOffset);
+    const clamped = Math.max(0, Math.min(adjusted, maxScroll));
+    scrollContainer.scrollTop = clamped;
+    return true;
+  }
+
+  /**
+   * メニュー操作後のスクロール復元を予約する。
+   * @param {object|null} snapshot
+   */
+  scheduleScrollRestore(snapshot) {
+    if (!snapshot || !snapshot.scrollContainer) return;
+    const runId = this.postRenderRunId + 1;
+    this.postRenderRunId = runId;
+    if (this.postRenderTimerId) {
+      clearTimeout(this.postRenderTimerId);
+      this.postRenderTimerId = null;
+    }
+    let attempts = 0;
+    let baseApplied = false;
+    const tryRestore = () => {
+      if (this.postRenderRunId !== runId) return;
+      attempts += 1;
+      if (!baseApplied) {
+        this.restoreScrollSnapshot(snapshot, true);
+        baseApplied = true;
+      }
+      const done = this.restoreScrollSnapshot(snapshot, false);
+      if (done || attempts >= 120) {
+        this.postRenderTimerId = null;
+        return;
+      }
+      this.postRenderTimerId = window.setTimeout(tryRestore, 50);
+    };
+    this.postRenderTimerId = window.setTimeout(tryRestore, 0);
+  }
+
+  /**
+   * 末尾までスクロールする。
+   */
+  scheduleScrollToEnd() {
+    const scrollContainer = this.getScrollContainer();
+    if (!scrollContainer) return;
+    const runId = this.postRenderRunId + 1;
+    this.postRenderRunId = runId;
+    if (this.postRenderTimerId) {
+      clearTimeout(this.postRenderTimerId);
+      this.postRenderTimerId = null;
+    }
+    let attempts = 0;
+    const tryScroll = () => {
+      if (this.postRenderRunId !== runId) return;
+      attempts += 1;
+      const maxScroll = Math.max(0, scrollContainer.scrollHeight - scrollContainer.clientHeight);
+      scrollContainer.scrollTop = maxScroll;
+      if (attempts >= 120) {
+        this.postRenderTimerId = null;
+        return;
+      }
+      this.postRenderTimerId = window.setTimeout(tryScroll, 50);
+    };
+    this.postRenderTimerId = window.setTimeout(tryScroll, 0);
+  }
+
+  /**
+   * メニュー操作後の小節を一時的に強調表示する。
+   * @param {number} barIndex
+   */
+  requestMenuHighlight(barIndex) {
+    if (!Number.isFinite(barIndex) || barIndex < 0) return;
+    if (!this.container) return;
+    // オーバーレイ再生成でも維持するためにグローバルへ保持する。
+    window.bclickMenuEditedBarIndex = barIndex;
+    const runId = this.menuHighlightRunId + 1;
+    this.menuHighlightRunId = runId;
+    if (this.menuHighlightTimerId) {
+      window.clearTimeout(this.menuHighlightTimerId);
+      this.menuHighlightTimerId = null;
+    }
+    let attempts = 0;
+    const clearMenuHighlight = () => {
+      if (this.menuHighlightRunId !== runId) return;
+      if (window.bclickMenuEditedBarIndex === barIndex) {
+        window.bclickMenuEditedBarIndex = null;
+      }
+      this.container
+        .querySelectorAll(".scoreChordOverlayLabel.isMenuEdited")
+        .forEach((node) => node.classList.remove("isMenuEdited"));
+    };
+    const applyHighlight = () => {
+      if (this.menuHighlightRunId !== runId) return;
+      attempts += 1;
+      const label = this.getOverlayLabel(barIndex);
+      if (!label) {
+        if (attempts < 180) {
+          window.requestAnimationFrame(applyHighlight);
+        } else {
+          clearMenuHighlight();
+        }
+        return;
+      }
+      this.container
+        .querySelectorAll(".scoreChordOverlayLabel.isMenuEdited")
+        .forEach((node) => node.classList.remove("isMenuEdited"));
+      label.classList.add("isMenuEdited");
+      this.menuHighlightTimerId = window.setTimeout(() => {
+        clearMenuHighlight();
+      }, 3000);
+    };
+    window.requestAnimationFrame(applyHighlight);
+  }
+
+  /**
    * UIメニュー操作を受け取って処理する。
    * @param {string} action
    * @param {number} barIndex
@@ -99,23 +286,44 @@ class RhythmScore {
       rhythmPattern: this.rhythmPattern,
     });
 
+    const isDeleteAction = action === "delete";
+    const isDeletingLastBar = isDeleteAction
+      && Array.isArray(this.bars)
+      && this.bars.length > 0
+      && barIndex >= this.bars.length - 1;
+    const shouldPreserveScroll = ["paste", "duplicate", "delete"].includes(action);
+    const scrollSnapshot = shouldPreserveScroll && !isDeletingLastBar
+      ? this.buildScrollSnapshot(barIndex)
+      : null;
+    const shouldScrollToEnd = isDeletingLastBar;
+    let highlightBarIndex = barIndex;
+
     let result = null;
     if (action === "copy") {
       result = this.editor.copy(this.bars, barIndex);
       if (result?.messageId) {
         showMessage(result.messageId, 2000);
       }
+      this.requestMenuHighlight(barIndex);
       return;
     } else if (action === "paste") {
       result = this.editor.paste(this.bars, barIndex);
     } else if (action === "duplicate") {
       result = this.editor.duplicate(this.bars, barIndex);
+      highlightBarIndex = barIndex + 1;
     } else if (action === "delete") {
       result = this.editor.delete(this.bars, barIndex);
+      if (result?.nextBars) {
+        highlightBarIndex = Math.min(barIndex, result.nextBars.length - 1);
+      }
     }
 
     if (!result || !result.nextBars) return;
-    this.applyBarsUpdate(result.nextBars);
+    this.applyBarsUpdate(result.nextBars, {
+      scrollSnapshot,
+      highlightBarIndex,
+      scrollToEnd: shouldScrollToEnd,
+    });
     if (result.messageId) {
       showMessage(result.messageId, 2000);
     }
@@ -124,13 +332,26 @@ class RhythmScore {
   /**
    * 小節配列を更新して通知する。
    * @param {object[]} nextBars
+   * @param {object} options
    */
-  applyBarsUpdate(nextBars) {
+  applyBarsUpdate(nextBars, {
+    scrollSnapshot = null,
+    highlightBarIndex = null,
+    scrollToEnd = false,
+  } = {}) {
     this.bars = Array.isArray(nextBars) ? nextBars : [];
     this.measures = this.bars.length > 0 ? this.bars.length : 1;
     window.bclickScoreBarCount = this.bars.length;
     this.onBarsChange?.(this.bars, this.measures);
     this.render();
+    if (scrollToEnd) {
+      this.scheduleScrollToEnd();
+    } else if (scrollSnapshot) {
+      this.scheduleScrollRestore(scrollSnapshot);
+    }
+    if (Number.isFinite(highlightBarIndex)) {
+      this.requestMenuHighlight(highlightBarIndex);
+    }
   }
 
   setTimeSignature(value) {

@@ -147,8 +147,9 @@ main {
   outline: 10px solid rgba(46, 139, 87, 0.4);
 }
 
-.scoreChordOverlayLabel.isLastEdited {
-  /* editMeasure から戻った直後の最終編集小節の強調表示 */
+.scoreChordOverlayLabel.isLastEdited,
+.scoreChordOverlayLabel.isMenuEdited {
+  /* editMeasure から戻った直後 / メニュー操作後の最終編集小節の強調表示 */
   color: #2e8b57;
   background-color: #ffffff;
   border: 2px solid #2e8b57;

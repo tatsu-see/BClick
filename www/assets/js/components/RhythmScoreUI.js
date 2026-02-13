@@ -457,6 +457,10 @@ class RhythmScoreUI {
         if (window.bclickLastEditedBarIndex === resolvedIndex) {
           badge.classList.add("isLastEdited");
         }
+        // コンテキストメニュー操作後の小節を一時的に強調する。
+        if (window.bclickMenuEditedBarIndex === resolvedIndex) {
+          badge.classList.add("isMenuEdited");
+        }
 
         badge.addEventListener("contextmenu", (event) => {
           event.preventDefault();
