@@ -44,9 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   };
 
-  //Spec 描画タイミング差に備えて200msごとに最大5回スクロールを試す（誤削除防止）
+  //Spec 描画タイミング差に備えて200msごとに最大15回スクロールを試す（誤削除防止）
   /**
-   * editMeasure から戻った直後だけ、200msごとに最大5回スクロールを試す。
+   * editMeasure から戻った直後だけ、200msごとに最大15回スクロールを試す。
    */
   const scheduleScrollToEditedBar = () => {
     if (overlayScrollTimerId !== null) return;
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const tryScroll = () => {
       retryCount += 1;
       const done = scrollToEditedBarByOverlay();
-      if (done || retryCount >= 5) {
+      if (done || retryCount >= 15) {
         overlayScrollTimerId = null;
         return;
       }
