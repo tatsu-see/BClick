@@ -272,7 +272,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // audioContextのウォームアップ
   warmUpAudioContext();
 
-  // 再生開始
+  /**
+   * クリック再生を開始する。
+   */
   const startPlayback = () => {
 
     if (isRunning) {
@@ -353,11 +355,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  /**
+   * クリック再生をリセットする。
+   */
   const resetPlayback = () => {
     clearTimers();
     if (typeof window.bclickActiveChordIndex !== "undefined") {
       window.bclickActiveChordIndex = -1;
     }
+    document.querySelectorAll(".scoreChordOverlayLabel.isActiveChord")
+      .forEach((label) => {
+        label.classList.remove("isActiveChord");
+      });
     const scrollContainer = document.getElementById("scoreArea");
     if (scrollContainer) {
       scrollContainer.scrollTo({ top: 0, behavior: "auto" });
@@ -365,6 +374,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setClickBoxes();
   };
 
+  /**
+   * クリック再生を一時停止する。
+   */
   const pausePlayback = () => {
     clearCycleTimer();
     if (countdownTimerId !== null) {
