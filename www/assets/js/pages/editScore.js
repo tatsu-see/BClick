@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let lastEditedHighlightTimerId = null;
   let lastEditedHighlightRunId = 0;
+  //Spec editMeasureから戻った直後の強調表示は復帰経路によって再実行が必要（誤削除防止）
   // editMeasure から戻った直後だけ、最後に編集した小節を一時強調表示する。
   const applyLastEditedHighlight = () => {
     const lastEditedBarRaw = sessionStorage.getItem("bclick.lastEditedBarIndex");
@@ -134,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoStepCoarse = document.getElementById("tempoStepCoarse");
   const tempoStepFine = document.getElementById("tempoStepFine");
     const tempoDialToggle = document.getElementById("tempoDialToggle");
-    const beatPreference = document.getElementById("beatPreference");
+    const beatPreference = document.getElementById("editScorePreference");
   const barsPerRowRange = document.getElementById("barsPerRowRange");
   const barsPerRowValue = document.getElementById("barsPerRowValue");
   let currentScoreData = null;

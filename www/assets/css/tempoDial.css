@@ -100,7 +100,9 @@
   cursor: grabbing;
 }
 
-#beatPreference .tempoDial {
+/* Spec index/configBeat/editScore のテンポダイアルは大きめサイズで統一する */
+#beatPreference .tempoDial,
+#editScorePreference .tempoDial {
   width: 144px;
   height: 144px;
 }
@@ -114,7 +116,9 @@
   border-radius: 2px;
 }
 
-#beatPreference .tempoDialIndicator {
+/* Spec 大きめダイアルに合わせてインジケータも拡大する */
+#beatPreference .tempoDialIndicator,
+#editScorePreference .tempoDialIndicator {
   top: 12px;
   height: 32px;
 }
