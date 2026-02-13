@@ -64,14 +64,24 @@ document.addEventListener("DOMContentLoaded", () => {
     overlayScrollTimerId = window.setTimeout(tryScroll, 200);
   };
 
+  let lastEditedHighlightTimerId = null;
+  let lastEditedHighlightRunId = 0;
   // editMeasure から戻った直後だけ、最後に編集した小節を一時強調表示する。
-  const lastEditedBarRaw = sessionStorage.getItem("bclick.lastEditedBarIndex");
-  const lastEditedBarIndex = Number.parseInt(lastEditedBarRaw, 10);
-  if (Number.isFinite(lastEditedBarIndex) && lastEditedBarIndex >= 0) {
+  const applyLastEditedHighlight = () => {
+    const lastEditedBarRaw = sessionStorage.getItem("bclick.lastEditedBarIndex");
+    const lastEditedBarIndex = Number.parseInt(lastEditedBarRaw, 10);
+    if (!Number.isFinite(lastEditedBarIndex) || lastEditedBarIndex < 0) return;
     // Overlay描画時に対象バッジへclassを付与するための共有フラグ。
     window.bclickLastEditedBarIndex = lastEditedBarIndex;
+    const runId = lastEditedHighlightRunId + 1;
+    lastEditedHighlightRunId = runId;
+    if (lastEditedHighlightTimerId) {
+      window.clearTimeout(lastEditedHighlightTimerId);
+      lastEditedHighlightTimerId = null;
+    }
     const clearLastEditedHighlight = () => {
       // 期限が過ぎたらハイライト情報を破棄する。
+      if (lastEditedHighlightRunId !== runId) return;
       window.bclickLastEditedBarIndex = null;
       sessionStorage.removeItem("bclick.lastEditedBarIndex");
       const label = document.querySelector(
@@ -84,12 +94,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let highlightAttempts = 0;
     const waitForHighlight = () => {
       // overlay生成タイミングまで待ってからハイライトを適用する。
+      if (lastEditedHighlightRunId !== runId) return;
       highlightAttempts += 1;
       const label = document.querySelector(
         `.scoreChordOverlayLabel[data-bar-index="${lastEditedBarIndex}"]`,
       );
       if (label) {
-        window.setTimeout(clearLastEditedHighlight, 3000);
+        lastEditedHighlightTimerId = window.setTimeout(clearLastEditedHighlight, 3000);
         return;
       }
       if (highlightAttempts >= 180) {
@@ -101,7 +112,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     window.requestAnimationFrame(waitForHighlight);
     scheduleScrollToEditedBar();
-  }
+  };
+
+  applyLastEditedHighlight();
 
   // PDF/alphaTab用フォントを先に読み込む。
   preloadAlphaTabFonts().catch(() => {
@@ -509,6 +522,7 @@ document.addEventListener("DOMContentLoaded", () => {
         barsPerRowValue.textContent = barsPerRowRange.value;
       }
     }
+    applyLastEditedHighlight();
   };
 
   document.addEventListener("bclick:scoreloaded", applyLoadedScoreToUI);
@@ -541,6 +555,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (consumeEditMeasureRefreshFlag()) {
       requestApplyLoadedScore();
     }
+    applyLastEditedHighlight();
   });
 
   document.addEventListener("visibilitychange", () => {
@@ -548,6 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (consumeEditMeasureRefreshFlag()) {
         requestApplyLoadedScore();
       }
+      applyLastEditedHighlight();
     }
   });
 
@@ -555,6 +571,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (consumeEditMeasureRefreshFlag()) {
       requestApplyLoadedScore();
     }
+    applyLastEditedHighlight();
   });
 
   // 操作ボタンのイベント
