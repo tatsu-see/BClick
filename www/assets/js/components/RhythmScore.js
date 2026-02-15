@@ -341,7 +341,8 @@ class RhythmScore {
   } = {}) {
     this.bars = Array.isArray(nextBars) ? nextBars : [];
     this.measures = this.bars.length > 0 ? this.bars.length : 1;
-    window.bclickScoreBarCount = this.bars.length;
+    const nextBarCount = this.bars.length > 0 ? this.bars.length : this.measures;
+    window.bclickScoreBarCount = nextBarCount;
     this.onBarsChange?.(this.bars, this.measures);
     this.render();
     if (scrollToEnd) {
@@ -370,6 +371,8 @@ class RhythmScore {
     const parsed = Number.parseInt(value, 10);
     if (Number.isNaN(parsed) || parsed <= 0) return;
     this.measures = parsed;
+    const nextBarCount = this.bars.length > 0 ? this.bars.length : this.measures;
+    window.bclickScoreBarCount = nextBarCount;
     this.render();
   }
 
@@ -387,6 +390,8 @@ class RhythmScore {
 
   setBars(value) {
     this.bars = Array.isArray(value) ? value : [];
+    const nextBarCount = this.bars.length > 0 ? this.bars.length : this.measures;
+    window.bclickScoreBarCount = nextBarCount;
     this.render();
   }
 

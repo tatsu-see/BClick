@@ -101,6 +101,33 @@ document.addEventListener("DOMContentLoaded", () => {
     currentClickVolume = toDeviceVolume(getClickVolume());
   };
 
+  /**
+   * 現在の楽譜から小節数を推定する。
+   * @returns {number|null}
+   */
+  const getCurrentScoreBarCount = () => {
+    const overlayLabels = document.querySelectorAll(".scoreChordOverlayLabel");
+    if (overlayLabels.length > 0) return overlayLabels.length;
+    if (Array.isArray(window.bclickRhythmScore?.bars) && window.bclickRhythmScore.bars.length > 0) {
+      return window.bclickRhythmScore.bars.length;
+    }
+    const storedBars = store.getScoreBars();
+    if (Array.isArray(storedBars) && storedBars.length > 0) return storedBars.length;
+    const storedMeasures = store.getScoreMeasures();
+    if (Number.isFinite(storedMeasures) && storedMeasures > 0) return storedMeasures;
+    return null;
+  };
+
+  /**
+   * 小節数をグローバルへ同期する。
+   */
+  const syncScoreBarCount = () => {
+    const count = getCurrentScoreBarCount();
+    if (Number.isFinite(count)) {
+      window.bclickScoreBarCount = count;
+    }
+  };
+
   // UI更新
   const setOperationEnabled = (enabled) => {
     if (setClickButton) setClickButton.disabled = !enabled;
@@ -299,6 +326,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // 新規スタート時は小節位置と小節数をリセットする。
+    window.bclickActiveChordIndex = -1;
+    syncScoreBarCount();
+
     const tempo = getTempo();
     const beatMs = 60000 / tempo;
     currentBeatMs = beatMs;
@@ -426,6 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("bclick:scoreloaded", () => {
+    syncScoreBarCount();
     syncClickCountFromStore();
     setClickBoxes();
   });
