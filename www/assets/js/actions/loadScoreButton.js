@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       document.dispatchEvent(new CustomEvent("bclick:scoreloaded", { detail: { merged: useMerge } }));
-      showMessage("loadScoreMessage", 2000);
+      showMessage(useMerge ? "mergeScoreMessage" : "loadScoreMessage", 2000);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.error("スコア読み込みエラー詳細:", error);

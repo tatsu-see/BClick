@@ -1,6 +1,8 @@
 /**
  * PDF保存ボタンの処理を担当する。
  */
+import ScoreData from "../models/ScoreModel.js";
+import { loadEditScoreDraft } from "../utils/editScoreDraft.js";
 import { ConfigStore } from "../utils/store.js";
 import { buildScoreDataFromStore } from "../utils/scoreButtonUtils.js";
 import { buildScorePdfBlob } from "../utils/scorePdf.js";
@@ -48,8 +50,49 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       return;
     }
+    //##Spec 今見ている楽譜を保存する。editScoreの一時ドラフトがあればそれを優先する。
     const store = new ConfigStore();
-    const scoreData = buildScoreDataFromStore(store);
+    const storeScoreData = buildScoreDataFromStore(store);
+    const draft = loadEditScoreDraft();
+    const mergedScore = {
+      tempo: storeScoreData.tempo,
+      clickCount: storeScoreData.clickCount,
+      countIn: storeScoreData.countIn,
+      timeSignature: storeScoreData.timeSignature,
+      measures: storeScoreData.measures,
+      progression: storeScoreData.progression,
+      bars: storeScoreData.bars,
+      rhythmPattern: storeScoreData.rhythmPattern,
+      barsPerRow: storeScoreData.barsPerRow,
+      scoreEnabled: storeScoreData.scoreEnabled,
+    };
+    if (draft && typeof draft === "object") {
+      if (Number.isFinite(draft.tempo)) {
+        mergedScore.tempo = draft.tempo;
+      }
+      if (typeof draft.timeSignature === "string") {
+        mergedScore.timeSignature = draft.timeSignature;
+      }
+      if (Number.isFinite(draft.measures)) {
+        mergedScore.measures = draft.measures;
+      }
+      if (typeof draft.progression === "string") {
+        mergedScore.progression = draft.progression;
+      }
+      if (Array.isArray(draft.rhythmPattern)) {
+        mergedScore.rhythmPattern = draft.rhythmPattern;
+      }
+      if (Array.isArray(draft.bars)) {
+        mergedScore.bars = draft.bars;
+        if (draft.bars.length > 0) {
+          mergedScore.measures = draft.bars.length;
+        }
+      }
+      if (Number.isFinite(draft.barsPerRow)) {
+        mergedScore.barsPerRow = draft.barsPerRow;
+      }
+    }
+    const scoreData = new ScoreData(mergedScore);
     try {
       const pdfBlob = await buildScorePdfBlob({
         svgEls: scoreSvgs,
