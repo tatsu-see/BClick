@@ -45,21 +45,44 @@ const KeyFrequencies = Object.freeze({
 let audioContext = null;
 let didWarmUp = false;
 
+/**
+ * AudioContext を生成し、内部状態を初期化する。
+ * @returns {AudioContext}
+ */
+const createAudioContext = () => {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  audioContext = new Ctx();
+  didWarmUp = false;
+  return audioContext;
+};
+
+/**
+ * AudioContext を返す。
+ * @returns {AudioContext}
+ */
 const getAudioContext = () => {
-  if (!audioContext) {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    audioContext = new Ctx();
-  }
-  if (audioContext.state === "suspended") {
-    audioContext.resume();
+  if (!audioContext || audioContext.state === "closed") {
+    return createAudioContext();
   }
   return audioContext;
 };
 
-const warmUpAudioContext = () => {
-  if (didWarmUp) return;
-  didWarmUp = true;
+/**
+ * AudioContext が一時停止状態か判定する。
+ * @param {string} state
+ * @returns {boolean}
+ */
+const isAudioContextInterrupted = (state) => state === "suspended" || state === "interrupted";
+
+/**
+ * AudioContext をウォームアップする。
+ * @param {boolean} force
+ */
+const warmUpAudioContext = (force = false) => {
   const ctx = getAudioContext();
+  if (ctx.state !== "running") return;
+  if (didWarmUp && !force) return;
+  didWarmUp = true;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   const now = ctx.currentTime;
@@ -71,6 +94,31 @@ const warmUpAudioContext = () => {
   osc.start();
   osc.stop(now + 0.06);
 };
+
+/**
+ * AudioContext の復帰を試み、必要なら再生成する。
+ * @param {boolean} forceWarmUp
+ * @returns {Promise<boolean>}
+ */
+//##Spec Safariは長時間放置でAudioContextが中断/終了し得るため、復帰処理をここで集中管理する。
+async function restoreAudioContext(forceWarmUp = false) {
+  let ctx = getAudioContext();
+  if (isAudioContextInterrupted(ctx.state)) {
+    try {
+      await ctx.resume();
+    } catch (error) {
+      // ユーザー操作が必要な場合はここで止まるため、例外は握りつぶす。
+    }
+  }
+  if (ctx.state === "closed") {
+    ctx = createAudioContext();
+  }
+  if (ctx.state === "running") {
+    warmUpAudioContext(forceWarmUp);
+    return true;
+  }
+  return false;
+}
 
 /**
  * 最大音量を返す。
@@ -104,5 +152,4 @@ function clickSound(volume = MaxVolume, key = "A5") {
   osc.stop(now + 0.33); // 余韻を少し残す
 }
 
-export { clickSound, getMaxVolume, KeyFrequencies, warmUpAudioContext };
-
+export { clickSound, getMaxVolume, KeyFrequencies, warmUpAudioContext, restoreAudioContext };

@@ -1,4 +1,6 @@
-import { clickSound, getMaxVolume, warmUpAudioContext } from "/assets/lib/Sound.js";
+// click.js
+// クリック再生画面の音再生制御とUI同期を行う。
+import { clickSound, getMaxVolume, restoreAudioContext } from "/assets/lib/Sound.js";
 import { chordPool } from "/assets/lib/guiterCode.js";
 import { ConfigStore } from "../utils/store.js";
 import { getLangMsg } from "/assets/lib/Language.js";
@@ -303,20 +305,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // audioContextのウォームアップ
-  warmUpAudioContext();
+  // audioContextの復帰/ウォームアップ（ユーザー操作が無い場合は失敗することがある）
+  void restoreAudioContext();
 
   /**
    * クリック再生を開始する。
    */
-  const startPlayback = () => {
+  //##Spec Safariなどで長時間放置後にAudioContextが停止するため、再生開始時に必ず復帰を試みる。
+  const startPlayback = async () => {
+    const wasRunning = isRunning;
+    await restoreAudioContext(!wasRunning);
 
     if (isRunning) {
       return;
     }
-
-    // audioContextのウォームアップ
-    warmUpAudioContext();
 
     if (isPaused && cycleBoxes.length > 0 && currentBeatMs !== null) {
       isRunning = true;
@@ -433,7 +435,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (startClickButton) {
-    startClickButton.addEventListener("click", startPlayback);
+    startClickButton.addEventListener("click", () => {
+      void startPlayback();
+    });
   }
 
   if (stopClickButton) {
@@ -445,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (!startClickButton) {
-    startPlayback();
+    void startPlayback();
   }
 
   syncClickCountFromStore();
@@ -462,8 +466,15 @@ document.addEventListener("DOMContentLoaded", () => {
     setClickBoxes();
   });
 
+  //##Spec 復帰イベントではユーザー操作が無い場合に失敗することがあるが、可能な限り復帰を試みる。
   window.addEventListener("pageshow", () => {
     refreshClickVolume();
+    void restoreAudioContext();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) return;
+    void restoreAudioContext();
   });
 
   window.addEventListener("storage", (event) => {
