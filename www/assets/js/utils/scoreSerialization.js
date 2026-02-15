@@ -848,6 +848,39 @@ const readPdfAttachmentJson = async (file) => {
 };
 
 /**
+ * PDFのマジックナンバー(%PDF-)を確認する。
+ * @param {Blob} file
+ * @returns {Promise<boolean>}
+ */
+const hasPdfSignature = async (file) => {
+  try {
+    if (!file || typeof file.slice !== "function") return false;
+    const headerBuffer = await file.slice(0, 5).arrayBuffer();
+    if (!headerBuffer) return false;
+    const headerText = new TextDecoder().decode(headerBuffer);
+    return headerText === "%PDF-";
+  } catch (error) {
+    return false;
+  }
+};
+
+/**
+ * File/Blob がPDFかどうかを判定する。
+ * @param {Blob} file
+ * @returns {Promise<boolean>}
+ */
+const isPdfFile = async (file) => {
+  const name = typeof file?.name === "string" ? file.name.toLowerCase() : "";
+  const type = typeof file?.type === "string" ? file.type.toLowerCase() : "";
+  const isNamePdf = name.endsWith(".pdf");
+  const isTypePdf = type === "application/pdf"
+    || type.startsWith("application/pdf;")
+    || type === "application/x-pdf";
+  if (isNamePdf || isTypePdf) return true;
+  return hasPdfSignature(file);
+};
+
+/**
  * JSONまたはPDF内添付JSONを読み込む。
  */
 export const readScoreFileAsJson = async (file) => {
@@ -855,8 +888,8 @@ export const readScoreFileAsJson = async (file) => {
   // PDF: 添付JSONを抽出して解析する。
   // JSON: そのまま読み込む。
   // 判定は拡張子(.pdf)とMIME(application/pdf)の両方を見る。
-  const name = typeof file?.name === "string" ? file.name.toLowerCase() : "";
-  const isPdf = file?.type === "application/pdf" || name.endsWith(".pdf");
+  // Android等でMIME/拡張子が欠落するため、PDFシグネチャもフォールバックする。
+  const isPdf = await isPdfFile(file);
   if (isPdf) {
     return readPdfAttachmentJson(file);
   }
