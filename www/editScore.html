@@ -255,8 +255,16 @@
       </button>
 
       <div class="mergeToggle">
-        <label class="scoreToggle">
+        <label class="scoreToggle mergeToggleLabel">
           <input type="checkbox" id="mergeToggle" aria-label="Toggle merge mode">
+          <span class="mergeToggleText mergeToggleTextOff">
+            <span class="lang" data-lang="en">OFF</span>
+            <span class="lang" data-lang="ja">OFF</span>
+          </span>
+          <span class="mergeToggleText mergeToggleTextOn">
+            <span class="lang" data-lang="en">Merge</span>
+            <span class="lang" data-lang="ja">追加</span>
+          </span>
           <script>
             (function() {
               try {

@@ -386,12 +386,46 @@ footer {
   pointer-events: none;
 }
 
+/* MergeトグルはHTML側の文字列で表示を切り替える。 */
+.mergeToggleLabel {
+  position: relative;
+}
+
+.mergeToggleLabel .mergeToggleText {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  pointer-events: none;
+}
+
+.mergeToggleLabel .mergeToggleTextOff {
+  right: 6px;
+  color: #1e7a4f;
+}
+
+.mergeToggleLabel .mergeToggleTextOn {
+  left: 6px;
+  color: #0f6a3d;
+  opacity: 0;
+}
+
+.mergeToggleLabel input:checked ~ .mergeToggleTextOff {
+  opacity: 0;
+}
+
+.mergeToggleLabel input:checked ~ .mergeToggleTextOn {
+  opacity: 1;
+}
+
 #mergeToggle::after {
-  content: "OFF";
+  content: "";
 }
 
 #mergeToggle:checked::after {
-  content: "Merge";
+  content: "";
 }
 
 .preferenceExec.isDisabled {
