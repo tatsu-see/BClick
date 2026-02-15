@@ -169,18 +169,23 @@ document.addEventListener("DOMContentLoaded", () => {
     clickSound(currentClickVolume ?? undefined, key);
   };
 
+  //##Spec クリック音とクリックBoxの表示切替は、体感ズレを最小化するため可能な限りタイミングを合わせる。
   const startCycleTimer = () => {
     if (cycleBoxes.length === 0 || currentBeatMs === null) return;
     clearCycleTimer();
     cycleTimerId = setInterval(() => {
-      cycleBoxes[cycleIndex].classList.remove("active");
-      cycleIndex = (cycleIndex + 1) % cycleBoxes.length;
-      cycleBoxes[cycleIndex].classList.add("active");
-      if (cycleIndex === 0) {
-        // 1周ごとに次の小節番号へスクロールする。
-        scrollToNextBar();
-      }
-      playClickSound(cycleIndex === 0);
+      const nextIndex = (cycleIndex + 1) % cycleBoxes.length;
+      const isFirstBeat = nextIndex === 0;
+      playClickSound(isFirstBeat);
+      requestAnimationFrame(() => {
+        cycleBoxes[cycleIndex].classList.remove("active");
+        cycleIndex = nextIndex;
+        cycleBoxes[cycleIndex].classList.add("active");
+        if (isFirstBeat) {
+          // 1周ごとに次の小節番号へスクロールする。
+          scrollToNextBar();
+        }
+      });
     }, currentBeatMs);
   };
 
@@ -253,10 +258,12 @@ document.addEventListener("DOMContentLoaded", () => {
     cycleIndex = 0;
     currentBeatMs = beatMs;
 
-    cycleBoxes.forEach((box) => box.classList.remove("active"));
-    cycleBoxes[0].classList.add("active");
-    scrollToNextBar();
     playClickSound(true);
+    requestAnimationFrame(() => {
+      cycleBoxes.forEach((box) => box.classList.remove("active"));
+      cycleBoxes[0].classList.add("active");
+      scrollToNextBar();
+    });
 
     startCycleTimer();
   };
