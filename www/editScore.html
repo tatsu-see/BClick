@@ -242,9 +242,9 @@
     -->
     <div class="preferenceExec isRow4">
       <div></div>
-      <button id="saveScore" type="button" class="okConfig makeScoreButton navButton">
+      <button id="saveScore" type="button" class="okConfig makeScoreButton navButton" aria-label="Save as file">
         <span class="material-symbols-rounded" aria-hidden="true">save</span>
-        <span class="lang" data-lang="en">Save</span>
+        <span class="lang" data-lang="en">Save As</span>
         <span class="lang" data-lang="ja">保存</span>
       </button>
 
@@ -288,6 +288,11 @@
   </main>
 
   <!--Spec メッセージ表示用の文字列 -->
+  <div id="saveScoreMessage" class="messageBox">
+    <span class="lang" data-lang="en">Saved.</span>
+    <span class="lang" data-lang="ja">保存しました。</span>
+  </div>
+
   <div id="loadScoreMessage" class="messageBox">
     <span class="lang" data-lang="en">Loaded.</span>
     <span class="lang" data-lang="ja">読み込みました。</span>
