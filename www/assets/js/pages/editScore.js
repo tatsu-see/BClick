@@ -9,6 +9,7 @@ import ScoreData from "../models/ScoreModel.js";
 import { TempoDialController } from "../components/tempoDial.js";
 import { preloadAlphaTabFonts } from "../utils/scorePdf.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
+import { showMessage } from "../../lib/ShowMessageBox.js";
 import {
   clearEditScoreDraft,
   loadEditScoreDraft,
@@ -221,6 +222,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const handleBack = () => {
     clearEditScoreDraft();
     closePage();
+  };
+
+  /**
+   * 現在の編集内容を永続保存する。
+   * @returns {boolean}
+   */
+  const persistCurrentScore = () => {
+    if (!currentScoreData) return false;
+    const barsToSave = Array.isArray(currentScoreData.bars) ? currentScoreData.bars : [];
+    const measuresToSave = barsToSave.length > 0 ? barsToSave.length : currentScoreData.measures;
+    store.setTempo(currentScoreData.tempo);
+    store.setScoreTimeSignature(currentScoreData.timeSignature);
+    store.setScoreProgression(currentScoreData.progression);
+    if (Array.isArray(currentScoreData.rhythmPattern)) {
+      store.setScoreRhythmPattern(currentScoreData.rhythmPattern);
+    }
+    store.setScoreBarsPerRow(currentScoreData.barsPerRow || 2);
+    store.setScoreBars(barsToSave);
+    store.setScoreMeasures(measuresToSave);
+    if (tempoDialToggle) {
+      store.setEditScoreSettingsEnabled(Boolean(tempoDialToggle.checked));
+    }
+    // 保存後も編集継続できるよう、ドラフトは現在値で同期して残す。
+    syncDraftFromCurrent();
+    return true;
   };
 
   if (showCodeDiagramButton) {
@@ -578,24 +604,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // 操作ボタンのイベント
   if (saveButton) {
     saveButton.addEventListener("click", () => {
-      if (currentScoreData) {
-        const barsToSave = Array.isArray(currentScoreData.bars) ? currentScoreData.bars : [];
-        const measuresToSave = barsToSave.length > 0 ? barsToSave.length : currentScoreData.measures;
-        store.setTempo(currentScoreData.tempo);
-        store.setScoreTimeSignature(currentScoreData.timeSignature);
-        store.setScoreProgression(currentScoreData.progression);
-        if (Array.isArray(currentScoreData.rhythmPattern)) {
-          store.setScoreRhythmPattern(currentScoreData.rhythmPattern);
-        }
-        store.setScoreBarsPerRow(currentScoreData.barsPerRow || 2);
-        store.setScoreBars(barsToSave);
-        store.setScoreMeasures(measuresToSave);
-        if (tempoDialToggle) {
-          store.setEditScoreSettingsEnabled(Boolean(tempoDialToggle.checked));
-        }
+      const saved = persistCurrentScore();
+      if (saved) {
+        showMessage("saveScoreMessage", 2000);
       }
-      clearEditScoreDraft();
-      closePage();
     });
   }
 

@@ -186,10 +186,15 @@ header {
   transform: translateY(0.02em); /* アイコンと文字の見た目揃え */
 }
 
-/* 閉じるボタン */
-#closePage {
+/* ヘッダー内ナビゲーションボタンの共通見た目 */
+#closePage,
+#saveConfigBeat,
+#saveConfigScore,
+#saveCodeDiagram,
+#saveShowScore,
+#backShowScore,
+#backEditMeasure {
   position: absolute;
-  right: 6px;
   top: 50%;
   transform: translateY(-50%);
   min-width: 66px;
@@ -202,37 +207,6 @@ header {
   justify-content: center;
   text-align: center;
 
-  background-color:mintcream;
-  color: mediumseagreen;
-  font-weight:bold;
-
-  border: 3px solid mediumseagreen;
-  border-radius: 999px;
-}
-
-/* 規約画面など左配置にしたい戻るボタン */
-#closePage.headerBack {
-  left: 6px;
-  right: auto;
-}
-
-/* 設定画面のOKボタン */
-#saveConfigBeat,
-#saveConfigScore,
-#saveCodeDiagram,
-#saveShowScore,
-#backShowScore,
-#backEditMeasure {
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  min-width: 66px;
-  min-height: 28px;
-  padding: 0 8px;
-  font-size: 0.75em;
-  line-height: 1.2;
-
   background-color: mintcream;
   color: mediumseagreen;
   font-weight: bold;
@@ -241,10 +215,33 @@ header {
   border-radius: 999px;
 }
 
+/* 右側配置のヘッダーボタン */
+#closePage {
+  left: auto;
+  right: 6px;
+}
+
+/* 規約画面など左配置にしたい戻るボタン */
+#closePage.headerBack {
+  left: 6px;
+  right: auto;
+}
+
+/* 左側配置のヘッダーボタン */
+#saveConfigBeat,
+#saveConfigScore,
+#saveCodeDiagram,
+#saveShowScore,
+#backShowScore,
+#backEditMeasure {
+  left: 6px;
+}
+
 /* OKボタン */
 .okConfig {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 2px;
   line-height: 1.1;
 }
