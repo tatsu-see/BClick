@@ -350,20 +350,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (showCodeDiagramButton) {
     showCodeDiagramButton.addEventListener("click", () => {
-      window.location.href = "/codeDiagram.html";
+      window.location.href = "codeDiagram.html";
     });
   }
 
   if (configScoreButton) {
     configScoreButton.addEventListener("click", () => {
-      window.location.href = "/configScore.html";
+      window.location.href = "configScore.html";
     });
   }
 
 
   if (configBeatButton) {
     configBeatButton.addEventListener("click", () => {
-      window.location.href = "/configBeat.html";
+      window.location.href = "configBeat.html";
     });
   }
 });

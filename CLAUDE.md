@@ -17,8 +17,9 @@
     .\run-codex.ps1 -Prompt "index.htmlのファイルサイズを教えて"
 
 ## 開発対象フォルダ
-- www\index.html をトップ画面とし、www フォルダ直下（releasesを除外）するファイルは stable 版なので、特に要求がされない限り改造しない。
-- releases\next\index.html をトップ画面とし、releases\next フォルダ内にあるファイルは開発版なので、ここで開発を進めていく。
+- www フォルダ直下（releasesを除外）するファイルは stable 版なので、www\index.html をトップ画面とし、特に要求がされない限り改造しない。
+- releases\next フォルダ内にあるファイルは開発版なので、releases\next\index.html をトップ画面とし、ここで開発を進めていく。
+- www と releases\next フォルダはそれぞれ独立した版として、基本的には影響しあわないようにする。
 - 開発したファイルを git push するのは、夜遅くか朝方にする。（使っている人への影響を考慮して）
 
 ## ソースコード(共通)
