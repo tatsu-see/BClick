@@ -1,15 +1,14 @@
 {
   "routes": [
-    { "route": "/index.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
-    { "route": "/configBeat.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
-    { "route": "/configScore.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
-    { "route": "/editMeasure.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
-    { "route": "/editScore.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
-    { "route": "/codeDiagram.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
-    { "route": "/terms.html", "headers": { "Cache-Control": "public, max-age=0, must-revalidate" } },
+    { "route": "/releases/next/*", "headers": { "Cache-Control": "no-cache, no-store" } },
 
-    { "route": "/assets/*.js", "headers": { "Cache-Control": "max-age=0, must-revalidate" } },
-    { "route": "/assets/*", "headers": { "Cache-Control": "public, max-age=60, immutable" } },
+    { "route": "/*.html", "headers": { "Cache-Control": "public, max-age=10800, must-revalidate" } },
+
+    { "route": "/assets/js/*", "headers": { "Cache-Control": "public, max-age=86400, must-revalidate" } },
+    { "route": "/assets/css/*", "headers": { "Cache-Control": "public, max-age=86400, must-revalidate" } },
+    { "route": "/assets/lib/*", "headers": { "Cache-Control": "public, max-age=86400, must-revalidate" } },
+    { "route": "/assets/icons/*", "headers": { "Cache-Control": "public, max-age=604800, must-revalidate" } },
+    { "route": "/assets/*", "headers": { "Cache-Control": "public, max-age=86400, must-revalidate" } },
 
     { "route": "/*", "headers": { "Cache-Control": "public, max-age=1800, must-revalidate" } }
   ]
