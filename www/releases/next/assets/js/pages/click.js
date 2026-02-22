@@ -130,6 +130,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // 音声停止バナーの表示/非表示
+  const showAudioResumeBanner = () => {
+    const banner = document.getElementById("audioResumeBanner");
+    if (banner) banner.hidden = false;
+  };
+
+  const hideAudioResumeBanner = () => {
+    const banner = document.getElementById("audioResumeBanner");
+    if (banner) banner.hidden = true;
+  };
+
   // UI更新
   const setOperationEnabled = (enabled) => {
     if (setClickButton) setClickButton.disabled = !enabled;
@@ -314,9 +325,15 @@ document.addEventListener("DOMContentLoaded", () => {
   //##Spec Safariなどで長時間放置後にAudioContextが停止するため、再生開始時に必ず復帰を試みる。
   const startPlayback = async () => {
     const wasRunning = isRunning;
-    await restoreAudioContext(!wasRunning);
+    const restored = await restoreAudioContext(!wasRunning);
 
     if (isRunning) {
+      return;
+    }
+
+    // AudioContext の復帰に失敗した場合はバナーを表示して処理を中断する
+    if (!restored) {
+      showAudioResumeBanner();
       return;
     }
 
@@ -476,6 +493,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.hidden) return;
     void restoreAudioContext();
   });
+
+  //##Spec Safari がアイドル時に AudioContext を停止した場合、Sound.js からイベントが発火する。
+  // メトロノーム再生中のみバナーを表示してユーザーに復帰操作を促す。
+  window.addEventListener("bclick:audioContextSuspended", () => {
+    if (isRunning) {
+      showAudioResumeBanner();
+    }
+  });
+
+  // バナーのタップでユーザー操作として AudioContext の復帰を試みる
+  const audioResumeButton = document.getElementById("audioResumeButton");
+  if (audioResumeButton) {
+    audioResumeButton.addEventListener("click", async () => {
+      const restored = await restoreAudioContext(true);
+      if (restored) {
+        hideAudioResumeBanner();
+      }
+    });
+  }
 
   window.addEventListener("storage", (event) => {
     if (event.storageArea !== window.localStorage) return;

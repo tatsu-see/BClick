@@ -314,6 +314,14 @@
     <small>&copy; 2025 tatsu. All rights reserved.</small>
   </footer>
 
+  <!-- 音声停止バナー：AudioContext がサスペンド状態になったときに表示する -->
+  <div id="audioResumeBanner" role="alert" hidden>
+    <button type="button" id="audioResumeButton" aria-label="Tap to resume audio">
+      <span class="lang" data-lang="ja">音声が停止しました。タップして再開</span>
+      <span class="lang" data-lang="en">Audio paused. Tap to resume.</span>
+    </button>
+  </div>
+
   <div id="consentBanner" class="consentBanner" aria-label="Cookie consent" hidden>
     <div class="consentBannerText">
       <span class="lang" data-lang="en">

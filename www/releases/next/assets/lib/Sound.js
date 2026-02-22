@@ -51,7 +51,14 @@ let didWarmUp = false;
  */
 const createAudioContext = () => {
   const Ctx = window.AudioContext || window.webkitAudioContext;
-  audioContext = new Ctx();
+  const ctx = new Ctx();
+  // Safari がアイドル時に AudioContext を停止した場合、カスタムイベントで通知する
+  ctx.addEventListener("statechange", () => {
+    if (isAudioContextInterrupted(ctx.state)) {
+      window.dispatchEvent(new CustomEvent("bclick:audioContextSuspended"));
+    }
+  });
+  audioContext = ctx;
   didWarmUp = false;
   return audioContext;
 };
@@ -133,6 +140,8 @@ function getMaxVolume() {
  */
 function clickSound(volume = MaxVolume, key = "A5") {
   const ctx = getAudioContext();
+  // AudioContext が実行中でなければ音を鳴らさない（バナー経由でユーザーに復帰を促す）
+  if (ctx.state !== "running") return;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   const now = ctx.currentTime;

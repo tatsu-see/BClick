@@ -18,6 +18,41 @@
   font-weight: bold;
 }
 
+/* 音声停止バナー：AudioContext がサスペンド時に画面上部に固定表示する */
+#audioResumeBanner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;       /* カウントダウンオーバーレイ(1000)より手前 */
+  display: flex;
+  justify-content: center;
+  padding: 4px 8px;
+  background: rgba(255, 200, 0, 0.95); /* 注意を促すアンバー色 */
+}
+
+#audioResumeBanner[hidden] {
+  display: none;
+}
+
+#audioResumeButton {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #333;
+  background: transparent;
+  border: none;
+  box-shadow: none;  /* app.css のボタン影を打ち消す */
+  cursor: pointer;
+}
+
+#audioResumeButton:active {
+  background: rgba(0, 0, 0, 0.08);
+  box-shadow: none;
+  transform: none;   /* app.css の押下アニメーションを打ち消す */
+}
+
 /* クリックボックスのスタイル */
 .clickBox {
 
