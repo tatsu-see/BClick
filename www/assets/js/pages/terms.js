@@ -23,5 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     acceptId: "consentAccept",
     declineId: "consentDecline",
     statusId: "consentStatus",
+    measurementId: "G-GW9DB782DZ",
   });
 });

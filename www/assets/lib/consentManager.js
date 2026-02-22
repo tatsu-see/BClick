@@ -4,6 +4,7 @@
  * 【使い方】
  * - index.html で initConsentBanner(...) を呼び出す。
  * - terms.html で initConsentDialog(...) を呼び出す。
+ * - その他のページで initConsentTracking(...) を呼び出す（バナー不要・同意済みなら計測開始）。
  * - 同意は Cookie に保存される（キー名: bclick.consent.analytics / 有効期限: 12か月）。
  *
  * 【注意事項】
@@ -107,6 +108,35 @@ export function initConsentBanner({ bannerId, acceptId, declineId, measurementId
 }
 
 /**
+ * バナー不要のページ向けに、同意済みなら gtag.js を読み込む。
+ * index.html 以外の各ページで呼び出す。
+ * @param {object} options - 初期化オプション
+ * @param {string} options.measurementId - GA測定ID
+ */
+export function initConsentTracking({ measurementId }) {
+  ensureGtagStub();
+  setDefaultConsent();
+  const stored = getStoredConsent();
+  if (stored === CONSENT_GRANTED) {
+    applyConsentToGtag(CONSENT_GRANTED);
+    loadGtag(measurementId);
+  } else if (stored === CONSENT_DENIED) {
+    applyConsentToGtag(CONSENT_DENIED);
+  }
+
+  // bfcache（ブラウザの戻る）で復帰した際に同意状態を再同期する
+  window.addEventListener("pageshow", () => {
+    const refreshed = getStoredConsent();
+    if (refreshed === CONSENT_GRANTED) {
+      applyConsentToGtag(CONSENT_GRANTED);
+      loadGtag(measurementId);
+    } else if (refreshed === CONSENT_DENIED) {
+      applyConsentToGtag(CONSENT_DENIED);
+    }
+  });
+}
+
+/**
  * terms.html の同意設定ダイアログを初期化する。
  * @param {object} options - 初期化オプション
  * @param {string} options.openButtonId - ダイアログを開くボタンID
@@ -114,8 +144,9 @@ export function initConsentBanner({ bannerId, acceptId, declineId, measurementId
  * @param {string} options.acceptId - 同意ボタンID
  * @param {string} options.declineId - 拒否ボタンID
  * @param {string} options.statusId - 現在状態表示のID
+ * @param {string} options.measurementId - GA測定ID
  */
-export function initConsentDialog({ openButtonId, dialogId, acceptId, declineId, statusId }) {
+export function initConsentDialog({ openButtonId, dialogId, acceptId, declineId, statusId, measurementId }) {
   const openButton = document.getElementById(openButtonId);
   const dialog = document.getElementById(dialogId);
   const acceptButton = document.getElementById(acceptId);
@@ -140,6 +171,8 @@ export function initConsentDialog({ openButtonId, dialogId, acceptId, declineId,
   if (acceptButton) {
     acceptButton.addEventListener("click", () => {
       saveConsent(CONSENT_GRANTED);
+      applyConsentToGtag(CONSENT_GRANTED);
+      loadGtag(measurementId);
       updateStatusLabel();
       dialog.close();
     });
@@ -148,6 +181,7 @@ export function initConsentDialog({ openButtonId, dialogId, acceptId, declineId,
   if (declineButton) {
     declineButton.addEventListener("click", () => {
       saveConsent(CONSENT_DENIED);
+      applyConsentToGtag(CONSENT_DENIED);
       updateStatusLabel();
       dialog.close();
     });
