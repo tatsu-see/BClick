@@ -1,0 +1,226 @@
+
+.preferenceValueCentered {
+  justify-content: center;
+}
+
+/* 縦方向の間隔をconfigBeatに寄せる */
+.preferenceValue {
+  margin-bottom: 3px;
+}
+
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.chipGroupSectionRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.chipGroupSectionRow[aria-label="Select root"] .chipGroup {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.chipGroupSectionRow[aria-label="Select quality"] .chipGroup {
+  justify-content: center;
+}
+
+.chipGroupSectionRow[aria-label="Select root"] .chipButton {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 0;
+}
+
+.chipGroupActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.chipButton {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 6px;
+  min-height: 28px;
+  min-width:  42px;
+  border-radius: 3px;
+  border: 1px solid #666;
+  background-color: #f7f7f7;
+  font-size: 0.85em;
+  color: #222;
+  user-select: none;
+  cursor: pointer;
+}
+
+.chipButton .material-symbols-rounded {
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+.chipButton .lang {
+  font-size: 0.6em;
+  line-height: 1;
+  align-self: flex-end;
+  padding-bottom: 1px;
+}
+
+.chipButton:focus-visible {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
+
+.chipButton.isActive {
+  background-color: #1e7a4f;
+  border-color: #1e7a4f;
+  color: #ffffff;
+}
+
+.rhythmBeatValue {
+  align-items: stretch;
+}
+
+.rhythmPatternTable {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  width: 100%;
+}
+
+.rhythmPatternHeader,
+.rhythmPatternRow {
+  display: grid;
+  grid-template-columns: 44px 1fr 160px; /* 列幅を調整する場合はここを変更する */
+  align-items: stretch;
+  gap: 1px;
+}
+
+.rhythmPatternRow.isCovered .rhythmPatternDivision,
+.rhythmPatternRow.isCovered .rhythmPatternSymbolRow,
+.rhythmPatternRow.isCovered .rhythmPatternChordRow,
+.rhythmPatternRow.isCovered .rhythmPatternPreview {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.rhythmPatternCell {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-bottom: 3px;
+  /* セル枠 */
+  border: 1px solid #d0d0d044;  /* セルに薄い枠を表示する */
+  border-radius: 4px;
+}
+
+.rhythmPatternHeader .rhythmPatternCell {
+  font-size: 0.6em;
+  font-weight: 600;
+  color: #333;
+  justify-content: center;
+  min-height: 28px;
+}
+
+.rhythmPatternHeader .rhythmPatternSymbols {
+  align-items: center;
+}
+
+
+.rhythmPatternSymbols {
+  display: flex;
+  align-items: stretch;
+}
+
+.rhythmPatternStack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.rhythmPatternSymbolRow {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1 1 0;
+}
+
+.rhythmPatternChordRow {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  flex: 1 1 0;
+}
+
+.rhythmPatternChordRow .rhythmSelectWrap {
+  width: 100%;
+}
+
+.rhythmSelectWrap.isDisabled {
+  opacity: 0.45;
+}
+
+.rhythmPatternSymbolRow .rhythmSymbolSelect {
+  min-width: 0;
+  text-align: center;
+  font-size: 0.7em;
+  padding: 1px 2px;
+  height: 100%;
+}
+
+.rhythmDivisionSelect,
+.rhythmPatternSymbols .rhythmSymbolSelect,
+.rhythmChordSelect {
+  height: 100%;
+}
+
+.rhythmDivisionSelect {
+  text-align: center;
+  padding: 2px 1px;
+}
+
+.rhythmPatternPreview {
+  justify-content: center;
+  /* Spec ABCJSプレビューは操作しないのでクリックを無効化する */
+  pointer-events: none;
+}
+
+.rhythmChordSelect {
+  min-width: 0;
+  text-align: center;
+  font-size: 0.7em;
+  padding: 1px 2px;
+}
+
+.rhythmPatternPreview .abcjs-inline-svg {
+  max-width: 100%;
+  height: 32px;
+}
+
+.codeProgressionGroup {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+#codeProgression {
+  font-size: 0.9em;
+  width: 100%;
+  box-sizing: border-box;
+}
