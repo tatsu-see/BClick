@@ -41,6 +41,9 @@
     <span class="lang" data-lang="en">Manual</span>
     <span class="lang" data-lang="ja">使い方</span>
 
+- <html translate="no"> を付けて翻訳不要とする。
+  過去に lang="en" などとする対応もあったが、lang を付けると自動翻訳が動作するようで、lang は付けない方針とする。
+
 - HTML内の aria-label 属性は英語表記を使用する。
 
 - HTMLではスクロールバーを強制的に非表示にする場合は、コメントで非表示にする理由を書いて後から見ても理解できるようにする。
