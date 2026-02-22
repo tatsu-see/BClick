@@ -1,0 +1,252 @@
+
+.preferenceValueCentered {
+  justify-content: center;
+}
+
+/* 縦方向の間隔をconfigBeatに寄せる */
+.preferenceValue {
+  margin-bottom: 3px;
+}
+
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.chipGroupSectionRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chipButton {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 6px;
+  min-height: 28px;
+  min-width: 42px;
+  border-radius: 3px;
+  border: 1px solid #666;
+  background-color: #f7f7f7;
+  font-size: 0.85em;
+  color: #222;
+  user-select: none;
+  cursor: pointer;
+}
+
+.chipButton .material-symbols-rounded {
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+.chipButton .lang {
+  font-size: 0.6em;
+  line-height: 1;
+  align-self: flex-end;
+  padding-bottom: 1px;
+}
+
+.chipButton.isActive {
+  background-color: #1e7a4f;
+  border-color: #1e7a4f;
+  color: #ffffff;
+}
+
+.chipButton:focus-visible {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
+
+
+#codeDiagram {
+  margin: 3px;
+  padding: 8px;
+  border-radius: 3px;
+  background-color: mintcream;
+}
+
+.fretboard {
+  display: grid;
+  grid-template-columns: repeat(11, 44px) 32px;
+  grid-template-rows: repeat(6, 32px) 20px;
+  gap: 0;
+  justify-content: center;
+  position: relative;
+}
+
+.fretCell.isHidden,
+.fretNumber.isHidden {
+  display: none;
+}
+
+.fretLabel,
+.fretNumber,
+.stringNumber {
+  width:50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7em;
+  color: #333;
+}
+
+.preferenceName {
+  padding: 4px 8px;
+  border-radius: 3px;
+  transition: background-color 160ms ease;
+}
+
+.preferenceName.isActive {
+  background-color: lightgreen;
+}
+
+/*
+  フレットをグリッド表示するためのセル情報。
+*/
+.fretCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0px solid #33333333;  /* 確認用の全体border*/
+  border-radius: 0;
+  background-color: #fff;
+  position: relative;
+}
+
+.fretCell.stringTop {
+  background: linear-gradient(to bottom, transparent 0 50%, #fff 50% 100%);
+}
+
+.fretCell.stringBottom {
+  background: linear-gradient(to bottom, #fff 0 50%, transparent 50% 100%);
+}
+
+.fretCell::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: #88888888;
+}
+
+.fretCell.stringTop::after {
+  height: 50%;
+  top: 50%;
+}
+
+.fretCell.stringBottom::after {
+  height: 50%;
+  top: 0;
+}
+
+.fretCell::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background-color: #444;
+}
+
+
+.fretCell[id$="-f0"]::before {
+  content: none;
+}
+
+.nutLine {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background-color: #666666;
+}
+
+.fretCell.stringTop .nutLine {
+  height: 50%;
+  top: 50%;
+}
+
+.fretCell.stringBottom .nutLine {
+  height: 50%;
+  top: 0;
+}
+
+.finger {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #111;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fingerOpen {
+  background-color: #fff;
+  border: 2px solid #111;
+  box-sizing: border-box;
+}
+
+.fingerLabel {
+  font-size: 0.65em;
+  font-weight: 600;
+  line-height: 1;
+  color: #fff;
+}
+
+.mute {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  z-index: 3;
+}
+
+.mute::before,
+.mute::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 2px;
+  background-color: #111;
+  transform-origin: center;
+}
+
+.mute::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.mute::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.open {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #111;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+.barre {
+  position: absolute;
+  background-color: #111;
+  border-radius: 3px;
+  z-index: 2;
+}
+
+#saveCodeDiagram {
+  min-width: 66px;
+}

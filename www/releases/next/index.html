@@ -1,13 +1,342 @@
-<!DOCTYPE html>
+<!doctype html>
 <html translate="no">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex">
-  <title>Next</title>
+  <meta charset="utf-8">
+  <meta name="description" content="B.Click はギター練習向けのクリック/メトロノーム WEBアプリ。BPM、カウントイン、クリック数を設定でき、コード付きのリズム譜を作成できます。リズム譜を見ながら練習でき、練習パターンをファイル保存可能。 Guitar practice click/metronome web app. Set BPM, count-in, click count; create chord rhythm scores and save practice patterns.">
+  <meta name="keywords" content="ギター,練習,メトロノーム,クリック,テンポ,BPM,カウントイン,リズム,リズム譜,コード,練習パターン,保存,webアプリ,Guitar,practice,metronome,click,tempo,BPM,count-in,rhythm,score,chords,practice patterns,save,web app">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="/assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="/assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="/assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="/assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
+
+  <!--Spec 画面遷移の仕様（ preconnect / preload / modulepreload / prefetch 用）
+  index.html → configBeat.html
+  index.html → configScore.html
+  index.html → editScore.html
+  index.html → codeDiagram.html
+  -->
+
+  <!-- Resource hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link rel="preload" href="/assets/css/app.css" as="style">
+  <link rel="preload" href="/assets/css/tempoDial.css" as="style">
+  <link rel="preload" href="/assets/css/click.css" as="style">
+
+  <link rel="modulepreload" href="/assets/lib/Language.js">
+  <link rel="modulepreload" href="/assets/lib/consentManager.js">
+  <link rel="modulepreload" href="/assets/lib/consentBanner.js">
+  <link rel="modulepreload" href="/assets/js/pages/app.js">
+  <link rel="modulepreload" href="/assets/js/actions/createScoreButton.js">
+  <link rel="modulepreload" href="/assets/js/actions/editScoreButton.js">
+  <link rel="modulepreload" href="/assets/js/actions/initScoreButton.js">
+
+  <link rel="prefetch" href="/configBeat.html" as="document">
+  <link rel="prefetch" href="/assets/css/configBeat.css" as="style">
+  <link rel="prefetch" href="/assets/js/pages/configBeat.js" as="script">
+
+  <link rel="prefetch" href="/configScore.html" as="document">
+  <link rel="prefetch" href="/assets/css/configScore.css" as="style">
+  <link rel="prefetch" href="/assets/js/pages/configScore.js" as="script">
+  <link rel="prefetch" href="/assets/lib/abcjs/abcjs-basic-min.js" as="script">
+
+  <link rel="prefetch" href="/editScore.html" as="document">
+  <link rel="prefetch" href="/assets/css/editScore.css" as="style">
+  <link rel="prefetch" href="/assets/js/pages/click.js" as="script">
+  <link rel="prefetch" href="/assets/js/pages/editScore.js" as="script">
+  <link rel="prefetch" href="/assets/js/actions/saveScoreButton.js" as="script">
+  <link rel="prefetch" href="/assets/js/actions/loadScoreButton.js" as="script">
+  <link rel="prefetch" href="/assets/lib/alphaTab/alphaTab.min.js" as="script">
+
+  <link rel="prefetch" href="/codeDiagram.html" as="document">
+  <link rel="prefetch" href="/assets/css/codeDiagram.css" as="style">
+  <link rel="prefetch" href="/assets/js/pages/codeDiagram.js" as="script">
+
+  <link rel="stylesheet" href="/assets/lib/Language.css">
+  <link rel="stylesheet" href="/assets/lib/consentManager.css">
+  <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="/assets/css/tempoDial.css">
+  <link rel="stylesheet" href="/assets/css/click.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+  <script type="module" src="/assets/lib/Language.js"></script>
+  <script type="module" src="/assets/lib/consentBanner.js"></script>
+
+  <script type="module" src="/assets/js/pages/app.js"></script>
+  <script type="module" src="/assets/js/pages/click.js"></script>
+  <script type="module" src="/assets/js/actions/createScoreButton.js"></script>
+  <script type="module" src="/assets/js/actions/editScoreButton.js"></script>
+  <script type="module" src="/assets/js/actions/initScoreButton.js"></script>
+
+  <!-- 構造化データ（JSON-LD）: 検索エンジンにアプリの情報を伝える -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "B.Click",
+    "url": "https://bclick.app",
+    "description": "B.Click はギター練習向けのクリック/メトロノーム WEBアプリ。BPM、カウントイン、クリック数を設定でき、コード付きのリズム譜を作成できます。リズム譜を見ながら練習でき、練習パターンをファイル保存可能。 Guitar practice click/metronome web app. Set BPM, count-in, click count; create chord rhythm scores and save practice patterns.",
+    "applicationCategory": "MusicApplication",
+    "operatingSystem": "Web Browser",
+    "inLanguage": ["ja", "en"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "JPY"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "tatsu",
+      "url": "https://tatsu-see.github.io/"
+    }
+  }
+  </script>
 </head>
+
 <body>
-  <h1>Next</h1>
-  <p>（ダミー）</p>
+  <header>
+    <div id="title" class="titleStack">
+      <span class="titleMain"><img src="/assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
+      <span class="titleSubtitle">— play daily, play better —</span>
+    </div>
+  </header>
+  <main class="pageFrame">
+    <span style="font-size:8pt;font-weight:100;color:red">This app is in testing. Bugs may occur.</span>
+
+    <!--Spec BPM テンポ設定（ダイアル操作）
+    -->
+    <div class="preferenceTitle">
+      <span class="material-symbols-rounded" aria-hidden="true">speed</span>
+      <span class="lang" data-lang="en">Tempo (30–240)</span>
+      <span class="lang" data-lang="ja">テンポ（30～240）</span>
+    </div>
+
+    <div id="beatPreference" class="tempoControl tempoControlStack">
+      <div class="tempoValueGroup tempoValueTop">
+        <div class="tempoStepSwitch">
+          <span class="tempoInputNote">♪=</span>
+          <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric" aria-label="Tempo" readonly>
+        </div>
+      </div>
+
+      <div class="tempoDialRow" role="group" aria-label="テンポ変更モード">
+        <button type="button" id="tempoStepCoarse" class="tempoStepButton" data-step="10" aria-pressed="false">±10</button>
+        <button type="button"
+          class="tempoDial"
+          id="tempoDial"
+          data-step="1"
+          data-degrees-per-step="36"
+          aria-label="テンポを1ずつ変更">
+          <span class="tempoDialSide tempoDialMinus" aria-hidden="true">-</span>
+          <span class="tempoDialIndicator" aria-hidden="true"></span>
+          <span class="tempoDialLabel">1</span>
+          <span class="tempoDialSide tempoDialPlus" aria-hidden="true">+</span>
+        </button>
+        <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
+      </div>
+    </div>
+
+    <div class="preferenceSummery">
+
+      <!--  Beat設定 -->
+      <div class="preferenceNow" id="configBeat">
+        <!-- ここにBPM、クリック数、カウントインの設定を表示する。 -->
+      </div>
+
+      <div class="preferenceValue">
+        <button id="configBeatButton" type="button" class="makeScoreButton navButton">
+          <span class="material-symbols-rounded" aria-hidden="true">tune</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!--Spec クリック再生エリア-開始 -->
+    <div class="preferenceTitle">
+      <span class="material-symbols-rounded" aria-hidden="true">play_circle</span>
+      <span class="lang" data-lang="en">Play</span>
+      <span class="lang" data-lang="ja">再生</span>
+    </div>
+
+    <div id="playClicking">
+      <button id="startClick" type="button" class="chipButton" aria-label="Play">
+        <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span>
+        <span class="lang" data-lang="en">Play</span>
+        <span class="lang" data-lang="ja">再生</span>
+      </button>
+      <button id="stopClickart" type="button" class="chipButton" aria-label="Pause">
+        <span class="material-symbols-rounded" aria-hidden="true">pause</span>
+        <span class="lang" data-lang="en">Pause</span>
+        <span class="lang" data-lang="ja">停止</span>
+      </button>
+      <button id="resetClickart" type="button" class="chipButton" aria-label="Reset">
+        <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span>
+        <span class="lang" data-lang="en">Reset</span>
+        <span class="lang" data-lang="ja">リセット</span>
+      </button>
+      <button id="showCodeDiagram" type="button" class="makeScoreButton makeScoreButtonCompact navButton">
+        <span class="material-symbols-rounded" aria-hidden="true">back_hand</span>
+        <span class="lang" data-lang="en">Chords</span>
+        <span class="lang" data-lang="ja">コード</span>
+      </button>
+    </div>
+
+    <div id="countdownOverlay" aria-hidden="true" hidden>
+      <div id="countdownText" aria-live="polite"></div>
+    </div>
+
+    <div id="clickPane">
+      <div id="showClick">
+        <!-- (ここにクリックが表示されます) -->
+      </div>
+    </div>
+    <!--Spec クリック再生エリア-終了 -->
+
+    <div class="preferenceTitle">
+      <span class="material-symbols-rounded" aria-hidden="true">queue_music</span>
+      <span class="lang" data-lang="en">Rhythm</span>
+      <span class="lang" data-lang="ja">リズム</span>
+      <label class="scoreToggle">
+        <input type="checkbox" id="scoreToggle" aria-label="Toggle rhythm display">
+        <script>
+          (function() {
+            try {
+              const saved = localStorage.getItem("bclick.score.enabled");
+              if (saved === null) return;
+              const parsed = JSON.parse(saved);
+              const toggle = document.getElementById("scoreToggle");
+              if (toggle) {
+                toggle.checked = parsed === true;
+              }
+            } catch (e) {
+              ;
+            }
+          })();
+        </script>
+      </label>
+    </div>
+
+    <div id="preferenceRythm" style="background-color: #f3f7f2; border-radius: 3px;">
+      <div class="preferenceSummery" id="scoreSetting">
+        <!--  スコア設定 -->
+        <div class="preferenceNow" id="configScore">
+          <!-- ここに拍子、コード進行、小節数 を表示する。 -->
+        </div>
+
+        <div class="preferenceValue">
+          <button id="configScoreButton" type="button" class="makeScoreButton navButton">
+            <span class="material-symbols-rounded" aria-hidden="true">tune</span>
+          </button>
+        </div>
+
+      </div>
+
+    <div class="preferenceTitle">
+      <span class="material-symbols-rounded" aria-hidden="true">library_music</span>
+      <span class="lang" data-lang="en">Score</span>
+      <span class="lang" data-lang="ja">スコア</span>
+    </div>
+
+      <!--Spec スコアの操作ボタン
+        以下のボタンは、configBeat.html画面やconfigScore.html画面で設定した情報から楽譜を新規生成したり、保存したりする機能のボタンである。
+        ボタンは1行に横並びで表示し、ボタンを等しい幅で配置する。
+        以下の楽譜編集ボタンや、楽譜ファイル(*.json)の操作ボタンは、app.js に全部実装するのではなくて、適宜モジュールに分割して実装する。
+
+        ・Createボタン
+          configBeat.html画面やconfigScore.html画面で設定した情報から新規に楽譜を生成する。Editで編集中の楽譜情報も破棄して、
+          新規生成する。楽譜を新規作成した後は、そのまま編集操作にするため、Editボタンが押されたように、editScore.html画面を表示する。
+          Createボタンは、現在の楽譜を保存せずに破棄して新規作成するため、注意を促すダイアログを表示してから実行する。
+
+        ・Editボタン
+          現在編集中の楽譜を編集する editScore.html画面 を表示する。
+      -->
+      <div class="preferenceExec isRow4">
+        <div></div>
+        <button id="setClick" type="button" class="okConfig makeScoreButton navButton">
+          <span class="material-symbols-rounded" aria-hidden="true">note_add</span>
+          <span class="lang" data-lang="en">Create</span>
+          <span class="lang" data-lang="ja">作成</span>
+        </button>
+
+        <button id="editScore" type="button" class="okConfig makeScoreButton navButton">
+          <span class="material-symbols-rounded" aria-hidden="true">music_note</span>
+          <span class="lang" data-lang="en">Play</span>
+          <span class="lang" data-lang="ja">演奏</span>
+        </button>
+        <div></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <a href="releases/index.html">Ver. 0.33</a> /
+
+    <!--
+      <a href="/manual.html" target="_blank">
+        <span class="lang" data-lang="en">Manual</span>
+        <span class="lang" data-lang="ja">使い方</span>
+      </a> /
+    -->
+
+      <!-- 利用規約 -->
+      <a href="/terms.html">
+        <span class="lang" data-lang="en">Terms of Service</span>
+        <span class="lang" data-lang="ja">利用規約</span>
+      </a> /
+
+      <!-- Message -->
+      <span class="lang" data-lang="en">
+        <a href="https://forms.gle/QMNE5WTUfHvq1cRk8" target="_blank">Message</a>
+      </span>
+      <span class="lang" data-lang="ja">
+        <a href="https://forms.gle/jDhYvo9E8UPvZM3D9" target="_blank">メッセージ</a>
+      </span>
+
+    <a href="https://tatsu-see.github.io/" target="_blank">
+      <img src="https://tatsu-see.github.io/assets/icons/Tww.ico"
+       alt="Think while walking icon" width="16" height="16" style="transform: translateY(2px)">
+    </a> /
+      
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+  <div id="consentBanner" class="consentBanner" aria-label="Cookie consent" hidden>
+    <div class="consentBannerText">
+      <span class="lang" data-lang="en">
+        We use analytics cookies to improve this app. You can accept or decline. You can change your choice anytime in Terms.
+      </span>
+      <span class="lang" data-lang="ja">
+        本アプリの改善のため解析用Cookieを使用します。同意または拒否が可能です。設定は利用規約ページからいつでも変更できます。
+      </span>
+    </div>
+    <div class="consentBannerActions">
+      <button type="button" id="consentAccept" class="makeScoreButton" aria-label="Accept analytics cookies">
+        <span class="lang" data-lang="en">Accept</span>
+        <span class="lang" data-lang="ja">同意する</span>
+      </button>
+      <button type="button" id="consentDecline" class="makeScoreButton" aria-label="Decline analytics cookies">
+        <span class="lang" data-lang="en">Decline</span>
+        <span class="lang" data-lang="ja">拒否する</span>
+      </button>
+    </div>
+  </div>
+
 </body>
 </html>
+
+
+

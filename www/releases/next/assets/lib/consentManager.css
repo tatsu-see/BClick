@@ -1,0 +1,105 @@
+/*
+  GDPR同意バナー・同意設定ダイアログ用の共通スタイル。
+  本ファイルは consentManager.js / consentBanner.js とセットで使用する。
+*/
+
+/* GDPR同意バナー */
+.consentBanner {
+  position: fixed; /* 常に画面下に固定 */
+  left: 0; /* 左端揃え */
+  right: 0; /* 右端揃え */
+  bottom: 0; /* 画面下部に配置 */
+  z-index: 1000; /* 他の要素より前面 */
+  background-color: mintcream; /* バナー背景色 */
+  color: #222; /* テキスト色 */
+  border-top: 2px solid mediumseagreen; /* 上部の強調ライン */
+  padding: 10px 12px; /* 余白 */
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2); /* 浮き上がり演出 */
+}
+
+.consentBannerText {
+  font-size: 0.7em; /* 本文サイズ */
+  line-height: 1.35; /* 読みやすさ */
+}
+
+.consentBannerActions {
+  margin-top: 8px; /* テキストとの間隔 */
+  display: flex; /* ボタンを横並び */
+  gap: 6px; /* ボタン間隔 */
+}
+
+.consentBannerActions .makeScoreButton {
+  width: auto; /* バナー内では固定幅にしない */
+  min-width: 120px; /* 最低幅 */
+  font-size: 11pt; /* terms.html 相当の文字サイズに揃える */
+}
+
+@media (max-width: 720px) {
+  .consentBanner {
+    padding: 10px; /* 小さい画面は余白を調整 */
+  }
+
+  .consentBannerActions {
+    flex-direction: column; /* 縦並びに切り替え */
+  }
+
+  .consentBannerActions .makeScoreButton {
+    width: 100%; /* ボタンを全幅に */
+  }
+}
+
+/* 同意設定リンク */
+.consentSettings {
+  margin-top: 0.6em; /* 規約本文との間隔 */
+}
+
+.consentSettingsButton {
+  display: inline-flex; /* ラベルを横並びに */
+  align-items: center; /* 高さを揃える */
+  gap: 6px; /* ラベル間の間隔 */
+  background-color: mintcream; /* ボタン背景 */
+  color: #1e7a4f; /* 文字色 */
+  border: 2px solid #1e7a4f; /* 強調の縁取り */
+  border-radius: 999px; /* 丸み */
+  padding: 4px 12px; /* 余白 */
+  font-size: 0.95em; /* サイズ */
+  cursor: pointer; /* クリック可能 */
+}
+
+/* 同意設定ダイアログ */
+.consentDialog::backdrop {
+  background: rgba(0, 0, 0, 0.35); /* 背景の暗幕 */
+}
+
+.consentDialog {
+  border: 2px solid #1e7a4f; /* 枠線 */
+  border-radius: 10px; /* 角丸 */
+  padding: 14px 16px; /* 余白 */
+  max-width: 420px; /* 最大幅 */
+  width: calc(100% - 32px); /* 画面幅に収める */
+}
+
+.consentDialogTitle {
+  margin: 0 0 6px 0; /* 下に余白 */
+  font-size: 1.05em; /* 見出しサイズ */
+}
+
+.consentDialogStatus {
+  margin: 0 0 12px 0; /* 下に余白 */
+  font-size: 0.95em; /* 状態表示 */
+}
+
+.consentDialogActions {
+  display: flex; /* ボタンを横並び */
+  gap: 8px; /* ボタン間隔 */
+}
+
+.consentDialogActions .makeScoreButton {
+  width: 100%; /* 2ボタンを均等に */
+}
+
+@media (max-width: 520px) {
+  .consentDialogActions {
+    flex-direction: column; /* 小画面は縦並び */
+  }
+}

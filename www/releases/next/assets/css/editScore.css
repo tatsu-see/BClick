@@ -1,0 +1,341 @@
+/* editScore.html 専用スタイル */
+
+/* html 要素の高さを viewport に制限しつつ、スクロールは許可する */
+html {
+  height: 100svh;
+  height: 100dvh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  /* Spec editScoreは画面内スクロールに統一するため、ページスクロールを無効化する */
+  overflow: hidden;
+  /* Spec alphaTabの再描画でページ全体がスクロールされる現象を抑制する */
+  overflow-anchor: none;
+}
+
+body {
+  height: 100svh;
+  height: 100dvh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  /* padding-bottom を削除：footer は flex:1 した main の下に配置するため不要 */
+  /* Spec editScoreは画面内スクロールに統一するため、ページスクロールを無効化する */
+  overflow: hidden;
+  /* Spec alphaTabの再描画でページ全体がスクロールされる現象を抑制する */
+  overflow-anchor: none;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* header と footer のマージン (3px ずつ) を相殺するため、
+     main の上下パディングを調整。これにより他のページとの見た目統一を保つ */
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+#playClicking {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin-bottom: 3px;
+  padding: 3px;
+  width: calc(100% - 6px);
+  border-radius: 3px;
+  background-color: mintcream;
+}
+
+#scorePane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow-x: hidden;
+}
+
+#showClick {
+  margin-bottom: 3px;
+
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.6em;
+  text-align: center;
+
+  border:0px solid black;
+  border-radius: 3px;
+  background-color: mintcream;
+}
+
+#scoreArea {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: 3px;
+  padding: 0px;
+  border-radius: 3px;
+  background-color: mintcream;
+
+  border:0px solid black;
+}
+
+/* Spec editScore内のスクロールバーを細くして表示領域を広くする */
+#scoreArea {
+  scrollbar-width: thin;
+  scrollbar-color: #5a9b77 #e7f4ec;
+}
+
+#scoreArea::-webkit-scrollbar {
+  width: 6px;
+}
+
+#scoreArea::-webkit-scrollbar-track {
+  background: #e7f4ec;
+}
+
+#scoreArea::-webkit-scrollbar-thumb {
+  background: #5a9b77;
+  border-radius: 999px;
+  border: 1px solid #e7f4ec;
+}
+
+#score {
+  width: 100%;
+  min-height: 140px;
+  position: relative;
+}
+
+.scoreChordOverlayLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* 楽譜に重ねて表示する小節番号。クリックやタップ可能 */
+.scoreChordOverlayLabel {
+  min-width: 0;
+  position: absolute;
+  font-weight: 700;
+  line-height: 1.5;
+  color: white;
+  font-size: 1.4em;
+
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  border: 1px solid green;
+  border-radius: 2px;
+  padding: 0;
+  background-color: green;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scoreChordOverlayLabel.isActiveChord {
+  /* 自動スクロール対象のコードを強調表示する。 */
+  color: #2e8b57;
+  background-color: #ffffff;
+  border: 2px solid #2e8b57;
+  outline: 10px solid rgba(46, 139, 87, 0.4);
+}
+
+.scoreChordOverlayLabel.isLastEdited,
+.scoreChordOverlayLabel.isMenuEdited {
+  /* editMeasure から戻った直後 / メニュー操作後の最終編集小節の強調表示 */
+  color: #2e8b57;
+  background-color: #ffffff;
+  border: 2px solid #2e8b57;
+  outline: 10px solid rgba(46, 139, 87, 0.4);
+/*  outline-offset: 0px;	*/
+/*  box-shadow: 0 0 12px rgba(46, 139, 87, 0.5);	*/
+}
+
+.scoreContextMenu {
+  position: absolute;
+  z-index: 2;
+  display: none;
+  min-width: 88px;
+  padding: 4px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  border: 2px solid #1e7a4f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+}
+
+.scoreContextMenu.isVisible {
+  display: block;
+}
+
+.scoreContextMenuList {
+  display: flex;
+  /* Spec 小節番号の上に横並び表示し、折り返しはしない */
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+
+.scoreContextMenuItem {
+  appearance: none;
+  /* Spec メニューごとの境界を見えるようにする */
+  border: 1px solid #222;
+  background-color: #f7f7f7;
+  padding: 6px 6px;
+  text-align: center;
+  font-size: 0.85em;
+  font-weight: normal;
+  color: #222;
+  border-radius: 3px;
+  cursor: pointer;
+  /* Spec メニュー項目は縮めずに横並びを維持する */
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 28px;
+  min-width: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.scoreContextMenuItem .material-symbols-rounded {
+  font-size: 1.0em;
+  line-height: 1;
+}
+
+/* chipButton のラベルに合わせて小さめにする */
+.scoreContextMenuItemLabel {
+  font-size: 0.6em;
+  line-height: 1;
+  align-self: flex-end;
+  padding-bottom: 1px;
+}
+
+.scoreContextMenuItem.isActive {
+  background-color: #1e7a4f;
+  color: #ffffff;
+}
+
+.scoreContextMenuItem.isDisabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+#saveShowScore {
+  left: auto;
+  right: 6px;
+}
+
+.tempoDialToggleLabel {
+  font-size: 0.7em;
+}
+
+.tempoDialToggleControl {
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  justify-content: center;
+  background-color: transparent;
+}
+
+#editScorePreference .preferenceTitle {
+  width: 100%;
+}
+
+main.pageFrame > .preferenceTitle {
+  width: 100%;
+}
+
+.preferenceTitle.tempoTitle {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.tempoTitleText {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  grid-column: 2;
+}
+
+.tempoTitle .tempoDialToggleControl {
+  justify-self: end;
+}
+
+.scoreToggle input#tempoDialToggle::after {
+  content: "OFF";
+}
+
+.scoreToggle input#tempoDialToggle:checked::after {
+  content: "ON";
+  right: 18px;
+  color: #0f6a3d;
+}
+
+.preferenceValueCentered {
+  justify-content: center;
+}
+
+.barsPerRowValue {
+  height: auto;
+  padding: 0;
+}
+
+#barsPerRowRange {
+  flex: 0 0 220px;
+  max-width: 220px;
+  width: 220px;
+  height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+#barsPerRowRange::-webkit-slider-runnable-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#barsPerRowRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#barsPerRowRange::-moz-range-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#barsPerRowRange::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#barsPerRowValue {
+  min-width: 32px;
+  text-align: right;
+  font-weight: 600;
+}

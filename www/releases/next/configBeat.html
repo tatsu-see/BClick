@@ -1,0 +1,163 @@
+<!--Spec
+  楽譜のテンポなどを設定する画面
+  <Back を選択したら編集を無かったことにするので、保存しないで index.htmlに戻る。
+  Done を選択したら、その時に初めて編集結果をLocalStrageに保存して編集を完了する。
+-->
+<!doctype html>
+<html translate="no">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click - Tempo Settings / テンポ設定</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="/assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="/assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="/assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="/assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="/assets/icons/BClick-256x256.png">
+
+  <link rel="stylesheet" href="/assets/lib/Language.css">
+  <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="/assets/css/tempoDial.css">
+  <link rel="stylesheet" href="/assets/css/configBeat.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+  <link rel="modulepreload" href="/assets/js/utils/navigationGuard.js">
+  <link rel="modulepreload" href="/assets/lib/consentManager.js">
+  <link rel="modulepreload" href="/assets/lib/consentTracking.js">
+
+  <script type="module" src="/assets/lib/Language.js"></script>
+  <script type="module" src="/assets/lib/consentTracking.js"></script>
+
+  <script type="module" src="/assets/js/pages/configBeat.js"></script>
+  <script type="module" src="/assets/js/actions/initScoreButton.js"></script>
+</head>
+
+<!--Spec クリック音に関する設定画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+-->
+
+<body>
+  <header>
+    <button type="button" id="saveConfigBeat" class="okConfig" aria-label="Back">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
+    <div id="title" class="titleStack">
+      <span class="titleMain"><img src="/assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
+      <span class="titleSubtitle">— play daily, play better —</span>
+    </div>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
+  </header>
+
+  <main class="pageFrame">
+
+    <div class="preferenceTitle">
+      <span class="material-symbols-rounded" aria-hidden="true">speed</span>
+      <span class="lang" data-lang="en">Tempo (30–240)</span>
+      <span class="lang" data-lang="ja">テンポ（30～240）</span>
+    </div>
+
+    <div id="beatPreference" class="tempoControl tempoControlStack">
+      <div class="tempoValueGroup tempoValueTop">
+        <div class="tempoStepSwitch">
+          <span class="tempoInputNote">♪=</span>
+          <input type="number" id="tempoInput" class="tempoInputLarge" min="30" max="240" value="60" inputmode="numeric" readonly>
+        </div>
+      </div>
+
+      <div class="tempoDialRow" role="group" aria-label="Tempo change mode">
+        <button type="button" id="tempoStepCoarse" class="tempoStepButton" data-step="10" aria-pressed="false">±10</button>
+        <button type="button"
+          class="tempoDial"
+          id="tempoDial"
+          data-step="10"
+          data-degrees-per-step="36"
+          aria-label="Change tempo by 10">
+          <span class="tempoDialSide tempoDialMinus" aria-hidden="true">-</span>
+          <span class="tempoDialIndicator" aria-hidden="true"></span>
+          <span class="tempoDialLabel">10</span>
+          <span class="tempoDialSide tempoDialPlus" aria-hidden="true">+</span>
+        </button>
+        <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
+      </div>
+    </div>
+
+    <div class="preferenceTitle">
+      <span class="lang" data-lang="en">Beats (1–8)</span>
+      <span class="lang" data-lang="ja">拍数（1〜8）</span>
+    </div>
+
+    <div class="preferenceValue preferenceValueCentered">
+      <input type="range" id="clickCountRange" min="1" max="8" step="1" value="4">
+      <output id="clickCountValue" for="clickCountRange">4</output>
+    </div>
+
+    <div class="preferenceTitle">
+      <span class="lang" data-lang="en">Count-in (0–10)</span>
+      <span class="lang" data-lang="ja">カウントイン（0〜10）</span>
+    </div>
+
+    <div class="preferenceValue preferenceValueCentered">
+      <input type="range" id="countdownRange" min="0" max="10" step="1" value="4">
+      <output id="countdownValue" for="countdownRange">4</output>
+    </div>
+
+    <!--Spec クリック音の音量を設定する
+    ・ユーザは 0-10 レベルで選択するが、内部的には0.0-2.0で設定する。
+    ・設定の見た目は、拍数やカウントインと同じCSSにする。
+    -->
+    <div class="preferenceTitle">
+      <span class="lang" data-lang="en">Volume (0–10)</span>
+      <span class="lang" data-lang="ja">ボリューム（0〜10）</span>
+    </div>
+
+    <div class="preferenceValue preferenceValueCentered">
+      <input type="range" id="clickVolumeRange" min="0" max="10" step="1" value="5">
+      <output id="clickVolumeValue" for="clickVolumeRange">5</output>
+    </div>
+
+    <div class="preferenceTitle">
+      <span class="lang" data-lang="en">Other</span>
+      <span class="lang" data-lang="ja">その他</span>
+    </div>
+
+    <!--Spec その他設定ボタン
+      ・Init.ボタン
+        現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
+        すべて初期値に戻る。初期値は次の通り。
+          テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
+        Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
+    -->
+    <div class="preferenceExec isRow4">
+        <button id="initScore" type="button" class="chipButton">
+          <span class="material-symbols-rounded" aria-hidden="true">cached</span>
+          <span class="lang" data-lang="en">Init.</span>
+          <span class="lang" data-lang="ja">初期化</span>
+        </button>
+    </div>
+
+  </main>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+</body>
+</html>
+
+
+

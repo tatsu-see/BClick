@@ -1,0 +1,236 @@
+
+.preferenceValueCentered {
+  justify-content: center;
+}
+
+/* 縦方向の間隔をconfigBeatに寄せる */
+.preferenceValue {
+  margin-bottom: 3px;
+}
+
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+
+/*  border:1px solid black; */
+}
+
+.chipGroupSectionRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+
+/*  border:1px solid black; */
+}
+
+.chipGroupSectionRow[aria-label="Select root"] .chipGroup {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.chipGroupSectionRow[aria-label="Select quality"] .chipGroup {
+  justify-content: center;
+}
+
+.chipGroupSectionRow[aria-label="Select root"] .chipButton {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 0;
+}
+
+.chipGroupActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+#measuresRange {
+  flex: 0 0 220px;
+  max-width: 220px;
+  width: 220px;
+  height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+#measuresRange::-webkit-slider-runnable-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#measuresRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#measuresRange::-moz-range-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#measuresRange::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#measuresValue {
+  min-width: 32px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.chipButton {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 6px;
+  min-height: 28px;
+  min-width:  42px;
+  border-radius: 3px;
+  border: 1px solid #666;
+  background-color: #f7f7f7;
+  font-size: 0.85em;
+  color: #222;
+  user-select: none;
+  cursor: pointer;
+}
+
+.chipButton .material-symbols-rounded {
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+.chipButton .lang {
+  font-size: 0.6em;
+  line-height: 1;
+  align-self: flex-end;
+  padding-bottom: 1px;
+}
+
+.chipButton.isActive {
+  background-color: #1e7a4f;
+  border-color: #1e7a4f;
+  color: #ffffff;
+}
+
+.chipButton:focus-visible {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
+
+.rhythmBeatValue {
+  align-items: stretch;
+}
+
+.rhythmPatternTable {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  width: 100%;
+}
+
+.rhythmPatternHeader,
+.rhythmPatternRow {
+  display: grid;
+  grid-template-columns: 44px 1fr 160px; /* 列幅を調整する場合はここを変更する */
+  align-items: stretch;
+  gap: 1px;
+}
+
+.rhythmPatternRow.isCovered {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* リズムパターンのセル */
+.rhythmPatternCell {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:0px;
+  margin-bottom:3px;
+
+  border: 1px solid #d0d0d044;  /* セルに薄い枠を表示する */
+  border-radius: 4px;
+}
+
+.rhythmPatternHeader .rhythmPatternCell {
+  font-size: 0.6em;
+  font-weight: 600;
+  color: #333;
+  justify-content: center;
+}
+
+
+.rhythmPatternSymbols {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  justify-content: center;
+}
+
+.rhythmPatternSymbols .rhythmSymbolSelect {
+  min-width: 0;
+  text-align: center;
+  font-size: 0.7em;
+  padding: 1px 2px;
+  height: 100%;
+}
+
+.rhythmDivisionSelect,
+.rhythmPatternSymbols .rhythmSymbolSelect {
+  height: 100%;
+}
+
+.rhythmDivisionSelect {
+  text-align: center;
+  padding: 2px 1px;
+}
+
+.rhythmPatternPreview {
+  justify-content: center;
+  /* Spec ABCJSプレビューは操作しないのでクリックを無効化する */
+  pointer-events: none;
+}
+
+.rhythmPatternPreview .abcjs-inline-svg {
+  max-width: 100%;
+  height: 32px;
+}
+
+#codeProgression {
+  font-size: 0.9em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.codeProgressionGroup {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+#saveConfigScore {
+  min-width: 66px;
+}
