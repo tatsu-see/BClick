@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (showCodeDiagramButton) {
     showCodeDiagramButton.addEventListener("click", () => {
-      window.location.href = "/codeDiagram.html";
+      window.location.href = "codeDiagram.html";
     });
   }
 

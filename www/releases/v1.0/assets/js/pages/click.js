@@ -1,9 +1,9 @@
 // click.js
 // クリック再生画面の音再生制御とUI同期を行う。
-import { clickSound, getMaxVolume, restoreAudioContext } from "/assets/lib/Sound.js";
-import { chordPool } from "/assets/lib/guiterCode.js";
+import { clickSound, getMaxVolume, restoreAudioContext } from "../../lib/Sound.js";
+import { chordPool } from "../../lib/guiterCode.js";
 import { ConfigStore } from "../utils/store.js";
-import { getLangMsg } from "/assets/lib/Language.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得

@@ -120,7 +120,7 @@ export const resetScoreSettings = (store) => {
  * editScore.html を開く。
  */
 export const openEditScorePage = () => {
-  window.location.href = "/editScore.html";
+  window.location.href = "editScore.html";
 };
 
 /**
