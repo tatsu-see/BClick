@@ -97,23 +97,26 @@
     </div>
 
     <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Beats (1–8)</span>
-      <span class="lang" data-lang="ja">拍数（1〜8）</span>
+      <span class="lang" data-lang="en">Beats (1–16)</span>
+      <span class="lang" data-lang="ja">拍数（1〜16）</span>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
-      <input type="range" id="clickCountRange" min="1" max="8" step="1" value="4">
+      <input type="range" id="clickCountRange" min="1" max="16" step="1" value="4">
       <output id="clickCountValue" for="clickCountRange">4</output>
     </div>
 
     <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Count-in (0–10)</span>
-      <span class="lang" data-lang="ja">カウントイン（0〜10）</span>
+      <span class="lang" data-lang="en">Tone</span>
+      <span class="lang" data-lang="ja">音色</span>
     </div>
 
-    <div class="preferenceValue preferenceValueCentered">
-      <input type="range" id="countdownRange" min="0" max="10" step="1" value="4">
-      <output id="countdownValue" for="countdownRange">4</output>
+    <div class="preferenceValue preferenceValueCentered tonePreference">
+      <div id="clickToneSelectors" class="toneSelectGroup" role="group" aria-label="Select click tone per beat"></div>
+      <div class="toneLegend">
+        <span class="lang" data-lang="en">High (A5) / Low (A4) / — (None)</span>
+        <span class="lang" data-lang="ja">High (A5) / Low (A4) / —（無し）</span>
+      </div>
     </div>
 
     <!--Spec クリック音の音量を設定する
@@ -131,6 +134,16 @@
     </div>
 
     <div class="preferenceTitle">
+      <span class="lang" data-lang="en">Count-in (0–10)</span>
+      <span class="lang" data-lang="ja">カウントイン（0〜10）</span>
+    </div>
+
+    <div class="preferenceValue preferenceValueCentered">
+      <input type="range" id="countdownRange" min="0" max="10" step="1" value="4">
+      <output id="countdownValue" for="countdownRange">4</output>
+    </div>
+
+    <div class="preferenceTitle">
       <span class="lang" data-lang="en">Other</span>
       <span class="lang" data-lang="ja">その他</span>
     </div>
@@ -140,6 +153,7 @@
         現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
         すべて初期値に戻る。初期値は次の通り。
           テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
+          音色パターン=4拍ごとに1拍目High(A5)・それ以外Low(A4)（例: [A5,A4,A4,A4, A5,A4,A4,A4, ...]）
         Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
     -->
     <div class="preferenceExec isRow4">
@@ -158,6 +172,4 @@
 
 </body>
 </html>
-
-
 

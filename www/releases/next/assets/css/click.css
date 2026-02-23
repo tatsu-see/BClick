@@ -54,16 +54,23 @@
 }
 
 /* クリックボックスのスタイル */
-.clickBox {
+#showClick {
+  width: 100%;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+}
 
-  margin:5px;
+.clickBox {
+  margin: 0;
   flex: 1 1 0;
+  min-width: 0;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.0rem;
   font-weight: 600;
   border: 1px solid black;
   border-radius: 3px;

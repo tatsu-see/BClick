@@ -62,9 +62,11 @@ main {
 
   display: flex;
   gap: 2px;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.6em;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  width: 100%;
+
   text-align: center;
 
   border:0px solid black;

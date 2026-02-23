@@ -1,7 +1,10 @@
+// configBeat.js
+// テンポ/拍数/カウントイン/音量/音色の設定UIを同期する。
 import { ConfigStore } from "../utils/store.js";
 import { TempoDialController } from "../components/tempoDial.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { getLangMsg } from "../../lib/Language.js";
+import { buildCenteredSelectWrap } from "../utils/centeredSelect.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -17,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const countdownValue = document.getElementById("countdownValue");
   const clickVolumeRange = document.getElementById("clickVolumeRange");
   const clickVolumeValue = document.getElementById("clickVolumeValue");
+  const clickToneSelectors = document.getElementById("clickToneSelectors");
   const saveButton = document.getElementById("saveConfigBeat");
   const closePageButton = document.getElementById("closePage");
 
@@ -84,14 +88,83 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   const levelToVolume = (level) => (level / 10) * 2;
 
+  // 保存値は音名(A5/A4/"")で持ち、UI表示だけ H/L/— にする。
+  const toneOptions = [
+    { value: "A5", label: "H" },
+    { value: "A4", label: "L" },
+    { value: "", label: "—" },
+  ];
+
+  // 1,5,9,13拍目を強拍として高い音にする。
+  const getDefaultToneForIndex = (index) => (index % 4 === 0 ? "A5" : "A4");
+
+  /**
+   * 現在の拍数に合わせて音色パターン配列を作る。
+   * 不足分は既定値で補い、拍数を減らした場合は切り詰める。
+   * @param {number} count
+   * @param {string[]} source
+   * @returns {string[]}
+   */
+  const buildTonePattern = (count, source = []) =>
+    Array.from({ length: count }, (_, index) => {
+      const tone = source[index];
+      if (toneOptions.some((option) => option.value === tone)) {
+        return tone;
+      }
+      return getDefaultToneForIndex(index);
+    });
+
+  let selectedClickTones = [];
+
+  /**
+   * 拍数に応じて音色選択UIを再構築する。
+   * @param {number} count
+   */
+  const renderToneSelectors = (count) => {
+    if (!clickToneSelectors) return;
+    const safeCount = Number.isFinite(count) ? Math.max(1, count) : 1;
+    selectedClickTones = buildTonePattern(safeCount, selectedClickTones);
+    clickToneSelectors.textContent = "";
+    selectedClickTones.forEach((tone, index) => {
+      const select = document.createElement("select");
+      select.dataset.beatIndex = index.toString();
+      select.setAttribute("aria-label", `Select tone for beat ${index + 1}`);
+      toneOptions.forEach((optionItem) => {
+        const option = document.createElement("option");
+        option.value = optionItem.value;
+        option.textContent = optionItem.label;
+        option.selected = tone === optionItem.value;
+        select.appendChild(option);
+      });
+      select.addEventListener("change", () => {
+        const nextValue = select.value;
+        selectedClickTones[index] = toneOptions.some((option) => option.value === nextValue)
+          ? nextValue
+          : getDefaultToneForIndex(index);
+      });
+      clickToneSelectors.appendChild(
+        buildCenteredSelectWrap(select, { labelClass: "rhythmSelectLabelTone" }),
+      );
+    });
+  };
+
   if (clickCountRange) {
     const savedClickCount = store.getClickCount();
     if (savedClickCount !== null) {
       clickCountRange.value = savedClickCount.toString();
     }
     syncRangeValue(clickCountRange, clickCountValue);
+    const initialClickCount = Number.parseInt(clickCountRange.value, 10);
+    if (Number.isFinite(initialClickCount)) {
+      selectedClickTones = store.getClickTonePattern(initialClickCount);
+      renderToneSelectors(initialClickCount);
+    }
     clickCountRange.addEventListener("input", () => {
       syncRangeValue(clickCountRange, clickCountValue);
+      const nextCount = Number.parseInt(clickCountRange.value, 10);
+      if (Number.isFinite(nextCount)) {
+        renderToneSelectors(nextCount);
+      }
     });
   }
 
@@ -137,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const clickCountNumber = Number.parseInt(clickCountRange.value, 10);
         if (!Number.isNaN(clickCountNumber)) {
           store.setClickCount(clickCountNumber);
+          store.setClickTonePattern(selectedClickTones, clickCountNumber);
         }
       }
 

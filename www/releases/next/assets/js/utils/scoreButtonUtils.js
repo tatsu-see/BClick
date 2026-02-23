@@ -11,6 +11,10 @@ import {
   readScoreFileAsJson,
 } from "./scoreSerialization.js";
 
+// configBeat の既定値ルールと揃えて、初期化時の音色パターンを生成する。
+const buildDefaultClickTonePattern = (count) =>
+  Array.from({ length: count }, (_, index) => (index % 4 === 0 ? "A5" : "A4"));
+
 /**
  * 保存済み設定からScoreDataを自動生成する。
  */
@@ -97,6 +101,9 @@ export const resetScoreSettings = (store) => {
   store.setTempo(defaults.tempo);
   store.setClickCount(defaults.clickCount);
   store.setCountInSec(defaults.countIn);
+  if (typeof store.setClickTonePattern === "function") {
+    store.setClickTonePattern(buildDefaultClickTonePattern(defaults.clickCount), defaults.clickCount);
+  }
   store.setScoreTimeSignature(defaults.timeSignature);
   store.setScoreProgression(defaults.progression);
   store.setScoreMeasures(defaults.measures);

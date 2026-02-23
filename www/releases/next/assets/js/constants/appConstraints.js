@@ -5,7 +5,7 @@
 
 export const APP_LIMITS = {
   tempo: { min: 30, max: 240 },
-  clickCount: { min: 1, max: 8 },
+  clickCount: { min: 1, max: 16 },
   countIn: { min: 0, max: 10 },
   clickVolume: { min: 0, max: 2 },
   scoreMeasures: { min: 1, max: 50 },
@@ -15,5 +15,6 @@ export const APP_LIMITS = {
 };
 
 export const ALLOWED_TIME_SIGNATURES = ["2/4", "3/4", "4/4"];
+export const ALLOWED_CLICK_TONES = ["A5", "A4", ""];
 
 export const RHYTHM_TOKEN_REGEX = /^(?:[rt])?(?:1|2|4|8|16)$/;

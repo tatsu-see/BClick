@@ -105,6 +105,11 @@ select {
   font-size: 0.7em;
 }
 
+/* クリック音色の表示は少し小さめにする */
+.rhythmSelectLabelTone {
+  font-size: 0.65em;
+}
+
 /* ネイティブ select は透明で上に載せて操作だけ残す */
 .rhythmSelectInput {
   position: relative;

@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentBeatMs = null;
   let isPaused = false;
   let currentClickVolume = null;
+  // 1拍ごとの再生キー(A5/A4/"")を保持する。空文字は無音。
+  let currentClickTonePattern = null;
 
   // 値の読み取りユーティリティ
   const getNumberValue = (value, fallback) => {
@@ -101,6 +103,14 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   const refreshClickVolume = () => {
     currentClickVolume = toDeviceVolume(getClickVolume());
+  };
+
+  /**
+   * 保存済みのクリック音色パターンを再読み込みする。
+   * @param {number} beatCount
+   */
+  const refreshClickTonePattern = (beatCount) => {
+    currentClickTonePattern = store.getClickTonePattern(beatCount);
   };
 
   /**
@@ -202,11 +212,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /**
    * クリック音を拍に応じて鳴らす。
-   * @param {boolean} isFirstBeat
+   * @param {number} beatIndex
    */
-  const playClickSound = (isFirstBeat) => {
-    const key = isFirstBeat ? "A5" : "A4";
-    clickSound(currentClickVolume ?? undefined, key);
+  const playClickSound = (beatIndex) => {
+    // 保存値が無い場合のフォールバックも、configBeat の既定値ルールに揃える。
+    const fallbackTone = beatIndex % 4 === 0 ? "A5" : "A4";
+    // 空文字("") は「無音」の有効値なので、フォールバック判定には nullish を使う。
+    const tone = currentClickTonePattern?.[beatIndex] ?? fallbackTone;
+    if (tone === "") return;
+    clickSound(currentClickVolume ?? undefined, tone);
   };
 
   //##Spec クリック音とクリックBoxの表示切替は、体感ズレを最小化するため可能な限りタイミングを合わせる。
@@ -215,13 +229,12 @@ document.addEventListener("DOMContentLoaded", () => {
     clearCycleTimer();
     cycleTimerId = setInterval(() => {
       const nextIndex = (cycleIndex + 1) % cycleBoxes.length;
-      const isFirstBeat = nextIndex === 0;
-      playClickSound(isFirstBeat);
+      playClickSound(nextIndex);
       requestAnimationFrame(() => {
         cycleBoxes[cycleIndex].classList.remove("active");
         cycleIndex = nextIndex;
         cycleBoxes[cycleIndex].classList.add("active");
-        if (isFirstBeat) {
+        if (nextIndex === 0) {
           // 1周ごとに次の小節番号へスクロールする。
           scrollToNextBar();
         }
@@ -298,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cycleIndex = 0;
     currentBeatMs = beatMs;
 
-    playClickSound(true);
+    playClickSound(0);
     requestAnimationFrame(() => {
       cycleBoxes.forEach((box) => box.classList.remove("active"));
       cycleBoxes[0].classList.add("active");
@@ -355,6 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const clickCount = getClickCount();
     let countdown = getCountdown();
     refreshClickVolume();
+    refreshClickTonePattern(clickCount);
 
     renderClickBoxes(clickCount);
     isRunning = true;
@@ -394,6 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const setClickBoxes = () => {
     const clickCount = getClickCount();
     renderClickBoxes(clickCount);
+    refreshClickTonePattern(clickCount);
     clearCycleTimer();
     if (countdownTimerId !== null) {
       clearInterval(countdownTimerId);
@@ -486,6 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //##Spec 復帰イベントではユーザー操作が無い場合に失敗することがあるが、可能な限り復帰を試みる。
   window.addEventListener("pageshow", () => {
     refreshClickVolume();
+    refreshClickTonePattern(getClickCount());
     void restoreAudioContext();
   });
 
@@ -524,6 +540,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // ボリュームの更新は次に再生するクリック音のボリュームに反映する。
     if (event.key === "bclick.clickVolume") {
       refreshClickVolume();
+      return;
+    }
+
+    if (event.key === "bclick.clickTonePattern") {
+      refreshClickTonePattern(getClickCount());
     }
   });
 });

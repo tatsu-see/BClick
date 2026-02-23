@@ -64,6 +64,7 @@ export const SCORE_JSON_VERSION = 0;
 //
 // 楽譜の読込・保存に対応していない設定項目
 // - clickVolume: クリック音量
+// - clickTonePattern: クリック音色パターン
 // - editScore 画面の 調節のトグルスイッチ
 
 /**
