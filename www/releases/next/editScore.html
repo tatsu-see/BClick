@@ -167,6 +167,34 @@
     </div>
 
     <div id="playClicking">
+
+      <!--Spec 再生ボタンの左に、プルダウンを用意する。選択肢は次の3つ
+      "ー"  :通常通りの「再生」。クリックの1周と共に、楽譜の小節を移動する。楽譜の最後まで要ったら先頭に戻る。
+
+      "●Rec":録音モードで「再生」する。録音モード時、クリックは楽譜の最後まで再生したら終了し、録音も終了する。
+            :録音は「マイク」で行う。録音する対象はギターで小節のコードを弾いた音を想定するが、特に制限は不要。
+            :そのため、カウントインの間は録音は不要。選択肢の文字列の "●" は赤く表示する。
+            :録音データは、IndexedDBに永続保存する。楽譜データとしては保存しない。
+            :録音モード中のStop/Resetは完全停止です。途中まで録音していたら、途中まで保存される。
+            :録音モードで再び録音したら、前回のデータは削除される。
+
+      "Rec▶":録音したものを再生する。録音したものがないときは、選択できないようにする。
+            :録音データは、クリックの再生と同期して再生する。例えば4拍のクリックでは先頭の音が鳴るとともに
+             楽譜の小節番号が強調されるが、これと同時に録音データが再生される。同期はできるだけ正確にする。
+            :録音再生中のStopは一時停止。Resetは完全停止です。（通常通りの「再生」と同じ。）
+
+     （録音とクリックの再生の同期が必要なので、例えば録音データを50msや100msごとに分割して保存しておいて、
+       クリックの再生に合わせて順番に再生するなどの工夫が必要かもしれない。）
+      -->
+      <!--Spec 再生モード選択プルダウン（startClickボタンの左） -->
+      <div class="rhythmSelectWrap playModeSelectWrap" id="playModeSelectWrap">
+        <span class="rhythmSelectLabel" id="playModeSelectLabel">ー</span>
+        <select class="rhythmSelectInput" id="playModeSelect" aria-label="Play mode">
+          <option value="normal">ー</option>
+          <option value="rec" style="color:red">●Rec</option>
+          <option value="recplay" disabled>▶Rec</option>
+        </select>
+      </div>
       <button id="startClick" type="button" class="chipButton" aria-label="Play">
         <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span>
         <span class="lang" data-lang="en">Play</span>

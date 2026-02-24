@@ -47,6 +47,30 @@ main {
   width: calc(100% - 6px);
   border-radius: 3px;
   background-color: mintcream;
+  /* ボタン類を横並びかつ縦方向・水平方向ともにセンター揃えにする */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* 再生モード選択プルダウン。chipButtonと同じ高さ・見た目に揃える */
+/* rhythmSelectWrap の width:100% / height:100% を上書きして固定サイズにする */
+.playModeSelectWrap {
+  width: 58px;    /* rhythmSelectWrap の width:100% を上書き */
+  height: 40px;   /* rhythmSelectWrap の height:100% を上書き（chipButtonに合わせた高さ）*/
+  min-height: 28px;
+  font-size: 0.85em;
+  flex-shrink: 0;
+}
+
+/* ドロップダウンを開いたときのオプション文字列をセンター寄せにする */
+/* select の padding: 4px 10px を上書きして左余白を詰める */
+#playModeSelect {
+  padding: 0;
+  text-align: center;
+  text-align-last: center;
 }
 
 #scorePane {
