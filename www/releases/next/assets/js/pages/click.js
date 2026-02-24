@@ -226,12 +226,27 @@ document.addEventListener("DOMContentLoaded", () => {
   //##Spec クリック音とクリックBoxの表示切替は、体感ズレを最小化するため可能な限りタイミングを合わせる。
   //##Spec 外部モジュール（recordingManagerなど）がクリックサイクルの開始を検知できるよう
   //        bclick:clickcyclestarted イベントを発火する。startClickBoxCycle の末尾で呼ぶ。
+  //##Spec 楽譜が1周してbeat 0に戻るとき bclick:clickscorelooprestarted を発火する（録音再生の再同期用）。
+  //        setInterval コールバック内で直接発火することで、rAF の1フレーム遅延を排除している。
   const startCycleTimer = () => {
     if (cycleBoxes.length === 0 || currentBeatMs === null) return;
     clearCycleTimer();
     cycleTimerId = setInterval(() => {
       const nextIndex = (cycleIndex + 1) % cycleBoxes.length;
       playClickSound(nextIndex);
+      // beat 0 に戻ったとき、楽譜の全小節を回り終えていたらスコアループを通知する
+      // （window.bclickActiveChordIndex は rAF 内の scrollToNextBar で更新されるが、
+      //   beatMs >> 16ms なので前の rAF は必ず完了しており、値は最新）
+      if (nextIndex === 0) {
+        const barCount = window.bclickScoreBarCount;
+        const currentBarIndex = window.bclickActiveChordIndex;
+        if (
+          Number.isFinite(barCount) && barCount > 0 &&
+          Number.isFinite(currentBarIndex) && currentBarIndex === barCount - 1
+        ) {
+          document.dispatchEvent(new CustomEvent("bclick:clickscorelooprestarted"));
+        }
+      }
       requestAnimationFrame(() => {
         cycleBoxes[cycleIndex].classList.remove("active");
         cycleIndex = nextIndex;

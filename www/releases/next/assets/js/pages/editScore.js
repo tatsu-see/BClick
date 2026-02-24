@@ -675,10 +675,24 @@ document.addEventListener("DOMContentLoaded", () => {
   updatePlayModeLabel(playModeSelect?.value ?? "normal");
   void updateRecPlayableState();
 
-  // プルダウン変更時にラベルを更新する
+  // プルダウン変更時にラベルを更新し、モードに応じた事前準備を行う
   if (playModeSelect) {
     playModeSelect.addEventListener("change", () => {
-      updatePlayModeLabel(playModeSelect.value);
+      const newValue = playModeSelect.value;
+      updatePlayModeLabel(newValue);
+      if (newValue === "rec") {
+        // ●Rec モード: マイクを事前取得して録音開始遅延を最小化する
+        void recordingManager.prewarmMic().catch((err) => {
+          console.error("マイクの事前取得に失敗しました:", err);
+        });
+      } else {
+        // ●Rec モード以外: 事前取得済みマイクを解放する（不要なら no-op）
+        recordingManager.releasePrewarmMic();
+      }
+      if (newValue === "recplay") {
+        // Rec▶ モード: AudioBuffer を事前デコードして再生開始遅延を最小化する
+        void recordingManager.prepareBuffer();
+      }
     });
   }
 
@@ -710,10 +724,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }, totalMs);
       }
     } else if (mode === "recplay") {
-      // 録音データをクリックと同期して再生する（ループあり）
-      void recordingManager.startPlayback(true).catch((err) => {
+      // 録音データをクリックと同期して再生する（ループはイベント駆動で制御）
+      void recordingManager.startPlayback(false).catch((err) => {
         console.error("録音再生に失敗しました:", err);
       });
+    }
+  });
+
+  // 楽譜が1周してbeat 0に戻ったとき（録音再生の再同期）
+  document.addEventListener("bclick:clickscorelooprestarted", () => {
+    const mode = playModeSelect?.value ?? "normal";
+    if (mode === "recplay") {
+      // 先頭から再生し直すことで setInterval のドリフトをリセットする
+      recordingManager.restartPlayback();
     }
   });
 

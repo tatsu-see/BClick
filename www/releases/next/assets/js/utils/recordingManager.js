@@ -35,6 +35,8 @@ export class RecordingManager {
     this._playbackStartCtxTime = 0; // 再生開始時の AudioContext 時刻（オフセット込み基準）
     /** @type {boolean} */
     this._currentLoop = false; // 現在のループ設定
+    /** @type {MediaStream|null} */
+    this._prewarmStream = null; // 事前取得済みのマイクストリーム
   }
 
   // ─── IndexedDB ───────────────────────────────────────────────
@@ -91,13 +93,43 @@ export class RecordingManager {
   // ─── 録音 ────────────────────────────────────────────────────
 
   /**
+   * マイクストリームを事前取得する。
+   * ●Rec モード選択時に呼ぶことで、録音開始時の getUserMedia 遅延を回避する。
+   * @returns {Promise<void>}
+   */
+  async prewarmMic() {
+    if (this._prewarmStream) return;
+    this._prewarmStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  }
+
+  /**
+   * 事前取得済みのマイクストリームを解放する。
+   * ●Rec モードから離れたとき（別モードへ切り替え）に呼ぶ。
+   */
+  releasePrewarmMic() {
+    if (this._prewarmStream) {
+      this._prewarmStream.getTracks().forEach((t) => t.stop());
+      this._prewarmStream = null;
+    }
+  }
+
+  /**
    * マイク録音を開始する。既存の録音データは削除してから開始する。
+   * 事前取得済みストリーム（_prewarmStream）があればそれを使い、遅延を最小化する。
    * @returns {Promise<void>}
    */
   async startRecording() {
-    // 前回の録音を削除してから新規録音を開始する
+    // 前回の録音を削除し、古い AudioBuffer も破棄する
     await this.deleteRecording();
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    this._audioBuffer = null;
+    // 事前取得済みストリームを優先して使う（getUserMedia 遅延の回避）
+    let stream;
+    if (this._prewarmStream) {
+      stream = this._prewarmStream;
+      this._prewarmStream = null;
+    } else {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
     this._recordedChunks = [];
     this._mediaRecorder = new MediaRecorder(stream);
     this._mediaRecorder.ondataavailable = (e) => {
@@ -276,13 +308,38 @@ export class RecordingManager {
   /**
    * 再生を完全停止する（一時停止位置もリセット）。
    * 次回 startPlayback 時に先頭から再生される。
+   * AudioBuffer はキャッシュしたまま（次回再生の高速化のため）。
+   * 新規録音時（startRecording）でバッファは破棄される。
    */
   stopPlayback() {
     this._stopCurrentNode();
     this._isPaused = false;
     this._pauseOffset = 0;
-    // AudioBuffer のキャッシュも破棄して次回の同期精度を保つ
-    this._audioBuffer = null;
+  }
+
+  /**
+   * AudioBuffer を事前デコードして準備する（公開メソッド）。
+   * Rec▶ モード選択時に呼ぶことで、startPlayback 時のデコード遅延を回避する。
+   * @returns {Promise<void>}
+   */
+  async prepareBuffer() {
+    try {
+      await this._prepareBuffer();
+    } catch {
+      // 録音データが無い場合は無視する
+    }
+  }
+
+  /**
+   * 現在の再生を止めて先頭から即座に再生し直す（ループ再同期用）。
+   * 一時停止中は何もしない。
+   */
+  restartPlayback() {
+    if (!this._audioBuffer || this._isPaused) return;
+    const ctx = this._getAudioCtx();
+    this._isPaused = false;
+    this._pauseOffset = 0;
+    this._playInternal(ctx, ctx.currentTime, 0, this._currentLoop);
   }
 
   /**

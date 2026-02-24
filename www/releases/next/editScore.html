@@ -178,13 +178,18 @@
             :録音モード中のStop/Resetは完全停止です。途中まで録音していたら、途中まで保存される。
             :録音モードで再び録音したら、前回のデータは削除される。
 
-      "▶再生":録音したものを再生する。録音したものがないときは、選択できないようにする。
+      "Rec▶":録音したものを再生する。録音したものがないときは、選択できないようにする。
             :録音データは、クリックの再生と同期して再生する。例えば4拍のクリックでは先頭の音が鳴るとともに
              楽譜の小節番号が強調されるが、これと同時に録音データが再生される。同期はできるだけ正確にする。
             :録音再生中のStopは一時停止。Resetは完全停止です。（通常通りの「再生」と同じ。）
 
-     （録音とクリックの再生の同期が必要なので、例えば録音データを50msや100msごとに分割して保存しておいて、
-       クリックの再生に合わせて順番に再生するなどの工夫が必要かもしれない。）
+      ・録音タイミングの精度をあげるために、処理時間と録音時間を詳細に持つことでタイミングを合わせる工夫も考えられる。
+      ・特にクリック開始部は録音タイミングがズレ易いはずで、カウントインが終わる前に録音を開始しておく工夫も考えられる。
+
+      （以下は未実装。チャンク分割しデータを小さく保持する工夫。）
+      ・録音とクリックの再生の同期が必要なので、例えば録音データを50msや100msごとに分割して保存しておき、クリックの
+        再生に合わせて順番に再生するなどの工夫が必要かもしれない。
+      ・もしくは、小節ごとに録音データを分けて持つことで、できるだけクリックの1拍目と同期するなどの工夫も考えられる。
       -->
       <!--Spec 再生モード選択プルダウン（startClickボタンの左） -->
       <div class="rhythmSelectWrap playModeSelectWrap" id="playModeSelectWrap">
@@ -192,13 +197,13 @@
         <select class="rhythmSelectInput" id="playModeSelect" aria-label="Play mode">
           <option value="normal">ー</option>
           <option value="rec" style="color:red">●Rec</option>
-          <option value="recplay" disabled>▶Rec</option>
+          <option value="recplay" disabled>Rec▶</option>
         </select>
       </div>
       <button id="startClick" type="button" class="chipButton" aria-label="Play">
         <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span>
-        <span class="lang" data-lang="en">Play</span>
-        <span class="lang" data-lang="ja">再生</span>
+        <span class="lang" data-lang="en">Start</span>
+        <span class="lang" data-lang="ja">開始</span>
       </button>
       <button id="stopClickart" type="button" class="chipButton" aria-label="Pause">
         <span class="material-symbols-rounded" aria-hidden="true">pause</span>
