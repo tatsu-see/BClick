@@ -224,6 +224,8 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   //##Spec クリック音とクリックBoxの表示切替は、体感ズレを最小化するため可能な限りタイミングを合わせる。
+  //##Spec 外部モジュール（recordingManagerなど）がクリックサイクルの開始を検知できるよう
+  //        bclick:clickcyclestarted イベントを発火する。startClickBoxCycle の末尾で呼ぶ。
   const startCycleTimer = () => {
     if (cycleBoxes.length === 0 || currentBeatMs === null) return;
     clearCycleTimer();
@@ -319,6 +321,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     startCycleTimer();
+    //##Spec クリックサイクルの実開始を外部モジュール（録音制御など）へ通知する
+    document.dispatchEvent(new CustomEvent("bclick:clickcyclestarted", {
+      detail: { beatMs, beatCount: boxes.length },
+    }));
   };
 
   const updateTempo = (tempo) => {
@@ -355,6 +361,8 @@ document.addEventListener("DOMContentLoaded", () => {
       isPaused = false;
       setOperationEnabled(true);
       startCycleTimer();
+      //##Spec 一時停止からの再開を外部モジュール（録音制御など）へ通知する
+      document.dispatchEvent(new CustomEvent("bclick:clickresumed"));
       return;
     }
 
@@ -444,6 +452,8 @@ document.addEventListener("DOMContentLoaded", () => {
       scrollContainer.scrollTo({ top: 0, behavior: "auto" });
     }
     setClickBoxes();
+    //##Spec 完全停止を外部モジュール（録音制御など）へ通知する
+    document.dispatchEvent(new CustomEvent("bclick:clickreset"));
   };
 
   /**
@@ -459,6 +469,8 @@ document.addEventListener("DOMContentLoaded", () => {
     isPaused = true;
     setOverlayVisible(false);
     setOperationEnabled(true);
+    //##Spec 一時停止を外部モジュール（録音制御など）へ通知する
+    document.dispatchEvent(new CustomEvent("bclick:clickpaused"));
   };
 
   // イベント登録
@@ -528,6 +540,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  //##Spec 外部モジュール（録音制御など）からクリックを強制リセットするためのイベントを受け付ける
+  document.addEventListener("bclick:forceReset", () => {
+    resetPlayback();
+  });
 
   window.addEventListener("storage", (event) => {
     if (event.storageArea !== window.localStorage) return;
