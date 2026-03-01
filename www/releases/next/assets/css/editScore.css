@@ -286,6 +286,12 @@ main.pageFrame.isFileDragOver {
   width: 100%;
 }
 
+#editScorePreference > .preferenceTitleWithTip,
+#editScoreBarsPerRow > .preferenceTitleWithTip,
+main.pageFrame > .preferenceTitleWithTip {
+  width: 100%;
+}
+
 /* editScore の BPM サマリーは index のBPMサマリーを同じ見た目にする */
 #editScorePreference {
   padding-bottom: 3px;
