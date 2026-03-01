@@ -292,6 +292,14 @@ main.pageFrame > .preferenceTitleWithTip {
   width: 100%;
 }
 
+#editScorePreference > .preferenceTitleWithTip {
+  margin-top: 3px;
+}
+
+#editScoreBarsPerRow + .preferenceTitleWithTip {
+  margin-top: 3px;
+}
+
 /* editScore の BPM サマリーは index のBPMサマリーを同じ見た目にする */
 #editScorePreference {
   padding-bottom: 3px;
