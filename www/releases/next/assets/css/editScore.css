@@ -38,6 +38,11 @@ main {
   padding-bottom: 3px;
 }
 
+main.pageFrame.isFileDragOver {
+  background-color: #eef8f1;
+  box-shadow: inset 0 0 0 3px #1e7a4f;
+}
+
 #playClicking {
   position: sticky;
   top: 0;

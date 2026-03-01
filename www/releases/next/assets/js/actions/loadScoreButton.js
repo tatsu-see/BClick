@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadButton = document.getElementById("loadScore");
   const loadInput = document.getElementById("loadScoreFile");
   const mergeToggle = document.getElementById("mergeToggle");
+  const dropZone = document.querySelector("main.pageFrame");
+  let dropEnterCount = 0;
   if (!loadButton || !loadInput) return;
 
   /**
@@ -59,10 +61,30 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /**
-   * ファイル選択後の処理。
+   * DataTransfer がファイルを含んでいるか判定する。
+   * @param {DataTransfer | null | undefined} dataTransfer
+   * @returns {boolean}
    */
-  const handleLoadChange = async () => {
-    const file = loadInput.files && loadInput.files[0];
+  const hasFilePayload = (dataTransfer) => {
+    if (!dataTransfer) return false;
+    const types = Array.from(dataTransfer.types || []);
+    return types.includes("Files");
+  };
+
+  /**
+   * ドロップ対象の強調表示を切り替える。
+   * @param {boolean} isActive
+   */
+  const setDropZoneActive = (isActive) => {
+    if (!dropZone) return;
+    dropZone.classList.toggle("isFileDragOver", isActive);
+  };
+
+  /**
+   * 指定ファイルを読み込んで、現在の編集状態へ反映する。
+   * @param {File} file
+   */
+  const loadSelectedFile = async (file) => {
     if (!file) return;
     const useMerge = Boolean(mergeToggle && mergeToggle.checked);
     try {
@@ -124,6 +146,95 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  /**
+   * ファイル選択後の処理。
+   */
+  const handleLoadChange = async () => {
+    const file = loadInput.files && loadInput.files[0];
+    await loadSelectedFile(file);
+  };
+
+  /**
+   * ドラッグ中にブラウザがファイルを直接開かないよう抑止する。
+   * @param {DragEvent} event
+   */
+  const handleWindowDragOver = (event) => {
+    if (!hasFilePayload(event.dataTransfer)) return;
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = "copy";
+    }
+  };
+
+  /**
+   * 画面外や対象外にドロップされた場合も、ブラウザのファイル直接表示を抑止する。
+   * @param {DragEvent} event
+   */
+  const handleWindowDrop = (event) => {
+    if (!hasFilePayload(event.dataTransfer)) return;
+    event.preventDefault();
+    dropEnterCount = 0;
+    setDropZoneActive(false);
+  };
+
+  /**
+   * ドロップ対象へ入ったときの処理。
+   * @param {DragEvent} event
+   */
+  const handleDropZoneDragEnter = (event) => {
+    if (!hasFilePayload(event.dataTransfer)) return;
+    event.preventDefault();
+    dropEnterCount += 1;
+    setDropZoneActive(true);
+  };
+
+  /**
+   * ドロップ対象上をドラッグ中の処理。
+   * @param {DragEvent} event
+   */
+  const handleDropZoneDragOver = (event) => {
+    if (!hasFilePayload(event.dataTransfer)) return;
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = "copy";
+    }
+    setDropZoneActive(true);
+  };
+
+  /**
+   * ドロップ対象から離れたときの処理。
+   * @param {DragEvent} event
+   */
+  const handleDropZoneDragLeave = (event) => {
+    if (!hasFilePayload(event.dataTransfer) && dropEnterCount === 0) return;
+    event.preventDefault();
+    dropEnterCount = Math.max(0, dropEnterCount - 1);
+    if (dropEnterCount === 0) {
+      setDropZoneActive(false);
+    }
+  };
+
+  /**
+   * ドロップされたファイルを読み込む。
+   * @param {DragEvent} event
+   */
+  const handleDropZoneDrop = async (event) => {
+    if (!hasFilePayload(event.dataTransfer)) return;
+    event.preventDefault();
+    dropEnterCount = 0;
+    setDropZoneActive(false);
+    const file = event.dataTransfer?.files && event.dataTransfer.files[0];
+    await loadSelectedFile(file);
+  };
+
   loadButton.addEventListener("click", handleLoadClick);
   loadInput.addEventListener("change", handleLoadChange);
+  window.addEventListener("dragover", handleWindowDragOver);
+  window.addEventListener("drop", handleWindowDrop);
+  if (dropZone) {
+    dropZone.addEventListener("dragenter", handleDropZoneDragEnter);
+    dropZone.addEventListener("dragover", handleDropZoneDragOver);
+    dropZone.addEventListener("dragleave", handleDropZoneDragLeave);
+    dropZone.addEventListener("drop", handleDropZoneDrop);
+  }
 });
