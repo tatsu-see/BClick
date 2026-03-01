@@ -146,6 +146,22 @@
         <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
       </div>
 
+    </div>
+
+    <!--Spec editScoreから configBeat画面へ遷移可能として、ドラフト値のテンポ/クリック数/カウントインの編集を可能にする -->
+    <div class="preferenceSummery" id="editScorePreferenceSummery">
+      <div class="preferenceNow" id="editScoreConfigBeat">
+        <!-- ここにBPM、クリック数、カウントインの設定を表示する。 -->
+      </div>
+
+      <div class="preferenceValue">
+        <button id="editScoreConfigBeatButton" type="button" class="makeScoreButton navButton" aria-label="Beat settings">
+          <span class="material-symbols-rounded" aria-hidden="true">tune</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="editScoreBarsPerRow">
       <div class="preferenceTitle">
         <span class="lang" data-lang="en">Bars per row (1–4)</span>
         <span class="lang" data-lang="ja">一段当たりの小節数（1〜4）</span>
@@ -153,12 +169,10 @@
       <!--Spec 1段当たりの小節通
       ・スライドバーを配置して1段当たりの小節数を設定する。設定範囲は（1～4）。初期値は2。
       -->
-
       <div class="preferenceValue preferenceValueCentered barsPerRowValue">
         <input type="range" id="barsPerRowRange" min="1" max="4" step="1" value="2" aria-label="Bars per row">
         <output id="barsPerRowValue" for="barsPerRowRange">2</output>
       </div>
-
     </div>
 
     <!--Spec クリック再生エリア-開始 -->

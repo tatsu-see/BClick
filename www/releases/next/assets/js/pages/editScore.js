@@ -10,6 +10,7 @@ import { TempoDialController } from "../components/tempoDial.js";
 import { preloadAlphaTabFonts } from "../utils/scorePdf.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { showMessage } from "../../lib/ShowMessageBox.js";
+import { getLangMsg } from "../../lib/Language.js";
 import {
   clearEditScoreDraft,
   loadEditScoreDraft,
@@ -140,6 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const beatPreference = document.getElementById("editScorePreference");
   const barsPerRowRange = document.getElementById("barsPerRowRange");
   const barsPerRowValue = document.getElementById("barsPerRowValue");
+  const editScoreConfigBeat = document.getElementById("editScoreConfigBeat");
+  const editScoreConfigBeatButton = document.getElementById("editScoreConfigBeatButton");
+  const editScorePreferenceSummery = document.getElementById("editScorePreferenceSummery");
+  const editScoreBarsPerRow = document.getElementById("editScoreBarsPerRow");
   let currentScoreData = null;
   let rhythmScore = null;
   let editDraft = null;
@@ -222,6 +227,21 @@ document.addEventListener("DOMContentLoaded", () => {
         : null,
     };
     saveEditScoreDraft(editDraft);
+    updateBeatSummary();
+  };
+
+  /**
+   * テンポ・クリック数・カウントインの現在値をサマリーエリアに表示する。
+   */
+  const updateBeatSummary = () => {
+    if (!editScoreConfigBeat) return;
+    const tempo = currentScoreData?.tempo ?? store.getTempo() ?? 60;
+    const clickCount = currentScoreData?.clickCount ?? store.getClickCount() ?? 4;
+    const countIn = currentScoreData?.countIn ?? store.getCountInSec() ?? 4;
+    editScoreConfigBeat.textContent = getLangMsg(
+      `BPM ${tempo}、クリック数 ${clickCount}、カウントイン ${countIn}`,
+      `BPM ${tempo}, Clicks ${clickCount}, Count-in ${countIn}`,
+    );
   };
 
   /**
@@ -417,6 +437,16 @@ document.addEventListener("DOMContentLoaded", () => {
       beatPreference.hidden = !shouldShow;
       beatPreference.style.display = shouldShow ? "" : "none";
       beatPreference.setAttribute("aria-hidden", String(!shouldShow));
+      if (editScorePreferenceSummery) {
+        editScorePreferenceSummery.hidden = !shouldShow;
+        editScorePreferenceSummery.style.display = shouldShow ? "" : "none";
+        editScorePreferenceSummery.setAttribute("aria-hidden", String(!shouldShow));
+      }
+      if (editScoreBarsPerRow) {
+        editScoreBarsPerRow.hidden = !shouldShow;
+        editScoreBarsPerRow.style.display = shouldShow ? "" : "none";
+        editScoreBarsPerRow.setAttribute("aria-hidden", String(!shouldShow));
+      }
       store.setEditScoreSettingsEnabled(shouldShow);
       syncDraftFromCurrent();
     };
@@ -581,6 +611,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     applyLastEditedHighlight();
+    updateBeatSummary();
   };
 
   document.addEventListener("bclick:scoreloaded", applyLoadedScoreToUI);
@@ -633,6 +664,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // 操作ボタンのイベント
+  if (editScoreConfigBeatButton) {
+    editScoreConfigBeatButton.addEventListener("click", () => {
+      sessionStorage.setItem("bclick.configBeat.fromEditScore", "1");
+      window.location.href = "configBeat.html";
+    });
+  }
+
   if (saveButton) {
     saveButton.addEventListener("click", () => {
       const saved = persistCurrentScore();

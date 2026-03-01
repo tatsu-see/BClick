@@ -5,11 +5,18 @@ import { TempoDialController } from "../components/tempoDial.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { getLangMsg } from "../../lib/Language.js";
 import { buildCenteredSelectWrap } from "../utils/centeredSelect.js";
+import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
 
   const store = new ConfigStore();
+
+  // editScoreから遷移してきたか判定（フラグは消費する）
+  const fromEditScore = sessionStorage.getItem("bclick.configBeat.fromEditScore") === "1";
+  sessionStorage.removeItem("bclick.configBeat.fromEditScore");
+  const editScoreDraft = fromEditScore ? loadEditScoreDraft() : null;
+
   const tempoInput = document.getElementById("tempoInput");
   const tempoDialEl = document.getElementById("tempoDial");
   const tempoStepCoarse = document.getElementById("tempoStepCoarse");
@@ -59,7 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (tempoInput) {
-    const savedTempo = store.getTempo();
+    const savedTempo = fromEditScore && Number.isFinite(editScoreDraft?.tempo)
+      ? editScoreDraft.tempo
+      : store.getTempo();
     if (savedTempo !== null) {
       tempoDial.applyStoredValue(savedTempo);
     } else {
@@ -133,14 +142,19 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   if (clickCountRange) {
-    const savedClickCount = store.getClickCount();
+    const savedClickCount = fromEditScore && Number.isFinite(editScoreDraft?.clickCount)
+      ? editScoreDraft.clickCount
+      : store.getClickCount();
     if (savedClickCount !== null) {
       clickCountRange.value = savedClickCount.toString();
     }
     syncRangeValue(clickCountRange, clickCountValue);
     const initialClickCount = Number.parseInt(clickCountRange.value, 10);
     if (Number.isFinite(initialClickCount)) {
-      selectedClickTones = store.getClickTonePattern(initialClickCount);
+      const draftTonePattern = fromEditScore && Array.isArray(editScoreDraft?.clickTonePattern)
+        ? editScoreDraft.clickTonePattern
+        : null;
+      selectedClickTones = draftTonePattern ?? store.getClickTonePattern(initialClickCount);
       renderToneSelectors(initialClickCount);
     }
     clickCountRange.addEventListener("input", () => {
@@ -153,7 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (countdownRange) {
-    const savedCountdown = store.getCountInSec();
+    const savedCountdown = fromEditScore && Number.isFinite(editScoreDraft?.countIn)
+      ? editScoreDraft.countIn
+      : store.getCountInSec();
     if (savedCountdown !== null) {
       countdownRange.value = savedCountdown.toString();
     }
@@ -171,26 +187,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const saveAndGoBack = () => {
     try {
-      if (tempoInput) {
-        const tempoValue = tempoDial.clamp(tempoDial.getInputValue());
-        if (Number.isFinite(tempoValue)) {
-          store.setTempo(tempoValue);
-        }
-      }
+      const tempoValue = tempoInput ? tempoDial.clamp(tempoDial.getInputValue()) : null;
+      const clickCountNumber = clickCountRange ? Number.parseInt(clickCountRange.value, 10) : NaN;
+      const countdownNumber = countdownRange ? Number.parseInt(countdownRange.value, 10) : NaN;
 
-      if (clickCountRange) {
-        const clickCountNumber = Number.parseInt(clickCountRange.value, 10);
+      if (fromEditScore) {
+        // ドラフトを更新して editScore に反映させる
+        const draft = loadEditScoreDraft();
+        if (draft) {
+          if (Number.isFinite(tempoValue)) { draft.tempo = tempoValue; }
+          if (!Number.isNaN(clickCountNumber)) {
+            draft.clickCount = clickCountNumber;
+            draft.clickTonePattern = selectedClickTones.slice();
+          }
+          if (!Number.isNaN(countdownNumber)) { draft.countIn = countdownNumber; }
+          saveEditScoreDraft(draft);
+        }
+        sessionStorage.setItem("bclick.needsScoreRefresh", "1");
+      } else {
+        // 本番データ（localStorage）に保存
+        if (Number.isFinite(tempoValue)) { store.setTempo(tempoValue); }
         if (!Number.isNaN(clickCountNumber)) {
           store.setClickCount(clickCountNumber);
           store.setClickTonePattern(selectedClickTones, clickCountNumber);
         }
-      }
-
-      if (countdownRange) {
-        const countdownNumber = Number.parseInt(countdownRange.value, 10);
-        if (!Number.isNaN(countdownNumber)) {
-          store.setCountInSec(countdownNumber);
-        }
+        if (!Number.isNaN(countdownNumber)) { store.setCountInSec(countdownNumber); }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
