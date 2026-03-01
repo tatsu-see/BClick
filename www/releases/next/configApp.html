@@ -139,9 +139,19 @@
     ・ユーザは 0-10 レベルで選択するが、内部的には0.0-2.0で設定する。
     ・設定の見た目は、拍数やカウントインと同じCSSにする。
     -->
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Volume (0–10)</span>
-      <span class="lang" data-lang="ja">ボリューム（0〜10）</span>
+    <div class="preferenceTitleWithTip">
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Volume (0–10)</span>
+        <span class="lang" data-lang="ja">ボリューム（0〜10）</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="clickVolumeTipsDialog"
+      >
+        ?
+      </button>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
@@ -149,9 +159,19 @@
       <output id="clickVolumeValue" for="clickVolumeRange">5</output>
     </div>
 
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Other</span>
-      <span class="lang" data-lang="ja">その他</span>
+    <div class="preferenceTitleWithTip">
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Other</span>
+        <span class="lang" data-lang="ja">その他</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="otherSettingsTipsDialog"
+      >
+        ?
+      </button>
     </div>
 
     <!--Spec その他設定ボタン
@@ -192,6 +212,56 @@
         ・ファイル名をクリックするとPDFを開きます。<br>
         ・「DL」をクリックするとPDFファイルをダウンロードできます。<br>
         ・PDFは「アプリトップ＞（スコア）演奏＞（ファイル）読込」ボタンから開くことができます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="clickVolumeTipsDialog" class="tipsDialog" aria-labelledby="clickVolumeTipsTitle">
+    <div class="tipsDialogTitle" id="clickVolumeTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        Adjust the click sound volume here.<br>
+        Select a value from 0 to 10.<br>
+        The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ここではクリック音の音量を調整します。<br>
+        0〜10の範囲で設定できます。<br>
+        設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="otherSettingsTipsDialog" class="tipsDialog" aria-labelledby="otherSettingsTipsTitle">
+    <div class="tipsDialogTitle" id="otherSettingsTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        "Init." resets the current score and related settings to their defaults.<br>
+        A confirmation dialog appears before resetting.<br>
+        After reset, the app returns to the top page.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        「初期化」を押すと、現在の楽譜と関連する設定を初期値に戻します。<br>
+        実行前に確認ダイアログが表示されます。<br>
+        初期化後はトップ画面に戻ります。<br>
       </span>
     </div>
     <div class="tipsDialogActions">
