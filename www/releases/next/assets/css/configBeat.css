@@ -92,3 +92,7 @@
 .preferenceValue:last-of-type {
   margin-bottom: 3px;
 }
+/* configBeat は Tips ボタンを先頭に置くため、row-reverse を打ち消す */
+.preferenceTitleWithTip.tipButtonLeft {
+  flex-direction: row;
+}

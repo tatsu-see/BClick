@@ -20,6 +20,17 @@
   margin-bottom: 0;
 }
 
+.preferenceTitleWithTip.tipButtonLeft {
+  flex-direction: row-reverse;
+}
+
+.preferenceTitleWithTip.tipButtonLeft .preferenceTitle {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
 /* 設定項目ラベルの右側に置く、小さな円形の Tips ボタン */
 .chipButton.tipButton {
   align-self: stretch;
@@ -31,7 +42,9 @@
   min-width: 33px;
   min-height: 0;
   border: 1px solid mediumseagreen;
-  background-color: #f7f7f7;
+  border-right-color: white;
+  background-color: mediumseagreen;
+  color: white;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: 3px;
@@ -40,6 +53,19 @@
   font-weight: bold;
   line-height: 1;
   box-shadow: none;
+}
+
+.preferenceTitleWithTip.tipButtonLeft .chipButton.tipButton {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.chipButton.tipButton .material-symbols-rounded {
+  color: inherit;
+  font-size: 1.05em;
+  line-height: 1;
 }
 
 /* Tips ダイアログ本体 */

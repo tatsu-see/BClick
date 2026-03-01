@@ -70,6 +70,11 @@
   background-color: mintcream;
 }
 
+/* configApp は Tips ボタンを先頭に置くため、row-reverse だけ打ち消す */
+.preferenceTitleWithTip.tipButtonLeft {
+  flex-direction: row;
+}
+
 .sampleScoreLinks {
   flex-direction: column;
   align-items: stretch;

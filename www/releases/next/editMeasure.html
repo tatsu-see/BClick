@@ -27,6 +27,7 @@
 
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
   <link rel="stylesheet" href="assets/css/editMeasure.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
@@ -35,11 +36,13 @@
   <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentTracking.js">
+  <link rel="modulepreload" href="assets/js/actions/tips.js">
 
   <script src="assets/lib/abcjs/abcjs-basic-min.js"></script>
   <script type="module" src="assets/lib/Language.js"></script>
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
+  <script type="module" src="assets/js/actions/tips.js"></script>
   <script type="module" src="assets/js/pages/editMeasure.js"></script>
 </head>
 
@@ -66,9 +69,19 @@
       ・少し違うのは「進行」は Back のボタンを用意する。（Reset と ランダムも用意する）
       ・リズムの設定項目は、選択した小節が 4/4 なら、４行の設定項目が現れ、3/4 なら３行の設定項目が現れます。
       -->
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Quality</span>
-        <span class="lang" data-lang="ja">クオリティ</span>
+      <div class="preferenceTitleWithTip tipButtonLeft">
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips for quality"
+          data-tip-target="editMeasureQualityTipsDialog"
+        >
+          <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+        </button>
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Quality</span>
+          <span class="lang" data-lang="ja">クオリティ</span>
+        </div>
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
@@ -81,9 +94,19 @@
         </div>
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Root</span>
-        <span class="lang" data-lang="ja">ルート</span>
+      <div class="preferenceTitleWithTip tipButtonLeft">
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips for root"
+          data-tip-target="editMeasureRootTipsDialog"
+        >
+          <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+        </button>
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Root</span>
+          <span class="lang" data-lang="ja">ルート</span>
+        </div>
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
@@ -108,9 +131,19 @@
         </div>
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Progression</span>
-        <span class="lang" data-lang="ja">進行</span>
+      <div class="preferenceTitleWithTip tipButtonLeft">
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips for progression"
+          data-tip-target="editMeasureProgressionTipsDialog"
+        >
+          <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+        </button>
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Progression</span>
+          <span class="lang" data-lang="ja">進行</span>
+        </div>
       </div>
 
       <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="Enter progression">
@@ -143,9 +176,19 @@
         </div>
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Rhythm</span>
-        <span class="lang" data-lang="ja">リズム</span>
+      <div class="preferenceTitleWithTip tipButtonLeft">
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips for rhythm"
+          data-tip-target="editMeasureRhythmTipsDialog"
+        >
+          <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+        </button>
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Rhythm</span>
+          <span class="lang" data-lang="ja">リズム</span>
+        </div>
       </div>
 
       <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Select rhythm">
@@ -203,12 +246,111 @@
 
   </main>
 
+  <dialog id="editMeasureQualityTipsDialog" class="tipsDialog" aria-labelledby="editMeasureQualityTipsTitle">
+    <div class="tipsDialogTitle" id="editMeasureQualityTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        Select the chord quality for this measure here.<br>
+        Choose from maj, min, and dim.<br>
+        The selected quality is used with the root and progression settings below.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        この小節のコードのクオリティをここで選びます。<br>
+        maj、min、dim から選択できます。<br>
+        選んだクオリティは、下のルートや進行設定と組み合わせて使われます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="editMeasureRootTipsDialog" class="tipsDialog" aria-labelledby="editMeasureRootTipsTitle">
+    <div class="tipsDialogTitle" id="editMeasureRootTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        Select the root note for the chord here.<br>
+        Turn on "/" when you want to enter a slash chord bass note.<br>
+        The chosen note is applied to the chord text for this measure.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ここではコードのルート音を選びます。<br>
+        分数コードのベース音を入れたいときは「/」を使います。<br>
+        選んだ音は、この小節のコード文字列に反映されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="editMeasureProgressionTipsDialog" class="tipsDialog" aria-labelledby="editMeasureProgressionTipsTitle">
+    <div class="tipsDialogTitle" id="editMeasureProgressionTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        Edit the chord progression text for this measure here.<br>
+        Use Reset, random chord buttons, and Back. to adjust the text.<br>
+        The rhythm section below can use these chord names for note positions.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        この小節のコード進行文字列をここで編集します。<br>
+        Reset、ランダム追加、Back. ボタンで文字列を調整できます。<br>
+        下のリズム設定では、このコード名を音符位置に割り当てられます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="editMeasureRhythmTipsDialog" class="tipsDialog" aria-labelledby="editMeasureRhythmTipsTitle">
+    <div class="tipsDialogTitle" id="editMeasureRhythmTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        Set the note and rest pattern for this measure here.<br>
+        You can also choose which chord appears on each note position.<br>
+        The preview updates to match the selected rhythm pattern.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        この小節の音符や休符のパターンをここで設定します。<br>
+        各音符位置に表示するコードも選択できます。<br>
+        選んだリズムに合わせてプレビューも更新されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
   <footer>
     <small>&copy; 2025 tatsu. All rights reserved.</small>
   </footer>
 
 </body>
 </html>
-
 
 

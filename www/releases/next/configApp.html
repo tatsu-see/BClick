@@ -71,20 +71,19 @@
 
   <main class="pageFrame">
 
-    <div class="preferenceTitleWithTip">
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for sample scores"
+        data-tip-target="sampleScoreTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
       <div class="preferenceTitle">
         <span class="lang" data-lang="en">Sample Scores</span>
         <span class="lang" data-lang="ja">サンプル楽譜</span>
       </div>
-      <!-- Tipsボタン -->
-      <button
-        type="button"
-        class="chipButton tipButton"
-        aria-label="Open tips"
-        data-tip-target="sampleScoreTipsDialog"
-      >
-        ?
-      </button>
     </div>
 
     <div class="preferenceExecCenter sampleScoreLinks">
@@ -139,19 +138,19 @@
     ・ユーザは 0-10 レベルで選択するが、内部的には0.0-2.0で設定する。
     ・設定の見た目は、拍数やカウントインと同じCSSにする。
     -->
-    <div class="preferenceTitleWithTip">
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for volume"
+        data-tip-target="clickVolumeTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
       <div class="preferenceTitle">
         <span class="lang" data-lang="en">Volume (0–10)</span>
         <span class="lang" data-lang="ja">ボリューム（0〜10）</span>
       </div>
-      <button
-        type="button"
-        class="chipButton tipButton"
-        aria-label="Open tips"
-        data-tip-target="clickVolumeTipsDialog"
-      >
-        ?
-      </button>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
@@ -159,19 +158,19 @@
       <output id="clickVolumeValue" for="clickVolumeRange">5</output>
     </div>
 
-    <div class="preferenceTitleWithTip">
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for other settings"
+        data-tip-target="otherSettingsTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
       <div class="preferenceTitle">
         <span class="lang" data-lang="en">Other</span>
         <span class="lang" data-lang="ja">その他</span>
       </div>
-      <button
-        type="button"
-        class="chipButton tipButton"
-        aria-label="Open tips"
-        data-tip-target="otherSettingsTipsDialog"
-      >
-        ?
-      </button>
     </div>
 
     <!--Spec その他設定ボタン

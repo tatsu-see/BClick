@@ -39,6 +39,7 @@
   <link rel="modulepreload" href="assets/lib/Language.js">
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentBanner.js">
+  <link rel="modulepreload" href="assets/js/actions/tips.js">
   <link rel="modulepreload" href="assets/js/pages/app.js">
   <link rel="modulepreload" href="assets/js/actions/createScoreButton.js">
   <link rel="modulepreload" href="assets/js/actions/editScoreButton.js">
@@ -72,6 +73,7 @@
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/lib/consentManager.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
   <link rel="stylesheet" href="assets/css/tempoDial.css">
   <link rel="stylesheet" href="assets/css/click.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
@@ -81,6 +83,7 @@
   <script type="module" src="assets/lib/Language.js"></script>
   <script type="module" src="assets/lib/consentBanner.js"></script>
 
+  <script type="module" src="assets/js/actions/tips.js"></script>
   <script type="module" src="assets/js/pages/app.js"></script>
   <script type="module" src="assets/js/pages/click.js"></script>
   <script type="module" src="assets/js/actions/createScoreButton.js"></script>
@@ -128,10 +131,20 @@
 
     <!--Spec BPM テンポ設定（ダイアル操作）
     -->
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">speed</span>
-      <span class="lang" data-lang="en">Tempo (30–240)</span>
-      <span class="lang" data-lang="ja">テンポ（30～240）</span>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <div class="preferenceTitle">
+        <span class="material-symbols-rounded" aria-hidden="true">speed</span>
+        <span class="lang" data-lang="en">Tempo (30–240)</span>
+        <span class="lang" data-lang="ja">テンポ（30～240）</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="indexTempoTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
     </div>
 
     <div id="beatPreference" class="tempoControl tempoControlStack">
@@ -175,10 +188,20 @@
     </div>
 
     <!--Spec クリック再生エリア-開始 -->
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">play_circle</span>
-      <span class="lang" data-lang="en">Play</span>
-      <span class="lang" data-lang="ja">再生</span>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <div class="preferenceTitle">
+        <span class="material-symbols-rounded" aria-hidden="true">play_circle</span>
+        <span class="lang" data-lang="en">Play</span>
+        <span class="lang" data-lang="ja">再生</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="indexPlayTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
     </div>
 
     <div id="playClicking">
@@ -215,28 +238,38 @@
     </div>
     <!--Spec クリック再生エリア-終了 -->
 
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">queue_music</span>
-      <span class="lang" data-lang="en">Rhythm</span>
-      <span class="lang" data-lang="ja">リズム</span>
-      <label class="scoreToggle">
-        <input type="checkbox" id="scoreToggle" aria-label="Toggle rhythm display">
-        <script>
-          (function() {
-            try {
-              const saved = localStorage.getItem("bclick.score.enabled");
-              if (saved === null) return;
-              const parsed = JSON.parse(saved);
-              const toggle = document.getElementById("scoreToggle");
-              if (toggle) {
-                toggle.checked = parsed === true;
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <div class="preferenceTitle">
+        <span class="material-symbols-rounded" aria-hidden="true">queue_music</span>
+        <span class="lang" data-lang="en">Rhythm</span>
+        <span class="lang" data-lang="ja">リズム</span>
+        <label class="scoreToggle">
+          <input type="checkbox" id="scoreToggle" aria-label="Toggle rhythm display">
+          <script>
+            (function() {
+              try {
+                const saved = localStorage.getItem("bclick.score.enabled");
+                if (saved === null) return;
+                const parsed = JSON.parse(saved);
+                const toggle = document.getElementById("scoreToggle");
+                if (toggle) {
+                  toggle.checked = parsed === true;
+                }
+              } catch (e) {
+                ;
               }
-            } catch (e) {
-              ;
-            }
-          })();
-        </script>
-      </label>
+            })();
+          </script>
+        </label>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="indexRhythmTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
     </div>
 
     <div id="preferenceRythm" style="background-color: #f3f7f2; border-radius: 3px;">
@@ -254,10 +287,20 @@
 
       </div>
 
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">library_music</span>
-      <span class="lang" data-lang="en">Score</span>
-      <span class="lang" data-lang="ja">スコア</span>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <div class="preferenceTitle">
+        <span class="material-symbols-rounded" aria-hidden="true">library_music</span>
+        <span class="lang" data-lang="en">Score</span>
+        <span class="lang" data-lang="ja">スコア</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="indexScoreTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
     </div>
 
       <!--Spec スコアの操作ボタン
@@ -346,8 +389,105 @@
     </div>
   </div>
 
+  <dialog id="indexTempoTipsDialog" class="tipsDialog" aria-labelledby="indexTempoTipsTitle">
+    <div class="tipsDialogTitle" id="indexTempoTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the tempo from 30 to 240 BPM.<br>
+        ・Use the dial and the step buttons to change the value.<br>
+        ・Details for clicks and count-in can be adjusted from the tune button below.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・テンポは30〜240 BPMの範囲で設定します。<br>
+        ・ダイヤルや刻み幅ボタンで値を変更できます。<br>
+        ・クリック数やカウントインの詳細は、下の調節ボタンから設定できます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="indexPlayTipsDialog" class="tipsDialog" aria-labelledby="indexPlayTipsTitle">
+    <div class="tipsDialogTitle" id="indexPlayTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Use Start to begin playback, Pause to stop, and Reset to return to the beginning.<br>
+        ・"Chords" opens the chord diagram list in a separate screen.<br>
+        ・The countdown appears before playback if count-in is set.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・Startで再生開始、Pauseで停止、Resetで先頭に戻ります。<br>
+        ・「コード」はコードダイアグラム画面を開きます。<br>
+        ・カウントインが設定されている場合は、再生前にカウントが表示されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="indexRhythmTipsDialog" class="tipsDialog" aria-labelledby="indexRhythmTipsTitle">
+    <div class="tipsDialogTitle" id="indexRhythmTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Turn this switch on to use rhythm score features.<br>
+        ・The tune button opens detailed rhythm settings such as time signature and progression.<br>
+        ・When the switch is off, score-related controls below are disabled.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・このスイッチをONにすると、リズム譜の機能を使えます。<br>
+        ・調節ボタンから、拍子やコード進行などの詳細設定を開けます。<br>
+        ・OFFのときは、下のスコア関連の操作が無効になります。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="indexScoreTipsDialog" class="tipsDialog" aria-labelledby="indexScoreTipsTitle">
+    <div class="tipsDialogTitle" id="indexScoreTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・"Create" generates a new score from the current settings.<br>
+        ・"Play" opens the score in the score/play screen for playback and editing.<br>
+        ・Use the tune button above to change score settings before creating.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・「作成」は現在の設定から新しい楽譜を生成します。<br>
+        ・「演奏」はスコア画面を開き、再生や編集を行います。<br>
+        ・作成前に設定を変えたいときは、上の調節ボタンから変更してください。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
 </body>
 </html>
-
-
-
