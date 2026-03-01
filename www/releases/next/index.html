@@ -21,6 +21,7 @@
   <link rel="icon" type="image/png" sizes="256x256" href="assets/icons/BClick-256x256.png">
 
   <!--Spec 画面遷移の仕様（ preconnect / preload / modulepreload / prefetch 用）
+  index.html → configApp.html
   index.html → configBeat.html
   index.html → configScore.html
   index.html → editScore.html
@@ -42,6 +43,10 @@
   <link rel="modulepreload" href="assets/js/actions/createScoreButton.js">
   <link rel="modulepreload" href="assets/js/actions/editScoreButton.js">
   <link rel="modulepreload" href="assets/js/actions/initScoreButton.js">
+
+  <link rel="prefetch" href="configApp.html" as="document">
+  <link rel="prefetch" href="assets/css/configApp.css" as="style">
+  <link rel="prefetch" href="assets/js/pages/configApp.js" as="script">
 
   <link rel="prefetch" href="configBeat.html" as="document">
   <link rel="prefetch" href="assets/css/configBeat.css" as="style">
@@ -113,6 +118,10 @@
       <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
       <span class="titleSubtitle">— play daily, play better —</span>
     </div>
+    <!--Spec アプリ設定画面へのナビゲーションボタン（ヘッダー右端） -->
+    <button id="openConfigApp" type="button" class="okConfig" aria-label="App settings">
+      <span class="material-symbols-rounded" aria-hidden="true">settings</span>
+    </button>
   </header>
   <main class="pageFrame">
     <span style="font-size:8pt;font-weight:100;color:red">This app is in testing. Bugs may occur.</span>

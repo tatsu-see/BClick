@@ -1,0 +1,15 @@
+/*
+  configApp.css
+  アプリ設定画面（configApp.html）専用のスタイル。
+  共通スタイルは app.css に定義済みのため、ここでは差分のみ記述する。
+*/
+
+/* ボタン1つをセンター配置する汎用コンテナ */
+.preferenceExecCenter {
+  display: flex;
+  justify-content: center; /* 水平センター */
+  margin-bottom: 3px;      /* 他の preferenceExec と間隔を揃える */
+  padding: 4px;
+  border-radius: 3px;
+  background-color: mintcream;
+}

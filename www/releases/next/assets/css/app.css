@@ -193,6 +193,8 @@ header {
 
 /* ヘッダー内ナビゲーションボタンの共通見た目 */
 #closePage,
+#openConfigApp,
+#saveConfigApp,
 #saveConfigBeat,
 #saveConfigScore,
 #saveCodeDiagram,
@@ -221,7 +223,8 @@ header {
 }
 
 /* 右側配置のヘッダーボタン */
-#closePage {
+#closePage,
+#openConfigApp {
   left: auto;
   right: 6px;
 }
@@ -233,6 +236,7 @@ header {
 }
 
 /* 左側配置のヘッダーボタン */
+#saveConfigApp,
 #saveConfigBeat,
 #saveConfigScore,
 #saveCodeDiagram,

@@ -12,14 +12,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const handleInit = () => {
     const confirmed = window.confirm(
       getLangMsg(
-        "現在の楽譜は破棄されます。初期化しますか？",
-        "The current score will be discarded. Initialize?",
+        "現在のテンポや楽譜は破棄されます。初期化してアプリ画面に戻りますか？",
+        "All settings and score will be reset. Initialize and return to the app?",
       ),
     );
     if (!confirmed) return;
     const store = new ConfigStore();
     resetScoreSettings(store);
-    window.location.reload();
+    // 初期化後は index.html へ戻る
+    window.location.href = "index.html";
   };
 
   initButton.addEventListener("click", handleInit);
