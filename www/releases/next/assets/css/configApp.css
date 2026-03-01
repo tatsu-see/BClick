@@ -4,6 +4,62 @@
   共通スタイルは app.css に定義済みのため、ここでは差分のみ記述する。
 */
 
+/* preferenceValue をセンター寄せにする修飾クラス */
+.preferenceValueCentered {
+  justify-content: center;
+}
+
+/* ボリュームスライダー */
+#clickVolumeRange {
+  flex: 0 0 220px;
+  max-width: 220px;
+  width: 220px;
+  height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+#clickVolumeRange::-webkit-slider-runnable-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#clickVolumeRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#clickVolumeRange::-moz-range-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#clickVolumeRange::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ボリュームの数値表示 */
+#clickVolumeValue {
+  min-width: 32px;
+  text-align: right;
+  font-weight: 600;
+}
+
 /* ボタン1つをセンター配置する汎用コンテナ */
 .preferenceExecCenter {
   display: flex;

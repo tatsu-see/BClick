@@ -1,5 +1,5 @@
 // configBeat.js
-// テンポ/拍数/カウントイン/音量/音色の設定UIを同期する。
+// テンポ/拍数/カウントイン/音色の設定UIを同期する。
 import { ConfigStore } from "../utils/store.js";
 import { TempoDialController } from "../components/tempoDial.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
@@ -18,8 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const clickCountValue = document.getElementById("clickCountValue");
   const countdownRange = document.getElementById("countdownRange");
   const countdownValue = document.getElementById("countdownValue");
-  const clickVolumeRange = document.getElementById("clickVolumeRange");
-  const clickVolumeValue = document.getElementById("clickVolumeValue");
   const clickToneSelectors = document.getElementById("clickToneSelectors");
   const saveButton = document.getElementById("saveConfigBeat");
   const closePageButton = document.getElementById("closePage");
@@ -73,20 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rangeEl || !outputEl) return;
     outputEl.textContent = rangeEl.value;
   };
-
-  /**
-   * クリック音量(0.0-2.0)を表示レベル(0-10)に変換する。
-   * @param {number} volume
-   * @returns {number}
-   */
-  const volumeToLevel = (volume) => Math.round((volume / 2) * 10);
-
-  /**
-   * 表示レベル(0-10)をクリック音量(0.0-2.0)に変換する。
-   * @param {number} level
-   * @returns {number}
-   */
-  const levelToVolume = (level) => (level / 10) * 2;
 
   // 保存値は音名(A5/A4/"")で持ち、UI表示だけ H/L/— にする。
   const toneOptions = [
@@ -179,18 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (clickVolumeRange) {
-    const savedClickVolume = store.getClickVolume();
-    if (savedClickVolume !== null) {
-      const level = volumeToLevel(savedClickVolume);
-      clickVolumeRange.value = level.toString();
-    }
-    syncRangeValue(clickVolumeRange, clickVolumeValue);
-    clickVolumeRange.addEventListener("input", () => {
-      syncRangeValue(clickVolumeRange, clickVolumeValue);
-    });
-  }
-
   if (saveButton) {
     saveButton.addEventListener("click", () => {
       goBackWithFallback();
@@ -218,13 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const countdownNumber = Number.parseInt(countdownRange.value, 10);
         if (!Number.isNaN(countdownNumber)) {
           store.setCountInSec(countdownNumber);
-        }
-      }
-
-      if (clickVolumeRange) {
-        const levelNumber = Number.parseInt(clickVolumeRange.value, 10);
-        if (!Number.isNaN(levelNumber)) {
-          store.setClickVolume(levelToVolume(levelNumber));
         }
       }
     } catch (error) {

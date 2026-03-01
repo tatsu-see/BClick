@@ -1,5 +1,5 @@
 <!--Spec
-  楽譜のテンポなどを設定する画面
+  楽譜データのテンポなどを設定する画面
   <Back を選択したら編集を無かったことにするので、保存しないで index.htmlに戻る。
   Done を選択したら、その時に初めて編集結果をLocalStrageに保存して編集を完了する。
 -->
@@ -116,20 +116,6 @@
         <span class="lang" data-lang="en">High (A5) / Low (A4) / — (None)</span>
         <span class="lang" data-lang="ja">High (A5) / Low (A4) / —（無し）</span>
       </div>
-    </div>
-
-    <!--Spec クリック音の音量を設定する
-    ・ユーザは 0-10 レベルで選択するが、内部的には0.0-2.0で設定する。
-    ・設定の見た目は、拍数やカウントインと同じCSSにする。
-    -->
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Volume (0–10)</span>
-      <span class="lang" data-lang="ja">ボリューム（0〜10）</span>
-    </div>
-
-    <div class="preferenceValue preferenceValueCentered">
-      <input type="range" id="clickVolumeRange" min="0" max="10" step="1" value="5">
-      <output id="clickVolumeValue" for="clickVolumeRange">5</output>
     </div>
 
     <div class="preferenceTitle">
