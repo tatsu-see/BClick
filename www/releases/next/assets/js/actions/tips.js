@@ -91,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!(dialog instanceof HTMLDialogElement)) return;
     const storageKey = dialog.getAttribute("data-tip-intro-key");
     if (!storageKey) return;
+    const sessionKey = `${storageKey}.session`;
 
     let dismissed = false;
     try {
@@ -99,6 +100,20 @@ document.addEventListener("DOMContentLoaded", () => {
       dismissed = false;
     }
     if (dismissed) return;
+
+    let shownThisSession = false;
+    try {
+      shownThisSession = sessionStorage.getItem(sessionKey) === "true";
+    } catch (error) {
+      shownThisSession = false;
+    }
+    if (shownThisSession) return;
+
+    try {
+      sessionStorage.setItem(sessionKey, "true");
+    } catch (error) {
+      ;
+    }
 
     attachDialogCloseHandlers(dialog);
 

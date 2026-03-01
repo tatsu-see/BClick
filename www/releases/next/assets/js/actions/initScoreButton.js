@@ -3,6 +3,7 @@ import { resetScoreSettings } from "../utils/scoreButtonUtils.js";
 import { getLangMsg } from "../../lib/Language.js";
 
 const TIPS_INTRO_DISMISSED_KEY = "bclick.tips.intro.dismissed.v1";
+const TIPS_INTRO_SESSION_KEY = `${TIPS_INTRO_DISMISSED_KEY}.session`;
 
 document.addEventListener("DOMContentLoaded", () => {
   const initButton = document.getElementById("initScore");
@@ -30,6 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
     resetScoreSettings(store);
     try {
       localStorage.removeItem(TIPS_INTRO_DISMISSED_KEY);
+    } catch (error) {
+      ;
+    }
+    try {
+      sessionStorage.removeItem(TIPS_INTRO_SESSION_KEY);
     } catch (error) {
       ;
     }
