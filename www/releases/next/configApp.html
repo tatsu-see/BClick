@@ -33,6 +33,7 @@
 
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
   <link rel="stylesheet" href="assets/css/configApp.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
@@ -41,10 +42,12 @@
   <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentTracking.js">
+  <link rel="modulepreload" href="assets/js/actions/tips.js">
 
   <script type="module" src="assets/lib/Language.js"></script>
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
+  <script type="module" src="assets/js/actions/tips.js"></script>
   <script type="module" src="assets/js/pages/configApp.js"></script>
   <script type="module" src="assets/js/actions/initScoreButton.js"></script>
 </head>
@@ -68,22 +71,20 @@
 
   <main class="pageFrame">
 
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Sample Scores</span>
-      <span class="lang" data-lang="ja">サンプル楽譜</span>
-    </div>
-
-    <div class="sampleScoreGuide">
-      <span class="lang" data-lang="en">
-        Click the file name to open the PDF.<br>
-        Click "DL" to download the PDF file.<br>
-        You can open the PDF from "App Top > (Score) Play > (File) Load".<br>
-      </span>
-      <span class="lang" data-lang="ja">
-        ファイル名をクリックするとPDFを開きます。<br>
-        「DL」をクリックするとPDFファイルをダウンロードできます。<br>
-        PDFは「アプリトップ＞（スコア）演奏＞（ファイル）読込」ボタンから開くことができます。<br>
-      </span>
+    <div class="preferenceTitleWithTip">
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Sample Scores</span>
+        <span class="lang" data-lang="ja">サンプル楽譜</span>
+      </div>
+      <!-- Tipsボタン -->
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="sampleScoreTipsDialog"
+      >
+        ?
+      </button>
     </div>
 
     <div class="preferenceExecCenter sampleScoreLinks">
@@ -175,6 +176,31 @@
   <footer>
     <small>&copy; 2025 tatsu. All rights reserved.</small>
   </footer>
+
+  <dialog id="sampleScoreTipsDialog" class="tipsDialog" aria-labelledby="sampleScoreTipsTitle">
+    <div class="tipsDialogTitle" id="sampleScoreTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Click the file name to open the PDF.<br>
+        ・Click "DL" to download the PDF file.<br>
+        ・You can open the PDF from "App Top &gt; (Score) Play &gt; (File) Load".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・ファイル名をクリックするとPDFを開きます。<br>
+        ・「DL」をクリックするとPDFファイルをダウンロードできます。<br>
+        ・PDFは「アプリトップ＞（スコア）演奏＞（ファイル）読込」ボタンから開くことができます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
 
 </body>
 </html>

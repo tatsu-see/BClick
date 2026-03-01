@@ -1,0 +1,80 @@
+/*
+  tips.css
+  Tips ボタンなど、画面共通で使う補助UIのスタイルを定義する。
+*/
+
+/* ラベル帯と Tips ボタンを1行で並べる */
+.preferenceTitleWithTip {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.preferenceTitleWithTip .preferenceTitle {
+  flex: 1;
+  margin-bottom: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* 設定項目ラベルの右側に置く、小さな円形の Tips ボタン */
+.tipButton {
+  align-self: stretch;
+  padding: 0;
+  margin: 0;
+  flex: 0 0 auto;
+  min-width: 33px;
+  min-height: 100%;
+  border: 1px solid mediumseagreen;
+  background-color: #f7f7f7;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  font-size: 9pt;
+  font-weight: bold;
+  line-height: 1;
+  box-shadow: none;
+}
+
+/* Tips ダイアログ本体 */
+.tipsDialog {
+  width: min(calc(100% - 24px), 520px);
+  max-width: 520px;
+  padding: 0;
+  border: 1px solid mediumseagreen;
+  border-radius: 8px;
+  background-color: mintcream;
+  color: #184f33;
+}
+
+.tipsDialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.tipsDialogTitle {
+  padding: 8px 12px;
+  border-bottom: 1px solid #b7d9c4;
+  background-color: mediumseagreen;
+  color: #ffffff;
+  font-size: 12pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tipsDialogBody {
+  padding: 12px;
+  font-size: 10pt;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.tipsDialogActions {
+  display: flex;
+  justify-content: center;
+  padding: 0 12px 12px;
+}
+
+.tipsDialogCloseButton {
+  min-width: 88px;
+}

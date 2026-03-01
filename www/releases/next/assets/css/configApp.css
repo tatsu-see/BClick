@@ -70,18 +70,6 @@
   background-color: mintcream;
 }
 
-/* サンプル楽譜リンクを縦並びにする */
-.sampleScoreGuide {
-  margin-bottom: 3px;
-  padding: 4px 8px;
-  border-radius: 3px;
-  background-color: #eef8f1;
-  color: #184f33;
-  font-size: 10pt;
-  line-height: 1.4;
-  text-align: left;
-}
-
 .sampleScoreLinks {
   flex-direction: column;
   align-items: stretch;
