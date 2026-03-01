@@ -389,6 +389,37 @@
     </div>
   </div>
 
+  <dialog
+    id="tipsIntroDialog"
+    class="tipsDialog"
+    aria-labelledby="tipsIntroTitle"
+    data-tip-intro-key="bclick.tips.intro.dismissed.v1"
+  >
+    <div class="tipsDialogTitle" id="tipsIntroTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Tap the <span class="material-symbols-rounded tipsInlineIcon" aria-hidden="true">web_asset</span> button whenever you want a quick help dialog.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・各項目の <span class="material-symbols-rounded tipsInlineIcon" aria-hidden="true">web_asset</span> ボタンから、その項目の説明を確認できます。<br>
+      </span>
+      <label class="tipsDialogOption">
+        <input type="checkbox" data-tip-intro-dismiss>
+        <span class="lang" data-lang="en">Do not show this again</span>
+        <span class="lang" data-lang="ja">次回から表示しない</span>
+      </label>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
   <dialog id="indexTempoTipsDialog" class="tipsDialog" aria-labelledby="indexTempoTipsTitle">
     <div class="tipsDialogTitle" id="indexTempoTipsTitle">
       <span class="lang" data-lang="en">Tips</span>

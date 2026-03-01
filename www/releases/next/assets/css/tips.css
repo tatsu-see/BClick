@@ -100,6 +100,25 @@
   text-align: left;
 }
 
+.tipsInlineIcon {
+  font-size: 1.1em;
+  line-height: 1;
+  vertical-align: -0.12em;
+}
+
+.tipsDialogOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 9pt;
+}
+
+.tipsDialogOption input[type="checkbox"] {
+  margin: 0;
+}
+
 .tipsDialogActions {
   display: flex;
   justify-content: center;

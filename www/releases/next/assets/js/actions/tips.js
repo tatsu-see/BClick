@@ -5,7 +5,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const tipButtons = document.querySelectorAll("[data-tip-target]");
-  if (tipButtons.length === 0) return;
+  const introDialogs = document.querySelectorAll("[data-tip-intro-key]");
 
   /**
    * 対象 dialog を開く。
@@ -33,6 +33,48 @@ document.addEventListener("DOMContentLoaded", () => {
     dialog.removeAttribute("open");
   };
 
+  /**
+   * 初回案内ダイアログの「次回から表示しない」を保存する。
+   * @param {HTMLDialogElement} dialog
+   */
+  const persistIntroDismissal = (dialog) => {
+    if (!(dialog instanceof HTMLDialogElement)) return;
+    const storageKey = dialog.getAttribute("data-tip-intro-key");
+    if (!storageKey) return;
+
+    const checkbox = dialog.querySelector("[data-tip-intro-dismiss]");
+    if (!(checkbox instanceof HTMLInputElement)) return;
+    if (!checkbox.checked) return;
+
+    try {
+      localStorage.setItem(storageKey, "true");
+    } catch (error) {
+      ;
+    }
+  };
+
+  /**
+   * dialog の共通閉じる操作を結び付ける。
+   * @param {HTMLDialogElement} dialog
+   */
+  const attachDialogCloseHandlers = (dialog) => {
+    if (!(dialog instanceof HTMLDialogElement)) return;
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) {
+        persistIntroDismissal(dialog);
+        closeDialog(dialog);
+      }
+    });
+
+    dialog.querySelectorAll("[data-tip-close]").forEach((closeButton) => {
+      closeButton.addEventListener("click", () => {
+        persistIntroDismissal(dialog);
+        closeDialog(dialog);
+      });
+    });
+  };
+
   tipButtons.forEach((button) => {
     const targetId = button.getAttribute("data-tip-target");
     if (!targetId) return;
@@ -42,17 +84,32 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", () => {
       openDialog(dialog);
     });
+    attachDialogCloseHandlers(dialog);
+  });
 
-    dialog.addEventListener("click", (event) => {
-      if (event.target === dialog) {
-        closeDialog(dialog);
-      }
+  introDialogs.forEach((dialog) => {
+    if (!(dialog instanceof HTMLDialogElement)) return;
+    const storageKey = dialog.getAttribute("data-tip-intro-key");
+    if (!storageKey) return;
+
+    let dismissed = false;
+    try {
+      dismissed = localStorage.getItem(storageKey) === "true";
+    } catch (error) {
+      dismissed = false;
+    }
+    if (dismissed) return;
+
+    attachDialogCloseHandlers(dialog);
+
+    dialog.addEventListener("cancel", () => {
+      persistIntroDismissal(dialog);
     });
 
-    dialog.querySelectorAll("[data-tip-close]").forEach((closeButton) => {
-      closeButton.addEventListener("click", () => {
-        closeDialog(dialog);
-      });
+    dialog.addEventListener("close", () => {
+      persistIntroDismissal(dialog);
     });
+
+    openDialog(dialog);
   });
 });
