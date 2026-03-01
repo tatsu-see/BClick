@@ -1,0 +1,214 @@
+<!--Spec
+  1小節の編集画面
+-->
+<!doctype html>
+<html translate="no">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click - Edit Measure / 小節編集</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="assets/icons/BClick-256x256.png">
+
+  <link rel="stylesheet" href="assets/lib/Language.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/editMeasure.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+  <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
+  <link rel="modulepreload" href="assets/lib/consentManager.js">
+  <link rel="modulepreload" href="assets/lib/consentTracking.js">
+
+  <script src="assets/lib/abcjs/abcjs-basic-min.js"></script>
+  <script type="module" src="assets/lib/Language.js"></script>
+  <script type="module" src="assets/lib/consentTracking.js"></script>
+
+  <script type="module" src="assets/js/pages/editMeasure.js"></script>
+</head>
+
+<!--Spec 作成した楽譜の１小節単位の編集画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+-->
+
+<body>
+  <header>
+    <button type="button" id="backEditMeasure" class="okConfig" aria-label="Back">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
+    <div id="title" class="titleStack">
+      <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
+      <span class="titleSubtitle">— play daily, play better —</span>
+    </div>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
+  </header>
+  <main class="pageFrame">
+
+      <!--Spec ここに１小節を編集するパラメータを用意する。
+      ・基本的には、configScore.html のクオリティ、ルート、進行、リズム、の設定入力項目がある。
+      ・少し違うのは「進行」は Back のボタンを用意する。（Reset と ランダムも用意する）
+      ・リズムの設定項目は、選択した小節が 4/4 なら、４行の設定項目が現れ、3/4 なら３行の設定項目が現れます。
+      -->
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Quality</span>
+        <span class="lang" data-lang="ja">クオリティ</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select quality">
+          <div class="chipGroup">
+            <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
+            <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
+            <button type="button" class="chipButton chordQuality" data-quality="dim" aria-pressed="false">dim</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Root</span>
+        <span class="lang" data-lang="ja">ルート</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select root">
+          <div class="chipGroup">
+            <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
+            <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
+            <button type="button" class="chipButton chordRoot" data-root="E" aria-pressed="false">E</button>
+            <button type="button" class="chipButton chordRoot" data-root="F" aria-pressed="false">F</button>
+            <button type="button" class="chipButton chordRoot" data-root="G" aria-pressed="false">G</button>
+            <button type="button" class="chipButton chordRoot" data-root="A" aria-pressed="false">A</button>
+            <button type="button" class="chipButton chordRoot" data-root="B" aria-pressed="false">B</button>
+            <button type="button" class="chipButton chordSlashToggle" aria-pressed="false" aria-label="Toggle '/' input">/</button>
+            <!--spec "/" トグルスイッチは分数コードのために用意する。
+            ・操作順は "/" をONして、C～Bのボタンをクリックする。
+            ・"/" をONしたら、maj/min/dim のモードによらず、分数コード入力となる。
+            ・分数コード入力は、コード進行の最後のアルファベットの文字に続けて"/"が入る。
+            ・例えば "Em/G" を入力する場合は、まず普通に "Em" を入力し、その後 /" トグルスイッチON、"G"をクリック、の順に操作する。
+            ・分数コード入力後は、トグルスイッチはOFFになる。また、画面操作開始時もトグルスイッチはOFFで始まる。
+            -->
+          </div>
+        </div>
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Progression</span>
+        <span class="lang" data-lang="ja">進行</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="Enter progression">
+        <!--Spec
+        ・configScore 画面にも同じコード進行入力欄があります。同じ仕様とすること。
+        -->
+        <input type="text" id="codeProgression" value="" inputmode="latin">
+
+        <div class="chipGroupActions" role="group" aria-label="Edit progression">
+          <button type="button" id="clearCodeProgression" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span>
+            <span class="lang" data-lang="en">Reset</span>
+            <span class="lang" data-lang="ja">リセット</span>
+          </button>
+          <button type="button" id="addRandom3Chords" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">filter_3</span>
+            <span class="lang" data-lang="en">Chords</span>
+            <span class="lang" data-lang="ja">コード</span>
+          </button>
+          <button type="button" id="addRandom4Chords" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">filter_4</span>
+            <span class="lang" data-lang="en">Chords</span>
+            <span class="lang" data-lang="ja">コード</span>
+          </button>
+          <button type="button" id="backCodeProgression" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">undo</span>
+            <span class="lang" data-lang="en">Back.</span>
+            <span class="lang" data-lang="ja">Back.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Rhythm</span>
+        <span class="lang" data-lang="ja">リズム</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Select rhythm">
+      <!--Spec 楽譜の１小節内のリズムパターン
+        （configScoreに書いてあるリズムパターンと同じ）
+      -->
+        <div class="rhythmPatternTable" role="table" aria-label="Rhythm pattern">
+          <!-- Header行 -->
+          <div class="rhythmPatternHeader" role="row">
+
+            <!--Spec 分割は全音符,2分音符,4分音符,8分音符,16分音符を選ぶ列 -->
+            <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">
+              ♪
+            </div>
+
+            <!--Spec 分割は1,2,4,8,16分で分割したときの演奏するか休符かを選ぶ項目と、コードを選択する項目の列
+
+            ・演奏するか休符かを選ぶ項目は、パターン項目と呼びます。パターンは "⌒●" "●" "○" "⌒"から選びます。
+            ・"⌒●" は前の小節の最後の音を伸ばすタイ付き先頭音符、"●"は音符、"○"は休符を表す、"⌒" は、その前の音符を伸ばすタイのような意味を持ちます。
+
+            ・例えば、4分音符だとパターン（"⌒●" "●" "○"）選択する項目が1つ現れ、その下にコードを選択する選択項目が1つ現れます。
+            ・例えば、8分音符だとパターン選択する項目が2つ現れ、その下にコードを選択する選択項目が2つ現れます。
+              8分音符の1つ目のパターンは "⌒●" "●" "○" です。
+              8分音符の2つ目のパターンは "●" "○" "⌒" です。
+            ・例えば、16分音符だとパターン選択する項目が4つ現れ、その下にコードを選択する選択項目が4つ現れます。
+              16分音符の1つ目のパターンは    "⌒●" "●" "○" です。
+              16分音符の2つ目以降のパターンは "●" "○" "⌒" です。
+
+            ・選択するコードは、「進行」に設定したコード文字列（input欄にあるスペース区切りの文字）から選択する。
+            ・コードは空欄も選べる。Createで生成した直後の小節を編集すると、１行目の最初の音符にはコードがあるが、それ以降はコード無しが初期状態。
+            ・例えば 4/4拍子、で４つの音符に G G C D とコードを選択したら、Done から editScore に戻ると、編集した小節の音符の上にコードが表示される。
+
+            ・パターンに "⌒●" "●" を選んだら、コードを選択可能になります。"○" はコード選択不可で、コードは"なし"と同じです。
+            ・パターンに "⌒●" "●" を選んだら、コードを選択したら、その音符へのコードを指定したことになります。
+            ・コードを選択する選択肢の順序は、コードを辞書順に並べた順序です。
+            -->
+            <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">
+              <span class="lang" data-lang="en">Pattern and Chord</span>
+              <span class="lang" data-lang="ja">パターンとコード</span>
+            </div>
+
+            <!--Spec 選んだ音符や休符による楽譜上での音符を描画する列 -->
+            <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">
+              <span class="lang" data-lang="en">Preview</span>
+              <span class="lang" data-lang="ja">プレビュー</span>
+            </div>
+
+          </div>
+
+          <!-- コンテンツ -->
+          <div id="rhythmPatternBody" class="rhythmPatternBody">
+          </div>
+        </div>
+      </div>
+
+  </main>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+</body>
+</html>
+
+
+

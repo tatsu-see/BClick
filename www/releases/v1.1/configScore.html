@@ -1,0 +1,311 @@
+<!--Spec
+・楽譜全体のリズムを設定する画面。楽譜の拍子や、1小節のリズムパターン、コード進行、小節数を設定する。
+・editScore 画面で楽譜を編集しても、楽譜の生成元データとなる この画面の設定値は変更しない。
+・ <Back を選択したら編集を無かったことにするので、保存しないで index.htmlに戻る。
+・ Done を選択したら、その時に初めて編集結果をLocalStrageに保存して編集を完了する。
+-->
+<!doctype html>
+<html translate="no">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click - Score Settings / 楽譜設定</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="assets/icons/BClick-256x256.png">
+
+  <link rel="stylesheet" href="assets/lib/Language.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/configScore.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+  <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
+  <link rel="modulepreload" href="assets/lib/consentManager.js">
+  <link rel="modulepreload" href="assets/lib/consentTracking.js">
+
+  <script src="assets/lib/abcjs/abcjs-basic-min.js"></script>
+  <script type="module" src="assets/lib/Language.js"></script>
+  <script type="module" src="assets/lib/consentTracking.js"></script>
+
+  <script type="module" src="assets/js/pages/configScore.js"></script>
+</head>
+
+<!--Spec 楽譜の小節に共通する設定画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+-->
+
+<body>
+  <header>
+    <button type="button" id="saveConfigScore" class="okConfig" aria-label="Back">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
+    <div id="title" class="titleStack">
+      <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
+      <span class="titleSubtitle">— play daily, play better —</span>
+    </div>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
+  </header>
+  <main class="pageFrame">
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Time Signature</span>
+        <span class="lang" data-lang="ja">拍子</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered" role="group" aria-label="Select time signature" id="timeSignature">
+        <label>
+          <input type="radio" name="timeSignature" value="2/4" checked>
+          2/4
+        </label>
+        <label>
+          <input type="radio" name="timeSignature" value="3/4">
+          3/4
+        </label>
+        <label>
+          <input type="radio" name="timeSignature" value="4/4" checked>
+          4/4
+        </label>
+      <!-- 
+        <label>
+          <input type="radio" name="timeSignature" value="6/8">
+          6/8
+        </label>
+      -->
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Quality</span>
+        <span class="lang" data-lang="ja">クオリティ</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select quality">
+          <div class="chipGroup">
+            <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
+            <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
+            <button type="button" class="chipButton chordQuality" data-quality="dim" aria-pressed="false">dim</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Root</span>
+        <span class="lang" data-lang="ja">ルート</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select root">
+          <div class="chipGroup">
+            <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
+            <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
+            <button type="button" class="chipButton chordRoot" data-root="E" aria-pressed="false">E</button>
+            <button type="button" class="chipButton chordRoot" data-root="F" aria-pressed="false">F</button>
+            <button type="button" class="chipButton chordRoot" data-root="G" aria-pressed="false">G</button>
+            <button type="button" class="chipButton chordRoot" data-root="A" aria-pressed="false">A</button>
+            <button type="button" class="chipButton chordRoot" data-root="B" aria-pressed="false">B</button>
+            <button type="button" class="chipButton chordSlashToggle" aria-pressed="false" aria-label="Toggle '/' input">/</button>
+            <!--spec "/" トグルスイッチは分数コードのために用意する。
+            ・操作順は "/" をONして、C～Bのボタンをクリックする。
+            ・"/" をONしたら、maj/min/dim のモードによらず、分数コード入力となる。
+            ・分数コード入力は、コード進行の最後のアルファベットの文字に続けて"/"が入る。
+            ・例えば "Em/G" を入力する場合は、まず普通に "Em" を入力し、その後 /" トグルスイッチON、"G"をクリック、の順に操作する。
+            ・分数コード入力後は、トグルスイッチはOFFになる。また、画面操作開始時もトグルスイッチはOFFで始まる。
+            -->
+          </div>
+        </div>
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Chord Progression (per measure)</span>
+        <span class="lang" data-lang="ja">コード進行（小節ごと）</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="Enter progression">
+      <!--Spec コード進行入力部分
+        ここは、コード進行を入力する部分。ユーザにはテキストボックスとして見せる。
+        テキストボックスには、コードをスペースで区切って入力する。
+        例） C G Am F
+        ・テキストボックスの下に、コード進行テキストを編集するボタンを横並びに配置する。
+        ・初期値は "" とする。
+
+        ・コード表記は以下のルールに従う。以下のルールに従わない場合、コード進行から除外される。
+          ・コードのルート音は A–G の大文字、直後に # または b を任意で許可する。
+          ・コード進行は画面のDoneボタンで保存されるが、その際NGの書き方であれば補正する。
+          ・コードは、大文字のアルファベット1文字で表される。（これを①とする）
+          ・コードは、大文字のアルファベット1文字＋（小文字のアルファベット文字 または 数字）の複数で表される。（これを②とする）
+          ・分数コードは 本体/ベース で表現される。ベースは A–G + 任意の #/b
+          ・コードは、最後に# または bが付くことがある。
+          ・例えば キーボードで直接 csus4 と入力したら、Done 操作時に先頭の文字は大文字に自動で調節され Csus4 となる。
+
+        ・Init.はテキストボックスを初期化するボタン
+        ・3コードは、ダイアトニックコードの内、ランダムに3つのコードを生成して、テキストボックスに追加するボタン
+        ・4コードは、ダイアトニックコードの内、ランダムに4つのコードを生成して、テキストボックスに追加するボタン
+        ・Back.はテキストボックスならんでいるコード文字列の一番後ろのコードを削除する。
+        ・これら編集ボタンを押しても、テキストボックスにはフォーカスは移動しない。
+      -->
+        <input type="text" id="codeProgression" value="" inputmode="latin">
+
+        <div class="chipGroupActions" role="group" aria-label="Progression actions">
+          <button type="button" id="clearCodeProgression" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span>
+            <span class="lang" data-lang="en">Reset</span>
+            <span class="lang" data-lang="ja">リセット</span>
+          </button>
+          <button type="button" id="addRandom3Chords" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">filter_3</span>
+            <span class="lang" data-lang="en">Chords</span>
+            <span class="lang" data-lang="ja">コード</span>
+          </button>
+          <button type="button" id="addRandom4Chords" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">filter_4</span>
+            <span class="lang" data-lang="en">Chords</span>
+            <span class="lang" data-lang="ja">コード</span>
+          </button>
+          <button type="button" id="backCodeProgression" class="chipButton">
+            <span class="material-symbols-rounded" aria-hidden="true">undo</span>
+            <span class="lang" data-lang="en">Back.</span>
+            <span class="lang" data-lang="ja">Back.</span>
+          </button>
+        </div>
+
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Rhythm</span>
+        <span class="lang" data-lang="ja">リズム</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Select rhythm">
+      <!--Spec 楽譜の１小節内のリズムパターン
+        ここは、楽譜の１小節内のリズムパターンを設定する部分。ユーザには表のように見せる。
+        表の１つずつの項目には "border:1px solid forestgreen" の境界線を付ける。
+        表の１つずつの項目の間には 上下左右の隙間は、ほぼ無い。
+        表の１つずつの項目の中の文字列や選択要素は、セルの中央に表示する。
+        表は、選択した拍子に応じて、2/4なら2つ、4/4なら4つ、3/4なら3つの行を表示する。行ごとに2～4列目の選択操作が可能。
+              拍の文字は小さくてよい。列名も不要。列も細く表示する。
+
+        1列目：1/2/4/8/16を選ぶ。1なら全音符、2なら2分音符、4なら4分音符、8なら8分音符、16なら16分音符。
+              ただし 2/4,3/4 の場合は全音符は選べない。
+
+        2列目：リズムパターンを選択する。
+              選択項目では "●"は音符、"○"は休符、"⌒"は直前の音符が続く、"⌒●"は先頭の音符が前の拍（前の小節）から
+              タイでつながってくる音符、の意味を表す。
+              選択肢の組み合わせ "○ ⌒" と、休符の後ろに "⌒" が続く場合、"○ ○" のように休符が続くとみなす。
+
+              1列目で 全音符(=1)を選択していたら、選択項目は 1つ表示され、"●" or "○" or "⌒●" を選択する。
+
+              1列目で 2分音符(=2)を選択していたら、選択項目は 1つ表示され、"●" or "○" or "⌒●" を選択する。
+
+              1列目で 4分音符(=4)を選択していたら、選択項目は 1つ表示され、"●" or "○" or "⌒●" を選択する。
+
+              1列目で 8分音符(=8)を選択していたら、選択項目は 2つ表示され、
+                1つ目は "●" or "○" or "⌒●" を選択し、2つ目は、● or ○ を選択する。
+                例）8分音符の場合
+                  ● ● を選んだら 8分音符×x の連桁で表す。
+                  ● ○ を選んだら 8分音符と8分休符で表す。
+                  ⌒● ○ を選んだら タイ付き8分音符と8分休符で表す。
+
+                その他）
+                  ○ ○ と、8分休符が2つ連続する場合は、休符部分を4分休符で表し、休符へのタイ情報は削除する。
+
+              1列目で16分音符(=16)を選択していたら、選択項目は 4つ表示され、
+                1つ目は "●" or "○" or "⌒●" を選択し、2つ目以降は、"●" or "○" or "⌒"を選択する。
+
+                16分音符は旗が繋がったり作りがややこしくなりがちなので、次の2ステップで音符を作成する。
+
+                Step1）まず全て16分音符(休符)＋タイ付き で情報を作成する。
+                  16分音符の例）
+                  ● ● ● ● を選んだら 16分音符×4 で旗をつなげた連桁で表す。
+                  ● ⌒ ⌒ ⌒ の場合を選んだら 16分音符×4 で旗をつなげた連桁で表し、全てタイでつなげる。
+                  ● ⌒ ● ⌒ を選んだら 16分音符×4 で旗をつなげた連桁で表し、1つ目と2つ目をタイでつなげ、3つ目と4つ目をタイでつなげる。
+
+                Step2）Step1で作成した情報の内、特定のパターン（以下）の場合に、タイ付き16分音符(休符)を8分音符に置き換える。
+                       特定のパターンに当てはまらない場合は、Step1の音符（＋タイ）はそのまま残す。
+
+                  パターンタイプ）
+                  ● ⌒ ● ● を選んだら 8分音符 + 16分音符×2 で旗をつなげた連桁で表す。
+                  ● ⌒ ⌒ ● を選んだら 付点8分音符（16分×3） + 16分音符 で旗をつなげた連桁で表す。
+                  ● ● ⌒ ⌒ を選んだら 16分音符 + 付点8分音符 で旗をつなげた連桁で表す。
+                  ● ● ● ⌒ を選んだら 16分音符×2 + 8分音符 で旗をつなげた連桁で表す。
+                  ● ● ⌒ ● を選んだら 16分音符 + 8分音符 + 16分音符で旗をつなげた連桁で表す。
+                  先頭に "⌒●" を選んで作成した "タイ付き" の情報は維持する。
+
+                その他）
+                  ○ ○ ○ ○ と、16分休符が4つ連続する場合は、休符部分を4分休符で表し、休符へのタイ情報は削除する。
+                  ● ⌒ ○ ○ または ○ ○ ● ⌒ など、16分休符が2つ連続する場合は、休符部分を8分休符で表し、休符へのタイ情報は削除する。
+
+              選択要素は横並びにする。（paddingを0に近づけるか、文字を小さくする。）
+              選択要素は縦方向には、2列目の選択要素と同じ高さにする。
+
+              ABCJSの実装が、ややこしくならないように、全音符/2分音符/4分音符/8分音符/16分音符、のケースで、
+              if-else か switch で分岐して処理を分けて、分けた処理は関数にわけて、あとで分かりやすく。
+
+        3列目：1～2列目で選択した内容を元に、ABCJSで譜面を描画する。
+              譜面はリズムを表示するだけなので 1本の線の譜面に音符 を描画する。
+              1小節の見た目の長さは、2列目の選択によって変化しないものとする。
+              音符の旗は玉の上に来るように表示する。
+              8分や16部の音符は、旗をつなげて連桁で表示する。
+              4列目のABCJSによる音符の描画は、JS で class にまとめ、ファイルを分けることで、ソースコードを簡潔に保つ。
+              ABCJSでは、ト音記号は表示しない。拍子は、この画面の <div id="timeSignature">で選択したものを表示する。
+      -->
+        <div class="rhythmPatternTable" role="table" aria-label="Rhythm pattern">
+          <div class="rhythmPatternHeader" role="row">
+            <!--Spec 分割は全音符,2分音符,4分音符,8分音符,16分音符を選ぶ列
+            ただし 2/4,3/4 の場合は全音符は選べない -->
+            <div class="rhythmPatternCell rhythmPatternDivision" role="columnheader">
+              ♪
+            </div>
+
+            <!--Spec 分割は1,2,4,8,16分で分割したときの演奏するか休符かを選ぶ列 -->
+            <div class="rhythmPatternCell rhythmPatternSymbols" role="columnheader">
+              <span class="lang" data-lang="en">Pattern</span>
+              <span class="lang" data-lang="ja">パターン</span>
+            </div>
+
+            <!--Spec 選んだ音符や休符による楽譜上での音符を描画する列 -->
+            <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">
+              <span class="lang" data-lang="en">Preview</span>
+              <span class="lang" data-lang="ja">プレビュー</span>
+            </div>
+
+          </div>
+          <div id="rhythmPatternBody" class="rhythmPatternBody"></div>
+        </div>
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Measures</span>
+        <span class="lang" data-lang="ja">小節数</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered" role="group" aria-label="Set measures">
+        <input type="range" id="measuresRange" min="1" max="12" step="1" value="8">
+        <output id="measuresValue" for="measuresRange">8</output>
+      </div>
+  </main>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+</body>
+</html>
+
+
+
