@@ -30,6 +30,7 @@
 
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
   <link rel="stylesheet" href="assets/css/configScore.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
@@ -38,11 +39,13 @@
   <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentTracking.js">
+  <link rel="modulepreload" href="assets/js/actions/tips.js">
 
   <script src="assets/lib/abcjs/abcjs-basic-min.js"></script>
   <script type="module" src="assets/lib/Language.js"></script>
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
+  <script type="module" src="assets/js/actions/tips.js"></script>
   <script type="module" src="assets/js/pages/configScore.js"></script>
 </head>
 
@@ -63,9 +66,19 @@
     <button id="closePage" type="button" aria-label="Save and back">Done</button>
   </header>
   <main class="pageFrame">
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Time Signature</span>
-        <span class="lang" data-lang="ja">拍子</span>
+      <div class="preferenceTitleWithTip">
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Time Signature</span>
+          <span class="lang" data-lang="ja">拍子</span>
+        </div>
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips"
+          data-tip-target="timeSignatureTipsDialog"
+        >
+          ?
+        </button>
       </div>
 
       <div class="preferenceValue preferenceValueCentered" role="group" aria-label="Select time signature" id="timeSignature">
@@ -89,9 +102,19 @@
       -->
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Quality</span>
-        <span class="lang" data-lang="ja">クオリティ</span>
+      <div class="preferenceTitleWithTip">
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Quality</span>
+          <span class="lang" data-lang="ja">クオリティ</span>
+        </div>
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips"
+          data-tip-target="qualityTipsDialog"
+        >
+          ?
+        </button>
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
@@ -104,9 +127,19 @@
         </div>
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Root</span>
-        <span class="lang" data-lang="ja">ルート</span>
+      <div class="preferenceTitleWithTip">
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Root</span>
+          <span class="lang" data-lang="ja">ルート</span>
+        </div>
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips"
+          data-tip-target="rootTipsDialog"
+        >
+          ?
+        </button>
       </div>
 
       <div class="preferenceValue preferenceValueCentered">
@@ -131,9 +164,19 @@
         </div>
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Chord Progression (per measure)</span>
-        <span class="lang" data-lang="ja">コード進行（小節ごと）</span>
+      <div class="preferenceTitleWithTip">
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Chord Progression (per measure)</span>
+          <span class="lang" data-lang="ja">コード進行（小節ごと）</span>
+        </div>
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips"
+          data-tip-target="progressionTipsDialog"
+        >
+          ?
+        </button>
       </div>
 
       <div class="preferenceValue preferenceValueCentered codeProgressionGroup" role="group" aria-label="Enter progression">
@@ -186,9 +229,19 @@
 
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Rhythm</span>
-        <span class="lang" data-lang="ja">リズム</span>
+      <div class="preferenceTitleWithTip">
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Rhythm</span>
+          <span class="lang" data-lang="ja">リズム</span>
+        </div>
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips"
+          data-tip-target="rhythmTipsDialog"
+        >
+          ?
+        </button>
       </div>
 
       <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Select rhythm">
@@ -289,9 +342,19 @@
         </div>
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Measures</span>
-        <span class="lang" data-lang="ja">小節数</span>
+      <div class="preferenceTitleWithTip">
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Measures</span>
+          <span class="lang" data-lang="ja">小節数</span>
+        </div>
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips"
+          data-tip-target="measuresTipsDialog"
+        >
+          ?
+        </button>
       </div>
 
       <div class="preferenceValue preferenceValueCentered" role="group" aria-label="Set measures">
@@ -304,8 +367,157 @@
     <small>&copy; 2025 tatsu. All rights reserved.</small>
   </footer>
 
+  <dialog id="timeSignatureTipsDialog" class="tipsDialog" aria-labelledby="timeSignatureTipsTitle">
+    <div class="tipsDialogTitle" id="timeSignatureTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Choose the time signature used for the score.<br>
+        ・The rhythm editor below updates to match the selected meter.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・楽譜で使う拍子を選択します。<br>
+        ・選んだ拍子に合わせて、下のリズム編集内容も切り替わります。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="qualityTipsDialog" class="tipsDialog" aria-labelledby="qualityTipsTitle">
+    <div class="tipsDialogTitle" id="qualityTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Choose the chord quality used by the chord entry buttons.<br>
+        ・For example, selecting "min" lets the root buttons add minor chords.<br>
+        ・This setting affects chord progression input on this screen.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・コード入力ボタンで使うクオリティを選択します。<br>
+        ・例えば「min」を選ぶと、ルートボタンからマイナーコードを追加できます。<br>
+        ・この設定は、この画面のコード進行入力に反映されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="rootTipsDialog" class="tipsDialog" aria-labelledby="rootTipsTitle">
+    <div class="tipsDialogTitle" id="rootTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Choose the root note to add a chord to the progression.<br>
+        ・If "/" is on, the selected note is added as the bass note of a slash chord.<br>
+        ・The selected chord is appended to the progression text box.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・ルート音を選んで、コード進行にコードを追加します。<br>
+        ・「/」がONのときは、選んだ音が分数コードのベース音として追加されます。<br>
+        ・選んだコードはコード進行テキストへ追記されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="progressionTipsDialog" class="tipsDialog" aria-labelledby="progressionTipsTitle">
+    <div class="tipsDialogTitle" id="progressionTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Enter chords separated by spaces, for example: C G Am F.<br>
+        ・You can edit the text directly or use the buttons below to add or remove chords.<br>
+        ・The progression is applied per measure when the score is generated.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・コードはスペース区切りで入力します。例: C G Am F<br>
+        ・直接入力のほか、下のボタンでもコードの追加や削除ができます。<br>
+        ・入力したコード進行は、楽譜生成時に小節ごとに反映されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="rhythmTipsDialog" class="tipsDialog" aria-labelledby="rhythmTipsTitle">
+    <div class="tipsDialogTitle" id="rhythmTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the rhythm pattern used in each measure.<br>
+        ・Change note lengths and note/rest patterns while checking the preview.<br>
+        ・The table layout changes depending on the selected time signature.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・各小節で使うリズムパターンを設定します。<br>
+        ・音価や音符/休符パターンを、プレビューを見ながら変更できます。<br>
+        ・表の内容は、選択した拍子に応じて切り替わります。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="measuresTipsDialog" class="tipsDialog" aria-labelledby="measuresTipsTitle">
+    <div class="tipsDialogTitle" id="measuresTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set how many measures the generated score will have.<br>
+        ・The range is 1 to 12 measures on this screen.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・生成する楽譜の小節数を設定します。<br>
+        ・この画面では1〜12小節の範囲で指定できます。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
 </body>
 </html>
-
 
 

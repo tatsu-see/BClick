@@ -12,19 +12,24 @@
 
 .preferenceTitleWithTip .preferenceTitle {
   flex: 1;
-  margin-bottom: 0;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
+.preferenceTitleWithTip > .preferenceTitle:last-of-type {
+  margin-bottom: 0;
+}
+
 /* 設定項目ラベルの右側に置く、小さな円形の Tips ボタン */
-.tipButton {
+.chipButton.tipButton {
   align-self: stretch;
+  box-sizing: border-box;
+  height: auto;
   padding: 0;
   margin: 0;
   flex: 0 0 auto;
   min-width: 33px;
-  min-height: 100%;
+  min-height: 0;
   border: 1px solid mediumseagreen;
   background-color: #f7f7f7;
   border-top-left-radius: 0;

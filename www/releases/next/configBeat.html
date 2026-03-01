@@ -29,6 +29,7 @@
 
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
   <link rel="stylesheet" href="assets/css/tempoDial.css">
   <link rel="stylesheet" href="assets/css/configBeat.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
@@ -38,10 +39,12 @@
   <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentTracking.js">
+  <link rel="modulepreload" href="assets/js/actions/tips.js">
 
   <script type="module" src="assets/lib/Language.js"></script>
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
+  <script type="module" src="assets/js/actions/tips.js"></script>
   <script type="module" src="assets/js/pages/configBeat.js"></script>
 </head>
 
@@ -64,10 +67,20 @@
 
   <main class="pageFrame">
 
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">speed</span>
-      <span class="lang" data-lang="en">Tempo (30–240)</span>
-      <span class="lang" data-lang="ja">テンポ（30～240）</span>
+    <div class="preferenceTitleWithTip">
+      <div class="preferenceTitle">
+        <span class="material-symbols-rounded" aria-hidden="true">speed</span>
+        <span class="lang" data-lang="en">Tempo (30–240)</span>
+        <span class="lang" data-lang="ja">テンポ（30～240）</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="tempoTipsDialog"
+      >
+        ?
+      </button>
     </div>
 
     <div id="beatPreference" class="tempoControl tempoControlStack">
@@ -95,9 +108,19 @@
       </div>
     </div>
 
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Beats (1–16)</span>
-      <span class="lang" data-lang="ja">拍数（1〜16）</span>
+    <div class="preferenceTitleWithTip">
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Beats (1–16)</span>
+        <span class="lang" data-lang="ja">拍数（1〜16）</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="beatsTipsDialog"
+      >
+        ?
+      </button>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
@@ -105,9 +128,19 @@
       <output id="clickCountValue" for="clickCountRange">4</output>
     </div>
 
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Tone</span>
-      <span class="lang" data-lang="ja">音色</span>
+    <div class="preferenceTitleWithTip">
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Tone</span>
+        <span class="lang" data-lang="ja">音色</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="toneTipsDialog"
+      >
+        ?
+      </button>
     </div>
 
     <div class="preferenceValue preferenceValueCentered tonePreference">
@@ -118,9 +151,19 @@
       </div>
     </div>
 
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Count-in (0–10)</span>
-      <span class="lang" data-lang="ja">カウントイン（0〜10）</span>
+    <div class="preferenceTitleWithTip">
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Count-in (0–10)</span>
+        <span class="lang" data-lang="ja">カウントイン（0〜10）</span>
+      </div>
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips"
+        data-tip-target="countInTipsDialog"
+      >
+        ?
+      </button>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
@@ -134,6 +177,105 @@
     <small>&copy; 2025 tatsu. All rights reserved.</small>
   </footer>
 
+  <dialog id="tempoTipsDialog" class="tipsDialog" aria-labelledby="tempoTipsTitle">
+    <div class="tipsDialogTitle" id="tempoTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the tempo from 30 to 240 BPM.<br>
+        ・Use the dial or the step buttons to change the value.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・テンポは30〜240 BPMの範囲で設定します。<br>
+        ・ダイヤルや刻み幅ボタンで値を変更できます。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="beatsTipsDialog" class="tipsDialog" aria-labelledby="beatsTipsTitle">
+    <div class="tipsDialogTitle" id="beatsTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the number of beats from 1 to 16.<br>
+        ・When you change the beat count, the tone selectors below are also updated.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・拍数は1〜16の範囲で設定します。<br>
+        ・拍数を変えると、下の音色選択もそれに合わせて更新されます。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="toneTipsDialog" class="tipsDialog" aria-labelledby="toneTipsTitle">
+    <div class="tipsDialogTitle" id="toneTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・You can set the click tone for each beat.<br>
+        ・Choose H for High (A5), L for Low (A4), or — for None.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・各拍ごとにクリック音の音色を設定できます。<br>
+        ・H は High (A5)、L は Low (A4)、— は音なしです。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="countInTipsDialog" class="tipsDialog" aria-labelledby="countInTipsTitle">
+    <div class="tipsDialogTitle" id="countInTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the count-in from 0 to 10 beats.<br>
+        ・A larger value gives you more beats before playback starts.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・カウントインは0〜10拍の範囲で設定します。<br>
+        ・値を大きくすると、再生開始前の数えが長くなります。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
 </body>
 </html>
-
