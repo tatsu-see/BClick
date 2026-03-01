@@ -119,8 +119,9 @@ export class RecordingManager {
    * @returns {Promise<void>}
    */
   async startRecording() {
-    // 前回の録音を削除し、古い AudioBuffer も破棄する
-    await this.deleteRecording();
+    // 古い録音を非同期で削除する（await しない：削除完了を待つと録音開始が遅れる）
+    // stopRecording() でのデータ保存は数秒後なので、削除との競合は実用上起きない
+    void this.deleteRecording();
     this._audioBuffer = null;
     // 事前取得済みストリームを優先して使う（getUserMedia 遅延の回避）
     let stream;

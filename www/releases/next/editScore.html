@@ -169,6 +169,9 @@
     <div id="playClicking">
 
       <!--Spec 再生ボタンの左に、プルダウンを用意する。選択肢は次の3つ
+
+        【いったんこの機能の開発を凍結するので、以下のプルダウンのコードは残しつつ、非表示にする。】
+
       "ー"  :通常通りの「再生」。クリックの1周と共に、楽譜の小節を移動する。楽譜の最後まで要ったら先頭に戻る。
 
       "●Rec":録音モードで「再生」する。録音モード時、クリックは楽譜の最後まで再生したら終了し、録音も終了する。
@@ -192,7 +195,7 @@
       ・もしくは、小節ごとに録音データを分けて持つことで、できるだけクリックの1拍目と同期するなどの工夫も考えられる。
       -->
       <!--Spec 再生モード選択プルダウン（startClickボタンの左） -->
-      <div class="rhythmSelectWrap playModeSelectWrap" id="playModeSelectWrap">
+      <div class="rhythmSelectWrap playModeSelectWrap" id="playModeSelectWrap" style="display:none"><!-- 録音モード開発凍結中のため非表示 -->
         <span class="rhythmSelectLabel" id="playModeSelectLabel">ー</span>
         <select class="rhythmSelectInput" id="playModeSelect" aria-label="Play mode">
           <option value="normal">ー</option>
