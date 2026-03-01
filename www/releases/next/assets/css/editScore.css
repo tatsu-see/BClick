@@ -276,6 +276,12 @@ main {
   width: 100%;
 }
 
+/* editScore の BPM サマリーは index のBPMサマリーを同じ見た目にする */
+#editScorePreference {
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+}
+
 main.pageFrame > .preferenceTitle {
   width: 100%;
 }
@@ -306,6 +312,13 @@ main.pageFrame > .preferenceTitle {
   content: "ON";
   right: 18px;
   color: #0f6a3d;
+}
+
+/* editScore の BPM サマリーは index と同じく内容高さで見せる */
+#editScorePreferenceSummery .preferenceNow,
+#editScorePreferenceSummery .preferenceValue {
+  height: auto;
+  align-self: center;
 }
 
 .preferenceValueCentered {
