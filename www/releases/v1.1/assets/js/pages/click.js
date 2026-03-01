@@ -4,6 +4,7 @@ import { clickSound, getMaxVolume, restoreAudioContext } from "../../lib/Sound.j
 import { chordPool } from "../../lib/guiterCode.js";
 import { ConfigStore } from "../utils/store.js";
 import { getLangMsg } from "../../lib/Language.js";
+import { loadEditScoreDraft } from "../utils/editScoreDraft.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得
@@ -19,6 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const clickCountSelect = document.getElementById("clickCount");
   const countdownSelect = document.getElementById("countdown");
   const store = new ConfigStore();
+
+  /**
+   * editScore ドラフトを取得する。
+   * @returns {object|null}
+   */
+  const getEditScoreDraft = () => {
+    const draft = loadEditScoreDraft();
+    return draft && typeof draft === "object" ? draft : null;
+  };
 
   // タイマーと状態
   let cycleTimerId = null;
@@ -59,6 +69,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (clickCountSelect) {
       const value = getSettingValue(clickCountSelect, "bclick.clickCount", 4);
       return value >= 0 ? value : 4;
+    }
+    // clickCountSelect が存在しない画面（editScore等）ではドラフトを優先して読む
+    const draftValue = getEditScoreDraft()?.clickCount;
+    if (Number.isFinite(draftValue) && draftValue >= 0) {
+      return draftValue;
     }
     const storedValue = store.getClickCount();
     return typeof storedValue === "number" && storedValue >= 0 ? storedValue : 4;
