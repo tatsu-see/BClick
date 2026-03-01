@@ -1,2 +1,6 @@
 {
+  "files.readonlyInclude": {
+    "**/www/releases/v1.1/**": true,
+    "**/www/releases/v1.0/**": true
+  }
 }

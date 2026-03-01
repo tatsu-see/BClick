@@ -3,6 +3,7 @@
 import { clickSound, getMaxVolume, restoreAudioContext } from "../../lib/Sound.js";
 import { chordPool } from "../../lib/guiterCode.js";
 import { ConfigStore } from "../utils/store.js";
+import { loadEditScoreDraft } from "../utils/editScoreDraft.js";
 import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -47,6 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return getNumberValue(stored, fallback);
   };
 
+  /**
+   * editScore の一時ドラフトを取得する。
+   * @returns {object|null}
+   */
+  const getEditScoreDraft = () => {
+    const draft = loadEditScoreDraft();
+    return draft && typeof draft === "object" ? draft : null;
+  };
+
   // 現在の設定値
   const getTempo = () => {
     if (tempoInput) {
@@ -62,6 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const value = getSettingValue(clickCountSelect, "bclick.clickCount", 4);
       return value >= 0 ? value : 4;
     }
+    const draftValue = getEditScoreDraft()?.clickCount;
+    if (Number.isFinite(draftValue) && draftValue >= 0) {
+      return draftValue;
+    }
     const storedValue = store.getClickCount();
     return typeof storedValue === "number" && storedValue >= 0 ? storedValue : 4;
   };
@@ -70,6 +84,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (countdownSelect) {
       const value = getSettingValue(countdownSelect, "bclick.countdown", 4);
       return value >= 0 ? value : 4;
+    }
+    const draftValue = getEditScoreDraft()?.countIn;
+    if (Number.isFinite(draftValue) && draftValue >= 0) {
+      return draftValue;
     }
     const storedValue = store.getCountInSec();
     return typeof storedValue === "number" && storedValue >= 0 ? storedValue : 4;
@@ -110,6 +128,18 @@ document.addEventListener("DOMContentLoaded", () => {
    * @param {number} beatCount
    */
   const refreshClickTonePattern = (beatCount) => {
+    const draftPattern = getEditScoreDraft()?.clickTonePattern;
+    if (Array.isArray(draftPattern)) {
+      const targetCount = Number.isFinite(beatCount) && beatCount > 0 ? beatCount : getClickCount();
+      const normalized = draftPattern
+        .map((tone) => (typeof tone === "string" ? tone : ""))
+        .slice(0, targetCount);
+      while (normalized.length < targetCount) {
+        normalized.push(normalized.length % 4 === 0 ? "A5" : "A4");
+      }
+      currentClickTonePattern = normalized;
+      return;
+    }
     currentClickTonePattern = store.getClickTonePattern(beatCount);
   };
 

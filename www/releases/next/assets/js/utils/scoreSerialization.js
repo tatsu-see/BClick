@@ -6,6 +6,7 @@ import { getLangMsg } from "../../lib/Language.js";
 import {
   APP_LIMITS,
   ALLOWED_TIME_SIGNATURES,
+  ALLOWED_CLICK_TONES,
   RHYTHM_TOKEN_REGEX,
 } from "../constants/appConstraints.js";
 import { isIntegerInRange } from "./validators.js";
@@ -24,7 +25,8 @@ const DEFAULT_SETTINGS = {
 //##Spec
 // JSON保存形式のバージョン定義。(schema version)
 // ・将来 JSON データの拡張をするとき、キー/値 を追加することになれば、新アプリは旧データのキーが存在しない場合を想定する。
-// ・新アプリで、「旧キーが存在しない」想定での実装が困難な場合は、VERSION 番号を増やして、新旧データの読み込みに対応する。
+// ・新アプリで、「旧キーが存在しない」想定での実装が困難な場合（たとえば旧データから新データへのコンバートが必要は場合）は、
+//   VERSION 番号を増やして、新旧データの読み込みに対応する。
 // ・こうすることで、アプリは新バージョンは旧データを読める。（旧アプリは新データの読込を保証しない。）
 export const SCORE_JSON_VERSION = 0;
 
@@ -41,6 +43,7 @@ export const SCORE_JSON_VERSION = 0;
 //     "progression": "G C Em",
 //     "barsPerRow": 2,
 //     "scoreEnabled": true,
+//     "clickTonePattern": ["A5", "A4", "A4", "A4"],   ← 省略可能。旧PDFには存在しない場合がある（後述）
 //     "rhythmPattern": ["4", "4", "4", "4"],
 //     "bars": [
 //       { "chord": [["G", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]], "rhythm": ["4", "4", "4", "4"] }
@@ -59,12 +62,14 @@ export const SCORE_JSON_VERSION = 0;
 //   - progression: コード進行（スペース区切り）
 //   - barsPerRow: 1段あたりの小節数
 //   - scoreEnabled: リズム表示のON/OFF
+//   - clickTonePattern: 拍ごとのクリック音色配列（"A5"=High / "A4"=Low / ""=無音）
+//                       省略可能フィールド。読み込み時に存在しない/無効な場合は
+//                       旧アプリの動作に合わせ「1拍目=A5、それ以外=A4」を既定値とする。
 //   - rhythmPattern: 小節内の音価トークン配列
 //   - bars: 小節配列（chord: 拍内分割ごとのコード配列, rhythm: 音符トークン配列）
 //
 // 楽譜の読込・保存に対応していない設定項目
 // - clickVolume: クリック音量
-// - clickTonePattern: クリック音色パターン
 // - editScore 画面の 調節のトグルスイッチ
 
 /**
@@ -86,6 +91,40 @@ export const getBeatCountFromTimeSignature = (timeSignature) => {
  */
 export const buildDefaultRhythmPattern = (beatCount) =>
   Array.from({ length: beatCount }, () => "4");
+
+/**
+ * 旧PDF読込時のクリック音色パターン既定値を生成する。
+ * 旧アプリの動作に合わせ、1拍目のみ A5（High）、それ以外は A4（Low）。
+ * ※新規作成時の既定値（1,5,9,13拍目=A5）とは異なる。store.js / scoreButtonUtils.js 参照。
+ * @param {number} count 拍数
+ * @returns {string[]}
+ */
+const buildDefaultClickTonePattern = (count) =>
+  Array.from({ length: count }, (_, index) => (index === 0 ? "A5" : "A4"));
+
+/**
+ * JSON読み込み時に clickTonePattern を正規化する。
+ *
+ *##Spec clickTonePattern は省略可能フィールド（schemaVersion 0 で追加）。
+ * 旧 PDF/JSON にはキーが存在しない場合がある。
+ * ・値が存在しない/配列でない/長さが clickCount と一致しない/無効なトークンを含む
+ *   → 旧アプリの動作に合わせ「1拍目=A5、それ以外=A4」の既定値を生成して動作を継続する。
+ *   ※新規作成時の既定値（1,5,9,13拍目=A5）とは意図的に異なる。旧PDFの音色を再現するため。
+ * ・値が有効な配列 → そのまま使用する。
+ *
+ * @param {unknown} value JSONから取得した値
+ * @param {number} clickCount 拍数
+ * @returns {string[]}
+ */
+const normalizeClickTonePatternFromJson = (value, clickCount) => {
+  if (!Array.isArray(value) || value.length !== clickCount) {
+    return buildDefaultClickTonePattern(clickCount);
+  }
+
+  // 保存値を検証しつつ読む。
+  const allValid = value.every((tone) => ALLOWED_CLICK_TONES.includes(tone));
+  return allValid ? value.slice() : buildDefaultClickTonePattern(clickCount);
+};
 
 /**
  * 不正なJSONデータ用の例外を生成する。
@@ -270,6 +309,10 @@ export const buildScoreDataFromObject = (source) => {
     throw buildInvalidJsonError();
   }
 
+  //##Spec clickTonePattern は省略可能フィールド。
+  // 旧データにはキーが存在しない場合があるため、normalizeClickTonePatternFromJson が既定値を補完する。
+  const clickTonePattern = normalizeClickTonePatternFromJson(normalized.clickTonePattern, clickCount);
+
   return new ScoreData({
     tempo,
     clickCount,
@@ -281,6 +324,7 @@ export const buildScoreDataFromObject = (source) => {
     progression,
     rhythmPattern,
     bars,
+    clickTonePattern,
   });
 };
 

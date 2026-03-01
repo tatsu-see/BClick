@@ -159,20 +159,28 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   const loadSettings = (resetBars = false) => {
     const savedTempo = store.getTempo();
+    const savedClickCount = store.getClickCount();
+    const savedCountIn = store.getCountInSec();
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
     const savedRhythmPattern = store.getScoreRhythmPattern();
     const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
+    const savedScoreEnabled = store.getScoreEnabled();
+    const savedClickTonePattern = store.getClickTonePattern(savedClickCount);
     return new ScoreData({
       tempo: savedTempo,
+      clickCount: savedClickCount,
+      countIn: savedCountIn,
       timeSignature: savedTimeSignature || "4/4",
       measures: savedMeasures || 8,
       progression: savedProgression || "",
       rhythmPattern: savedRhythmPattern || null,
       bars: savedBars || null,
       barsPerRow: savedBarsPerRow || 2,
+      scoreEnabled: typeof savedScoreEnabled === "boolean" ? savedScoreEnabled : true,
+      clickTonePattern: savedClickTonePattern,
     });
   };
 
@@ -198,6 +206,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!currentScoreData) return;
     editDraft = {
       tempo: currentScoreData.tempo,
+      clickCount: currentScoreData.clickCount,
+      countIn: currentScoreData.countIn,
       timeSignature: currentScoreData.timeSignature,
       measures: currentScoreData.measures,
       progression: currentScoreData.progression,
@@ -206,6 +216,10 @@ document.addEventListener("DOMContentLoaded", () => {
         : null,
       bars: cloneBars(currentScoreData.bars),
       barsPerRow: currentScoreData.barsPerRow || 2,
+      scoreEnabled: currentScoreData.scoreEnabled,
+      clickTonePattern: Array.isArray(currentScoreData.clickTonePattern)
+        ? currentScoreData.clickTonePattern.slice()
+        : null,
     };
     saveEditScoreDraft(editDraft);
   };
@@ -234,6 +248,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const barsToSave = Array.isArray(currentScoreData.bars) ? currentScoreData.bars : [];
     const measuresToSave = barsToSave.length > 0 ? barsToSave.length : currentScoreData.measures;
     store.setTempo(currentScoreData.tempo);
+    store.setClickCount(currentScoreData.clickCount);
+    store.setCountInSec(currentScoreData.countIn);
     store.setScoreTimeSignature(currentScoreData.timeSignature);
     store.setScoreProgression(currentScoreData.progression);
     if (Array.isArray(currentScoreData.rhythmPattern)) {
@@ -242,6 +258,10 @@ document.addEventListener("DOMContentLoaded", () => {
     store.setScoreBarsPerRow(currentScoreData.barsPerRow || 2);
     store.setScoreBars(barsToSave);
     store.setScoreMeasures(measuresToSave);
+    store.setScoreEnabled(currentScoreData.scoreEnabled);
+    if (Array.isArray(currentScoreData.clickTonePattern)) {
+      store.setClickTonePattern(currentScoreData.clickTonePattern, currentScoreData.clickCount);
+    }
     if (tempoDialToggle) {
       store.setEditScoreSettingsEnabled(Boolean(tempoDialToggle.checked));
     }
@@ -262,19 +282,23 @@ document.addEventListener("DOMContentLoaded", () => {
     editDraft = loadedDraft;
     currentScoreData = new ScoreData({
       tempo: loadedDraft.tempo,
+      clickCount: loadedDraft.clickCount,
+      countIn: loadedDraft.countIn,
       timeSignature: loadedDraft.timeSignature || "4/4",
       measures: loadedDraft.measures || 8,
       progression: loadedDraft.progression || "",
       rhythmPattern: Array.isArray(loadedDraft.rhythmPattern) ? loadedDraft.rhythmPattern : null,
       bars: Array.isArray(loadedDraft.bars) ? loadedDraft.bars : null,
       barsPerRow: loadedDraft.barsPerRow || 2,
+      scoreEnabled: loadedDraft.scoreEnabled,
+      clickTonePattern: Array.isArray(loadedDraft.clickTonePattern) ? loadedDraft.clickTonePattern : null,
     });
   } else {
     const hasSavedBars = Array.isArray(store.getScoreBars());
     currentScoreData = loadSettings(!hasSavedBars);
     syncDraftFromCurrent();
   }
-  if (store.getScoreEnabled() === false) {
+  if (currentScoreData.scoreEnabled === false) {
     // 仕様: リズム表示がOFFならクリックUIのみ表示し、楽譜エリアは隠す。
     if (scoreArea) {
       scoreArea.hidden = true;
@@ -312,7 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("楽譜生成条件エラー:", {
       scoreElementExists: !!scoreElement,
       alphaTabLoaded: !!window.alphaTab,
-      scoreEnabled: store.getScoreEnabled(),
+      scoreEnabled: currentScoreData.scoreEnabled,
     });
   }
 
@@ -449,16 +473,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const buildApplyKey = (data) => {
     const safeBars = Array.isArray(data?.bars) ? data.bars : [];
     const safeRhythm = Array.isArray(data?.rhythmPattern) ? data.rhythmPattern : [];
-    const scoreEnabled = store.getScoreEnabled();
     return JSON.stringify({
       tempo: data?.tempo,
+      clickCount: data?.clickCount,
+      countIn: data?.countIn,
       timeSignature: data?.timeSignature,
       measures: data?.measures,
       progression: data?.progression,
       barsPerRow: data?.barsPerRow,
+      scoreEnabled: data?.scoreEnabled,
       rhythmPattern: safeRhythm,
       bars: safeBars,
-      scoreEnabled,
+      clickTonePattern: Array.isArray(data?.clickTonePattern) ? data.clickTonePattern : [],
     });
   };
 
@@ -470,12 +496,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextScoreData = nextDraft
       ? new ScoreData({
           tempo: nextDraft.tempo,
+          clickCount: nextDraft.clickCount,
+          countIn: nextDraft.countIn,
           timeSignature: nextDraft.timeSignature || "4/4",
           measures: nextDraft.measures || 8,
           progression: nextDraft.progression || "",
           rhythmPattern: Array.isArray(nextDraft.rhythmPattern) ? nextDraft.rhythmPattern : null,
           bars: Array.isArray(nextDraft.bars) ? nextDraft.bars : null,
           barsPerRow: nextDraft.barsPerRow || 2,
+          scoreEnabled: nextDraft.scoreEnabled,
+          clickTonePattern: Array.isArray(nextDraft.clickTonePattern) ? nextDraft.clickTonePattern : null,
         })
       : loadSettings(false);
     const nextApplyKey = buildApplyKey(nextScoreData);
@@ -484,7 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     lastAppliedKey = nextApplyKey;
     currentScoreData = nextScoreData;
-    if (store.getScoreEnabled() === false) {
+    if (nextScoreData.scoreEnabled === false) {
       if (scoreArea) {
         scoreArea.hidden = true;
       }

@@ -92,12 +92,18 @@ document.addEventListener("DOMContentLoaded", () => {
           const nextDraft = {
             ...draft,
             tempo: scoreData.tempo,
+            clickCount: scoreData.clickCount,
+            countIn: scoreData.countIn,
             timeSignature: scoreData.timeSignature,
             progression: scoreData.progression,
             rhythmPattern: scoreData.rhythmPattern,
             bars: scoreData.bars,
             measures: scoreData.measures,
             barsPerRow: scoreData.barsPerRow,
+            scoreEnabled: scoreData.scoreEnabled,
+            clickTonePattern: Array.isArray(scoreData.clickTonePattern)
+              ? scoreData.clickTonePattern.slice()
+              : null,
           };
           saveEditScoreDraft(nextDraft);
         } else {

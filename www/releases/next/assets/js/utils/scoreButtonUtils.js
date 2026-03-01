@@ -46,6 +46,10 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
     ? storedRhythmPattern
     : buildDefaultRhythmPattern(beatCount);
   const bars = resetBars ? null : store.getScoreBars();
+  //##Spec clickTonePattern は store から取得する。
+  // store が未対応の場合や保存データが存在しない場合は null になり、
+  // ScoreModel 側で null として保持される（PDF保存時にはストアの値を優先するため影響なし）。
+  const clickTonePattern = store.getClickTonePattern ? store.getClickTonePattern(clickCount) : null;
 
   return new ScoreData({
     tempo,
@@ -58,6 +62,7 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
     progression,
     rhythmPattern,
     bars,
+    clickTonePattern,
   });
 };
 
@@ -90,6 +95,12 @@ export const saveScoreDataToStore = (store, scoreData) => {
   }
   if (Array.isArray(scoreData.bars)) {
     store.setScoreBars(scoreData.bars);
+  }
+  //##Spec clickTonePattern が存在する場合のみ store へ保存する。
+  // 旧データ読込時は normalizeClickTonePatternFromJson が既定値を補完した上で
+  // ScoreData に設定されているため、ここでは null チェックのみ行う。
+  if (typeof store.setClickTonePattern === "function" && Array.isArray(scoreData.clickTonePattern)) {
+    store.setClickTonePattern(scoreData.clickTonePattern, scoreData.clickCount);
   }
 };
 
