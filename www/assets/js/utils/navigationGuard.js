@@ -5,17 +5,17 @@
 export function ensureInAppNavigation() {
   const referrer = document.referrer;
   if (!referrer) {
-    window.location.href = "/";
+    window.location.href = "index.html";
     return false;
   }
   try {
     const refUrl = new URL(referrer);
     if (refUrl.origin !== window.location.origin) {
-      window.location.href = "/";
+      window.location.href = "index.html";
       return false;
     }
   } catch (error) {
-    window.location.href = "/";
+    window.location.href = "index.html";
     return false;
   }
   return true;
@@ -29,5 +29,5 @@ export function goBackWithFallback() {
     window.history.back();
     return;
   }
-  window.location.href = "/";
+  window.location.href = "index.html";
 }

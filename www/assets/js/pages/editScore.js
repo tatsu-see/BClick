@@ -158,20 +158,26 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   const loadSettings = (resetBars = false) => {
     const savedTempo = store.getTempo();
+    const savedClickCount = store.getClickCount();
+    const savedCountIn = store.getCountInSec();
     const savedTimeSignature = store.getScoreTimeSignature();
     const savedMeasures = store.getScoreMeasures();
     const savedProgression = store.getScoreProgression();
     const savedRhythmPattern = store.getScoreRhythmPattern();
     const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
+    const savedScoreEnabled = store.getScoreEnabled();
     return new ScoreData({
       tempo: savedTempo,
+      clickCount: savedClickCount,
+      countIn: savedCountIn,
       timeSignature: savedTimeSignature || "4/4",
       measures: savedMeasures || 8,
       progression: savedProgression || "",
       rhythmPattern: savedRhythmPattern || null,
       bars: savedBars || null,
       barsPerRow: savedBarsPerRow || 2,
+      scoreEnabled: typeof savedScoreEnabled === "boolean" ? savedScoreEnabled : true,
     });
   };
 
@@ -197,6 +203,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!currentScoreData) return;
     editDraft = {
       tempo: currentScoreData.tempo,
+      clickCount: currentScoreData.clickCount,
+      countIn: currentScoreData.countIn,
       timeSignature: currentScoreData.timeSignature,
       measures: currentScoreData.measures,
       progression: currentScoreData.progression,
@@ -205,6 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
         : null,
       bars: cloneBars(currentScoreData.bars),
       barsPerRow: currentScoreData.barsPerRow || 2,
+      scoreEnabled: currentScoreData.scoreEnabled,
     };
     saveEditScoreDraft(editDraft);
   };
@@ -233,6 +242,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const barsToSave = Array.isArray(currentScoreData.bars) ? currentScoreData.bars : [];
     const measuresToSave = barsToSave.length > 0 ? barsToSave.length : currentScoreData.measures;
     store.setTempo(currentScoreData.tempo);
+    store.setClickCount(currentScoreData.clickCount);
+    store.setCountInSec(currentScoreData.countIn);
     store.setScoreTimeSignature(currentScoreData.timeSignature);
     store.setScoreProgression(currentScoreData.progression);
     if (Array.isArray(currentScoreData.rhythmPattern)) {
@@ -241,6 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
     store.setScoreBarsPerRow(currentScoreData.barsPerRow || 2);
     store.setScoreBars(barsToSave);
     store.setScoreMeasures(measuresToSave);
+    store.setScoreEnabled(currentScoreData.scoreEnabled);
     if (tempoDialToggle) {
       store.setEditScoreSettingsEnabled(Boolean(tempoDialToggle.checked));
     }
@@ -251,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (showCodeDiagramButton) {
     showCodeDiagramButton.addEventListener("click", () => {
-      window.location.href = "/codeDiagram.html";
+      window.location.href = "codeDiagram.html";
     });
   }
 
@@ -261,12 +273,15 @@ document.addEventListener("DOMContentLoaded", () => {
     editDraft = loadedDraft;
     currentScoreData = new ScoreData({
       tempo: loadedDraft.tempo,
+      clickCount: loadedDraft.clickCount,
+      countIn: loadedDraft.countIn,
       timeSignature: loadedDraft.timeSignature || "4/4",
       measures: loadedDraft.measures || 8,
       progression: loadedDraft.progression || "",
       rhythmPattern: Array.isArray(loadedDraft.rhythmPattern) ? loadedDraft.rhythmPattern : null,
       bars: Array.isArray(loadedDraft.bars) ? loadedDraft.bars : null,
       barsPerRow: loadedDraft.barsPerRow || 2,
+      scoreEnabled: loadedDraft.scoreEnabled,
     });
   } else {
     const hasSavedBars = Array.isArray(store.getScoreBars());
@@ -448,16 +463,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const buildApplyKey = (data) => {
     const safeBars = Array.isArray(data?.bars) ? data.bars : [];
     const safeRhythm = Array.isArray(data?.rhythmPattern) ? data.rhythmPattern : [];
-    const scoreEnabled = store.getScoreEnabled();
     return JSON.stringify({
       tempo: data?.tempo,
+      clickCount: data?.clickCount,
+      countIn: data?.countIn,
       timeSignature: data?.timeSignature,
       measures: data?.measures,
       progression: data?.progression,
       barsPerRow: data?.barsPerRow,
+      scoreEnabled: data?.scoreEnabled,
       rhythmPattern: safeRhythm,
       bars: safeBars,
-      scoreEnabled,
     });
   };
 
@@ -469,12 +485,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextScoreData = nextDraft
       ? new ScoreData({
           tempo: nextDraft.tempo,
+          clickCount: nextDraft.clickCount,
+          countIn: nextDraft.countIn,
           timeSignature: nextDraft.timeSignature || "4/4",
           measures: nextDraft.measures || 8,
           progression: nextDraft.progression || "",
           rhythmPattern: Array.isArray(nextDraft.rhythmPattern) ? nextDraft.rhythmPattern : null,
           bars: Array.isArray(nextDraft.bars) ? nextDraft.bars : null,
           barsPerRow: nextDraft.barsPerRow || 2,
+          scoreEnabled: nextDraft.scoreEnabled,
         })
       : loadSettings(false);
     const nextApplyKey = buildApplyKey(nextScoreData);
@@ -483,7 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     lastAppliedKey = nextApplyKey;
     currentScoreData = nextScoreData;
-    if (store.getScoreEnabled() === false) {
+    if (nextScoreData.scoreEnabled === false) {
       if (scoreArea) {
         scoreArea.hidden = true;
       }
