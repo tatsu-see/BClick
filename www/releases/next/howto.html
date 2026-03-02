@@ -53,10 +53,9 @@
 <!--Spec How To画面の記述方法
 1．章タイトルを<h3>タグで示す。
 2．章の次に、章で説明することを1文で説明する。
-3-1．章で説明するSVG画像（画像と引き出し番号）を載せる。
-    SVGは70%程度の大きさ、センター寄せで表示する。
-    SVGファイルは日本語は *_J.svg、英語は *_E.svg のように分けて用意する。
-3-2．SVG画像を説明する文章を用意する。箇条書きで簡潔に説明する。
+3-1．章で説明するSVG画像（画像と引き出し番号）を載せる。SVGは75%程度の大きさ、センター寄せで表示する。
+    SVGファイルは、日本語は *_J.svg、英語は *_E.svg のように分けて用意する。
+3-2．SVG画像を説明する文章を用意する。箇条書きで簡潔に説明する。文章に使う単語はSVG内のテキストに合わせて説明する。
 （内容によっては 3-1 と 3-2 を繰り返して説明する。）
 -->
 
@@ -64,13 +63,35 @@
       <div style="text-align:left; padding:6px;">
 
         <!--Spec 最初の章
-        ・タイトル：（日）はじめの一歩 / （英）The first step
-        ・説明：まずはクリックを動かす手順を説明する。
-        ・SVG画像：assets/svg/the_first_step.svg
+        ・タイトル：（日）ヒントの表示 / （英）Show hints
+        ・説明：ヒントの表示
+        ・SVG画像：なし
         ・説明文：
-        1．#1テンポダイアルをぐるぐる回してテンポを変更する。
-        2．#2クリック操作の「開始」からクリックを開始。
-        3. クリック中に、テンポを変更したり「停止」を押したりしてみる。
+        1．画面内にあるアイコン web_asset をクリックすると、ヒントが表示される。
+        -->
+
+        <h3>
+          <span class="lang" data-lang="en">Show hints</span>
+          <span class="lang" data-lang="ja">ヒントの表示</span>
+        </h3>
+        <ul>
+          <li>
+            <span class="lang" data-lang="en">Tap the <span class="material-symbols-rounded howtoIcon" aria-label="hints icon">web_asset</span> icon on the screen to show hints.</span>
+            <span class="lang" data-lang="ja">画面内にある <span class="material-symbols-rounded howtoIcon" aria-label="ヒントアイコン">web_asset</span> アイコンをタップすると、ヒントが表示されます。</span>
+          </li>
+        </ul>
+
+        <hr>
+
+        <!--Spec 2番目の章
+        ・タイトル：（日）はじめの一歩 / （英）The first step
+        ・説明：クリックを動かしてみる。
+        ・SVG画像：assets/svg/the_first_step_J(E).svg
+        ・説明文：
+        1．#1 テンポダイアルをぐるぐる回してテンポを変更する。
+        2．#2 クリック操作の「開始」からクリックを開始。
+        3. クリック中に、テンポを変更したり「停止」を押す。
+        4. テンポ数などの変更は「#3 設定」画面で編集する。
         -->
 
         <h3>
@@ -79,7 +100,7 @@
         </h3>
         <p>
           <span class="lang" data-lang="en">Let's learn the steps to get the click running.</span>
-          <span class="lang" data-lang="ja">まずはクリックを動かす手順を説明します。</span>
+          <span class="lang" data-lang="ja">クリックを動かす手順を説明します。</span>
         </p>
         <div class="howtoSvgWrap">
           <img src="assets/svg/the_first_step_J.svg" alt="はじめの一歩の図" class="lang howtoSvg" data-lang="ja">
@@ -91,12 +112,16 @@
             <span class="lang" data-lang="ja">#1 テンポダイアルをぐるぐる回してテンポを変更する。</span>
           </li>
           <li>
-            <span class="lang" data-lang="en">#2 Press "Start" in the click controls to begin the click.</span>
+            <span class="lang" data-lang="en">#2 Press "Start" in Playback to begin the click.</span>
             <span class="lang" data-lang="ja">#2 クリック操作の「開始」からクリックを開始。</span>
           </li>
           <li>
             <span class="lang" data-lang="en">While the click is running, try changing the tempo or pressing "Stop".</span>
             <span class="lang" data-lang="ja">クリック中に、テンポを変更したり「停止」を押したりしてみる。</span>
+          </li>
+          <li>
+            <span class="lang" data-lang="en">#3 Use the Setting screen to change the tempo and other values.</span>
+            <span class="lang" data-lang="ja">テンポ数などの変更は「#3 設定」画面で編集する。</span>
           </li>
         </ul>
       </div>

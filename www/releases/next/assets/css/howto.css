@@ -21,14 +21,21 @@ body {
   line-height: 1.35; /* li間の縦密度を上げる */
 }
 
+/* インラインアイコン：本文テキストと縦位置を揃える */
+.howtoIcon {
+  font-size: 1.1em;    /* 本文より少し大きめで視認しやすく */
+  vertical-align: middle; /* テキストと垂直方向に揃える */
+  line-height: 1;      /* 行高への影響を最小化 */
+}
+
 /* SVG画像のラッパー：センター寄せ */
 .howtoSvgWrap {
   text-align: center;
   margin: 8px 0;
 }
 
-/* SVG画像：70%幅で表示 */
+/* SVG画像：75%幅で表示 */
 .howtoSvg {
-  width: 70%;
+  width: 75%;
   height: auto;
 }
