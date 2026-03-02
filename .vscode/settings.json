@@ -1,6 +1,10 @@
 {
   "files.readonlyInclude": {
-    "**/www/releases/v1.1/**": true,
-    "**/www/releases/v1.0/**": true
+    "**/www/**": true,
+    "**/www/releases/v*/**": true
+  },
+  "files.readonlyExclude": {
+    "**/www/releases/next/index.html": true,
+    "**/www/releases/next/**": true
   }
 }

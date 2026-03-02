@@ -50,20 +50,55 @@
   </header>
   <main class="pageFrame">
 
+<!--Spec How To画面の記述方法
+1．章タイトルを<h3>タグで示す。
+2．章の次に、章で説明することを1文で説明する。
+3-1．章で説明するSVG画像（画像と引き出し番号）を載せる。
+    SVGは70%程度の大きさ、センター寄せで表示する。
+    SVGファイルは日本語は *_J.svg、英語は *_E.svg のように分けて用意する。
+3-2．SVG画像を説明する文章を用意する。箇条書きで簡潔に説明する。
+（内容によっては 3-1 と 3-2 を繰り返して説明する。）
+-->
+
     <div id="howtoContent">
       <div style="text-align:left; padding:6px;">
+
+        <!--Spec 最初の章
+        ・タイトル：（日）はじめの一歩 / （英）The first step
+        ・説明：まずはクリックを動かす手順を説明する。
+        ・SVG画像：assets/svg/the_first_step.svg
+        ・説明文：
+        1．#1テンポダイアルをぐるぐる回してテンポを変更する。
+        2．#2クリック操作の「開始」からクリックを開始。
+        3. クリック中に、テンポを変更したり「停止」を押したりしてみる。
+        -->
+
         <h3>
-          <span class="lang" data-lang="en">How to use B.Click</span>
-          <span class="lang" data-lang="ja">B.Click の使い方</span>
+          <span class="lang" data-lang="en">The first step</span>
+          <span class="lang" data-lang="ja">はじめの一歩</span>
         </h3>
         <p>
-          <span class="lang" data-lang="en">
-            (Content will be added here.)
-          </span>
-          <span class="lang" data-lang="ja">
-            （ここに使い方の内容を追加します。）
-          </span>
+          <span class="lang" data-lang="en">Let's learn the steps to get the click running.</span>
+          <span class="lang" data-lang="ja">まずはクリックを動かす手順を説明します。</span>
         </p>
+        <div class="howtoSvgWrap">
+          <img src="assets/svg/the_first_step_J.svg" alt="はじめの一歩の図" class="lang howtoSvg" data-lang="ja">
+          <img src="assets/svg/the_first_step_E.svg" alt="The first step diagram" class="lang howtoSvg" data-lang="en">
+        </div>
+        <ul>
+          <li>
+            <span class="lang" data-lang="en">#1 Turn the tempo dial to change the tempo.</span>
+            <span class="lang" data-lang="ja">#1 テンポダイアルをぐるぐる回してテンポを変更する。</span>
+          </li>
+          <li>
+            <span class="lang" data-lang="en">#2 Press "Start" in the click controls to begin the click.</span>
+            <span class="lang" data-lang="ja">#2 クリック操作の「開始」からクリックを開始。</span>
+          </li>
+          <li>
+            <span class="lang" data-lang="en">While the click is running, try changing the tempo or pressing "Stop".</span>
+            <span class="lang" data-lang="ja">クリック中に、テンポを変更したり「停止」を押したりしてみる。</span>
+          </li>
+        </ul>
       </div>
     </div>
 

@@ -20,3 +20,15 @@ body {
   margin-bottom: 0.2em; /* 箇条書きの間隔を少し詰める */
   line-height: 1.35; /* li間の縦密度を上げる */
 }
+
+/* SVG画像のラッパー：センター寄せ */
+.howtoSvgWrap {
+  text-align: center;
+  margin: 8px 0;
+}
+
+/* SVG画像：70%幅で表示 */
+.howtoSvg {
+  width: 70%;
+  height: auto;
+}
