@@ -21,7 +21,7 @@
 }
 
 .preferenceTitleWithTip.tipButtonLeft {
-  flex-direction: row-reverse;
+  flex-direction: row;
 }
 
 .preferenceTitleWithTip.tipButtonLeft .preferenceTitle {
