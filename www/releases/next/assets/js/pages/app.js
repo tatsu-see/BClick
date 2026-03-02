@@ -374,6 +374,14 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "configApp.html";
     });
   }
+
+  // HOW TOボタン（ヘッダー左端のヘルプアイコン）
+  const openHowToButton = document.getElementById("openHowTo");
+  if (openHowToButton) {
+    openHowToButton.addEventListener("click", () => {
+      window.location.href = "howto.html";
+    });
+  }
 });
 
 

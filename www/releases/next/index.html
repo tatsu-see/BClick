@@ -22,6 +22,7 @@
 
   <!--Spec 画面遷移の仕様（ preconnect / preload / modulepreload / prefetch 用）
   index.html → configApp.html
+  index.html → howto.html
   index.html → configBeat.html
   index.html → configScore.html
   index.html → editScore.html → configBeat.html, editMeasure.html, codeDiagram.html
@@ -48,6 +49,10 @@
   <link rel="prefetch" href="configApp.html" as="document">
   <link rel="prefetch" href="assets/css/configApp.css" as="style">
   <link rel="prefetch" href="assets/js/pages/configApp.js" as="script">
+
+  <link rel="prefetch" href="howto.html" as="document">
+  <link rel="prefetch" href="assets/css/howto.css" as="style">
+  <link rel="prefetch" href="assets/js/pages/howto.js" as="script">
 
   <link rel="prefetch" href="configBeat.html" as="document">
   <link rel="prefetch" href="assets/css/configBeat.css" as="style">
@@ -117,6 +122,10 @@
 
 <body>
   <header>
+    <!--Spec アプリ使い方画面へのナビゲーションボタン（ヘッダー左端） -->
+    <button id="openHowTo" type="button" class="okConfig" aria-label="How to use">
+      How to
+    </button>
     <div id="title" class="titleStack">
       <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
       <span class="titleSubtitle">— play daily, play better —</span>
