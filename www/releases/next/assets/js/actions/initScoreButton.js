@@ -28,12 +28,23 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     if (!confirmed) return;
     const store = new ConfigStore();
+
+    // スコア関連の設定を既定値に戻す（テンポ・拍子・進行など）
     resetScoreSettings(store);
+
+    // クリック音量も既定値(内部値: 1.0、表示上は0〜10で5)へ戻す
+    if (typeof store.setClickVolume === "function") {
+      store.setClickVolume(1.0);
+    }
+
+    // 初回チュートリアル表示抑制フラグを消して、次回起動時にヒント表示状態をリセット
     try {
       localStorage.removeItem(TIPS_INTRO_DISMISSED_KEY);
     } catch (error) {
       ;
     }
+
+    // セッション内のチュートリアル抑制状態も初期化
     try {
       sessionStorage.removeItem(TIPS_INTRO_SESSION_KEY);
     } catch (error) {
