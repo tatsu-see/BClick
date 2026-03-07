@@ -277,6 +277,12 @@ footer {
   background-color: mintcream;
 }
 
+/* Ver.リンクを通常文字の見た目にしておく（リンク機能は維持） */
+footer .footerPlainLink {
+  color: inherit;
+  text-decoration: none;
+}
+
 #beatPreference {
   margin-bottom:3px;
   padding:3px;
