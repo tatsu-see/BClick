@@ -281,6 +281,12 @@ footer {
 footer .footerPlainLink {
   color: inherit;
   text-decoration: none;
+  cursor: default;
+}
+
+footer .footerPlainLink:hover {
+  color: inherit;
+  text-decoration: none;
 }
 
 #beatPreference {
