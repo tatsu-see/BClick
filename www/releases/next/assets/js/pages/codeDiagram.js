@@ -13,6 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveButton = document.getElementById("saveCodeDiagram");
   const fretboard = document.querySelector(".fretboard");
   const MAX_FRET = 10;
+  const qualitySuffixMap = {
+    maj: "",
+    min: "m",
+    dim: "dim",
+    sus4: "sus4",
+  };
   let currentChord = "";
 
   /**
@@ -206,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rootButton || !qualityButton) return null;
     const root = rootButton.dataset.root || rootButton.textContent.trim();
     const quality = qualityButton.dataset.quality || "maj";
-    const suffix = quality === "min" ? "m" : quality === "dim" ? "dim" : "";
+    const suffix = qualitySuffixMap[quality] ?? "";
     return `${root}${suffix}`;
   };
 
@@ -228,14 +234,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const savedChord = store.getCodeDiagramChord();
   if (savedChord) {
-    const isDim = savedChord.endsWith("dim");
-    const isMinor = !isDim && savedChord.endsWith("m");
-    const rootValue = isDim
-      ? savedChord.slice(0, -3)
-      : isMinor
-        ? savedChord.slice(0, -1)
-        : savedChord;
-    const qualityValue = isDim ? "dim" : isMinor ? "min" : "maj";
+    const qualityParseOrder = ["sus4", "dim", "min"];
+    const detectedQuality = qualityParseOrder.find((quality) =>
+      savedChord.endsWith(qualitySuffixMap[quality] || ""),
+    ) || "maj";
+    const detectedSuffix = qualitySuffixMap[detectedQuality] || "";
+    const rootValue = detectedSuffix.length > 0
+      ? savedChord.slice(0, -detectedSuffix.length)
+      : savedChord;
+    const qualityValue = detectedQuality;
     const rootButton =
       chordRootButtons.find((button) => (button.dataset.root || button.textContent.trim()) === rootValue)
       || chordRootButtons[0];
