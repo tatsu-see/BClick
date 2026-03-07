@@ -5,6 +5,7 @@
  * Done: 設定を保存して前の画面へ戻る。
  */
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
+import { getLangMsg } from "../../lib/Language.js";
 import { ConfigStore } from "../utils/store.js";
 
 /**
@@ -73,35 +74,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // サンプル楽譜DLボタン: クリック時にダイアログを表示する
+  // サンプル楽譜DLボタン: まず confirm で確認してから既定DL動作へ進める
   const sampleDownloadButtons = document.querySelectorAll(".sampleScoreDownloadButton");
-  const sampleScoreDownloadDialog = document.getElementById("sampleScoreDownloadDialog");
-  const downloadDialogClose = document.getElementById("sampleScoreDownloadDialogClose");
-  const downloadDialogGoPlay = document.getElementById("sampleScoreDownloadDialogGoPlay");
+  const sampleDownloadConfirmMessage = getLangMsg(
+    `サンプル楽譜をダウンロードしますか？
+ダウンロード後、演奏画面の「ファイル-読込」から開くことができます。
 
-  if (sampleScoreDownloadDialog) {
-    // 各DLボタンにクリックイベントを設定（デフォルトのダウンロード動作はそのまま続ける）
-    sampleDownloadButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        sampleScoreDownloadDialog.showModal();
-      });
+iPhone/iPadでは、PDFがブラウザの別タブ表示になる場合があります。
+画面の「⋯」→「共有」→「ファイル」 を選びファイルに保存してください。`,
+
+    `Do you want to download this sample score?
+After saving/downloading, open it from "File - Load" on the Play screen.
+
+On iPhone/iPad, PDF may open in a separate browser tab.
+Tap "⋯" → Share → Files → Save to Files.`
+  );
+  sampleDownloadButtons.forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      if (!window.confirm(sampleDownloadConfirmMessage)) {
+        event.preventDefault();
+      }
     });
+  });
 
-    // 「あとで」ボタン: ダイアログを閉じて configApp に留まる
-    if (downloadDialogClose) {
-      downloadDialogClose.addEventListener("click", () => {
-        sampleScoreDownloadDialog.close();
-      });
-    }
-
-    // 「演奏画面へ」ボタン: scoreEnabled をONにして演奏画面へ遷移する
-    // location.replace を使い configApp を履歴から置き換えることで、演奏画面の Back が index へ戻るようにする
-    if (downloadDialogGoPlay) {
-      downloadDialogGoPlay.addEventListener("click", () => {
-        sampleScoreDownloadDialog.close();
-        store.setScoreEnabled(true);
-        location.replace("editScore.html");
-      });
-    }
+  // 「演奏画面へ」ボタン: scoreEnabled をONにして演奏画面へ遷移する
+  // location.replace を使い configApp を履歴から置き換えることで、演奏画面の Back が index へ戻る
+  const goPlayButton = document.getElementById("sampleScoreGoPlay");
+  if (goPlayButton) {
+    goPlayButton.addEventListener("click", () => {
+      store.setScoreEnabled(true);
+      location.replace("editScore.html");
+    });
   }
 });

@@ -123,7 +123,16 @@
   outline-offset: 2px;
 }
 
-/* サンプル楽譜DLダイアログ: ボタン2つを並べるため gap を追加 */
-.sampleScoreDownloadActions {
-  gap: 8px;
+.sampleScoreGoPlayButton {
+  width: auto;
+  font-size: 0.74em;
+  padding: 3px 8px;
+  min-height: 25px;
+  border-width: 2px;
+  gap: 4px;
 }
+
+.sampleScoreGoPlayButton .material-symbols-rounded {
+  font-size: 1.1em;
+}
+
