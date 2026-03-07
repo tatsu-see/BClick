@@ -20,3 +20,14 @@ body {
   margin-bottom: 0.2em; /* 箇条書きの間隔を少し詰める */
   line-height: 1.35; /* li間の縦密度を上げる */
 }
+
+/* 利用規約本文が左寄せでも、同意設定ボタンの配置は中央にする */
+#clicking .consentSettings {
+  text-align: center;
+}
+
+/* 同意設定ボタン内のラベルを中央寄せに固定する */
+#clicking .consentSettingsButton {
+  justify-content: center;
+  text-align: center;
+}
