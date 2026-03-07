@@ -1,0 +1,219 @@
+<!--Spec
+  ギターのコードを選択して、フレットボードと抑える弦を表示する画面。
+-->
+<!doctype html>
+<html translate="no">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click - Code Diagram / コード表示</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="assets/icons/BClick-256x256.png">
+
+  <link rel="stylesheet" href="assets/lib/Language.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/codeDiagram.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+  <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
+  <link rel="modulepreload" href="assets/lib/consentManager.js">
+  <link rel="modulepreload" href="assets/lib/consentTracking.js">
+
+  <script type="module" src="assets/lib/Language.js"></script>
+  <script type="module" src="assets/lib/consentTracking.js"></script>
+
+  <script type="module" src="assets/js/pages/codeDiagram.js"></script>
+</head>
+
+<!--Spec ギターのコードを表示する画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+-->
+
+<body>
+  <header>
+    <button type="button" id="saveCodeDiagram" class="okConfig" aria-label="Back">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
+    <div id="title" class="titleStack">
+      <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
+      <span class="titleSubtitle">— play daily, play better —</span>
+    </div>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
+  </header>
+  <main class="pageFrame">
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Quality</span>
+        <span class="lang" data-lang="ja">クオリティ</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select quality">
+          <div class="chipGroup">
+            <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
+            <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
+            <button type="button" class="chipButton chordQuality" data-quality="dim" aria-pressed="false">dim</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Root</span>
+        <span class="lang" data-lang="ja">ルート</span>
+      </div>
+
+      <div class="preferenceValue preferenceValueCentered">
+        <div class="chipGroupSectionRow" role="group" aria-label="Select root">
+          <div class="chipGroup">
+            <button type="button" class="chipButton chordRoot isActive" data-root="C" aria-pressed="true">C</button>
+            <button type="button" class="chipButton chordRoot" data-root="D" aria-pressed="false">D</button>
+            <button type="button" class="chipButton chordRoot" data-root="E" aria-pressed="false">E</button>
+            <button type="button" class="chipButton chordRoot" data-root="F" aria-pressed="false">F</button>
+            <button type="button" class="chipButton chordRoot" data-root="G" aria-pressed="false">G</button>
+            <button type="button" class="chipButton chordRoot" data-root="A" aria-pressed="false">A</button>
+            <button type="button" class="chipButton chordRoot" data-root="B" aria-pressed="false">B</button>
+          </div>
+        </div>
+      </div>
+    <div id="codeDiagram">
+      <div class="fretboard" aria-label="Guitar fretboard">
+        <div class="fretCell stringTop" id="fret-s1-f0"><span class="nutLine"></span></div>
+        <div class="fretCell stringTop" id="fret-s1-f1"></div>
+        <div class="fretCell stringTop" id="fret-s1-f2"></div>
+        <div class="fretCell stringTop" id="fret-s1-f3"></div>
+        <div class="fretCell stringTop" id="fret-s1-f4"></div>
+        <div class="fretCell stringTop" id="fret-s1-f5"></div>
+        <div class="fretCell stringTop" id="fret-s1-f6"></div>
+        <div class="fretCell stringTop" id="fret-s1-f7"></div>
+        <div class="fretCell stringTop" id="fret-s1-f8"></div>
+        <div class="fretCell stringTop" id="fret-s1-f9"></div>
+        <div class="fretCell stringTop" id="fret-s1-f10"></div>
+        <div class="stringNumber">
+          <span class="lang" data-lang="en">1 Str.</span>
+          <span class="lang" data-lang="ja">1弦</span>
+        </div>
+
+        <div class="fretCell" id="fret-s2-f0"><span class="nutLine"></span></div>
+        <div class="fretCell" id="fret-s2-f1"></div>
+        <div class="fretCell" id="fret-s2-f2"></div>
+        <div class="fretCell" id="fret-s2-f3"></div>
+        <div class="fretCell" id="fret-s2-f4"></div>
+        <div class="fretCell" id="fret-s2-f5"></div>
+        <div class="fretCell" id="fret-s2-f6"></div>
+        <div class="fretCell" id="fret-s2-f7"></div>
+        <div class="fretCell" id="fret-s2-f8"></div>
+        <div class="fretCell" id="fret-s2-f9"></div>
+        <div class="fretCell" id="fret-s2-f10"></div>
+        <div class="stringNumber">
+          <span class="lang" data-lang="en">2 Str.</span>
+          <span class="lang" data-lang="ja">2弦</span>
+        </div>
+
+        <div class="fretCell" id="fret-s3-f0"><span class="nutLine"></span></div>
+        <div class="fretCell" id="fret-s3-f1"></div>
+        <div class="fretCell" id="fret-s3-f2"></div>
+        <div class="fretCell" id="fret-s3-f3"></div>
+        <div class="fretCell" id="fret-s3-f4"></div>
+        <div class="fretCell" id="fret-s3-f5"></div>
+        <div class="fretCell" id="fret-s3-f6"></div>
+        <div class="fretCell" id="fret-s3-f7"></div>
+        <div class="fretCell" id="fret-s3-f8"></div>
+        <div class="fretCell" id="fret-s3-f9"></div>
+        <div class="fretCell" id="fret-s3-f10"></div>
+        <div class="stringNumber">
+          <span class="lang" data-lang="en">3 Str.</span>
+          <span class="lang" data-lang="ja">3弦</span>
+        </div>
+
+        <div class="fretCell" id="fret-s4-f0"><span class="nutLine"></span></div>
+        <div class="fretCell" id="fret-s4-f1"></div>
+        <div class="fretCell" id="fret-s4-f2"></div>
+        <div class="fretCell" id="fret-s4-f3"></div>
+        <div class="fretCell" id="fret-s4-f4"></div>
+        <div class="fretCell" id="fret-s4-f5"></div>
+        <div class="fretCell" id="fret-s4-f6"></div>
+        <div class="fretCell" id="fret-s4-f7"></div>
+        <div class="fretCell" id="fret-s4-f8"></div>
+        <div class="fretCell" id="fret-s4-f9"></div>
+        <div class="fretCell" id="fret-s4-f10"></div>
+        <div class="stringNumber">
+          <span class="lang" data-lang="en">4 Str.</span>
+          <span class="lang" data-lang="ja">4弦</span>
+        </div>
+
+        <div class="fretCell" id="fret-s5-f0"><span class="nutLine"></span></div>
+        <div class="fretCell" id="fret-s5-f1"></div>
+        <div class="fretCell" id="fret-s5-f2"></div>
+        <div class="fretCell" id="fret-s5-f3"></div>
+        <div class="fretCell" id="fret-s5-f4"></div>
+        <div class="fretCell" id="fret-s5-f5"></div>
+        <div class="fretCell" id="fret-s5-f6"></div>
+        <div class="fretCell" id="fret-s5-f7"></div>
+        <div class="fretCell" id="fret-s5-f8"></div>
+        <div class="fretCell" id="fret-s5-f9"></div>
+        <div class="fretCell" id="fret-s5-f10"></div>
+        <div class="stringNumber">
+          <span class="lang" data-lang="en">5 Str.</span>
+          <span class="lang" data-lang="ja">5弦</span>
+        </div>
+
+        <div class="fretCell stringBottom" id="fret-s6-f0"><span class="nutLine"></span></div>
+        <div class="fretCell stringBottom" id="fret-s6-f1"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f2"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f3"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f4"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f5"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f6"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f7"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f8"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f9"></div>
+        <div class="fretCell stringBottom" id="fret-s6-f10"></div>
+        <div class="stringNumber">
+          <span class="lang" data-lang="en">6 Str.</span>
+          <span class="lang" data-lang="ja">6弦</span>
+        </div>
+
+        <div class="fretLabel"></div>
+        <div class="fretNumber" data-fret="1">1</div>
+        <div class="fretNumber" data-fret="2">2</div>
+        <div class="fretNumber" data-fret="3">3</div>
+        <div class="fretNumber" data-fret="4">4</div>
+        <div class="fretNumber" data-fret="5">5</div>
+        <div class="fretNumber" data-fret="6">6</div>
+        <div class="fretNumber" data-fret="7">7</div>
+        <div class="fretNumber" data-fret="8">8</div>
+        <div class="fretNumber" data-fret="9">9</div>
+        <div class="fretNumber" data-fret="10">10</div>
+        <div class="fretLabel"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,132 @@
+/*
+  tips.css
+  Tips ボタンなど、画面共通で使う補助UIのスタイルを定義する。
+*/
+
+/* ラベル帯と Tips ボタンを1行で並べる */
+.preferenceTitleWithTip {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-top: 2px;    /* ラベル上の余白（Tips ボタンの押しやすさ確保） */
+  margin-bottom: 2px; /* ラベル下の余白（Tips ボタンの押しやすさ確保） */
+}
+
+.preferenceTitleWithTip .preferenceTitle {
+  flex: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.preferenceTitleWithTip > .preferenceTitle:last-of-type {
+  margin-bottom: 0;
+}
+
+.preferenceTitleWithTip.tipButtonLeft {
+  flex-direction: row;
+}
+
+.preferenceTitleWithTip.tipButtonLeft .preferenceTitle {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+/* 設定項目ラベルの右側に置く、小さな円形の Tips ボタン */
+.chipButton.tipButton {
+  align-self: stretch;
+  box-sizing: border-box;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  flex: 0 0 auto;
+  min-width: 33px;
+  min-height: 0;
+  border: 1px solid mediumseagreen;
+  border-right-color: white;
+  background-color: mediumseagreen;
+  color: white;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  font-size: 9pt;
+  font-weight: bold;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.preferenceTitleWithTip.tipButtonLeft .chipButton.tipButton {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.chipButton.tipButton .material-symbols-rounded {
+  color: inherit;
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+/* Tips ダイアログ本体 */
+.tipsDialog {
+  width: min(calc(100% - 24px), 520px);
+  max-width: 520px;
+  padding: 0;
+  border: 1px solid mediumseagreen;
+  border-radius: 8px;
+  background-color: mintcream;
+  color: #184f33;
+}
+
+.tipsDialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.tipsDialogTitle {
+  padding: 8px 12px;
+  border-bottom: 1px solid #b7d9c4;
+  background-color: mediumseagreen;
+  color: #ffffff;
+  font-size: 12pt;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tipsDialogBody {
+  padding: 12px;
+  font-size: 10pt;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.tipsInlineIcon {
+  font-size: 1.1em;
+  line-height: 1;
+  vertical-align: -0.12em;
+}
+
+.tipsDialogOption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 9pt;
+}
+
+.tipsDialogOption input[type="checkbox"] {
+  margin: 0;
+}
+
+.tipsDialogActions {
+  display: flex;
+  justify-content: center;
+  padding: 0 12px 12px;
+}
+
+.tipsDialogCloseButton {
+  min-width: 88px;
+}

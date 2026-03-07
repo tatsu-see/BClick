@@ -1,0 +1,98 @@
+
+.preferenceValueCentered {
+  justify-content: center;
+}
+
+.tonePreference {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toneSelectGroup {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.toneSelectGroup .rhythmSelectWrap {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  min-height: 28px;
+  padding: 0 1px;
+}
+
+.toneLegend {
+  font-size: 0.6em;
+  color: #333;
+  text-align: center;
+}
+
+#clickCountRange,
+#countdownRange {
+  flex: 0 0 220px;
+  max-width: 220px;
+  width: 220px;
+  height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+#clickCountRange::-webkit-slider-runnable-track,
+#countdownRange::-webkit-slider-runnable-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#clickCountRange::-webkit-slider-thumb,
+#countdownRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#clickCountRange::-moz-range-track,
+#countdownRange::-moz-range-track {
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+}
+
+#clickCountRange::-moz-range-thumb,
+#countdownRange::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e7a4f;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#clickCountValue,
+#countdownValue {
+  min-width: 32px;
+  text-align: right;
+  font-weight: 600;
+}
+
+#saveConfigBeat {
+  min-width: 66px;
+}
+.preferenceTitle:last-of-type,
+.preferenceValue:last-of-type {
+  margin-bottom: 3px;
+}
+/* configBeat は Tips ボタンを先頭に置くため、row-reverse を打ち消す */
+.preferenceTitleWithTip.tipButtonLeft {
+  flex-direction: row;
+}

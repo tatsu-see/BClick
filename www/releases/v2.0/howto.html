@@ -1,0 +1,137 @@
+<!doctype html>
+<html translate="no">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click - How to use / 使い方</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="assets/icons/BClick-256x256.png">
+
+  <link rel="stylesheet" href="assets/lib/Language.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/howto.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+  <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
+  <link rel="modulepreload" href="assets/js/pages/howto.js">
+
+  <script type="module" src="assets/lib/Language.js"></script>
+
+  <script type="module" src="assets/js/pages/howto.js"></script>
+</head>
+
+<body>
+  <header>
+    <button type="button" id="closePage" class="okConfig headerBack" aria-label="Back">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
+    <div id="title" class="titleStack">
+      <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
+      <span class="titleSubtitle">— play daily, play better —</span>
+    </div>
+  </header>
+  <main class="pageFrame">
+
+<!--Spec How To画面の記述方法
+1．章タイトルを<h3>タグで示す。
+2．章の次に、章で説明することを1文で説明する。
+3-1．章で説明するSVG画像（画像と引き出し番号）を載せる。SVGは75%程度の大きさ、センター寄せで表示する。
+    SVGファイルは、日本語は *_J.svg、英語は *_E.svg のように分けて用意する。
+3-2．SVG画像を説明する文章を用意する。箇条書きで簡潔に説明する。文章に使う単語はSVG内のテキストに合わせて説明する。
+（内容によっては 3-1 と 3-2 を繰り返して説明する。）
+-->
+
+    <div id="howtoContent">
+      <div style="text-align:left; padding:6px;">
+
+        <!--Spec 最初の章
+        ・タイトル：（日）ヒントの表示 / （英）Show hints
+        ・説明：ヒントの表示
+        ・SVG画像：なし
+        ・説明文：
+        1．画面内にあるアイコン web_asset をクリックすると、ヒントが表示される。
+        -->
+
+        <h3>
+          <span class="lang" data-lang="en">Show hints</span>
+          <span class="lang" data-lang="ja">ヒントの表示</span>
+        </h3>
+        <ul>
+          <li>
+            <span class="lang" data-lang="en">Tap the <span class="material-symbols-rounded howtoIcon" aria-label="hints icon">web_asset</span> icon on the screen to show hints.</span>
+            <span class="lang" data-lang="ja">画面内にある <span class="material-symbols-rounded howtoIcon" aria-label="ヒントアイコン">web_asset</span> アイコンをタップすると、ヒントが表示されます。</span>
+          </li>
+        </ul>
+
+        <hr>
+
+        <!--Spec 2番目の章
+        ・タイトル：（日）はじめの一歩 / （英）The first step
+        ・説明：クリックを動かしてみる。
+        ・SVG画像：assets/svg/the_first_step_J(E).svg
+        ・説明文：
+        1．#1 テンポダイアルをぐるぐる回してテンポを変更する。
+        2．#2 クリック操作の「開始」からクリックを開始。
+        3. クリック中に、テンポを変更したり「停止」を押す。
+        4. テンポ数などの変更は「#3 設定」画面で編集する。
+        -->
+
+        <h3>
+          <span class="lang" data-lang="en">The first step</span>
+          <span class="lang" data-lang="ja">はじめの一歩</span>
+        </h3>
+        <p>
+          <span class="lang" data-lang="en">Let's learn the steps to get the click running.</span>
+          <span class="lang" data-lang="ja">クリックを動かす手順を説明します。</span>
+        </p>
+        <div class="howtoSvgWrap">
+          <img src="assets/svg/the_first_step_J.svg" alt="はじめの一歩の図" class="lang howtoSvg" data-lang="ja">
+          <img src="assets/svg/the_first_step_E.svg" alt="The first step diagram" class="lang howtoSvg" data-lang="en">
+        </div>
+        <ul>
+          <li>
+            <span class="lang" data-lang="en">#1 Turn the tempo dial to change the tempo.</span>
+            <span class="lang" data-lang="ja">#1 テンポダイアルをぐるぐる回してテンポを変更する。</span>
+          </li>
+          <li>
+            <span class="lang" data-lang="en">#2 Press "Start" in Playback to begin the click.</span>
+            <span class="lang" data-lang="ja">#2 クリック操作の「開始」からクリックを開始。</span>
+          </li>
+          <li>
+            <span class="lang" data-lang="en">While the click is running, try changing the tempo or pressing "Stop".</span>
+            <span class="lang" data-lang="ja">クリック中に、テンポを変更したり「停止」を押したりしてみる。</span>
+          </li>
+          <li>
+            <span class="lang" data-lang="en">#3 Use the Setting screen to change the tempo and other values.</span>
+            <span class="lang" data-lang="ja">テンポ数などの変更は「#3 設定」画面で編集する。</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+</body>
+</html>

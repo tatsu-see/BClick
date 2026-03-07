@@ -1,0 +1,288 @@
+<!--Spec
+  アプリ全体の設定を行う画面（楽譜データに保存されない設定値）
+  <Back を選択したら編集を無かったことにするので、保存しないで index.htmlに戻る。
+  Done を選択したら、その時に初めて編集結果をLocalStrageに保存して編集を完了する。
+-->
+<!doctype html>
+<html translate="no">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click - App Settings / アプリ設定</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="assets/icons/BClick-256x256.png">
+
+  <!--Spec 画面遷移の仕様（ preconnect / preload / modulepreload / prefetch 用）
+  index.html → configApp.html
+  -->
+
+  <link rel="stylesheet" href="assets/lib/Language.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
+  <link rel="stylesheet" href="assets/css/configApp.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+  <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
+  <link rel="modulepreload" href="assets/lib/consentManager.js">
+  <link rel="modulepreload" href="assets/lib/consentTracking.js">
+  <link rel="modulepreload" href="assets/js/actions/tips.js">
+
+  <script type="module" src="assets/lib/Language.js"></script>
+  <script type="module" src="assets/lib/consentTracking.js"></script>
+
+  <script type="module" src="assets/js/actions/tips.js"></script>
+  <script type="module" src="assets/js/pages/configApp.js"></script>
+  <script type="module" src="assets/js/actions/initScoreButton.js"></script>
+</head>
+
+<!--Spec アプリ設定画面
+・Backは、設定を保存せずに画面遷移する。Doneは、設定を保存して画面遷移する。
+-->
+
+<body>
+  <header>
+    <button type="button" id="saveConfigApp" class="okConfig" aria-label="Back">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
+    <div id="title" class="titleStack">
+      <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
+      <span class="titleSubtitle">— play daily, play better —</span>
+    </div>
+    <button id="closePage" type="button" aria-label="Save and back">Done</button>
+  </header>
+
+  <main class="pageFrame">
+
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for sample scores"
+        data-tip-target="sampleScoreTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Sample Scores</span>
+        <span class="lang" data-lang="ja">サンプル楽譜</span>
+      </div>
+    </div>
+
+    <div class="preferenceExecCenter sampleScoreLinks">
+      <div class="sampleScoreLinkRow">
+        <a
+          href="assets/score/70BPM_4-4_G-Em_4bars.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="sampleScoreFileLink"
+          aria-label="Open sample score PDF 70 BPM 4/4 G Em 4 bars"
+        >70BPM_4-4_G-Em_4bars.pdf</a>
+        <a
+          href="assets/score/70BPM_4-4_G-Em_4bars.pdf"
+          download
+          class="sampleScoreDownloadButton"
+          aria-label="Download sample score PDF 70 BPM 4/4 G Em 4 bars"
+        >DL</a>
+      </div>
+      <div class="sampleScoreLinkRow">
+        <a
+          href="assets/score/75BPM_3-4_C-D_6bars.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="sampleScoreFileLink"
+          aria-label="Open sample score PDF 75 BPM 3/4 C D 6 bars"
+        >75BPM_3-4_C-D_6bars.pdf</a>
+        <a
+          href="assets/score/75BPM_3-4_C-D_6bars.pdf"
+          download
+          class="sampleScoreDownloadButton"
+          aria-label="Download sample score PDF 75 BPM 3/4 C D 6 bars"
+        >DL</a>
+      </div>
+      <div class="sampleScoreLinkRow">
+        <a
+          href="assets/score/112BPM_4-4_G-Em-A-F_8bars.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="sampleScoreFileLink"
+          aria-label="Open sample score PDF 112 BPM 4/4 G Em A F 8 bars"
+        >112BPM_4-4_G-Em-A-F_8bars.pdf</a>
+        <a
+          href="assets/score/112BPM_4-4_G-Em-A-F_8bars.pdf"
+          download
+          class="sampleScoreDownloadButton"
+          aria-label="Download sample score PDF 112 BPM 4/4 G Em A F 8 bars"
+        >DL</a>
+      </div>
+    </div>
+    <div class="preferenceExecCenter sampleScoreGotoPlay">
+      <button type="button" id="sampleScoreGoPlay" class="okConfig makeScoreButton navButton sampleScoreGoPlayButton">
+        <span class="material-symbols-rounded" aria-hidden="true">music_note</span>
+        <span class="lang" data-lang="en">Go to Play</span>
+        <span class="lang" data-lang="ja">演奏画面へ</span>
+      </button>
+    </div>
+
+    <!--Spec クリック音の音量を設定する
+    ・ユーザは 0-10 レベルで選択するが、内部的には0.0-2.0で設定する。
+    ・設定の見た目は、拍数やカウントインと同じCSSにする。
+    -->
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for volume"
+        data-tip-target="clickVolumeTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Volume (0–10)</span>
+        <span class="lang" data-lang="ja">ボリューム（0〜10）</span>
+      </div>
+    </div>
+
+    <div class="preferenceValue preferenceValueCentered">
+      <input type="range" id="clickVolumeRange" min="0" max="10" step="1" value="5">
+      <output id="clickVolumeValue" for="clickVolumeRange">5</output>
+    </div>
+
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for other settings"
+        data-tip-target="otherSettingsTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Other</span>
+        <span class="lang" data-lang="ja">その他</span>
+      </div>
+    </div>
+
+    <!--Spec その他設定ボタン
+      ・Init.ボタン
+        現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
+        すべて初期値に戻る。初期値は次の通り。
+          テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
+          音色パターン=4拍ごとに1拍目High(A5)・それ以外Low(A4)（例: [A5,A4,A4,A4, A5,A4,A4,A4, ...]）
+        Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
+        初期化後は index.html へ戻る。
+    -->
+    <div class="preferenceExecCenter">
+      <button id="initScore" type="button" class="chipButton">
+        <span class="material-symbols-rounded" aria-hidden="true">cached</span>
+        <span class="lang" data-lang="en">Init.</span>
+        <span class="lang" data-lang="ja">初期化</span>
+      </button>
+    </div>
+
+  </main>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+  <dialog id="sampleScoreTipsDialog" class="tipsDialog" aria-labelledby="sampleScoreTipsTitle">
+    <div class="tipsDialogTitle" id="sampleScoreTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+
+    <!--Spec このTipsは楽譜データが扱えることを知ってほしいので、ちょっとややこしい操作としている。 -->
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Click the file name to open the PDF.<br>
+        ・Click "DL" to download the PDF file.<br>
+        ・You can open the PDF from "App Top &gt; (Score) Play &gt; (File) Load".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・ファイル名をクリックするとPDFを開きます。<br>
+        ・「DL」をクリックするとPDFファイルをダウンロードできます。<br>
+        ・DLしたPDFは「アプリトップ＞（スコア）演奏＞（ファイル）読込」ボタンから開くことができます。<br>
+      </span>
+    </div>
+
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="clickVolumeTipsDialog" class="tipsDialog" aria-labelledby="clickVolumeTipsTitle">
+    <div class="tipsDialogTitle" id="clickVolumeTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Adjust the click sound volume here.<br>
+        ・Select a value from 0 to 10.<br>
+        ・The setting is saved when you press "Done".<br>
+        ・For iPhone, please make sure the Ring/Silent switch is set to OFF.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・ここではクリック音の音量を調整します。<br>
+        ・0〜10の範囲で設定できます。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+        ・iPhone では、着信／サイレントスイッチをOFFにしてください。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="otherSettingsTipsDialog" class="tipsDialog" aria-labelledby="otherSettingsTipsTitle">
+    <div class="tipsDialogTitle" id="otherSettingsTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・"Init." resets the current score and related settings to their defaults.<br>
+        ・A confirmation dialog appears before resetting.<br>
+        ・After reset, the app returns to the top page.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・「初期化」を押すと、現在の楽譜と関連する設定を初期値に戻します。<br>
+        ・実行前に確認ダイアログが表示されます。<br>
+        ・初期化後はトップ画面に戻ります。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+</body>
+</html>
+

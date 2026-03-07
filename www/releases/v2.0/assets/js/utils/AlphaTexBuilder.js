@@ -1,0 +1,709 @@
+import { APP_LIMITS } from "../constants/appConstraints.js";
+
+/**
+ * AlphaTexBuilder.js
+ * スコアデータから alphaTex 文字列を生成するクラス
+ */
+
+class AlphaTexBuilder {
+  constructor() {
+    // 同じ入力のときはalphaTexを再利用する。
+    this._lastCacheKey = null;
+    this._lastAlphaTex = null;
+  }
+
+  /**
+   * コード表記から危険文字を取り除く。
+   * @param {string} value
+   * @returns {string}
+   */
+  sanitizeChordLabel(value) {
+    if (typeof value !== "string") return "";
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+    return trimmed.replace(/["\\]/g, "");
+  }
+
+  /**
+   * コード進行を配列に正規化する。
+   * @param {string[] | string} value
+   * @returns {string[]}
+   */
+  normalizeProgression(value) {
+    if (Array.isArray(value)) {
+      return value.filter((item) => typeof item === "string" && item.length > 0);
+    }
+    if (typeof value !== "string") return [];
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed.split(/\s+/) : [];
+  }
+
+  /**
+   * alphaTex キャッシュ用のキーを生成する。
+   * @param {object} params
+   * @returns {string}
+   */
+  buildCacheKey({ timeSignature, measures, barsPerRow, progression, bars, tempo } = {}) {
+    const progressionList = this.normalizeProgression(progression);
+    const safeBars = Array.isArray(bars) ? bars : [];
+    // 拍内の最大分割数（16分まで=4）
+    const MAX_SUBDIV = APP_LIMITS.beatSubdivMax;
+    /**
+     * 空の拍内コード配列を生成する。
+     * @returns {string[]}
+     */
+    const buildEmptyChordRow = () => Array.from({ length: MAX_SUBDIV }, () => "");
+    /**
+     * 拍内コード配列を正規化する。
+     * @param {unknown} row
+     * @returns {string[]}
+     */
+    const normalizeChordRow = (row) => {
+      if (Array.isArray(row)) {
+        const normalized = row.map((item) => (typeof item === "string" ? item : ""));
+        while (normalized.length < MAX_SUBDIV) {
+          normalized.push("");
+        }
+        return normalized.slice(0, MAX_SUBDIV);
+      }
+      if (typeof row === "string" && row.length > 0) {
+        return [row, ...Array.from({ length: MAX_SUBDIV - 1 }, () => "")];
+      }
+      return buildEmptyChordRow();
+    };
+    /**
+     * 拍ごとのコード配列を正規化する。
+     * @param {unknown} value
+     * @returns {string[][]}
+     */
+    const normalizeBeatChords = (value) => {
+      if (!Array.isArray(value)) {
+        return typeof value === "string" && value.length > 0
+          ? [normalizeChordRow(value)]
+          : [];
+      }
+      const isMatrix = value.some((item) => Array.isArray(item));
+      return isMatrix
+        ? value.map((row) => normalizeChordRow(row))
+        : value.map((item) => normalizeChordRow(item));
+    };
+    const normalizedBars = safeBars.map((bar) => ({
+      chord: normalizeBeatChords(bar?.chord),
+      rhythm: Array.isArray(bar?.rhythm) ? bar.rhythm : bar?.rhythm || "",
+    }));
+    return JSON.stringify({
+      timeSignature: typeof timeSignature === "string" ? timeSignature : "",
+      measures: Number.isFinite(measures) ? measures : null,
+      barsPerRow: Number.isFinite(barsPerRow) ? barsPerRow : null,
+      tempo: Number.isFinite(Number.parseInt(tempo, 10)) ? Number.parseInt(tempo, 10) : null,
+      progression: progressionList,
+      bars: normalizedBars,
+    });
+  }
+
+  /**
+   * alphaTab に表示する楽譜用の文字列を作成する。
+   * @param {object} params
+   * @param {string} params.timeSignature
+   * @param {number} params.measures
+   * @param {number|null} params.barsPerRow
+   * @param {string[]|string} params.progression
+   * @param {Array} params.bars
+   * @returns {string}
+   */
+  buildAlphaTex({ timeSignature, measures, barsPerRow, progression, bars, tempo } = {}) {
+    const cacheKey = this.buildCacheKey({ timeSignature, measures, barsPerRow, progression, bars, tempo });
+    if (cacheKey === this._lastCacheKey && typeof this._lastAlphaTex === "string") {
+      return this._lastAlphaTex;
+    }
+
+    const signature = typeof timeSignature === "string" ? timeSignature : "4/4";
+    const [numeratorRaw, denominatorRaw] = signature.split("/");
+    const numeratorValue = Number.parseInt(numeratorRaw, 10);
+    const denominatorValue = Number.parseInt(denominatorRaw, 10);
+    const numerator = Number.isNaN(numeratorValue) || numeratorValue <= 0 ? 4 : numeratorValue;
+    const denominator = Number.isNaN(denominatorValue) || denominatorValue <= 0 ? 4 : denominatorValue;
+    const beats = numerator;
+    const barSource = Array.isArray(bars) && bars.length > 0 ? bars : null;
+    const barCount = barSource ? barSource.length : Number.isFinite(measures) ? measures : 2;
+    const progressionList = this.normalizeProgression(progression);
+    const progressionSource = progressionList.length > 0 ? progressionList : null;
+
+    /**
+     * 16分パターンから表示用トークンを作る。
+     * Step1/Step2 の仕様（Specコメント）に合わせて変換する。
+     * @param {string[]} pattern
+     * @returns {{type: string, len: number, tieFromPrev?: boolean, tieToNext?: boolean}[]}
+     */
+    const buildSixteenthDisplayTokens = (pattern) => {
+      // Step1: 16分音符(休符)＋タイ付きで情報を作成する。
+      const step1 = [];
+      let prevType = null;
+      pattern.forEach((value, index) => {
+        if (value === "rest") {
+          step1.push({ type: "rest", len: 1, sourceIndex: index });
+          prevType = "rest";
+          return;
+        }
+        if (value === "tie") {
+          if (prevType === "rest") {
+            // 休符の後ろにタイが来た場合は休符が続く扱いにする。
+            step1.push({ type: "rest", len: 1, sourceIndex: index });
+            prevType = "rest";
+            return;
+          }
+          if (step1.length > 0 && step1[step1.length - 1].type === "note") {
+            step1[step1.length - 1].tieToNext = true;
+          }
+          step1.push({ type: "note", len: 1, tieFromPrev: true, sourceIndex: index });
+          prevType = "note";
+          return;
+        }
+        if (index === 0 && value === "tieNote") {
+          step1.push({ type: "note", len: 1, tieFromPrev: true, sourceIndex: index });
+          prevType = "note";
+          return;
+        }
+        step1.push({ type: "note", len: 1, sourceIndex: index });
+        prevType = "note";
+      });
+
+      // Step2: 特定パターンは8分音符へ置換する。
+      const normalized = pattern.map((value, index) => {
+        if (value === "rest") return "rest";
+        if (index === 0 && value === "tieNote") return "note";
+        return value === "tie" ? "tie" : "note";
+      });
+
+      let replaced = null;
+      const key = normalized.join("");
+      if (!normalized.includes("rest")) {
+        const firstTieFromPrev = step1[0]?.tieFromPrev === true;
+        switch (key) {
+          case "notetienotenote":
+            replaced = [
+              { type: "note", len: 2, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 1, sourceIndex: 2 },
+              { type: "note", len: 1, sourceIndex: 3 },
+            ];
+            break;
+          case "notetietienote":
+            replaced = [
+              { type: "note", len: 3, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 1, sourceIndex: 3 },
+            ];
+            break;
+          case "notenotetietie":
+            replaced = [
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 3, sourceIndex: 1 },
+            ];
+            break;
+          case "notenotenotetie":
+            replaced = [
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 1, sourceIndex: 1 },
+              { type: "note", len: 2, sourceIndex: 2 },
+            ];
+            break;
+          case "notenotetienote":
+            replaced = [
+              { type: "note", len: 1, tieFromPrev: firstTieFromPrev, sourceIndex: 0 },
+              { type: "note", len: 2, sourceIndex: 1 },
+              { type: "note", len: 1, sourceIndex: 3 },
+            ];
+            break;
+          default:
+            break;
+        }
+      }
+
+      const baseTokens = replaced || step1;
+      const merged = [];
+      for (let i = 0; i < baseTokens.length; i += 1) {
+        const current = baseTokens[i];
+        const next = baseTokens[i + 1];
+        const next2 = baseTokens[i + 2];
+        const next3 = baseTokens[i + 3];
+        if (
+          current?.type === "rest" &&
+          next?.type === "rest" &&
+          next2?.type === "rest" &&
+          next3?.type === "rest" &&
+          current.len === 1 &&
+          next.len === 1 &&
+          next2.len === 1 &&
+          next3.len === 1
+        ) {
+          merged.push({ type: "rest", len: 4, sourceIndex: current.sourceIndex });
+          i += 3;
+          continue;
+        }
+        if (
+          current?.type === "rest" &&
+          next?.type === "rest" &&
+          current.len === 1 &&
+          next.len === 1
+        ) {
+          merged.push({ type: "rest", len: 2, sourceIndex: current.sourceIndex });
+          i += 1;
+          continue;
+        }
+        merged.push(current);
+      }
+
+      // tieFromPrev を前の音符の tieToNext に反映する。
+      for (let i = 0; i < merged.length; i += 1) {
+        const current = merged[i];
+        const prev = merged[i - 1];
+        if (current?.tieFromPrev && prev?.type === "note") {
+          prev.tieToNext = true;
+        }
+      }
+      return merged;
+    };
+
+    /**
+     * 16分表示用トークンを alphaTex 文字列へ変換する。
+     * @param {object} token
+     * @param {string} chordLabel
+     * @param {boolean} attachChord
+     * @returns {string}
+     */
+    const toSixteenthAlphaTex = (token, chordLabel, addBeamSplit) => {
+      const duration = token.len === 1 ? 16
+        : token.len === 2 ? 8
+          : token.len === 3 ? 8
+            : token.len === 4 ? 4
+              : 16;
+      const dotted = token.len === 3;
+      const shouldAttachChord = token.type === "note" && chordLabel;
+      const props = [
+        "slashed",
+        addBeamSplit ? "beam split" : null,
+        dotted ? "d" : null,
+        // 休符にコードを付けない
+        shouldAttachChord ? `ch "${chordLabel}"` : null,
+      ].filter(Boolean).join(" ");
+      return token.type === "rest"
+        ? `r.${duration} { ${props} }`
+        : `C4.${duration} { ${props} }`;
+    };
+
+    const barTokens = [];
+    let lastBeatDivision = 4;
+    for (let barIndex = 0; barIndex < barCount; barIndex += 1) {
+      const notes = [];
+      const barData = barSource ? barSource[barIndex] : null;
+      const MAX_SUBDIV = APP_LIMITS.beatSubdivMax;
+      /**
+       * 空の拍内コード配列を生成する。
+       * @returns {string[]}
+       */
+      const buildEmptyChordRow = () => Array.from({ length: MAX_SUBDIV }, () => "");
+      const getBeatLength = (duration) => {
+        if (duration === "16") return 0.25;
+        if (duration === "8") return 0.5;
+        if (duration === "4") return 1;
+        if (duration === "2") return 2;
+        if (duration === "1") return 4;
+        return 1;
+      };
+      /**
+       * 拍内コード配列を正規化する。
+       * @param {unknown} row
+       * @returns {string[]}
+       */
+      const normalizeChordRow = (row) => {
+        if (Array.isArray(row)) {
+          const normalized = row.map((item) => (typeof item === "string" ? item : ""));
+          while (normalized.length < MAX_SUBDIV) {
+            normalized.push("");
+          }
+          return normalized.slice(0, MAX_SUBDIV);
+        }
+        if (typeof row === "string" && row.length > 0) {
+          return [row, ...Array.from({ length: MAX_SUBDIV - 1 }, () => "")];
+        }
+        return buildEmptyChordRow();
+      };
+      /**
+       * 拍ごとのコード配列を正規化する。
+       * @param {unknown} value
+       * @returns {string[][]}
+       */
+      const normalizeBeatChords = (value) => {
+        const normalized = [];
+        if (Array.isArray(value)) {
+          const isMatrix = value.some((item) => Array.isArray(item));
+          if (isMatrix) {
+            value.forEach((row) => normalized.push(normalizeChordRow(row)));
+          } else {
+            value.forEach((item) => normalized.push(normalizeChordRow(item)));
+          }
+        } else if (typeof value === "string" && value.length > 0) {
+          normalized.push(normalizeChordRow(value));
+        }
+        while (normalized.length < beats) {
+          normalized.push(buildEmptyChordRow());
+        }
+        return normalized.slice(0, beats);
+      };
+      const buildBeatChords = () => {
+        if (barData && barData.chord) {
+          return normalizeBeatChords(barData.chord);
+        }
+        const fallback = progressionSource ? progressionSource[barIndex % progressionSource.length] : "";
+        return normalizeBeatChords(fallback);
+      };
+      // 拍内コード配列をサニタイズして利用する
+      const beatChords = buildBeatChords().map((row) =>
+        row.map((value) => this.sanitizeChordLabel(value)),
+      );
+      let beatIndex = 0;
+      let beatProgress = 0;
+      let currentBeatDivision = 4;
+      const rhythm = barData && Array.isArray(barData.rhythm) && barData.rhythm.length > 0
+        ? barData.rhythm
+        : Array.from({ length: beats }, () => "4");
+      let lastNoteIndex = null;
+
+      // 小節内のリズム配列を順に走査して alphaTex の音符列を構築する。
+      for (let rhythmIndex = 0; rhythmIndex < rhythm.length; rhythmIndex += 1) {
+        const value = rhythm[rhythmIndex];
+        let duration = "4";
+        if (value.endsWith("16")) {
+          duration = "16";
+        } else if (value.endsWith("8")) {
+          duration = "8";
+        } else if (value.endsWith("4")) {
+          duration = "4";
+        } else if (value.endsWith("2")) {
+          duration = "2";
+        } else if (value.endsWith("1")) {
+          duration = "1";
+        }
+        const isRest = value.startsWith("r");
+        const isTie = value.startsWith("t");
+        const isBarHead = beatIndex === 0 && beatProgress === 0;
+
+        if (beatProgress === 0) {
+          currentBeatDivision = Number.parseInt(duration, 10);
+        }
+        const beatChordRow = beatChords[beatIndex] || [];
+        const beatLength = getBeatLength(duration);
+
+        if (duration === "16" && beatProgress === 0) {
+          const slice = rhythm.slice(rhythmIndex, rhythmIndex + 4);
+          const pattern = slice.map((raw, index) => {
+            if (typeof raw !== "string") return "note";
+            if (raw.startsWith("r")) return "rest";
+            if (raw.startsWith("t")) return index === 0 ? "tieNote" : "tie";
+            return "note";
+          });
+          const displayTokens = buildSixteenthDisplayTokens(pattern);
+          let divisionTokenEmitted = false;
+          displayTokens.forEach((token, tokenIndex) => {
+            const nextToken = displayTokens[tokenIndex + 1];
+            const chordLabel = typeof token.sourceIndex === "number"
+              ? (beatChordRow[token.sourceIndex] || "")
+              : "";
+            if (token.tieFromPrev) {
+              // タイ継続は音符を出さず、タイだけを出す（Specの正解文字列に合わせる）
+              const tieDuration = token.len === 1 ? 16
+                : token.len === 2 ? 8
+                  : token.len === 3 ? 8
+                    : token.len === 4 ? 4
+                      : 16;
+              const tieDotted = token.len === 3;
+              const tieProps = [
+                "slashed",
+                tieDotted ? "d" : null,
+                // 先頭がタイ継続の場合はここでコードを付与する
+                chordLabel ? `ch "${chordLabel}"` : null,
+              ].filter(Boolean).join(" ");
+              const tiePrefix = !divisionTokenEmitted && currentBeatDivision !== lastBeatDivision
+                ? `:${tieDuration} `
+                : "";
+              notes.push(`${tiePrefix}- { ${tieProps} }`);
+              if (tiePrefix) {
+                divisionTokenEmitted = true;
+              }
+              lastNoteIndex = null;
+            } else {
+              const addBeamSplit = token.type === "note" && nextToken?.type === "rest";
+              const noteText = toSixteenthAlphaTex(
+                token,
+                chordLabel,
+                addBeamSplit,
+              );
+              if (!divisionTokenEmitted && currentBeatDivision !== lastBeatDivision) {
+                notes.push(`:${currentBeatDivision}`);
+                divisionTokenEmitted = true;
+              }
+              notes.push(noteText);
+              lastNoteIndex = token.type === "note" ? notes.length - 1 : null;
+              if (token.tieToNext && !nextToken?.tieFromPrev) {
+                // 16分内のタイは分割トークンを付けない（Specの正解文字列に合わせる）
+                notes.push("- { slashed }");
+              }
+            }
+            beatProgress += token.len / 4;
+
+            while (beatProgress >= 0.999) {
+              beatIndex = Math.min(beatIndex + 1, beats - 1);
+              beatProgress -= 1;
+              lastBeatDivision = currentBeatDivision;
+              if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+                beatProgress = 0;
+                break;
+              }
+            }
+          });
+          rhythmIndex += 3;
+          continue;
+        }
+
+        // 8分の2つ目ならsubIndex=1、それ以外は0（4分/2分/1分は先頭のみ）
+        const subIndex = duration === "8"
+          ? (beatProgress >= 0.5 ? 1 : 0)
+          : 0;
+        const chordLabel = beatChordRow[subIndex] || "";
+
+        // 8分の先頭がタイ継続の場合は、タイ記号のみ出す
+        if (duration === "8" && isTie && beatProgress === 0) {
+          const nextValue = rhythm[rhythmIndex + 1];
+          const isNextTie = typeof nextValue === "string" && nextValue.startsWith("t") && nextValue.endsWith("8");
+          const tieProps = [
+            "slashed",
+            chordLabel ? `ch "${chordLabel}"` : null,
+          ].filter(Boolean).join(" ");
+          if (currentBeatDivision !== lastBeatDivision) {
+            notes.push(`:${currentBeatDivision} - { ${tieProps} }`);
+          } else {
+            notes.push(`- { ${tieProps} }`);
+          }
+          beatProgress += getBeatLength(duration);
+          if (isNextTie) {
+            notes.push("- { slashed }");
+            beatProgress += getBeatLength(duration);
+            rhythmIndex += 1;
+          }
+          while (beatProgress >= 0.999) {
+            beatIndex = Math.min(beatIndex + 1, beats - 1);
+            beatProgress -= 1;
+            lastBeatDivision = currentBeatDivision;
+            if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+              beatProgress = 0;
+              break;
+            }
+          }
+          continue;
+        }
+
+        let handledTie = false;
+        if (isTie) {
+          if (lastNoteIndex !== null) {
+            const divisionToken = currentBeatDivision !== lastBeatDivision
+              ? ` :${currentBeatDivision}`
+              : "";
+            notes[lastNoteIndex] = `${notes[lastNoteIndex]}${divisionToken} - { slashed }`;
+            beatProgress += beatLength;
+            handledTie = true;
+          } else if (isBarHead && barIndex > 0) {
+            const divisionToken = currentBeatDivision !== lastBeatDivision
+              ? `:${currentBeatDivision} `
+              : "";
+            const tieProps = [
+              "slashed",
+              chordLabel ? `ch "${chordLabel}"` : null,
+            ].filter(Boolean).join(" ");
+            notes.push(`${divisionToken}- { ${tieProps} }`);
+            beatProgress += beatLength;
+            handledTie = true;
+          }
+        }
+
+        // タイ単独で接続先が無い場合は休符扱いにする
+        if (isTie && !handledTie) {
+          let restValue = "r.4";
+          if (duration === "16") {
+            restValue = "r.16";
+          } else if (duration === "8") {
+            restValue = "r.8";
+          } else if (duration === "4") {
+            restValue = "r.4";
+          } else if (duration === "2") {
+            restValue = "r.2";
+          } else if (duration === "1") {
+            restValue = "r.1";
+          }
+          notes.push(`${restValue} { slashed }`);
+          lastNoteIndex = null;
+          beatProgress += beatLength;
+          handledTie = true;
+        }
+
+        if (handledTie) {
+          while (beatProgress >= 0.999) {
+            beatIndex = Math.min(beatIndex + 1, beats - 1);
+            beatProgress -= 1;
+            lastBeatDivision = currentBeatDivision;
+            if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+              beatProgress = 0;
+              break;
+            }
+          }
+          continue;
+        }
+
+        if (isRest) {
+          let noteValue = "r.4";
+          if (duration === "16") {
+            noteValue = "r.16";
+          } else if (duration === "8") {
+            noteValue = "r.8";
+          } else if (duration === "4") {
+            noteValue = "r.4";
+          } else if (duration === "2") {
+            noteValue = "r.2";
+          } else if (duration === "1") {
+            noteValue = "r.1";
+        }
+          const noteText = `${noteValue} { slashed }`;
+          notes.push(noteText);
+          lastNoteIndex = null;
+          beatProgress += beatLength;
+        } else {
+          let noteValue = "C4.4";
+          if (duration === "16") {
+            noteValue = "C4.16";
+          } else if (duration === "8") {
+            noteValue = "C4.8";
+          } else if (duration === "4") {
+            noteValue = "C4.4";
+          } else if (duration === "2") {
+            noteValue = "C4.2";
+          } else if (duration === "1") {
+            noteValue = "C4.1";
+        }
+          let props = "slashed";
+          if (chordLabel) {
+            props += ` ch "${chordLabel}"`;
+          }
+          const noteText = `${noteValue} { ${props} }`;
+          notes.push(noteText);
+          lastNoteIndex = notes.length - 1;
+          beatProgress += beatLength;
+        }
+
+        while (beatProgress >= 0.999) {
+          beatIndex = Math.min(beatIndex + 1, beats - 1);
+          beatProgress -= 1;
+          lastBeatDivision = currentBeatDivision;
+          if (beatIndex >= beats - 1 && beatProgress > 0.999) {
+            beatProgress = 0;
+            break;
+          }
+        }
+      }
+      barTokens.push(notes.join(" "));
+    }
+
+    const layoutLine = Number.isFinite(barsPerRow) && barsPerRow > 0
+      ? `\\track { defaultSystemsLayout ${barsPerRow} }`
+      : null;
+    const tempoValue = Number.parseInt(tempo, 10);
+    const tempoLine = Number.isFinite(tempoValue) && tempoValue > 0
+      ? `\\tempo ${tempoValue}`
+      : null;
+
+    // 先頭小節が「:8 - { slashed }」のような分割トークン始まりだと、
+    // 先頭に「:4」を重ねると alphaTex の構文エラーになるため回避する。
+    const firstBarText = barTokens[0] || "";
+    const needsDefaultDivision = !firstBarText.trim().startsWith(":");
+    const rhythmLinePrefix = needsDefaultDivision ? `:${denominator} ` : "";
+
+    const alphaTex = [
+      layoutLine,
+      tempoLine,
+      `\\ts ${numerator} ${denominator}`,
+      ".",
+      `${rhythmLinePrefix}${barTokens.join(" | ")} |`,
+    ].filter(Boolean).join("\n");
+
+    // ●DEBUG: alphaTabへ渡す最終alphaTex
+    console.log("AlphaTexBuilder alphaTex:", alphaTex);
+
+/*Spec（このコメントは消さないこと）
+  alphaTex に渡す文字列の例）4/4拍の場合、１小節部のみ
+
+  ・4部音符4つ。
+  :4 C4.4 { slashed ch "D" } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・4部音符4つ、2拍目にタイ。
+  ::4 C4.4 { slashed ch "D" } - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4部音符、後は8分音符。
+  :4 C4.4 { slashed ch "D" } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
+
+  ・先頭4部音符、2拍目は16分音符(音符内2番目と4番目は⌒)、3,4拍目は4部音符
+  :4 C4.4 { slashed ch "D" } C4.16 { slashed } - { slashed } C4.16 { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4部音符、2拍目は16分音符(音符内1番目は休符、2番目は⌒、3,4番目は16分音符)、3,4拍目は4部音符
+  :4 C4.4 { slashed ch "D" } r.8 { slashed } C4.16 { slashed } :16 - { slashed } r.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4部音符、2拍目にタイを付けて後は8分音符。
+  :4 C4.4 { slashed ch "D" } :8 - { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } C4.8 { slashed } |
+
+  ・先頭4分音符、2拍目にタイを付けて16分音符（音符内2,3,4番目は⌒）、後は4部音符。
+  :4 C4.4 { slashed ch "D" } :16 - { slashed } - { slashed } - { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4分音符、2拍目は16分音符（付点8分音符と16分音符）、後は4部音符。
+  :4 C4.4 { slashed ch "D" } C4.8 { slashed d } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4分音符、2拍目にタイを付けて16分音符（付点8分音符と16分音符）、後は4部音符。
+  :4 C4.4 { slashed ch "D" } :8 - { slashed d } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭4分音符、2拍目にタイを付けて16分音符（16分音符x4で音符内2,3,4番目は⌒）、3拍目にタイを付けて8分音符、最後は4部音符。
+  :4 C4.4 { slashed ch "D" } :16 - { slashed } - { slashed } - { slashed } - { slashed } :8 - { slashed } - { slashed } C4.4 { slashed } |
+
+  ・先頭16分音符、後は4部音符で2拍目にタイを付ける。
+  :4 C4.16 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭16分音符（16分音符の先頭は⌒、2番目は休符、3,4番目は●、コードはD）、後は4部音符（コード無し）。
+  :16 - { slashed ch "D" } r.16 { slashed } C4.16 { slashed } C4.16 { slashed } :4 - { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭16分音符（音符内2番目は⌒）、後は4部音符。
+  :4 C4.8 { slashed ch "D" } C4.16 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭16分音符（音符内2番目と4番目は⌒）、後は4部音符。
+  :4 C4.16 { slashed ch "D" } - { slashed } C4.16 { slashed } - { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+
+  ・先頭16分音符（音符内2番目と3番目は○（2つ合わせて8分休符））、後は4部音符。
+  :16 C4.16 { slashed beam split } r.8 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+  (16分音符の2番目以降に休符がある場合は、休符前に beam split を入れて、16分音符の連桁を解除する。)
+
+  ・先頭16分音符（音符内3番目は○）、後は4部音符。
+  :16 C4.16 { slashed } C4.16 { slashed beam split } r.16 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |
+  (16分音符の2番目以降に休符がある場合は、休符前に beam split を入れて、16分音符の連桁を解除する。)
+
+  ・音符とコードの対応を説明します。（部分的に説明します。）
+    音符にコードが付く場合は      { slashed ch "D" }  のように、{}括弧内の slashed の後ろに ch "D" と追加して表現します。
+    音符にコードが付かない場合は  { slashed }         のように、{}括弧内は slashed だけで表現します。
+  
+
+  下記は console から変数値を更新するために使う。
+  alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' + ''
+
+  例）
+  alphaTex = '\\track { defaultSystemsLayout 1 }\n\\tempo 62\n\\ts 4 4\n.\n' +
+  ':16 C4.16 { slashed } C4.16 { slashed beam split } r.16 { slashed } C4.16 { slashed } C4.4 { slashed } C4.4 { slashed } C4.4 { slashed } |'
+*/
+    this._lastCacheKey = cacheKey;
+    this._lastAlphaTex = alphaTex;
+    return alphaTex;
+  }
+}
+
+export default AlphaTexBuilder;
