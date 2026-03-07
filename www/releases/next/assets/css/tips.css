@@ -8,6 +8,8 @@
   display: flex;
   align-items: stretch;
   gap: 0;
+  margin-top: 2px;    /* ラベル上の余白（Tips ボタンの押しやすさ確保） */
+  margin-bottom: 2px; /* ラベル下の余白（Tips ボタンの押しやすさ確保） */
 }
 
 .preferenceTitleWithTip .preferenceTitle {
