@@ -20,8 +20,74 @@
   flex: 1 1 0;
   width: auto;
   min-width: 0;
-  min-height: 28px;
+  min-height: 44px;
   padding: 0 1px;
+}
+
+#clickToneSelectors .rhythmSelectWrap.clickBox {
+  position: relative;
+  overflow: visible;
+}
+
+#clickToneSelectors .rhythmSelectWrap.clickBox::before {
+  content: attr(data-beat-number);
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  z-index: 3;
+  font-size: 0.5rem;
+  line-height: 1;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+}
+
+#clickToneSelectors .rhythmSelectLabelTone {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding-top: 6px;
+  padding-bottom: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+#clickToneSelectors .rhythmSelectLabelTone .toneLine {
+  display: block;
+  line-height: 1.05;
+  opacity: 0.12;
+}
+
+#clickToneSelectors .rhythmSelectWrap.clickBox[data-tone-state="high"] .toneLineHigh {
+  opacity: 1;
+}
+
+#clickToneSelectors .rhythmSelectWrap.clickBox[data-tone-state="low"] .toneLineLow {
+  opacity: 1;
+}
+
+#clickToneSelectors .rhythmSelectLabelTone .toneMuteMark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+#clickToneSelectors .rhythmSelectWrap.clickBox[data-tone-state="mute"] .toneMuteMark {
+  opacity: 1;
+}
+
+#clickToneSelectors .rhythmSelectWrap.clickBox[data-tone-state="mute"] .toneLine {
+  opacity: 0;
 }
 
 /* 音色セレクトの表示文字とドロップダウン候補を中央寄せにする */
@@ -111,3 +177,4 @@
 .preferenceTitleWithTip.tipButtonLeft {
   flex-direction: row;
 }
+

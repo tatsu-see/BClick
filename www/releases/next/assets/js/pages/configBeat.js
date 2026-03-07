@@ -118,7 +118,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const safeCount = Number.isFinite(count) ? Math.max(1, count) : 1;
     selectedClickTones = buildTonePattern(safeCount, selectedClickTones);
     clickToneSelectors.textContent = "";
-      selectedClickTones.forEach((tone, index) => {
+    const toToneState = (toneValue) => {
+      if (toneValue === "A5") return "high";
+      if (toneValue === "A4") return "low";
+      return "mute";
+    };
+    const applyToneVisual = (wrapEl, toneValue) => {
+      if (!wrapEl) return;
+      wrapEl.dataset.toneState = toToneState(toneValue);
+      const toneLabel = wrapEl.querySelector(".rhythmSelectLabelTone");
+      if (!toneLabel) return;
+      toneLabel.innerHTML = ""
+        + '<span class="toneLine toneLineHigh">H</span>'
+        + '<span class="toneLine toneLineLow">L</span>'
+        + '<span class="toneMuteMark">—</span>';
+    };
+    selectedClickTones.forEach((tone, index) => {
       const select = document.createElement("select");
       select.dataset.beatIndex = index.toString();
       select.setAttribute("aria-label", `Select tone for beat ${index + 1}`);
@@ -137,6 +152,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const wrappedSelect = buildCenteredSelectWrap(select, { labelClass: "rhythmSelectLabelTone" });
       wrappedSelect.classList.add("clickBox");
+      wrappedSelect.dataset.beatNumber = (index + 1).toString();
+      applyToneVisual(wrappedSelect, tone);
+      select.addEventListener("change", () => {
+        applyToneVisual(wrappedSelect, select.value);
+      });
       clickToneSelectors.appendChild(wrappedSelect);
     });
   };
