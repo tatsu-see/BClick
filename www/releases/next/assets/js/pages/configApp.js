@@ -72,4 +72,36 @@ document.addEventListener("DOMContentLoaded", () => {
       saveAndGoBack();
     });
   }
+
+  // サンプル楽譜DLボタン: クリック時にダイアログを表示する
+  const sampleDownloadButtons = document.querySelectorAll(".sampleScoreDownloadButton");
+  const sampleScoreDownloadDialog = document.getElementById("sampleScoreDownloadDialog");
+  const downloadDialogClose = document.getElementById("sampleScoreDownloadDialogClose");
+  const downloadDialogGoPlay = document.getElementById("sampleScoreDownloadDialogGoPlay");
+
+  if (sampleScoreDownloadDialog) {
+    // 各DLボタンにクリックイベントを設定（デフォルトのダウンロード動作はそのまま続ける）
+    sampleDownloadButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        sampleScoreDownloadDialog.showModal();
+      });
+    });
+
+    // 「あとで」ボタン: ダイアログを閉じて configApp に留まる
+    if (downloadDialogClose) {
+      downloadDialogClose.addEventListener("click", () => {
+        sampleScoreDownloadDialog.close();
+      });
+    }
+
+    // 「演奏画面へ」ボタン: scoreEnabled をONにして演奏画面へ遷移する
+    // location.replace を使い configApp を履歴から置き換えることで、演奏画面の Back が index へ戻るようにする
+    if (downloadDialogGoPlay) {
+      downloadDialogGoPlay.addEventListener("click", () => {
+        sampleScoreDownloadDialog.close();
+        store.setScoreEnabled(true);
+        location.replace("editScore.html");
+      });
+    }
+  }
 });

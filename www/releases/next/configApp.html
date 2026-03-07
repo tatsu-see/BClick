@@ -196,6 +196,49 @@
     <small>&copy; 2025 tatsu. All rights reserved.</small>
   </footer>
 
+  <!--Spec サンプル楽譜DLボタンをクリックしたときに表示するダイアログ
+  ・ダウンロード開始を知らせ、演奏画面へ移動する選択肢を提示する。
+  ・「演奏画面へ」を選ぶとscoreEnabledをONにしてeditScoreへ遷移する。
+  ・「あとで」を選ぶとダイアログを閉じて configApp に留まる。
+  -->
+  <dialog id="sampleScoreDownloadDialog" class="tipsDialog" aria-labelledby="sampleScoreDownloadTitle">
+    <div class="tipsDialogTitle" id="sampleScoreDownloadTitle">
+      <span class="lang" data-lang="en">Sample Score</span>
+      <span class="lang" data-lang="ja">サンプル楽譜</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        Download started.<br>
+        ・On iPhone/iPad, the PDF opens in the browser.<br>
+        Tap <span class="material-symbols-rounded tipsInlineIcon" aria-hidden="true">more_horiz</span>→<span class="material-symbols-rounded tipsInlineIcon" aria-hidden="true">ios_share</span>(Share) → "Save to Files" to save it.<br>
+        <br>
+        ・After saving, load it from the play screen → File → Load.<br>
+        (The play screen's "File - Save/Load" is for saving and loading your own rhythm scores.)<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ダウンロードを開始しました。<br>
+        ・iPhone/iPad では、PDFがブラウザで開きます。<br>
+        画面下の
+        <span class="material-symbols-rounded tipsInlineIcon" aria-hidden="true">more_horiz</span>→
+        <span class="material-symbols-rounded tipsInlineIcon" aria-hidden="true">ios_share</span>共有）→
+        「ファイルに保存」で保存してください。<br>
+        <br>
+        ・保存後、演奏画面の「ファイル-読込」から読み込むことができます。<br>
+        （演奏画面の「ファイル‐保存/読込」は、自作リズム譜の保存/読込用です。）<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions sampleScoreDownloadActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" id="sampleScoreDownloadDialogClose">
+        <span class="lang" data-lang="en">Later</span>
+        <span class="lang" data-lang="ja">あとで</span>
+      </button>
+      <button type="button" class="chipButton tipsDialogCloseButton" id="sampleScoreDownloadDialogGoPlay">
+        <span class="lang" data-lang="en">Go to Play</span>
+        <span class="lang" data-lang="ja">演奏画面へ</span>
+      </button>
+    </div>
+  </dialog>
+
   <dialog id="sampleScoreTipsDialog" class="tipsDialog" aria-labelledby="sampleScoreTipsTitle">
     <div class="tipsDialogTitle" id="sampleScoreTipsTitle">
       <span class="lang" data-lang="en">Tips</span>
