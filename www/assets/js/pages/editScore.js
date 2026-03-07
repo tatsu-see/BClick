@@ -10,11 +10,13 @@ import { TempoDialController } from "../components/tempoDial.js";
 import { preloadAlphaTabFonts } from "../utils/scorePdf.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { showMessage } from "../../lib/ShowMessageBox.js";
+import { getLangMsg } from "../../lib/Language.js";
 import {
   clearEditScoreDraft,
   loadEditScoreDraft,
   saveEditScoreDraft,
 } from "../utils/editScoreDraft.js";
+import { RecordingManager } from "../utils/recordingManager.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -139,6 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const beatPreference = document.getElementById("editScorePreference");
   const barsPerRowRange = document.getElementById("barsPerRowRange");
   const barsPerRowValue = document.getElementById("barsPerRowValue");
+  const editScoreConfigBeat = document.getElementById("editScoreConfigBeat");
+  const editScoreConfigBeatButton = document.getElementById("editScoreConfigBeatButton");
+  const editScorePreferenceSummery = document.getElementById("editScorePreferenceSummery");
+  const editScoreBarsPerRow = document.getElementById("editScoreBarsPerRow");
   let currentScoreData = null;
   let rhythmScore = null;
   let editDraft = null;
@@ -167,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
     const savedScoreEnabled = store.getScoreEnabled();
+    const savedClickTonePattern = store.getClickTonePattern(savedClickCount);
     return new ScoreData({
       tempo: savedTempo,
       clickCount: savedClickCount,
@@ -178,6 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bars: savedBars || null,
       barsPerRow: savedBarsPerRow || 2,
       scoreEnabled: typeof savedScoreEnabled === "boolean" ? savedScoreEnabled : true,
+      clickTonePattern: savedClickTonePattern,
     });
   };
 
@@ -214,8 +222,26 @@ document.addEventListener("DOMContentLoaded", () => {
       bars: cloneBars(currentScoreData.bars),
       barsPerRow: currentScoreData.barsPerRow || 2,
       scoreEnabled: currentScoreData.scoreEnabled,
+      clickTonePattern: Array.isArray(currentScoreData.clickTonePattern)
+        ? currentScoreData.clickTonePattern.slice()
+        : null,
     };
     saveEditScoreDraft(editDraft);
+    updateBeatSummary();
+  };
+
+  /**
+   * テンポ・クリック数・カウントインの現在値をサマリーエリアに表示する。
+   */
+  const updateBeatSummary = () => {
+    if (!editScoreConfigBeat) return;
+    const tempo = currentScoreData?.tempo ?? store.getTempo() ?? 60;
+    const clickCount = currentScoreData?.clickCount ?? store.getClickCount() ?? 4;
+    const countIn = currentScoreData?.countIn ?? store.getCountInSec() ?? 4;
+    editScoreConfigBeat.textContent = getLangMsg(
+      `BPM ${tempo}、クリック数 ${clickCount}、カウントイン ${countIn}`,
+      `BPM ${tempo}, Clicks ${clickCount}, Count-in ${countIn}`,
+    );
   };
 
   /**
@@ -253,6 +279,9 @@ document.addEventListener("DOMContentLoaded", () => {
     store.setScoreBars(barsToSave);
     store.setScoreMeasures(measuresToSave);
     store.setScoreEnabled(currentScoreData.scoreEnabled);
+    if (Array.isArray(currentScoreData.clickTonePattern)) {
+      store.setClickTonePattern(currentScoreData.clickTonePattern, currentScoreData.clickCount);
+    }
     if (tempoDialToggle) {
       store.setEditScoreSettingsEnabled(Boolean(tempoDialToggle.checked));
     }
@@ -282,13 +311,14 @@ document.addEventListener("DOMContentLoaded", () => {
       bars: Array.isArray(loadedDraft.bars) ? loadedDraft.bars : null,
       barsPerRow: loadedDraft.barsPerRow || 2,
       scoreEnabled: loadedDraft.scoreEnabled,
+      clickTonePattern: Array.isArray(loadedDraft.clickTonePattern) ? loadedDraft.clickTonePattern : null,
     });
   } else {
     const hasSavedBars = Array.isArray(store.getScoreBars());
     currentScoreData = loadSettings(!hasSavedBars);
     syncDraftFromCurrent();
   }
-  if (store.getScoreEnabled() === false) {
+  if (currentScoreData.scoreEnabled === false) {
     // 仕様: リズム表示がOFFならクリックUIのみ表示し、楽譜エリアは隠す。
     if (scoreArea) {
       scoreArea.hidden = true;
@@ -326,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("楽譜生成条件エラー:", {
       scoreElementExists: !!scoreElement,
       alphaTabLoaded: !!window.alphaTab,
-      scoreEnabled: store.getScoreEnabled(),
+      scoreEnabled: currentScoreData.scoreEnabled,
     });
   }
 
@@ -407,6 +437,16 @@ document.addEventListener("DOMContentLoaded", () => {
       beatPreference.hidden = !shouldShow;
       beatPreference.style.display = shouldShow ? "" : "none";
       beatPreference.setAttribute("aria-hidden", String(!shouldShow));
+      if (editScorePreferenceSummery) {
+        editScorePreferenceSummery.hidden = !shouldShow;
+        editScorePreferenceSummery.style.display = shouldShow ? "" : "none";
+        editScorePreferenceSummery.setAttribute("aria-hidden", String(!shouldShow));
+      }
+      if (editScoreBarsPerRow) {
+        editScoreBarsPerRow.hidden = !shouldShow;
+        editScoreBarsPerRow.style.display = shouldShow ? "" : "none";
+        editScoreBarsPerRow.setAttribute("aria-hidden", String(!shouldShow));
+      }
       store.setEditScoreSettingsEnabled(shouldShow);
       syncDraftFromCurrent();
     };
@@ -474,6 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
       scoreEnabled: data?.scoreEnabled,
       rhythmPattern: safeRhythm,
       bars: safeBars,
+      clickTonePattern: Array.isArray(data?.clickTonePattern) ? data.clickTonePattern : [],
     });
   };
 
@@ -494,6 +535,7 @@ document.addEventListener("DOMContentLoaded", () => {
           bars: Array.isArray(nextDraft.bars) ? nextDraft.bars : null,
           barsPerRow: nextDraft.barsPerRow || 2,
           scoreEnabled: nextDraft.scoreEnabled,
+          clickTonePattern: Array.isArray(nextDraft.clickTonePattern) ? nextDraft.clickTonePattern : null,
         })
       : loadSettings(false);
     const nextApplyKey = buildApplyKey(nextScoreData);
@@ -569,6 +611,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     applyLastEditedHighlight();
+    updateBeatSummary();
   };
 
   document.addEventListener("bclick:scoreloaded", applyLoadedScoreToUI);
@@ -621,6 +664,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // 操作ボタンのイベント
+  if (editScoreConfigBeatButton) {
+    editScoreConfigBeatButton.addEventListener("click", () => {
+      sessionStorage.setItem("bclick.configBeat.fromEditScore", "1");
+      window.location.href = "configBeat.html";
+    });
+  }
+
   if (saveButton) {
     saveButton.addEventListener("click", () => {
       const saved = persistCurrentScore();
@@ -637,4 +687,161 @@ document.addEventListener("DOMContentLoaded", () => {
   if (closePageButton) {
     closePageButton.addEventListener("click", closePage);
   }
+
+  // ─── 再生モード制御（プルダウン + 録音連携） ─────────────────
+
+  const playModeSelect = document.getElementById("playModeSelect");
+  const playModeSelectLabel = document.getElementById("playModeSelectLabel");
+  const recordingManager = new RecordingManager();
+
+  // ●Rec モードの自動停止タイマー ID
+  let recAutoStopTimerId = null;
+
+  /**
+   * 再生モードプルダウンの表示ラベルを更新する。
+   * "●Rec" 選択時は "●" を赤くする。
+   * @param {string} value - "normal" | "rec" | "recplay"
+   */
+  const updatePlayModeLabel = (value) => {
+    if (!playModeSelectLabel) return;
+    if (value === "rec") {
+      playModeSelectLabel.innerHTML = '<span style="color:red">●</span>Rec';
+    } else if (value === "recplay") {
+      playModeSelectLabel.textContent = "Rec▶";
+    } else {
+      playModeSelectLabel.textContent = "ー";
+    }
+  };
+
+  /**
+   * 録音データの有無に応じて Rec▶ オプションの有効/無効を切り替える。
+   * 録音データが無い場合に Rec▶ が選択されていたら ー に戻す。
+   */
+  const updateRecPlayableState = async () => {
+    if (!playModeSelect) return;
+    const recplayOption = playModeSelect.querySelector("option[value='recplay']");
+    if (!recplayOption) return;
+    const has = await recordingManager.hasRecording();
+    recplayOption.disabled = !has;
+    if (playModeSelect.value === "recplay" && !has) {
+      playModeSelect.value = "normal";
+      updatePlayModeLabel("normal");
+    }
+  };
+
+  /**
+   * ●Rec モードの自動停止タイマーをクリアする。
+   */
+  const clearRecAutoStop = () => {
+    if (recAutoStopTimerId !== null) {
+      window.clearTimeout(recAutoStopTimerId);
+      recAutoStopTimerId = null;
+    }
+  };
+
+  // 初期化: ラベル同期 と Rec▶ の有効/無効を反映する
+  updatePlayModeLabel(playModeSelect?.value ?? "normal");
+  void updateRecPlayableState();
+
+  // プルダウン変更時にラベルを更新し、モードに応じた事前準備を行う
+  if (playModeSelect) {
+    playModeSelect.addEventListener("change", () => {
+      const newValue = playModeSelect.value;
+      updatePlayModeLabel(newValue);
+      if (newValue === "rec") {
+        // ●Rec モード: マイクを事前取得して録音開始遅延を最小化する
+        void recordingManager.prewarmMic().catch((err) => {
+          console.error("マイクの事前取得に失敗しました:", err);
+        });
+      } else {
+        // ●Rec モード以外: 事前取得済みマイクを解放する（不要なら no-op）
+        recordingManager.releasePrewarmMic();
+      }
+      if (newValue === "recplay") {
+        // Rec▶ モード: AudioBuffer を事前デコードして再生開始遅延を最小化する
+        void recordingManager.prepareBuffer();
+      }
+    });
+  }
+
+  // クリックサイクルが実際に開始したとき（カウントイン終了後）
+  document.addEventListener("bclick:clickcyclestarted", (e) => {
+    const { beatMs, beatCount } = e.detail ?? {};
+    const mode = playModeSelect?.value ?? "normal";
+    clearRecAutoStop();
+
+    if (mode === "rec") {
+      // カウントイン終了後にマイク録音を開始する
+      void recordingManager.startRecording().catch((err) => {
+        console.error("録音開始に失敗しました:", err);
+        // 録音に失敗した場合はクリックを強制停止する
+        document.dispatchEvent(new CustomEvent("bclick:forceReset"));
+      });
+      // 楽譜 1 周分の時間が経過したら自動停止する
+      const barCount =
+        Number.isFinite(window.bclickScoreBarCount) && window.bclickScoreBarCount > 0
+          ? window.bclickScoreBarCount
+          : null;
+      if (barCount && beatMs > 0 && beatCount > 0) {
+        const totalMs = barCount * beatCount * beatMs;
+        recAutoStopTimerId = window.setTimeout(async () => {
+          recAutoStopTimerId = null;
+          await recordingManager.stopRecording();
+          await updateRecPlayableState();
+          document.dispatchEvent(new CustomEvent("bclick:forceReset"));
+        }, totalMs);
+      }
+    } else if (mode === "recplay") {
+      // 録音データをクリックと同期して再生する（ループはイベント駆動で制御）
+      void recordingManager.startPlayback(false).catch((err) => {
+        console.error("録音再生に失敗しました:", err);
+      });
+    }
+  });
+
+  // 楽譜が1周してbeat 0に戻ったとき（録音再生の再同期）
+  document.addEventListener("bclick:clickscorelooprestarted", () => {
+    const mode = playModeSelect?.value ?? "normal";
+    if (mode === "recplay") {
+      // 先頭から再生し直すことで setInterval のドリフトをリセットする
+      recordingManager.restartPlayback();
+    }
+  });
+
+  // クリックが一時停止したとき
+  document.addEventListener("bclick:clickpaused", () => {
+    const mode = playModeSelect?.value ?? "normal";
+    clearRecAutoStop();
+    if (mode === "rec") {
+      // ●Rec モード: Stop = 完全停止。録音を保存してクリックを強制リセットする
+      void recordingManager.stopRecording().then(() => void updateRecPlayableState());
+      document.dispatchEvent(new CustomEvent("bclick:forceReset"));
+    } else if (mode === "recplay") {
+      // Rec▶ モード: Stop = 一時停止
+      recordingManager.pausePlayback();
+    }
+  });
+
+  // クリックが完全リセットされたとき
+  document.addEventListener("bclick:clickreset", () => {
+    const mode = playModeSelect?.value ?? "normal";
+    clearRecAutoStop();
+    if (mode === "rec") {
+      // ●Rec モード: 録音中ならば停止して保存する（自動停止以外のリセット時）
+      if (recordingManager.isRecording()) {
+        void recordingManager.stopRecording().then(() => void updateRecPlayableState());
+      }
+    } else if (mode === "recplay") {
+      // Rec▶ モード: 録音再生を完全停止する
+      recordingManager.stopPlayback();
+    }
+  });
+
+  // 一時停止から再開したとき
+  document.addEventListener("bclick:clickresumed", () => {
+    const mode = playModeSelect?.value ?? "normal";
+    if (mode === "recplay") {
+      recordingManager.resumePlayback();
+    }
+  });
 });

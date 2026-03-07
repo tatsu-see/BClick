@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const countdownDownButton = document.getElementById("countdownDown");
   const countdownUpButton = document.getElementById("countdownUp");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
+  const openConfigAppButton = document.getElementById("openConfigApp");
   const configBeatButton = document.getElementById("configBeatButton");
   const configScoreButton = document.getElementById("configScoreButton");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
@@ -364,6 +365,21 @@ document.addEventListener("DOMContentLoaded", () => {
   if (configBeatButton) {
     configBeatButton.addEventListener("click", () => {
       window.location.href = "configBeat.html";
+    });
+  }
+
+  // アプリ設定ボタン（ヘッダー右端の歯車）
+  if (openConfigAppButton) {
+    openConfigAppButton.addEventListener("click", () => {
+      window.location.href = "configApp.html";
+    });
+  }
+
+  // HOW TOボタン（ヘッダー左端のヘルプアイコン）
+  const openHowToButton = document.getElementById("openHowTo");
+  if (openHowToButton) {
+    openHowToButton.addEventListener("click", () => {
+      window.location.href = "howto.html";
     });
   }
 });

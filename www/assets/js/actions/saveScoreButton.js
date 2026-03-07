@@ -65,10 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
       rhythmPattern: storeScoreData.rhythmPattern,
       barsPerRow: storeScoreData.barsPerRow,
       scoreEnabled: storeScoreData.scoreEnabled,
+      clickTonePattern: storeScoreData.clickTonePattern,
     };
     if (draft && typeof draft === "object") {
       if (Number.isFinite(draft.tempo)) {
         mergedScore.tempo = draft.tempo;
+      }
+      if (Number.isFinite(draft.clickCount)) {
+        mergedScore.clickCount = draft.clickCount;
+      }
+      if (Number.isFinite(draft.countIn)) {
+        mergedScore.countIn = draft.countIn;
       }
       if (typeof draft.timeSignature === "string") {
         mergedScore.timeSignature = draft.timeSignature;
@@ -90,6 +97,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (Number.isFinite(draft.barsPerRow)) {
         mergedScore.barsPerRow = draft.barsPerRow;
+      }
+      if (typeof draft.scoreEnabled === "boolean") {
+        mergedScore.scoreEnabled = draft.scoreEnabled;
+      }
+      if (Array.isArray(draft.clickTonePattern)) {
+        mergedScore.clickTonePattern = draft.clickTonePattern.slice();
       }
     }
     const scoreData = new ScoreData(mergedScore);

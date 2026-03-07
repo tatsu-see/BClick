@@ -1,4 +1,8 @@
 
+.preferenceTitleWithTip.tipButtonLeft {
+  flex-direction: row;
+}
+
 .preferenceValueCentered {
   justify-content: center;
 }

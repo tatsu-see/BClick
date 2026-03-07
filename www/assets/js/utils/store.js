@@ -1,12 +1,49 @@
 
 import { LocalStore } from '../../lib/LocalStore.js';
-import { APP_LIMITS, ALLOWED_TIME_SIGNATURES } from "../constants/appConstraints.js";
+import { APP_LIMITS, ALLOWED_TIME_SIGNATURES, ALLOWED_CLICK_TONES } from "../constants/appConstraints.js";
 import { isIntegerInRange, isNumberInRange } from "./validators.js";
 
 const getProgressionChordCount = (value) => {
   if (typeof value !== "string") return 0;
   const tokens = value.trim().split(/\s+/).filter((token) => token.length > 0);
   return tokens.length;
+};
+
+/**
+ * 拍数をクリック設定の上限下限に収めて返す。
+ * @param {unknown} value
+ * @returns {number|null}
+ */
+const normalizeBeatCount = (value) => {
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed)) return null;
+  return Math.max(APP_LIMITS.clickCount.min, Math.min(APP_LIMITS.clickCount.max, parsed));
+};
+
+/**
+ * クリック音色パターンの既定値を生成する。
+ * 1,5,9,13拍目はA5、それ以外はA4。
+ * @param {number} beatCount
+ * @returns {string[]}
+ */
+const buildDefaultClickTonePattern = (beatCount) =>
+  Array.from({ length: beatCount }, (_, index) => (index % 4 === 0 ? "A5" : "A4"));
+
+/**
+ * クリック音色パターンを拍数に合わせて正規化する。
+ * 不正値や不足分は既定値で補う。
+ * @param {unknown} value
+ * @param {unknown} beatCount
+ * @returns {string[]|null}
+ */
+const normalizeClickTonePattern = (value, beatCount) => {
+  const count = normalizeBeatCount(beatCount);
+  if (!count) return null;
+  const source = Array.isArray(value) ? value : [];
+  return Array.from({ length: count }, (_, index) => {
+    const tone = source[index];
+    return ALLOWED_CLICK_TONES.includes(tone) ? tone : (index % 4 === 0 ? "A5" : "A4");
+  });
 };
 
 /**
@@ -29,6 +66,8 @@ export class ConfigStore extends LocalStore {
         Countdown: 'bclick.countdown',
         // configBeat: ボリューム(UI)
         ClickVolume: 'bclick.clickVolume',
+        // configBeat: クリック音の音色パターン
+        ClickTonePattern: 'bclick.clickTonePattern',
 
         // configScore: 拍子
         ScoreTimeSignature: 'bclick.score.timeSignature',
@@ -126,6 +165,35 @@ export class ConfigStore extends LocalStore {
     const clamped = Math.min(APP_LIMITS.clickVolume.max, Math.max(APP_LIMITS.clickVolume.min, value));
     const rounded = Math.round(clamped * 10) / 10;
     this.saveSettings(this.keys.ClickVolume, rounded);
+  }
+
+  /**
+   * クリック音色パターンのI/O
+   */
+  getClickTonePattern(beatCount) {
+    const count =
+      normalizeBeatCount(beatCount)
+      || this.getClickCount()
+      || APP_LIMITS.clickCount.min;
+    // 拍数が未指定でも、保存済みクリック数を使って配列長を決定する。
+    // （旧バージョンの保存状態では ClickTonePattern キーが存在しないため、    ）
+    // （その場合は未保存扱いとして既定値(A5/A4パターン)を返して動作を継続する。）
+    // （以後 configBeat の Done 保存時に、現行形式の配列が保存される。       ）
+    const saved = this.getSettings(this.keys.ClickTonePattern);
+    const normalized = normalizeClickTonePattern(saved, count);
+    return normalized || buildDefaultClickTonePattern(count);
+  }
+
+  setClickTonePattern(value, beatCount) {
+    const count =
+      normalizeBeatCount(beatCount)
+      || (Array.isArray(value) ? value.length : null)
+      || this.getClickCount()
+      || APP_LIMITS.clickCount.min;
+    // 保存時に拍数と配列長がズレても、ここで拍数に合わせて整形して保存する。
+    const normalized = normalizeClickTonePattern(value, count);
+    if (!normalized) return;
+    this.saveSettings(this.keys.ClickTonePattern, normalized);
   }
 
   /**

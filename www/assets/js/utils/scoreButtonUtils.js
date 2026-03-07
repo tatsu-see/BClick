@@ -11,6 +11,10 @@ import {
   readScoreFileAsJson,
 } from "./scoreSerialization.js";
 
+// configBeat の既定値ルールと揃えて、初期化時の音色パターンを生成する。
+const buildDefaultClickTonePattern = (count) =>
+  Array.from({ length: count }, (_, index) => (index % 4 === 0 ? "A5" : "A4"));
+
 /**
  * 保存済み設定からScoreDataを自動生成する。
  */
@@ -42,6 +46,10 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
     ? storedRhythmPattern
     : buildDefaultRhythmPattern(beatCount);
   const bars = resetBars ? null : store.getScoreBars();
+  //##Spec clickTonePattern は store から取得する。
+  // store が未対応の場合や保存データが存在しない場合は null になり、
+  // ScoreModel 側で null として保持される（PDF保存時にはストアの値を優先するため影響なし）。
+  const clickTonePattern = store.getClickTonePattern ? store.getClickTonePattern(clickCount) : null;
 
   return new ScoreData({
     tempo,
@@ -54,6 +62,7 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
     progression,
     rhythmPattern,
     bars,
+    clickTonePattern,
   });
 };
 
@@ -87,6 +96,12 @@ export const saveScoreDataToStore = (store, scoreData) => {
   if (Array.isArray(scoreData.bars)) {
     store.setScoreBars(scoreData.bars);
   }
+  //##Spec clickTonePattern が存在する場合のみ store へ保存する。
+  // 旧データ読込時は normalizeClickTonePatternFromJson が既定値を補完した上で
+  // ScoreData に設定されているため、ここでは null チェックのみ行う。
+  if (typeof store.setClickTonePattern === "function" && Array.isArray(scoreData.clickTonePattern)) {
+    store.setClickTonePattern(scoreData.clickTonePattern, scoreData.clickCount);
+  }
 };
 
 /**
@@ -97,6 +112,9 @@ export const resetScoreSettings = (store) => {
   store.setTempo(defaults.tempo);
   store.setClickCount(defaults.clickCount);
   store.setCountInSec(defaults.countIn);
+  if (typeof store.setClickTonePattern === "function") {
+    store.setClickTonePattern(buildDefaultClickTonePattern(defaults.clickCount), defaults.clickCount);
+  }
   store.setScoreTimeSignature(defaults.timeSignature);
   store.setScoreProgression(defaults.progression);
   store.setScoreMeasures(defaults.measures);

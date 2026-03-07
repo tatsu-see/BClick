@@ -3,6 +3,8 @@
   index.html からは、楽譜データのコピーを受け取ること。
   "<Back" を選択したら編集を無かったことにするので、保存しないで index.htmlに戻る。
   "Save"  を選択したら、その時に編集結果をLocalStrageに保存する。Saveは画面遷移せず、この画面で編集を継続する。
+  configBeat画面へも画面遷移可能として、ドラフト値のテンポ編集を可能にする。configBeat画面から戻る時は、editScore画面に戻る。
+（未実装）画面にPDF保存したファイルをドラッグ&ドロップしたら、そのPDFを読み込む。
 -->
 <!doctype html>
 <html translate="no">
@@ -30,6 +32,7 @@
 
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
   <link rel="stylesheet" href="assets/css/tempoDial.css">
   <link rel="stylesheet" href="assets/css/click.css">
   <link rel="stylesheet" href="assets/css/editScore.css">
@@ -47,11 +50,13 @@
   <link rel="modulepreload" href="assets/lib/ShowMessageBox.js">
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentTracking.js">
+  <link rel="modulepreload" href="assets/js/actions/tips.js">
 
   <script type="module" src="assets/lib/Language.js"></script>
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
   <script src="assets/lib/pdf-lib.min.js"></script>
+  <script type="module" src="assets/js/actions/tips.js"></script>
   <script type="module" src="assets/js/pages/click.js"></script>
   <script src="assets/lib/alphaTab/alphaTab.min.js"></script>
   <script type="module" src="assets/js/pages/editScore.js"></script>
@@ -86,38 +91,58 @@
     <!-- ここに テンポ（30～240）のBPMダイアルを用意する
     ・クリック音の再生中にテンポを変更すると、クリック音の再生スピードが、変更したテンポになる。
     -->
-    <div class="preferenceTitle tempoTitle">
-      <div class="tempoTitleText">
-        <span class="material-symbols-rounded" aria-hidden="true">tune</span>
-        <span class="lang" data-lang="en">Settings</span>
-        <span class="lang" data-lang="ja">調節</span>
-      </div>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for settings"
+        data-tip-target="editScoreSettingsTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle tempoTitle">
+        <div class="tempoTitleText">
+          <span class="material-symbols-rounded" aria-hidden="true">tune</span>
+          <span class="lang" data-lang="en">Settings</span>
+          <span class="lang" data-lang="ja">調節</span>
+        </div>
 
-      <!--Spec editScore.html の トグルスイッチの特殊仕様
-      ・ここに <div id="beatPreference"> の表示をON/OFF切り替えられるスイッチを用意する。初期値はOFFで表示しない。
-      ・スイッチの見た目は、index.html の <input type="checkbox" id="scoreToggle"> と同じ見た目。
-      ・文字は OFF と ON を表示して。ON場合は少し濃い緑色を使う。
-      ・トグルスイッチのON/OFF情報は楽譜としては保存されないが、アプリの動作状態としては記憶され再現される。
-        そのため、editMeasure画面から戻ってきたときや、editScore画面から"< Back"でindex画面へ移動し、index画面から
-        「演奏」（編集）ボタンで editScore画面に戻ってきたときは、再現される。
-      ・トグルスイッチのON/OFF情報は、configBeatの初期化ボタンや、index画面の（新規）「作成」ボタンによって初期化（=OFF）される。
-      ・ON/OFFの状態の保持は LocalStrage に行う。
-      -->
-      <div class="preferenceValue preferenceValueCentered tempoDialToggleControl">
-        <label class="scoreToggle">
-          <input type="checkbox" id="tempoDialToggle" aria-label="Toggle tempo dial">
-        </label>
-      </div>
+        <!--Spec editScore.html の トグルスイッチの特殊仕様
+        ・ここに <div id="beatPreference"> の表示をON/OFF切り替えられるスイッチを用意する。初期値はOFFで表示しない。
+        ・スイッチの見た目は、index.html の <input type="checkbox" id="scoreToggle"> と同じ見た目。
+        ・文字は OFF と ON を表示して。ON場合は少し濃い緑色を使う。
+        ・トグルスイッチのON/OFF情報は楽譜としては保存されないが、アプリの動作状態としては記憶され再現される。
+          そのため、editMeasure画面から戻ってきたときや、editScore画面から"< Back"でindex画面へ移動し、index画面から
+          「演奏」（編集）ボタンで editScore画面に戻ってきたときは、再現される。
+        ・トグルスイッチのON/OFF情報は、configBeatの初期化ボタンや、index画面の（新規）「作成」ボタンによって初期化（=OFF）される。
+        ・ON/OFFの状態の保持は LocalStrage に行う。
+        -->
+        <div class="preferenceValue preferenceValueCentered tempoDialToggleControl">
+          <label class="scoreToggle">
+            <input type="checkbox" id="tempoDialToggle" aria-label="Toggle tempo dial">
+          </label>
+        </div>
 
+      </div>
     </div>
 
     <div id="editScorePreference" class="tempoControl tempoControlStack">
 
       <!-- テンポを表示 -->
-      <div class="preferenceTitle">
-        <span class="material-symbols-rounded" aria-hidden="true">speed</span>
-        <span class="lang" data-lang="en">Tempo (30–240)</span>
-        <span class="lang" data-lang="ja">テンポ（30～240）</span>
+      <div class="preferenceTitleWithTip tipButtonLeft">
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips for tempo"
+          data-tip-target="editScoreTempoTipsDialog"
+        >
+          <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+        </button>
+        <div class="preferenceTitle">
+          <span class="material-symbols-rounded" aria-hidden="true">speed</span>
+          <span class="lang" data-lang="en">Tempo (30–240)</span>
+          <span class="lang" data-lang="ja">テンポ（30～240）</span>
+        </div>
       </div>
 
       <div class="tempoValueGroup tempoValueTop">
@@ -144,33 +169,103 @@
         <button type="button" id="tempoStepFine" class="tempoStepButton isActive" data-step="1" aria-pressed="true">±1</button>
       </div>
 
-      <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Bars per row (1–4)</span>
-        <span class="lang" data-lang="ja">一段当たりの小節数（1〜4）</span>
+    </div>
+
+    <!--Spec editScoreから configBeat画面へ遷移可能として、ドラフト値のテンポ/クリック数/カウントインの編集を可能にする -->
+    <div class="preferenceSummery" id="editScorePreferenceSummery">
+      <div class="preferenceNow" id="editScoreConfigBeat">
+        <!-- ここにBPM、クリック数、カウントインの設定を表示する。 -->
+      </div>
+
+      <div class="preferenceValue">
+        <button id="editScoreConfigBeatButton" type="button" class="makeScoreButton navButton" aria-label="Beat settings">
+          <span class="material-symbols-rounded" aria-hidden="true">tune</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="editScoreBarsPerRow">
+      <div class="preferenceTitleWithTip tipButtonLeft">
+        <button
+          type="button"
+          class="chipButton tipButton"
+          aria-label="Open tips for bars per row"
+          data-tip-target="editScoreBarsPerRowTipsDialog"
+        >
+          <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+        </button>
+        <div class="preferenceTitle">
+          <span class="lang" data-lang="en">Bars per row (1–4)</span>
+          <span class="lang" data-lang="ja">一段当たりの小節数（1〜4）</span>
+        </div>
       </div>
       <!--Spec 1段当たりの小節通
       ・スライドバーを配置して1段当たりの小節数を設定する。設定範囲は（1～4）。初期値は2。
       -->
-
       <div class="preferenceValue preferenceValueCentered barsPerRowValue">
         <input type="range" id="barsPerRowRange" min="1" max="4" step="1" value="2" aria-label="Bars per row">
         <output id="barsPerRowValue" for="barsPerRowRange">2</output>
       </div>
-
     </div>
 
     <!--Spec クリック再生エリア-開始 -->
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">play_circle</span>
-      <span class="lang" data-lang="en">Play</span>
-      <span class="lang" data-lang="ja">再生</span>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for play"
+        data-tip-target="editScorePlayTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="material-symbols-rounded" aria-hidden="true">play_circle</span>
+        <span class="lang" data-lang="en">Play</span>
+        <span class="lang" data-lang="ja">再生</span>
+      </div>
     </div>
 
     <div id="playClicking">
+
+      <!--Spec 再生ボタンの左に、プルダウンを用意する。選択肢は次の3つ
+
+        【いったんこの機能の開発を凍結するので、以下のプルダウンのコードは残しつつ、非表示にする。】
+
+      "ー"  :通常通りの「再生」。クリックの1周と共に、楽譜の小節を移動する。楽譜の最後まで要ったら先頭に戻る。
+
+      "●Rec":録音モードで「再生」する。録音モード時、クリックは楽譜の最後まで再生したら終了し、録音も終了する。
+            :録音は「マイク」で行う。録音する対象はギターで小節のコードを弾いた音を想定するが、特に制限は不要。
+            :そのため、カウントインの間は録音は不要。選択肢の文字列の "●" は赤く表示する。
+            :録音データは、IndexedDBに永続保存する。楽譜データとしては保存しない。
+            :録音モード中のStop/Resetは完全停止です。途中まで録音していたら、途中まで保存される。
+            :録音モードで再び録音したら、前回のデータは削除される。
+
+      "Rec▶":録音したものを再生する。録音したものがないときは、選択できないようにする。
+            :録音データは、クリックの再生と同期して再生する。例えば4拍のクリックでは先頭の音が鳴るとともに
+             楽譜の小節番号が強調されるが、これと同時に録音データが再生される。同期はできるだけ正確にする。
+            :録音再生中のStopは一時停止。Resetは完全停止です。（通常通りの「再生」と同じ。）
+
+      ・録音タイミングの精度をあげるために、処理時間と録音時間を詳細に持つことでタイミングを合わせる工夫も考えられる。
+      ・特にクリック開始部は録音タイミングがズレ易いはずで、カウントインが終わる前に録音を開始しておく工夫も考えられる。
+
+      （以下は未実装。チャンク分割しデータを小さく保持する工夫。）
+      ・録音とクリックの再生の同期が必要なので、例えば録音データを50msや100msごとに分割して保存しておき、クリックの
+        再生に合わせて順番に再生するなどの工夫が必要かもしれない。
+      ・もしくは、小節ごとに録音データを分けて持つことで、できるだけクリックの1拍目と同期するなどの工夫も考えられる。
+      -->
+      <!--Spec 再生モード選択プルダウン（startClickボタンの左） -->
+      <div class="rhythmSelectWrap playModeSelectWrap" id="playModeSelectWrap" style="display:none"><!-- 録音モード開発凍結中のため非表示 -->
+        <span class="rhythmSelectLabel" id="playModeSelectLabel">ー</span>
+        <select class="rhythmSelectInput" id="playModeSelect" aria-label="Play mode">
+          <option value="normal">ー</option>
+          <option value="rec" style="color:red">●Rec</option>
+          <option value="recplay" disabled>Rec▶</option>
+        </select>
+      </div>
       <button id="startClick" type="button" class="chipButton" aria-label="Play">
         <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span>
-        <span class="lang" data-lang="en">Play</span>
-        <span class="lang" data-lang="ja">再生</span>
+        <span class="lang" data-lang="en">Start</span>
+        <span class="lang" data-lang="ja">開始</span>
       </button>
       <button id="stopClickart" type="button" class="chipButton" aria-label="Pause">
         <span class="material-symbols-rounded" aria-hidden="true">pause</span>
@@ -222,10 +317,20 @@
       </div>
     </div>
 
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">folder</span>
-      <span class="lang" data-lang="en">File</span>
-      <span class="lang" data-lang="ja">ファイル</span>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for file"
+        data-tip-target="editScoreFileTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="material-symbols-rounded" aria-hidden="true">folder</span>
+        <span class="lang" data-lang="en">File</span>
+        <span class="lang" data-lang="ja">ファイル</span>
+      </div>
     </div>
 
     <!--Spec スコアの操作ボタン
@@ -322,12 +427,136 @@
     <span class="lang" data-lang="ja">貼り付けました。</span>
   </div>
 
+  <dialog id="editScoreSettingsTipsDialog" class="tipsDialog" aria-labelledby="editScoreSettingsTipsTitle">
+    <div class="tipsDialogTitle" id="editScoreSettingsTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Use this section to show or hide the tempo settings area.<br>
+        ・Turn the switch on to display the tempo controls below.<br>
+        ・The tune button opens the detailed beat settings screen.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・この項目ではテンポ設定エリアの表示を切り替えます。<br>
+        ・スイッチをONにすると下のテンポ操作を表示します。<br>
+        ・右下の調節ボタンから詳細なテンポ設定画面を開けます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="editScoreTempoTipsDialog" class="tipsDialog" aria-labelledby="editScoreTempoTipsTitle">
+    <div class="tipsDialogTitle" id="editScoreTempoTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the tempo by turning the dial from 30 to 240 BPM.<br>
+        ・Use the dial and the step buttons to change the value.<br>
+        ・Details for clicks and count-in can be adjusted from the tune button below.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・テンポはダイアルを回して、30〜240 BPMの範囲で設定します。<br>
+        ・ダイヤルや刻み幅ボタンで値を変更できます。<br>
+        ・クリック数やカウントインの詳細は、下の調節ボタンから設定できます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="editScoreBarsPerRowTipsDialog" class="tipsDialog" aria-labelledby="editScoreBarsPerRowTipsTitle">
+    <div class="tipsDialogTitle" id="editScoreBarsPerRowTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set how many bars are shown in one row of the score.<br>
+        ・You can choose from 1 to 4 bars per row.<br>
+        ・This changes only the display layout, not the score content.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・楽譜を1段に何小節表示するかを設定します。<br>
+        ・1〜4小節の範囲で選べます。<br>
+        ・変わるのは表示レイアウトだけで、楽譜内容は変わりません。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="editScorePlayTipsDialog" class="tipsDialog" aria-labelledby="editScorePlayTipsTitle">
+    <div class="tipsDialogTitle" id="editScorePlayTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Use Start to begin playback, Pause to stop, and Reset to return to the beginning.<br>
+        ・"Chords" opens the chord diagram list in a separate screen.<br>
+        ・The countdown appears before playback if count-in is set.<br>
+        ・Selecting a measure number in the score allows you to edit that measure.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・Startで再生開始、Pauseで停止、Resetで先頭に戻ります。<br>
+        ・「コード」はコードダイアグラム画面を開きます。<br>
+        ・カウントインが設定されている場合は、再生前にカウントが表示されます。<br>
+        ・楽譜内の小節番号を選択すると小節ごとの編集が可能です。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="editScoreFileTipsDialog" class="tipsDialog" aria-labelledby="editScoreFileTipsTitle">
+    <div class="tipsDialogTitle" id="editScoreFileTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・"Save As" downloads the current score as a file.<br>
+        ・"Load" opens a saved JSON file or a compatible PDF file.<br>
+        ・On Windows and Mac, you can also drag and drop a file onto this page to load it.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・「保存」で現在の楽譜をファイル保存できます。<br>
+        ・「読込」で保存済みのPDFファイルを読み込めます。<br>
+        ・Windows と Mac では、この画面にファイルをドラッグ＆ドロップしても読み込めます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
   <footer>
     <small>&copy; 2025 tatsu. All rights reserved.</small>
   </footer>
 
 </body>
 </html>
-
-
-

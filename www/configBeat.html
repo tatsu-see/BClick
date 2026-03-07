@@ -1,5 +1,5 @@
 <!--Spec
-  楽譜のテンポなどを設定する画面
+  楽譜データのテンポなどを設定する画面
   <Back を選択したら編集を無かったことにするので、保存しないで index.htmlに戻る。
   Done を選択したら、その時に初めて編集結果をLocalStrageに保存して編集を完了する。
 -->
@@ -29,6 +29,7 @@
 
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
   <link rel="stylesheet" href="assets/css/tempoDial.css">
   <link rel="stylesheet" href="assets/css/configBeat.css">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
@@ -38,12 +39,13 @@
   <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentTracking.js">
+  <link rel="modulepreload" href="assets/js/actions/tips.js">
 
   <script type="module" src="assets/lib/Language.js"></script>
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
+  <script type="module" src="assets/js/actions/tips.js"></script>
   <script type="module" src="assets/js/pages/configBeat.js"></script>
-  <script type="module" src="assets/js/actions/initScoreButton.js"></script>
 </head>
 
 <!--Spec クリック音に関する設定画面
@@ -65,10 +67,20 @@
 
   <main class="pageFrame">
 
-    <div class="preferenceTitle">
-      <span class="material-symbols-rounded" aria-hidden="true">speed</span>
-      <span class="lang" data-lang="en">Tempo (30–240)</span>
-      <span class="lang" data-lang="ja">テンポ（30～240）</span>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for tempo"
+        data-tip-target="tempoTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="material-symbols-rounded" aria-hidden="true">speed</span>
+        <span class="lang" data-lang="en">Tempo (30–240)</span>
+        <span class="lang" data-lang="ja">テンポ（30～240）</span>
+      </div>
     </div>
 
     <div id="beatPreference" class="tempoControl tempoControlStack">
@@ -96,58 +108,67 @@
       </div>
     </div>
 
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Beats (1–8)</span>
-      <span class="lang" data-lang="ja">拍数（1〜8）</span>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for beats"
+        data-tip-target="beatsTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Beats (1–16)</span>
+        <span class="lang" data-lang="ja">拍数（1〜16）</span>
+      </div>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
-      <input type="range" id="clickCountRange" min="1" max="8" step="1" value="4">
+      <input type="range" id="clickCountRange" min="1" max="16" step="1" value="4">
       <output id="clickCountValue" for="clickCountRange">4</output>
     </div>
 
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Count-in (0–10)</span>
-      <span class="lang" data-lang="ja">カウントイン（0〜10）</span>
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for tone"
+        data-tip-target="toneTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Tone</span>
+        <span class="lang" data-lang="ja">音色</span>
+      </div>
+    </div>
+
+    <div class="preferenceValue preferenceValueCentered tonePreference">
+      <div id="clickToneSelectors" class="toneSelectGroup" role="group" aria-label="Select click tone per beat"></div>
+      <div class="toneLegend">
+        <span class="lang" data-lang="en">High (A5) / Low (A4) / — (None)</span>
+        <span class="lang" data-lang="ja">High (A5) / Low (A4) / —（無し）</span>
+      </div>
+    </div>
+
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for count-in"
+        data-tip-target="countInTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Count-in (0–10)</span>
+        <span class="lang" data-lang="ja">カウントイン（0〜10）</span>
+      </div>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
       <input type="range" id="countdownRange" min="0" max="10" step="1" value="4">
       <output id="countdownValue" for="countdownRange">4</output>
-    </div>
-
-    <!--Spec クリック音の音量を設定する
-    ・ユーザは 0-10 レベルで選択するが、内部的には0.0-2.0で設定する。
-    ・設定の見た目は、拍数やカウントインと同じCSSにする。
-    -->
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Volume (0–10)</span>
-      <span class="lang" data-lang="ja">ボリューム（0〜10）</span>
-    </div>
-
-    <div class="preferenceValue preferenceValueCentered">
-      <input type="range" id="clickVolumeRange" min="0" max="10" step="1" value="5">
-      <output id="clickVolumeValue" for="clickVolumeRange">5</output>
-    </div>
-
-    <div class="preferenceTitle">
-      <span class="lang" data-lang="en">Other</span>
-      <span class="lang" data-lang="ja">その他</span>
-    </div>
-
-    <!--Spec その他設定ボタン
-      ・Init.ボタン
-        現在編集中の楽譜情報を破棄して設定値を初期化する。configBeat.html画面やconfigScore.html画面で設定した情報は、
-        すべて初期値に戻る。初期値は次の通り。
-          テンポ=60, クリック数=4, カウントイン=4, 拍子=4/4, 進行="", リズム=OFF, パターン=全て4&●, 小節数=8
-        Init.ボタンは、現在の楽譜を破棄するため、注意を促すダイアログを表示してから実行する。
-    -->
-    <div class="preferenceExec isRow4">
-        <button id="initScore" type="button" class="chipButton">
-          <span class="material-symbols-rounded" aria-hidden="true">cached</span>
-          <span class="lang" data-lang="en">Init.</span>
-          <span class="lang" data-lang="ja">初期化</span>
-        </button>
     </div>
 
   </main>
@@ -156,8 +177,105 @@
     <small>&copy; 2025 tatsu. All rights reserved.</small>
   </footer>
 
+  <dialog id="tempoTipsDialog" class="tipsDialog" aria-labelledby="tempoTipsTitle">
+    <div class="tipsDialogTitle" id="tempoTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the tempo by turning the dial from 30 to 240 BPM.<br>
+        ・Use the dial or the step buttons to change the value.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・テンポはダイアルを回して、30〜240 BPMの範囲で設定します。<br>
+        ・ダイヤルや刻み幅ボタンで値を変更できます。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="beatsTipsDialog" class="tipsDialog" aria-labelledby="beatsTipsTitle">
+    <div class="tipsDialogTitle" id="beatsTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the number of beats from 1 to 16.<br>
+        ・When you change the beat count, the tone selectors below are also updated.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・拍数は1〜16の範囲で設定します。<br>
+        ・拍数を変えると、下の音色選択もそれに合わせて更新されます。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="toneTipsDialog" class="tipsDialog" aria-labelledby="toneTipsTitle">
+    <div class="tipsDialogTitle" id="toneTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・You can set the click tone for each beat.<br>
+        ・Choose H for High (A5), L for Low (A4), or — for None.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・各拍ごとにクリック音の音色を設定できます。<br>
+        ・H は High (A5)、L は Low (A4)、— は音なしです。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="countInTipsDialog" class="tipsDialog" aria-labelledby="countInTipsTitle">
+    <div class="tipsDialogTitle" id="countInTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        ・Set the count-in from 0 to 10 beats.<br>
+        ・A larger value gives you more beats before playback starts.<br>
+        ・The setting is saved when you press "Done".<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・カウントインは0〜10拍の範囲で設定します。<br>
+        ・値を大きくすると、再生開始前のカウントが長くなります。<br>
+        ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
 </body>
 </html>
-
-
-

@@ -3,8 +3,8 @@
 import { clickSound, getMaxVolume, restoreAudioContext } from "../../lib/Sound.js";
 import { chordPool } from "../../lib/guiterCode.js";
 import { ConfigStore } from "../utils/store.js";
-import { getLangMsg } from "../../lib/Language.js";
 import { loadEditScoreDraft } from "../utils/editScoreDraft.js";
+import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得
@@ -21,15 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const countdownSelect = document.getElementById("countdown");
   const store = new ConfigStore();
 
-  /**
-   * editScore ドラフトを取得する。
-   * @returns {object|null}
-   */
-  const getEditScoreDraft = () => {
-    const draft = loadEditScoreDraft();
-    return draft && typeof draft === "object" ? draft : null;
-  };
-
   // タイマーと状態
   let cycleTimerId = null;
   let countdownTimerId = null;
@@ -39,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentBeatMs = null;
   let isPaused = false;
   let currentClickVolume = null;
+  // 1拍ごとの再生キー(A5/A4/"")を保持する。空文字は無音。
+  let currentClickTonePattern = null;
 
   // 値の読み取りユーティリティ
   const getNumberValue = (value, fallback) => {
@@ -53,6 +46,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const stored = sessionStorage.getItem(storageKey);
     return getNumberValue(stored, fallback);
+  };
+
+  /**
+   * editScore の一時ドラフトを取得する。
+   * @returns {object|null}
+   */
+  const getEditScoreDraft = () => {
+    const draft = loadEditScoreDraft();
+    return draft && typeof draft === "object" ? draft : null;
   };
 
   // 現在の設定値
@@ -70,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const value = getSettingValue(clickCountSelect, "bclick.clickCount", 4);
       return value >= 0 ? value : 4;
     }
-    // clickCountSelect が存在しない画面（editScore等）ではドラフトを優先して読む
     const draftValue = getEditScoreDraft()?.clickCount;
     if (Number.isFinite(draftValue) && draftValue >= 0) {
       return draftValue;
@@ -83,6 +84,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (countdownSelect) {
       const value = getSettingValue(countdownSelect, "bclick.countdown", 4);
       return value >= 0 ? value : 4;
+    }
+    const draftValue = getEditScoreDraft()?.countIn;
+    if (Number.isFinite(draftValue) && draftValue >= 0) {
+      return draftValue;
     }
     const storedValue = store.getCountInSec();
     return typeof storedValue === "number" && storedValue >= 0 ? storedValue : 4;
@@ -119,6 +124,26 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /**
+   * 保存済みのクリック音色パターンを再読み込みする。
+   * @param {number} beatCount
+   */
+  const refreshClickTonePattern = (beatCount) => {
+    const draftPattern = getEditScoreDraft()?.clickTonePattern;
+    if (Array.isArray(draftPattern)) {
+      const targetCount = Number.isFinite(beatCount) && beatCount > 0 ? beatCount : getClickCount();
+      const normalized = draftPattern
+        .map((tone) => (typeof tone === "string" ? tone : ""))
+        .slice(0, targetCount);
+      while (normalized.length < targetCount) {
+        normalized.push(normalized.length % 4 === 0 ? "A5" : "A4");
+      }
+      currentClickTonePattern = normalized;
+      return;
+    }
+    currentClickTonePattern = store.getClickTonePattern(beatCount);
+  };
+
+  /**
    * 現在の楽譜から小節数を推定する。
    * @returns {number|null}
    */
@@ -143,6 +168,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (Number.isFinite(count)) {
       window.bclickScoreBarCount = count;
     }
+  };
+
+  // 音声停止バナーの表示/非表示
+  const showAudioResumeBanner = () => {
+    const banner = document.getElementById("audioResumeBanner");
+    if (banner) banner.hidden = false;
+  };
+
+  const hideAudioResumeBanner = () => {
+    const banner = document.getElementById("audioResumeBanner");
+    if (banner) banner.hidden = true;
   };
 
   // UI更新
@@ -206,26 +242,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /**
    * クリック音を拍に応じて鳴らす。
-   * @param {boolean} isFirstBeat
+   * @param {number} beatIndex
    */
-  const playClickSound = (isFirstBeat) => {
-    const key = isFirstBeat ? "A5" : "A4";
-    clickSound(currentClickVolume ?? undefined, key);
+  const playClickSound = (beatIndex) => {
+    // 保存値が無い場合のフォールバックも、configBeat の既定値ルールに揃える。
+    const fallbackTone = beatIndex % 4 === 0 ? "A5" : "A4";
+    // 空文字("") は「無音」の有効値なので、フォールバック判定には nullish を使う。
+    const tone = currentClickTonePattern?.[beatIndex] ?? fallbackTone;
+    if (tone === "") return;
+    clickSound(currentClickVolume ?? undefined, tone);
   };
 
   //##Spec クリック音とクリックBoxの表示切替は、体感ズレを最小化するため可能な限りタイミングを合わせる。
+  //##Spec 外部モジュール（recordingManagerなど）がクリックサイクルの開始を検知できるよう
+  //        bclick:clickcyclestarted イベントを発火する。startClickBoxCycle の末尾で呼ぶ。
+  //##Spec 楽譜が1周してbeat 0に戻るとき bclick:clickscorelooprestarted を発火する（録音再生の再同期用）。
+  //        setInterval コールバック内で直接発火することで、rAF の1フレーム遅延を排除している。
   const startCycleTimer = () => {
     if (cycleBoxes.length === 0 || currentBeatMs === null) return;
     clearCycleTimer();
     cycleTimerId = setInterval(() => {
       const nextIndex = (cycleIndex + 1) % cycleBoxes.length;
-      const isFirstBeat = nextIndex === 0;
-      playClickSound(isFirstBeat);
+      playClickSound(nextIndex);
+      // beat 0 に戻ったとき、楽譜の全小節を回り終えていたらスコアループを通知する
+      // （window.bclickActiveChordIndex は rAF 内の scrollToNextBar で更新されるが、
+      //   beatMs >> 16ms なので前の rAF は必ず完了しており、値は最新）
+      if (nextIndex === 0) {
+        const barCount = window.bclickScoreBarCount;
+        const currentBarIndex = window.bclickActiveChordIndex;
+        if (
+          Number.isFinite(barCount) && barCount > 0 &&
+          Number.isFinite(currentBarIndex) && currentBarIndex === barCount - 1
+        ) {
+          document.dispatchEvent(new CustomEvent("bclick:clickscorelooprestarted"));
+        }
+      }
       requestAnimationFrame(() => {
         cycleBoxes[cycleIndex].classList.remove("active");
         cycleIndex = nextIndex;
         cycleBoxes[cycleIndex].classList.add("active");
-        if (isFirstBeat) {
+        if (nextIndex === 0) {
           // 1周ごとに次の小節番号へスクロールする。
           scrollToNextBar();
         }
@@ -302,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cycleIndex = 0;
     currentBeatMs = beatMs;
 
-    playClickSound(true);
+    playClickSound(0);
     requestAnimationFrame(() => {
       cycleBoxes.forEach((box) => box.classList.remove("active"));
       cycleBoxes[0].classList.add("active");
@@ -310,6 +366,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     startCycleTimer();
+    //##Spec クリックサイクルの実開始を外部モジュール（録音制御など）へ通知する
+    document.dispatchEvent(new CustomEvent("bclick:clickcyclestarted", {
+      detail: { beatMs, beatCount: boxes.length },
+    }));
   };
 
   const updateTempo = (tempo) => {
@@ -329,9 +389,15 @@ document.addEventListener("DOMContentLoaded", () => {
   //##Spec Safariなどで長時間放置後にAudioContextが停止するため、再生開始時に必ず復帰を試みる。
   const startPlayback = async () => {
     const wasRunning = isRunning;
-    await restoreAudioContext(!wasRunning);
+    const restored = await restoreAudioContext(!wasRunning);
 
     if (isRunning) {
+      return;
+    }
+
+    // AudioContext の復帰に失敗した場合はバナーを表示して処理を中断する
+    if (!restored) {
+      showAudioResumeBanner();
       return;
     }
 
@@ -340,6 +406,8 @@ document.addEventListener("DOMContentLoaded", () => {
       isPaused = false;
       setOperationEnabled(true);
       startCycleTimer();
+      //##Spec 一時停止からの再開を外部モジュール（録音制御など）へ通知する
+      document.dispatchEvent(new CustomEvent("bclick:clickresumed"));
       return;
     }
 
@@ -353,6 +421,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const clickCount = getClickCount();
     let countdown = getCountdown();
     refreshClickVolume();
+    refreshClickTonePattern(clickCount);
 
     renderClickBoxes(clickCount);
     isRunning = true;
@@ -392,6 +461,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const setClickBoxes = () => {
     const clickCount = getClickCount();
     renderClickBoxes(clickCount);
+    refreshClickTonePattern(clickCount);
     clearCycleTimer();
     if (countdownTimerId !== null) {
       clearInterval(countdownTimerId);
@@ -427,6 +497,8 @@ document.addEventListener("DOMContentLoaded", () => {
       scrollContainer.scrollTo({ top: 0, behavior: "auto" });
     }
     setClickBoxes();
+    //##Spec 完全停止を外部モジュール（録音制御など）へ通知する
+    document.dispatchEvent(new CustomEvent("bclick:clickreset"));
   };
 
   /**
@@ -442,6 +514,8 @@ document.addEventListener("DOMContentLoaded", () => {
     isPaused = true;
     setOverlayVisible(false);
     setOperationEnabled(true);
+    //##Spec 一時停止を外部モジュール（録音制御など）へ通知する
+    document.dispatchEvent(new CustomEvent("bclick:clickpaused"));
   };
 
   // イベント登録
@@ -484,12 +558,37 @@ document.addEventListener("DOMContentLoaded", () => {
   //##Spec 復帰イベントではユーザー操作が無い場合に失敗することがあるが、可能な限り復帰を試みる。
   window.addEventListener("pageshow", () => {
     refreshClickVolume();
+    refreshClickTonePattern(getClickCount());
     void restoreAudioContext();
   });
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) return;
     void restoreAudioContext();
+  });
+
+  //##Spec Safari がアイドル時に AudioContext を停止した場合、Sound.js からイベントが発火する。
+  // メトロノーム再生中のみバナーを表示してユーザーに復帰操作を促す。
+  window.addEventListener("bclick:audioContextSuspended", () => {
+    if (isRunning) {
+      showAudioResumeBanner();
+    }
+  });
+
+  // バナーのタップでユーザー操作として AudioContext の復帰を試みる
+  const audioResumeButton = document.getElementById("audioResumeButton");
+  if (audioResumeButton) {
+    audioResumeButton.addEventListener("click", async () => {
+      const restored = await restoreAudioContext(true);
+      if (restored) {
+        hideAudioResumeBanner();
+      }
+    });
+  }
+
+  //##Spec 外部モジュール（録音制御など）からクリックを強制リセットするためのイベントを受け付ける
+  document.addEventListener("bclick:forceReset", () => {
+    resetPlayback();
   });
 
   window.addEventListener("storage", (event) => {
@@ -503,6 +602,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // ボリュームの更新は次に再生するクリック音のボリュームに反映する。
     if (event.key === "bclick.clickVolume") {
       refreshClickVolume();
+      return;
+    }
+
+    if (event.key === "bclick.clickTonePattern") {
+      refreshClickTonePattern(getClickCount());
     }
   });
 });

@@ -1,5 +1,10 @@
 /* editScore.html 専用スタイル */
 
+/* editScore は Tips ボタンを先頭に置くため、row-reverse を打ち消す */
+.preferenceTitleWithTip.tipButtonLeft {
+  flex-direction: row;
+}
+
 /* html 要素の高さを viewport に制限しつつ、スクロールは許可する */
 html {
   height: 100svh;
@@ -38,6 +43,11 @@ main {
   padding-bottom: 3px;
 }
 
+main.pageFrame.isFileDragOver {
+  background-color: #eef8f1;
+  box-shadow: inset 0 0 0 3px #1e7a4f;
+}
+
 #playClicking {
   position: sticky;
   top: 0;
@@ -47,6 +57,30 @@ main {
   width: calc(100% - 6px);
   border-radius: 3px;
   background-color: mintcream;
+  /* ボタン類を横並びかつ縦方向・水平方向ともにセンター揃えにする */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* 再生モード選択プルダウン。chipButtonと同じ高さ・見た目に揃える */
+/* rhythmSelectWrap の width:100% / height:100% を上書きして固定サイズにする */
+.playModeSelectWrap {
+  width: 58px;    /* rhythmSelectWrap の width:100% を上書き */
+  height: 40px;   /* rhythmSelectWrap の height:100% を上書き（chipButtonに合わせた高さ）*/
+  min-height: 28px;
+  font-size: 0.85em;
+  flex-shrink: 0;
+}
+
+/* ドロップダウンを開いたときのオプション文字列をセンター寄せにする */
+/* select の padding: 4px 10px を上書きして左余白を詰める */
+#playModeSelect {
+  padding: 0;
+  text-align: center;
+  text-align-last: center;
 }
 
 #scorePane {
@@ -62,9 +96,11 @@ main {
 
   display: flex;
   gap: 2px;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.6em;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  width: 100%;
+
   text-align: center;
 
   border:0px solid black;
@@ -250,6 +286,26 @@ main {
   width: 100%;
 }
 
+#editScorePreference > .preferenceTitleWithTip,
+#editScoreBarsPerRow > .preferenceTitleWithTip,
+main.pageFrame > .preferenceTitleWithTip {
+  width: 100%;
+}
+
+#editScorePreference > .preferenceTitleWithTip {
+  margin-top: 3px;
+}
+
+#editScoreBarsPerRow + .preferenceTitleWithTip {
+  margin-top: 3px;
+}
+
+/* editScore の BPM サマリーは index のBPMサマリーを同じ見た目にする */
+#editScorePreference {
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+}
+
 main.pageFrame > .preferenceTitle {
   width: 100%;
 }
@@ -280,6 +336,13 @@ main.pageFrame > .preferenceTitle {
   content: "ON";
   right: 18px;
   color: #0f6a3d;
+}
+
+/* editScore の BPM サマリーは index と同じく内容高さで見せる */
+#editScorePreferenceSummery .preferenceNow,
+#editScorePreferenceSummery .preferenceValue {
+  height: auto;
+  align-self: center;
 }
 
 .preferenceValueCentered {
