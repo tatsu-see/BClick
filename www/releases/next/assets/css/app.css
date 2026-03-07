@@ -82,6 +82,19 @@ select {
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
 }
 
+.rhythmSelectWrap.clickBox {
+  margin: 0;
+  min-width: 0;
+  flex: 1 1 0;
+  height: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1px solid black;
+  border-radius: 3px;
+  background: white;
+  box-shadow: none;
+}
+
 /* iOS でも中央寄せに見せるための表示用ラベル */
 .rhythmSelectLabel {
   position: absolute;
@@ -107,7 +120,9 @@ select {
 
 /* クリック音色の表示は少し小さめにする */
 .rhythmSelectLabelTone {
-  font-size: 0.65em;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1;
 }
 
 /* ネイティブ select は透明で上に載せて操作だけ残す */

@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const safeCount = Number.isFinite(count) ? Math.max(1, count) : 1;
     selectedClickTones = buildTonePattern(safeCount, selectedClickTones);
     clickToneSelectors.textContent = "";
-    selectedClickTones.forEach((tone, index) => {
+      selectedClickTones.forEach((tone, index) => {
       const select = document.createElement("select");
       select.dataset.beatIndex = index.toString();
       select.setAttribute("aria-label", `Select tone for beat ${index + 1}`);
@@ -135,9 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
           ? nextValue
           : getDefaultToneForIndex(index);
       });
-      clickToneSelectors.appendChild(
-        buildCenteredSelectWrap(select, { labelClass: "rhythmSelectLabelTone" }),
-      );
+      const wrappedSelect = buildCenteredSelectWrap(select, { labelClass: "rhythmSelectLabelTone" });
+      wrappedSelect.classList.add("clickBox");
+      clickToneSelectors.appendChild(wrappedSelect);
     });
   };
 

@@ -24,6 +24,21 @@
   padding: 0 1px;
 }
 
+/* 音色セレクトの表示文字とドロップダウン候補を中央寄せにする */
+#clickToneSelectors .rhythmSelectInput {
+  text-align: center;
+  text-align-last: center;
+  -moz-text-align-last: center;
+  text-indent: 0;
+  padding-inline: 0;
+}
+
+#clickToneSelectors .rhythmSelectInput option {
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .toneLegend {
   font-size: 0.6em;
   color: #333;
