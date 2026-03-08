@@ -1,7 +1,7 @@
 import { ConfigStore } from "../utils/store.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { isLanguage } from "../../lib/Language.js";
-import { chordPositions } from "../data/chords/index.js";
+import { chordPositions } from "../data/chords/index.js?v=20260308";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -290,3 +290,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
