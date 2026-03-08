@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderBarres(chord.barres);
     const fingerLabelMap = isLanguage("ja")
       ? { 1: "人", 2: "中", 3: "薬", 4: "小", 5: "親" }
-      : null;
+      : { 5: "T" };
     const barreFrets = new Set(
       (chord.barres || []).map((barre) => barre.fret),
     );
