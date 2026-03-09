@@ -183,6 +183,22 @@ header {
   color: darkslategray
 }
 
+/* アプリ説明文セクション（AdSense審査向けコンテンツ） */
+.appDesc {
+  width: calc(100% - 6px); /* ヘッダー・mainと同じ幅 */
+  max-width: 800px;        /* ヘッダー・mainと同じ最大幅 */
+  margin-left: auto;       /* 中央揃え */
+  margin-right: auto;      /* 中央揃え */
+  margin-bottom: 3px;      /* mainとの隙間（headerのmargin-bottomに合わせる） */
+  text-align: center;
+  font-size: 0.43rem;      /* 小さめ */
+  font-weight: 300;
+  color: darkgreen;          /* タイトルと同色 */
+  background-color: mintcream; /* ヘッダー・mainと同じ背景色 */
+  padding: 2px 3px 4px; /* 左右はheaderのpaddingに合わせて3px */
+  border-radius: 3px;      /* ヘッダー・mainと同じ角丸 */
+}
+
 /* タイトル内のBアイコン */
 .titleIcon {
   height: 0.8em; /* 文字サイズに合わせる */
