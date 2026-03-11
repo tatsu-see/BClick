@@ -137,28 +137,41 @@ function getMaxVolume() {
 
 /**
  * クリック音を鳴らす。
+ * @param {number} volume - 音量
+ * @param {string} key - 音階キー
+ * @param {number|null} startTime - 再生開始時刻（audioContext.currentTime 基準）。null なら即時再生。
  */
-function clickSound(volume = MaxVolume, key = "A5") {
+function clickSound(volume = MaxVolume, key = "A5", startTime = null) {
   const ctx = getAudioContext();
   // AudioContext が実行中でなければ音を鳴らさない（バナー経由でユーザーに復帰を促す）
   if (ctx.state !== "running") return;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  const now = ctx.currentTime;
+  // startTime が指定されていればその時刻に、なければ即時再生
+  const schedTime = startTime !== null ? startTime : ctx.currentTime;
 
   osc.type = "triangle";   // 角が丸い音色に寄せる
   osc.frequency.value = KeyFrequencies[key] ?? KeyFrequencies.A5;
-  
+
   // 簡易エンベロープでアタック/リリースをつける
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.linearRampToValueAtTime(volume, now + 0.015);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+  gain.gain.setValueAtTime(0.0001, schedTime);
+  gain.gain.linearRampToValueAtTime(volume, schedTime + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, schedTime + 0.32);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
 
-  osc.start();
-  osc.stop(now + 0.33); // 余韻を少し残す
+  osc.start(schedTime);
+  osc.stop(schedTime + 0.33); // 余韻を少し残す
 }
 
-export { clickSound, getMaxVolume, KeyFrequencies, warmUpAudioContext, restoreAudioContext };
+/**
+ * AudioContext の現在時刻を返す。
+ * Web Audio API スケジューリングで使用するオーディオクロック基準の時刻。
+ * @returns {number}
+ */
+function getAudioCurrentTime() {
+  return getAudioContext().currentTime;
+}
+
+export { clickSound, getMaxVolume, KeyFrequencies, warmUpAudioContext, restoreAudioContext, getAudioCurrentTime };

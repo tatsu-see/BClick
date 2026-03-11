@@ -1,7 +1,14 @@
 // click.js
 // クリック再生画面の音再生制御とUI同期を行う。
-import { clickSound, getMaxVolume, restoreAudioContext } from "../../lib/Sound.js";
-import { chordPool } from "../../lib/guiterCode.js";
+
+/*Spec
+・クリック音の同期のための技術ポイントは次の３つ
+  1．setTimeoutとドリフト補正
+  2．Web Audio API スケジューリングによる時間指定の再生
+  3. Workerによるタイマー制御（今回は採用せず、将来の検討課題）
+ */
+
+import { clickSound, getMaxVolume, restoreAudioContext, getAudioCurrentTime } from "../../lib/Sound.js";
 import { ConfigStore } from "../utils/store.js";
 import { loadEditScoreDraft } from "../utils/editScoreDraft.js";
 import { getLangMsg } from "../../lib/Language.js";
@@ -21,9 +28,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const countdownSelect = document.getElementById("countdown");
   const store = new ConfigStore();
 
+  // スケジューラ定数
+  //##Spec 100ms先まで音を予約することで、JavaScriptのタイマー遅延の影響を排除する。
+  const LOOKAHEAD_SEC = 0.1;       // Web Audio スケジューリングの先読み時間（秒）
+  const SCHEDULE_INTERVAL_MS = 25; // スケジューラの実行間隔（ms）
+
   // タイマーと状態
-  let cycleTimerId = null;
-  let countdownTimerId = null;
+  let scheduleTimerId = null;      // スケジューラの再帰 setTimeout ID
+  let nextBeatAudioTime = null;    // 次にスケジュールする拍の audioContext 時刻
+  let scheduledBeatIndex = 0;      // 次にスケジュールする拍のインデックス（0〜clickCount-1）
+  let scheduledCountdown = 0;      // カウントダウン残り拍数（スケジュール未済分）
   let isRunning = false;
   let cycleBoxes = [];
   let cycleIndex = 0;
@@ -208,20 +222,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // タイマー停止
-  const clearCycleTimer = () => {
-    if (cycleTimerId !== null) {
-      clearInterval(cycleTimerId);
-      cycleTimerId = null;
+  // スケジューラ停止
+  const stopScheduler = () => {
+    if (scheduleTimerId !== null) {
+      clearTimeout(scheduleTimerId);
+      scheduleTimerId = null;
     }
   };
 
   const clearTimers = () => {
-    clearCycleTimer();
-    if (countdownTimerId !== null) {
-      clearInterval(countdownTimerId);
-      countdownTimerId = null;
-    }
+    stopScheduler();
+    nextBeatAudioTime = null;
+    scheduledBeatIndex = 0;
+    scheduledCountdown = 0;
     cycleBoxes = [];
     cycleIndex = 0;
     currentBeatMs = null;
@@ -241,52 +254,112 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /**
-   * クリック音を拍に応じて鳴らす。
+   * クリック音を指定時刻にスケジュールする。
    * @param {number} beatIndex
+   * @param {number} audioTime - audioContext.currentTime 基準の再生時刻
    */
-  const playClickSound = (beatIndex) => {
+  const scheduleClickSound = (beatIndex, audioTime) => {
     // 保存値が無い場合のフォールバックも、configBeat の既定値ルールに揃える。
     const fallbackTone = beatIndex % 4 === 0 ? "A5" : "A4";
     // 空文字("") は「無音」の有効値なので、フォールバック判定には nullish を使う。
     const tone = currentClickTonePattern?.[beatIndex] ?? fallbackTone;
     if (tone === "") return;
-    clickSound(currentClickVolume ?? undefined, tone);
+    clickSound(currentClickVolume ?? undefined, tone, audioTime);
   };
 
   //##Spec クリック音とクリックBoxの表示切替は、体感ズレを最小化するため可能な限りタイミングを合わせる。
   //##Spec 外部モジュール（recordingManagerなど）がクリックサイクルの開始を検知できるよう
   //        bclick:clickcyclestarted イベントを発火する。startClickBoxCycle の末尾で呼ぶ。
   //##Spec 楽譜が1周してbeat 0に戻るとき bclick:clickscorelooprestarted を発火する（録音再生の再同期用）。
-  //        setInterval コールバック内で直接発火することで、rAF の1フレーム遅延を排除している。
-  const startCycleTimer = () => {
-    if (cycleBoxes.length === 0 || currentBeatMs === null) return;
-    clearCycleTimer();
-    cycleTimerId = setInterval(() => {
-      const nextIndex = (cycleIndex + 1) % cycleBoxes.length;
-      playClickSound(nextIndex);
-      // beat 0 に戻ったとき、楽譜の全小節を回り終えていたらスコアループを通知する
-      // （window.bclickActiveChordIndex は rAF 内の scrollToNextBar で更新されるが、
-      //   beatMs >> 16ms なので前の rAF は必ず完了しており、値は最新）
-      if (nextIndex === 0) {
-        const barCount = window.bclickScoreBarCount;
-        const currentBarIndex = window.bclickActiveChordIndex;
-        if (
-          Number.isFinite(barCount) && barCount > 0 &&
-          Number.isFinite(currentBarIndex) && currentBarIndex === barCount - 1
-        ) {
-          document.dispatchEvent(new CustomEvent("bclick:clickscorelooprestarted"));
+  //##Spec Web Audio スケジューリングで先読み予約し、音はオーディオクロック基準で正確に鳴らす。
+  //        UIアップデートは setTimeout で音の再生タイミングに合わせて実行する。
+  const runScheduler = () => {
+    if (!isRunning || nextBeatAudioTime === null) return;
+    const lookaheadEnd = getAudioCurrentTime() + LOOKAHEAD_SEC;
+
+    while (nextBeatAudioTime < lookaheadEnd) {
+      const beatTime = nextBeatAudioTime;
+      // 最後のカウントダウン拍では時刻を進めず、beat 0 を同タイミングで開始する
+      let advanceTime = true;
+
+      if (scheduledCountdown > 0) {
+        // カウントダウン拍をスケジュール
+        const remaining = scheduledCountdown - 1;
+        if (remaining === 0) {
+          // 最後のカウントダウン拍：音なし、オーバーレイを非表示にする
+          // nextBeatAudioTime を進めないことで beat 0 が同タイミングで鳴る
+          const uiDelay = Math.max(0, (beatTime - getAudioCurrentTime()) * 1000);
+          setTimeout(() => {
+            updateCountdownDisplay(0);
+            setOverlayVisible(false);
+          }, uiDelay);
+          scheduledCountdown = 0;
+          advanceTime = false;
+        } else {
+          // カウントダウン音をスケジュール（残り拍に応じて音量を上げる）
+          clickSound(currentClickVolume / remaining, "A4", beatTime);
+          const uiDelay = Math.max(0, (beatTime - getAudioCurrentTime()) * 1000);
+          const dispRemaining = remaining;
+          setTimeout(() => {
+            updateCountdownDisplay(dispRemaining);
+          }, uiDelay);
+          scheduledCountdown--;
         }
+      } else {
+        // メイン拍をスケジュール
+        const beatIdx = scheduledBeatIndex;
+
+        // beat 0 に戻ったとき、楽譜の全小節を回り終えていたらスコアループを通知する
+        if (beatIdx === 0) {
+          const barCount = window.bclickScoreBarCount;
+          const currentBarIndex = window.bclickActiveChordIndex;
+          if (
+            Number.isFinite(barCount) && barCount > 0 &&
+            Number.isFinite(currentBarIndex) && currentBarIndex === barCount - 1
+          ) {
+            const evtDelay = Math.max(0, (beatTime - getAudioCurrentTime()) * 1000);
+            setTimeout(() => {
+              document.dispatchEvent(new CustomEvent("bclick:clickscorelooprestarted"));
+            }, evtDelay);
+          }
+        }
+
+        // 音をスケジュール
+        scheduleClickSound(beatIdx, beatTime);
+
+        // UIアップデートを予約（音が鳴るタイミングに合わせる）
+        const uiDelay = Math.max(0, (beatTime - getAudioCurrentTime()) * 1000);
+        const uiBeatIdx = beatIdx;
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            cycleBoxes[cycleIndex]?.classList.remove("active");
+            cycleIndex = uiBeatIdx;
+            cycleBoxes[cycleIndex]?.classList.add("active");
+            if (uiBeatIdx === 0) {
+              // 1周ごとに次の小節番号へスクロールする。
+              scrollToNextBar();
+            }
+          });
+        }, uiDelay);
+
+        scheduledBeatIndex = (scheduledBeatIndex + 1) % cycleBoxes.length;
       }
-      requestAnimationFrame(() => {
-        cycleBoxes[cycleIndex].classList.remove("active");
-        cycleIndex = nextIndex;
-        cycleBoxes[cycleIndex].classList.add("active");
-        if (nextIndex === 0) {
-          // 1周ごとに次の小節番号へスクロールする。
-          scrollToNextBar();
-        }
-      });
-    }, currentBeatMs);
+
+      if (advanceTime) {
+        nextBeatAudioTime += currentBeatMs / 1000;
+      }
+    }
+
+    // 再帰 setTimeout でスケジューラを継続
+    scheduleTimerId = setTimeout(runScheduler, SCHEDULE_INTERVAL_MS);
+  };
+
+  /**
+   * スケジューラを起動する。
+   */
+  const startScheduler = () => {
+    stopScheduler();
+    scheduleTimerId = setTimeout(runScheduler, 0);
   };
 
   const scrollToNextBar = () => {
@@ -357,15 +430,11 @@ document.addEventListener("DOMContentLoaded", () => {
     cycleBoxes = boxes;
     cycleIndex = 0;
     currentBeatMs = beatMs;
+    scheduledBeatIndex = 0;
+    // beat 0 を即時スケジュール（わずかな先読み時間を確保）
+    nextBeatAudioTime = getAudioCurrentTime() + 0.01;
 
-    playClickSound(0);
-    requestAnimationFrame(() => {
-      cycleBoxes.forEach((box) => box.classList.remove("active"));
-      cycleBoxes[0].classList.add("active");
-      scrollToNextBar();
-    });
-
-    startCycleTimer();
+    startScheduler();
     //##Spec クリックサイクルの実開始を外部モジュール（録音制御など）へ通知する
     document.dispatchEvent(new CustomEvent("bclick:clickcyclestarted", {
       detail: { beatMs, beatCount: boxes.length },
@@ -375,8 +444,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateTempo = (tempo) => {
     if (!Number.isFinite(tempo) || tempo <= 0) return;
     currentBeatMs = 60000 / tempo;
-    if (isRunning && cycleTimerId !== null) {
-      startCycleTimer();
+    if (isRunning && scheduleTimerId !== null) {
+      // テンポ変更時はスケジューラを再起動して次の拍から新テンポを反映
+      stopScheduler();
+      nextBeatAudioTime = getAudioCurrentTime();
+      scheduledBeatIndex = (cycleIndex + 1) % (cycleBoxes.length || 1);
+      startScheduler();
     }
   };
 
@@ -405,7 +478,10 @@ document.addEventListener("DOMContentLoaded", () => {
       isRunning = true;
       isPaused = false;
       setOperationEnabled(true);
-      startCycleTimer();
+      // 一時停止からの再開：1拍分の間隔を空けてから次の拍をスケジュール
+      nextBeatAudioTime = getAudioCurrentTime() + currentBeatMs / 1000;
+      scheduledBeatIndex = (cycleIndex + 1) % cycleBoxes.length;
+      startScheduler();
       //##Spec 一時停止からの再開を外部モジュール（録音制御など）へ通知する
       document.dispatchEvent(new CustomEvent("bclick:clickresumed"));
       return;
@@ -442,31 +518,19 @@ document.addEventListener("DOMContentLoaded", () => {
     clickSound(0.02, "A4");
     clickSound(currentClickVolume / countdown, "A4");
 
-    countdownTimerId = setInterval(() => {
-      countdown -= 1;
-
-      if (countdown <= 0) {
-        clearInterval(countdownTimerId);
-        countdownTimerId = null;
-        updateCountdownDisplay(0);
-        setOverlayVisible(false);
-        startClickBoxCycle(currentBeatMs ?? beatMs);
-        return;
-      }
-      updateCountdownDisplay(countdown);
-      clickSound(currentClickVolume / countdown, "A4");
-    }, beatMs);
+    // カウントダウン+メインループをスケジューラで一括管理
+    cycleBoxes = showClick ? Array.from(showClick.querySelectorAll(".clickBox")) : [];
+    scheduledCountdown = countdown;
+    scheduledBeatIndex = 0;
+    nextBeatAudioTime = getAudioCurrentTime() + beatMs / 1000;
+    startScheduler();
   };
 
   const setClickBoxes = () => {
     const clickCount = getClickCount();
     renderClickBoxes(clickCount);
     refreshClickTonePattern(clickCount);
-    clearCycleTimer();
-    if (countdownTimerId !== null) {
-      clearInterval(countdownTimerId);
-      countdownTimerId = null;
-    }
+    stopScheduler();
     isRunning = false;
     isPaused = false;
     setOverlayVisible(false);
@@ -505,11 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
    * クリック再生を一時停止する。
    */
   const pausePlayback = () => {
-    clearCycleTimer();
-    if (countdownTimerId !== null) {
-      clearInterval(countdownTimerId);
-      countdownTimerId = null;
-    }
+    stopScheduler();
     isRunning = false;
     isPaused = true;
     setOverlayVisible(false);
