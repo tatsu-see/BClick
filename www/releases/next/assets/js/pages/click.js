@@ -447,7 +447,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isRunning && scheduleTimerId !== null) {
       // テンポ変更時はスケジューラを再起動して次の拍から新テンポを反映
       stopScheduler();
-      nextBeatAudioTime = getAudioCurrentTime();
+      // 即鳴り防止：1拍後から新テンポを反映する
+      nextBeatAudioTime = getAudioCurrentTime() + currentBeatMs / 1000;
       scheduledBeatIndex = (cycleIndex + 1) % (cycleBoxes.length || 1);
       startScheduler();
     }
