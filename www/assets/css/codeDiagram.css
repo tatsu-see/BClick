@@ -78,6 +78,12 @@
   position: relative;
 }
 
+.toneLegend {
+  font-size: 0.6em;
+  color: #333;
+  text-align: center;
+}
+
 .fretCell.isHidden,
 .fretNumber.isHidden {
   display: none;

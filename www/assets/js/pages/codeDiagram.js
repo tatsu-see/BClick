@@ -1,6 +1,7 @@
 import { ConfigStore } from "../utils/store.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { isLanguage } from "../../lib/Language.js";
+import { chordPositions } from "../data/chords/index.js?v=20260308";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -12,6 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveButton = document.getElementById("saveCodeDiagram");
   const fretboard = document.querySelector(".fretboard");
   const MAX_FRET = 10;
+  const qualitySuffixMap = {
+    maj: "",
+    min: "m",
+    dim: "dim",
+    sus4: "sus4",
+  };
   let currentChord = "";
 
   /**
@@ -30,258 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // https://hikigatarisuto-labo.jp/category/guitar-code/
   // https://www.aki-f.com/chordbook/item.php?id=0_28
-
-  // メジャー
-  const majorChordPositions = {
-    C: {
-      positions: [
-        { string: 1, fret: 0 },
-        { string: 2, fret: 1, finger: 1 },
-        { string: 3, fret: 0 },
-        { string: 4, fret: 2, finger: 2 },
-        { string: 5, fret: 3, finger: 3 },
-        { string: 6, fret: -1 },
-      ],
-    },
-    D: {
-      positions: [
-        { string: 1, fret: 2, finger: 2 },
-        { string: 2, fret: 3, finger: 3 },
-        { string: 3, fret: 2, finger: 1 },
-        { string: 4, fret: 0 },
-        { string: 5, fret: -1 },
-        { string: 6, fret: -1 },
-      ],
-    },
-    E: {
-      positions: [
-        { string: 1, fret: 0 },
-        { string: 2, fret: 0 },
-        { string: 3, fret: 1, finger: 1 },
-        { string: 4, fret: 2, finger: 2 },
-        { string: 5, fret: 2, finger: 3 },
-        { string: 6, fret: 0 },
-      ],
-    },
-    F: {
-      positions: [
-        { string: 1, fret: 1, finger: 1 },
-        { string: 2, fret: 1, finger: 0 },
-        { string: 3, fret: 2, finger: 2 },
-        { string: 4, fret: 3, finger: 4 },
-        { string: 5, fret: 3, finger: 3 },
-        { string: 6, fret: 1, finger: 0 },
-      ],
-      barres: [
-        { fret: 1, fromString: 1, toString: 6 },
-      ],
-    },
-    G: {
-      positions: [
-        { string: 1, fret: 3, finger: 4 },
-        { string: 2, fret: 0 },
-        { string: 5, fret: 2, finger: 2 },
-        { string: 3, fret: 0 },
-        { string: 4, fret: 0 },
-        { string: 6, fret: 3, finger: 3 },
-      ],
-    },
-    A: {
-      positions: [
-        { string: 1, fret: 0 },
-        { string: 2, fret: 2, finger: 3 },
-        { string: 3, fret: 2, finger: 2 },
-        { string: 4, fret: 2, finger: 1 },
-        { string: 5, fret: 0 },
-        { string: 6, fret: -1 },
-      ],
-    },
-    B: {
-      positions: [
-        { string: 1, fret: 2, finger: 1 },
-        { string: 2, fret: 4, finger: 4 },
-        { string: 3, fret: 4, finger: 3 },
-        { string: 4, fret: 4, finger: 2 },
-        { string: 5, fret: 2, finger: 0 },
-        { string: 6, fret: -1 },
-      ],
-      barres: [
-        { fret: 2, fromString: 1, toString: 5 },
-      ],
-    },
-  };
-
-  // マイナー
-  const minorChordPositions = {
-    Cm: {
-      positions: [
-        { string: 1, fret: 3, finger: 1 },
-        { string: 2, fret: 4, finger: 2 },
-        { string: 3, fret: 5, finger: 4 },
-        { string: 4, fret: 5, finger: 3 },
-        { string: 5, fret: 3, finger: 0 },
-        { string: 6, fret: -1 },
-      ],
-      barres: [
-        { fret: 3, fromString: 1, toString: 5 },
-      ],
-    },
-    Dm: {
-      positions: [
-        { string: 1, fret: 1, finger: 1 },
-        { string: 2, fret: 3, finger: 3 },
-        { string: 3, fret: 2, finger: 2 },
-        { string: 4, fret: 0 },
-        { string: 5, fret: -1 },
-        { string: 6, fret: -1 },
-      ],
-    },
-    Em: {
-      positions: [
-        { string: 1, fret: 0 },
-        { string: 2, fret: 0 },
-        { string: 3, fret: 0 },
-        { string: 4, fret: 2, finger: 3 },
-        { string: 5, fret: 2, finger: 2 },
-        { string: 6, fret: 0 },
-      ],
-    },
-    Fm: {
-      positions: [
-        { string: 1, fret: 1, finger: 1 },
-        { string: 2, fret: 1, finger: 0 },
-        { string: 3, fret: 1, finger: 0 },
-        { string: 4, fret: 3, finger: 4 },
-        { string: 5, fret: 3, finger: 3 },
-        { string: 6, fret: 1, finger: 0 },
-      ],
-      barres: [
-        { fret: 1, fromString: 1, toString: 6 },
-      ],
-    },
-    Gm: {
-      positions: [
-        { string: 1, fret: 3, finger: 1 },
-        { string: 2, fret: 3, finger: 0 },
-        { string: 3, fret: 3, finger: 0 },
-        { string: 4, fret: 5, finger: 4 },
-        { string: 5, fret: 5, finger: 3 },
-        { string: 6, fret: 3, finger: 0 },
-      ],
-      barres: [
-        { fret: 3, fromString: 1, toString: 6 },
-      ],
-    },
-    Am: {
-      positions: [
-        { string: 1, fret: 0 },
-        { string: 2, fret: 1, finger: 1 },
-        { string: 3, fret: 2, finger: 3 },
-        { string: 4, fret: 2, finger: 2 },
-        { string: 5, fret: 0 },
-        { string: 6, fret: -1 },
-      ],
-    },
-    Bm: {
-      positions: [
-        { string: 1, fret: 2, finger: 1 },
-        { string: 2, fret: 3, finger: 3 },
-        { string: 3, fret: 4, finger: 4 },
-        { string: 4, fret: 4, finger: 2 },
-        { string: 5, fret: 2, finger: 0 },
-        { string: 6, fret: 2, finger: 0 },
-      ],
-      barres: [
-        { fret: 2, fromString: 1, toString: 6 },
-      ],
-    },
-  };
-
-  // ディミニッシュ
-  const dimChordPositions = {
-    Cdim: {
-      positions: [
-        { string: 1, fret: -1 },
-        { string: 2, fret: 4, finger: 4 },
-        { string: 3, fret: 2, finger: 1 },
-        { string: 4, fret: 4, finger: 3 },
-        { string: 5, fret: 3, finger: 2 },
-        { string: 6, fret: -1 },
-      ],
-    },
-    Ddim: {
-      positions: [
-        { string: 1, fret: 1, finger: 2 },
-        { string: 2, fret: 0 },
-        { string: 3, fret: 1, finger: 1 },
-        { string: 4, fret: 0 },
-        { string: 5, fret: -1 },
-        { string: 6, fret: -1 },
-      ],
-    },
-    Edim: {
-      positions: [
-        { string: 1, fret: 0 },
-        { string: 2, fret: 2, finger: 3 },
-        { string: 3, fret: 0 },
-        { string: 4, fret: 2, finger: 2 },
-        { string: 5, fret: 1, finger: 1 },
-        { string: 6, fret: 0 },
-      ],
-    },
-    Fdim: {
-      positions: [
-        { string: 1, fret: 1, finger: 2 },
-        { string: 2, fret: 0 },
-        { string: 3, fret: 1, finger: 1 },
-        { string: 4, fret: 0 },
-        { string: 5, fret: 0 },
-        { string: 6, fret: 1, finger: 5 },
-      ],
-    },
-    Gdim: {
-      positions: [
-        { string: 1, fret: -1 },
-        { string: 2, fret: 2, finger: 1 },
-        { string: 3, fret: 3, finger: 3 },
-        { string: 4, fret: 2, finger: 0 },
-        { string: 5, fret: -1 },
-        { string: 6, fret: 3, finger: 2 },
-      ],
-      barres: [
-        { fret: 2, fromString: 2, toString: 4 },
-      ],
-    },
-    Adim: {
-      positions: [
-        { string: 1, fret: 2, finger: 3 },
-        { string: 2, fret: 1, finger: 1 },
-        { string: 3, fret: 2, finger: 2 },
-        { string: 4, fret: 1, finger: 0 },
-        { string: 5, fret: 0 },
-        { string: 6, fret: -1 },
-      ],
-      barres: [
-        { fret: 1, fromString: 2, toString: 4 },
-      ],
-    },
-    Bdim: {
-      positions: [
-        { string: 1, fret: -1 },
-        { string: 2, fret: 3, finger: 4 },
-        { string: 3, fret: 1, finger: 1 },
-        { string: 4, fret: 3, finger: 3 },
-        { string: 5, fret: 2, finger: 2 },
-        { string: 6, fret: -1 },
-      ],
-    },
-  };
-
-  const chordPositions = {
-    ...majorChordPositions,
-    ...minorChordPositions,
-    ...dimChordPositions,
-  };
 
   /**
    * 指番号・ミュート表示をクリアする。
@@ -371,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderBarres(chord.barres);
     const fingerLabelMap = isLanguage("ja")
       ? { 1: "人", 2: "中", 3: "薬", 4: "小", 5: "親" }
-      : null;
+      : { 5: "T" };
     const barreFrets = new Set(
       (chord.barres || []).map((barre) => barre.fret),
     );
@@ -457,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!rootButton || !qualityButton) return null;
     const root = rootButton.dataset.root || rootButton.textContent.trim();
     const quality = qualityButton.dataset.quality || "maj";
-    const suffix = quality === "min" ? "m" : quality === "dim" ? "dim" : "";
+    const suffix = qualitySuffixMap[quality] ?? "";
     return `${root}${suffix}`;
   };
 
@@ -479,14 +234,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const savedChord = store.getCodeDiagramChord();
   if (savedChord) {
-    const isDim = savedChord.endsWith("dim");
-    const isMinor = !isDim && savedChord.endsWith("m");
-    const rootValue = isDim
-      ? savedChord.slice(0, -3)
-      : isMinor
-        ? savedChord.slice(0, -1)
-        : savedChord;
-    const qualityValue = isDim ? "dim" : isMinor ? "min" : "maj";
+    const qualityParseOrder = ["sus4", "dim", "min"];
+    const detectedQuality = qualityParseOrder.find((quality) =>
+      savedChord.endsWith(qualitySuffixMap[quality] || ""),
+    ) || "maj";
+    const detectedSuffix = qualitySuffixMap[detectedQuality] || "";
+    const rootValue = detectedSuffix.length > 0
+      ? savedChord.slice(0, -detectedSuffix.length)
+      : savedChord;
+    const qualityValue = detectedQuality;
     const rootButton =
       chordRootButtons.find((button) => (button.dataset.root || button.textContent.trim()) === rootValue)
       || chordRootButtons[0];
@@ -534,3 +290,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+

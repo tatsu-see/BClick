@@ -136,3 +136,131 @@
   font-size: 1.1em;
 }
 
+/* チューナーパネル：縦並びでセンター配置 */
+.tunerPanel {
+  flex-direction: column; /* 表示エリアとボタンを縦並びに */
+  gap: 10px;
+}
+
+/* チューナー表示エリア */
+.tunerDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 220px;
+}
+
+/* 検出音名（大きく表示） */
+.tunerNote {
+  font-size: 2.5em;
+  font-weight: 600;
+  color: #1e7a4f;
+  line-height: 1;
+  min-width: 3ch;
+  text-align: center;
+}
+
+/* Hz と cent を横並びにするサブ行 */
+.tunerSubRow {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* 周波数表示 */
+.tunerHz {
+  font-size: 0.65em;
+  color: #555;
+}
+
+/* セントバー行（♭ バー ♯） */
+.tunerCentRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 200px;
+}
+
+/* ♭ ♯ ラベル */
+.tunerCentLabel {
+  font-size: 0.75em;
+  color: #555;
+  min-width: 12px;
+  text-align: center;
+}
+
+/* 9ドット表示コンテナ */
+.tunerDots {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3px;
+}
+
+/* 各ドット（未点灯: グレー） */
+.tunerDot {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ccc;
+  transition: background 0.15s;
+}
+
+/* 中央ドット（未点灯時も少し目立たせる） */
+.tunerDotCenter {
+  width: 16px;
+  height: 16px;
+}
+
+/* ドット点灯：低い（フラット）→ 青 */
+.tunerDot.isFlat {
+  background: #2979ff;
+}
+
+/* ドット点灯：高い（シャープ）→ 赤 */
+.tunerDot.isSharp {
+  background: #e53935;
+}
+
+/* ドット点灯：合っている → 緑 */
+.tunerDot.isInTune {
+  background: #1e7a4f;
+}
+
+/* セント値テキスト */
+.tunerCentValue {
+  font-size: 0.65em;
+  color: #555;
+}
+
+/* ギター弦ガイド行 */
+.tunerStringGuide {
+  display: flex;
+  gap: 6px;
+  justify-content: center; /* センター寄せ */
+}
+
+/* 弦番号 + 音名の1セット */
+.tunerStringItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+/* 弦番号（小さめ） */
+.tunerStringNo {
+  font-size: 0.5em;
+  color: #888;
+}
+
+/* 音名 */
+.tunerStringNote {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: #444;
+}
+

@@ -33,6 +33,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const configScoreButton = document.getElementById("configScoreButton");
   const closeCodeDiagramButton = document.getElementById("closeCodeDiagram");
 
+  // 仕様:
+  // - テスト注意文言は初期状態で hidden にする
+  // - ルートページ (`/` または `/index.html`) 以外では表示
+  // - next 以外の release 配下や将来拡張時にも使えるよう app.js で一元管理する
+  const initReleaseNotice = () => {
+    const releaseNotice = document.getElementById("releaseNotice");
+    if (!releaseNotice) {
+      return;
+    }
+    const pathname = window.location.pathname || "";
+    const isRootPath = pathname === "/" || pathname === "/index.html";
+    if (!isRootPath) {
+      releaseNotice.hidden = false;
+    }
+  };
+
   const getNumberAttribute = (element, attrName, fallback) => {
     if (!element) return fallback;
     const raw = element.getAttribute(attrName);
@@ -382,8 +398,9 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "howto.html";
     });
   }
-});
 
+  initReleaseNotice();
+});
 
 
 

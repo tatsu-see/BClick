@@ -2,8 +2,8 @@
 <html translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="B.Click はギター練習向けのクリック/メトロノーム WEBアプリ。BPM、カウントイン、クリック数を設定でき、コード付きのリズム譜を作成できます。リズム譜を見ながら練習でき、練習パターンをファイル保存可能。 Guitar practice click/metronome web app. Set BPM, count-in, click count; create chord rhythm scores and save practice patterns.">
-  <meta name="keywords" content="ギター,練習,メトロノーム,クリック,テンポ,BPM,カウントイン,リズム,リズム譜,コード,練習パターン,保存,webアプリ,Guitar,practice,metronome,click,tempo,BPM,count-in,rhythm,score,chords,practice patterns,save,web app">
+  <meta name="description" content="B.Click はギター練習向けのクリック/メトロノーム WEBアプリ。BPM・カウントイン・クリック数設定、ギターチューナー、コード付きリズム譜作成、練習パターン保存が可能。Guitar practice click/metronome web app with built-in guitar tuner. Set BPM, count-in, click count; create chord rhythm scores and save practice patterns.">
+  <meta name="keywords" content="ギター,練習,メトロノーム,クリック,テンポ,BPM,カウントイン,リズム,リズム譜,コード,練習パターン,保存,チューナー,ギターチューニング,音程,webアプリ,Guitar,practice,metronome,click,tempo,BPM,count-in,rhythm,score,chords,practice patterns,save,tuner,guitar tuning,pitch detection,web app">
 
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111111">
@@ -41,22 +41,22 @@
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentBanner.js">
   <link rel="modulepreload" href="assets/js/actions/tips.js?v=20260307">
-  <link rel="modulepreload" href="assets/js/pages/app.js?v=20260307">
+  <link rel="modulepreload" href="assets/js/pages/app.js?v=20260308">
   <link rel="modulepreload" href="assets/js/actions/createScoreButton.js?v=20260307">
   <link rel="modulepreload" href="assets/js/actions/editScoreButton.js?v=20260307">
   <link rel="modulepreload" href="assets/js/actions/initScoreButton.js?v=20260307">
 
   <link rel="prefetch" href="configApp.html" as="document">
-  <link rel="prefetch" href="assets/css/configApp.css?v=20260307" as="style">
-  <link rel="prefetch" href="assets/js/pages/configApp.js?v=20260307" as="script">
+  <link rel="prefetch" href="assets/css/configApp.css?v=20260314" as="style">
+  <link rel="prefetch" href="assets/js/pages/configApp.js?v=20260314" as="script">
 
   <link rel="prefetch" href="howto.html" as="document">
   <link rel="prefetch" href="assets/css/howto.css?v=20260307" as="style">
   <link rel="prefetch" href="assets/js/pages/howto.js?v=20260307" as="script">
 
   <link rel="prefetch" href="configBeat.html" as="document">
-  <link rel="prefetch" href="assets/css/configBeat.css?v=20260307" as="style">
-  <link rel="prefetch" href="assets/js/pages/configBeat.js?v=20260307" as="script">
+  <link rel="prefetch" href="assets/css/configBeat.css?v=20260308" as="style">
+  <link rel="prefetch" href="assets/js/pages/configBeat.js?v=20260308" as="script">
 
   <link rel="prefetch" href="configScore.html" as="document">
   <link rel="prefetch" href="assets/css/configScore.css?v=20260307" as="style">
@@ -65,19 +65,19 @@
 
   <link rel="prefetch" href="editScore.html" as="document">
   <link rel="prefetch" href="assets/css/editScore.css?v=20260307" as="style">
-  <link rel="prefetch" href="assets/js/pages/click.js?v=20260307" as="script">
+  <link rel="prefetch" href="assets/js/pages/click.js?v=20260311" as="script">
   <link rel="prefetch" href="assets/js/pages/editScore.js?v=20260307" as="script">
   <link rel="prefetch" href="assets/js/actions/saveScoreButton.js?v=20260307" as="script">
   <link rel="prefetch" href="assets/js/actions/loadScoreButton.js?v=20260307" as="script">
   <link rel="prefetch" href="assets/lib/alphaTab/alphaTab.min.js" as="script">
 
   <link rel="prefetch" href="codeDiagram.html" as="document">
-  <link rel="prefetch" href="assets/css/codeDiagram.css" as="style">
-  <link rel="prefetch" href="assets/js/pages/codeDiagram.js" as="script">
+  <link rel="prefetch" href="assets/css/codeDiagram.css?v=20260308" as="style">
+  <link rel="prefetch" href="assets/js/pages/codeDiagram.js?v=20260308" as="script">
 
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/lib/consentManager.css">
-  <link rel="stylesheet" href="assets/css/app.css?v=20260307">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260308">
   <link rel="stylesheet" href="assets/css/tips.css?v=20260307">
   <link rel="stylesheet" href="assets/css/tempoDial.css">
   <link rel="stylesheet" href="assets/css/click.css?v=20260307">
@@ -89,8 +89,8 @@
   <script type="module" src="assets/lib/consentBanner.js"></script>
 
   <script type="module" src="assets/js/actions/tips.js?v=20260307"></script>
-  <script type="module" src="assets/js/pages/app.js?v=20260307"></script>
-  <script type="module" src="assets/js/pages/click.js?v=20260307"></script>
+  <script type="module" src="assets/js/pages/app.js?v=20260308"></script>
+  <script type="module" src="assets/js/pages/click.js?v=20260311"></script>
   <script type="module" src="assets/js/actions/createScoreButton.js?v=20260307"></script>
   <script type="module" src="assets/js/actions/editScoreButton.js?v=20260307"></script>
   <script type="module" src="assets/js/actions/initScoreButton.js?v=20260307"></script>
@@ -102,7 +102,19 @@
     "@type": "WebApplication",
     "name": "B.Click",
     "url": "https://bclick.app",
-    "description": "B.Click はギター練習向けのクリック/メトロノーム WEBアプリ。BPM、カウントイン、クリック数を設定でき、コード付きのリズム譜を作成できます。リズム譜を見ながら練習でき、練習パターンをファイル保存可能。 Guitar practice click/metronome web app. Set BPM, count-in, click count; create chord rhythm scores and save practice patterns.",
+    "description": "B.Click はギター練習向けのクリック/メトロノーム WEBアプリ。BPM・カウントイン・クリック数設定、ギターチューナー、コード付きリズム譜作成、練習パターン保存が可能。Guitar practice click/metronome web app with built-in guitar tuner. Set BPM, count-in, click count; create chord rhythm scores and save practice patterns.",
+    "featureList": [
+      "BPM / メトロノーム",
+      "カウントイン",
+      "ギターチューナー（マイク入力）",
+      "コード付きリズム譜作成",
+      "練習パターン保存（PDF）",
+      "BPM / Metronome",
+      "Count-in",
+      "Guitar Tuner (microphone input)",
+      "Chord rhythm score creation",
+      "Practice pattern save (PDF)"
+    ],
     "applicationCategory": "MusicApplication",
     "operatingSystem": "Web Browser",
     "inLanguage": ["ja", "en"],
@@ -146,9 +158,8 @@
   </section>
 
   <main class="pageFrame">
-<!--
-    <span style="font-size:8pt;font-weight:100;color:red">This app is in testing. Bugs may occur.</span>
--->
+    <span id="releaseNotice" style="font-size:8pt;font-weight:100;color:red" hidden>This app is in testing. Bugs may occur.</span>
+
     <!--Spec BPM テンポ設定（ダイアル操作）
     -->
     <div class="preferenceTitleWithTip tipButtonLeft">
@@ -356,7 +367,7 @@
 
   <footer>
   	<!--Spec このVer.リンクだけはサーバーの絶対参照となる。 -->
-    <a href="/releases/index.html">Ver. 2.0</a> /
+    <a href="/releases/index.html" class="footerPlainLink">Ver. 3.0</a> /
 
       <!-- 利用規約 -->
       <a href="terms.html">

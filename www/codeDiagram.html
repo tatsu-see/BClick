@@ -26,8 +26,8 @@
   <link rel="icon" type="image/png" sizes="256x256" href="assets/icons/BClick-256x256.png">
 
   <link rel="stylesheet" href="assets/lib/Language.css">
-  <link rel="stylesheet" href="assets/css/app.css?v=20260307">
-  <link rel="stylesheet" href="assets/css/codeDiagram.css">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260308">
+  <link rel="stylesheet" href="assets/css/codeDiagram.css?v=20260308">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
@@ -39,7 +39,7 @@
   <script type="module" src="assets/lib/Language.js"></script>
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
-  <script type="module" src="assets/js/pages/codeDiagram.js"></script>
+  <script type="module" src="assets/js/pages/codeDiagram.js?v=20260308"></script>
 </head>
 
 <!--Spec ギターのコードを表示する画面
@@ -71,6 +71,7 @@
             <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
             <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
             <button type="button" class="chipButton chordQuality" data-quality="dim" aria-pressed="false">dim</button>
+            <button type="button" class="chipButton chordQuality" data-quality="sus4" aria-pressed="false">sus4</button>
           </div>
         </div>
       </div>
@@ -203,6 +204,10 @@
         <div class="fretNumber" data-fret="9">9</div>
         <div class="fretNumber" data-fret="10">10</div>
         <div class="fretLabel"></div>
+      </div>
+      <div class="toneLegend">
+        <span class="lang" data-lang="en">Finger labels: 1=index, 2=middle, 3=ring, 4=little, T=thumb</span>
+        <span class="lang" data-lang="ja">指ラベル: 人=人差し指 / 中=中指 / 薬=薬指 / 小=小指 / 親=親指</span>
       </div>
     </div>
 
