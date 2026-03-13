@@ -7,7 +7,7 @@ import {
 } from "../utils/scoreButtonUtils.js";
 import { showMessage } from "../../lib/ShowMessageBox.js";
 import { getLangMsg } from "../../lib/Language.js";
-import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
+import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 
 document.addEventListener("DOMContentLoaded", () => {
   const MERGE_TOGGLE_KEY = "bclick.score.merge";

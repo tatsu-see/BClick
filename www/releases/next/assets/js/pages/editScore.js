@@ -15,7 +15,7 @@ import {
   clearEditScoreDraft,
   loadEditScoreDraft,
   saveEditScoreDraft,
-} from "../utils/editScoreDraft.js";
+} from "../utils/editScoreDraft.js?v=20260314";
 import { RecordingManager } from "../utils/recordingManager.js";
 
 document.addEventListener("DOMContentLoaded", () => {

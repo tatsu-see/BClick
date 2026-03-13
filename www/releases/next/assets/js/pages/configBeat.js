@@ -5,7 +5,7 @@ import { TempoDialController } from "../components/tempoDial.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { getLangMsg } from "../../lib/Language.js";
 import { buildCenteredSelectWrap } from "../utils/centeredSelect.js";
-import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
+import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;

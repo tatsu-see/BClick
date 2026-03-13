@@ -7,7 +7,7 @@ import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGu
 import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
 import { getLangMsg } from "../../lib/Language.js";
 import { APP_LIMITS } from "../constants/appConstraints.js";
-import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
+import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 import { buildCenteredSelectWrap, syncCenteredSelectLabel } from "../utils/centeredSelect.js";
 
 document.addEventListener("DOMContentLoaded", () => {
