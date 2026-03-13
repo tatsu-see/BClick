@@ -236,3 +236,31 @@
   color: #555;
 }
 
+/* ギター弦ガイド行 */
+.tunerStringGuide {
+  display: flex;
+  gap: 6px;
+  justify-content: center; /* センター寄せ */
+}
+
+/* 弦番号 + 音名の1セット */
+.tunerStringItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+/* 弦番号（小さめ） */
+.tunerStringNo {
+  font-size: 0.5em;
+  color: #888;
+}
+
+/* 音名 */
+.tunerStringNote {
+  font-size: 0.7em;
+  font-weight: 600;
+  color: #444;
+}
+
