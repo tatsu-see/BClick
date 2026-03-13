@@ -136,3 +136,100 @@
   font-size: 1.1em;
 }
 
+/* チューナーパネル：縦並びでセンター配置 */
+.tunerPanel {
+  flex-direction: column; /* 表示エリアとボタンを縦並びに */
+  gap: 10px;
+}
+
+/* チューナー表示エリア */
+.tunerDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 220px;
+}
+
+/* 検出音名（大きく表示） */
+.tunerNote {
+  font-size: 2.5em;
+  font-weight: 600;
+  color: #1e7a4f;
+  line-height: 1;
+  min-width: 3ch;
+  text-align: center;
+}
+
+/* Hz と cent を横並びにするサブ行 */
+.tunerSubRow {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* 周波数表示 */
+.tunerHz {
+  font-size: 0.65em;
+  color: #555;
+}
+
+/* セントバー行（♭ バー ♯） */
+.tunerCentRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 200px;
+}
+
+/* ♭ ♯ ラベル */
+.tunerCentLabel {
+  font-size: 0.75em;
+  color: #555;
+  min-width: 12px;
+  text-align: center;
+}
+
+/* セントのトラック（バー背景） */
+.tunerCentTrack {
+  flex: 1;
+  height: 12px;
+  background: #d6efe0;
+  border-radius: 999px;
+  position: relative;
+}
+
+/* セントの針（中央=チューニング正位置） */
+.tunerCentNeedle {
+  position: absolute;
+  top: 50%;
+  left: 50%; /* 初期位置：中央（= in tune） */
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 18px;
+  background: #aaa; /* 未起動時はグレー */
+  border-radius: 2px;
+  transition: background 0.2s, left 0.1s; /* 色と位置をなめらかに変化 */
+}
+
+/* 針の状態：低い（フラット）→ 青 */
+.tunerCentNeedle.isFlat {
+  background: #2979ff;
+}
+
+/* 針の状態：高い（シャープ）→ 赤 */
+.tunerCentNeedle.isSharp {
+  background: #e53935;
+}
+
+/* 針の状態：合っている → 緑 */
+.tunerCentNeedle.isInTune {
+  background: #1e7a4f;
+}
+
+/* セント値テキスト */
+.tunerCentValue {
+  font-size: 0.65em;
+  color: #555;
+}
+

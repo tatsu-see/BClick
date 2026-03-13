@@ -7,6 +7,7 @@
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { getLangMsg } from "../../lib/Language.js";
 import { ConfigStore } from "../utils/store.js";
+import { initTuner } from "../actions/tuner.js";
 
 /**
  * クリック音量(0.0-2.0)を表示レベル(0-10)に変換する。
@@ -24,6 +25,9 @@ const levelToVolume = (level) => (level / 10) * 2;
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
+
+  // チューナー初期化
+  initTuner();
 
   const store = new ConfigStore();
   const backButton = document.getElementById("saveConfigApp");
