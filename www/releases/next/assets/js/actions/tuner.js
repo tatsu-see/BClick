@@ -4,6 +4,11 @@
  * マイク入力から Pitchy（McLeod Pitch Method）でピッチを検出し、
  * 検出した音名・周波数・セントズレを configApp 画面のチューナーUIに反映する。
  *
+ * 表示仕様:
+ *   - セントズレを 9 段階のドットで表示（LEDメーター風）
+ *   - 無音時は最後に検出した音を保持し続ける（更新しない）
+ *   - Stop ボタン押下時のみ表示をリセットする
+ *
  * 使い方:
  *   import { initTuner } from './tuner.js';
  *   initTuner();
@@ -22,9 +27,6 @@ import { PitchDetector } from '../../lib/pitchy.js';
 /** ピッチ検出バッファサイズ（2のべき乗。大きいほど低音域が検出しやすい） */
 const BUFFER_SIZE = 4096;
 
-/** サンプリングレート（getUserMedia デフォルト。実際は AudioContext から取得する） */
-const DEFAULT_SAMPLE_RATE = 44100;
-
 /** 基準音 A4 の周波数（Hz） */
 const A4_HZ = 440.0;
 
@@ -34,11 +36,20 @@ const A4_MIDI = 69;
 /** 音名の配列（C から順） */
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-/** チューニングOKと判定するセントの閾値（±この値以内なら緑） */
-const IN_TUNE_THRESHOLD_CENT = 5;
-
 /** ピッチ検出の明瞭度の閾値（これ以下は無音とみなす） */
 const CLARITY_THRESHOLD = 0.85;
+
+/**
+ * セント値を 9 段階ドットのインデックス（0〜8）に変換するゾーン境界。
+ * インデックス 4 が中央（in tune）。
+ * 各境界はそのゾーンの「上限（絶対値）」を表す。
+ *   zone 0,8: ±36〜±50 cent（一番外側）
+ *   zone 1,7: ±23〜±35 cent
+ *   zone 2,6: ±13〜±22 cent
+ *   zone 3,5: ± 6〜±12 cent
+ *   zone 4  :    0〜± 5 cent（中央）
+ */
+const DOT_ZONE_BOUNDARIES = [5, 12, 22, 35, 50];
 
 // ===========================================================================
 // ピッチ変換ユーティリティ
@@ -59,28 +70,53 @@ function hzToNoteInfo(hz) {
   // 音名とオクターブ
   const noteIndex = ((midiNote % 12) + 12) % 12;
   const octave = Math.floor(midiNote / 12) - 1;
-  return {
-    noteName: NOTE_NAMES[noteIndex],
-    octave,
-    cent,
-  };
+  return { noteName: NOTE_NAMES[noteIndex], octave, cent };
+}
+
+/**
+ * セント値（-50〜+50）を 9 段階ドットのインデックス（0〜8）に変換する。
+ * インデックス 4 が中央（in tune）。左側（0〜3）がフラット、右側（5〜8）がシャープ。
+ * @param {number} cent
+ * @returns {number} 0〜8
+ */
+function centToDotIndex(cent) {
+  const abs = Math.abs(cent);
+  // ゾーン境界から距離（中央からの離れ度）を求める
+  let offset = DOT_ZONE_BOUNDARIES.findIndex((boundary) => abs <= boundary);
+  if (offset === -1) offset = DOT_ZONE_BOUNDARIES.length - 1;
+  // 中央ドット（インデックス4）から offset 分ずらす
+  return cent < 0 ? 4 - offset : 4 + offset;
 }
 
 // ===========================================================================
 // UI 更新
 // ===========================================================================
 
+/** ドット要素のキャッシュ（初回取得後は再利用） */
+let _dotEls = null;
+
+/**
+ * ドット要素の配列を返す（遅延初期化）。
+ * @returns {Element[]}
+ */
+function getDotEls() {
+  if (!_dotEls) {
+    _dotEls = Array.from(document.querySelectorAll('#tunerDots .tunerDot'));
+  }
+  return _dotEls;
+}
+
 /**
  * チューナー表示UIを更新する。
  * @param {string} noteText - 音名（例: "A4"）または "—"
  * @param {number | null} hz  - 周波数（null のとき "— Hz" 表示）
- * @param {number | null} cent - セントズレ（null のとき "— cent" 表示）
+ * @param {number | null} cent - セントズレ（null のとき "— cent" 表示、ドット全消灯）
  */
 function updateTunerUI(noteText, hz, cent) {
-  const noteEl   = document.querySelector('.tunerNote');
-  const hzEl     = document.querySelector('.tunerHz');
-  const centEl   = document.querySelector('.tunerCentValue');
-  const needleEl = document.getElementById('tunerCentNeedle');
+  const noteEl = document.querySelector('.tunerNote');
+  const hzEl   = document.querySelector('.tunerHz');
+  const centEl = document.querySelector('.tunerCentValue');
+  const dotEls = getDotEls();
 
   // 音名
   if (noteEl) noteEl.textContent = noteText;
@@ -88,35 +124,36 @@ function updateTunerUI(noteText, hz, cent) {
   // 周波数
   if (hzEl) hzEl.textContent = hz !== null ? `${hz.toFixed(1)} Hz` : '— Hz';
 
-  // セント表示とバー針
+  // セント値テキスト
   if (centEl) centEl.textContent = cent !== null ? `${cent >= 0 ? '+' : ''}${cent} cent` : '— cent';
 
-  if (needleEl) {
+  // ドット更新
+  if (dotEls.length === 9) {
     if (cent === null) {
-      // 未検出: グレー・中央
-      needleEl.className = 'tunerCentNeedle';
-      needleEl.style.left = '50%';
+      // 全ドット消灯
+      dotEls.forEach((dot) => dot.classList.remove('isFlat', 'isSharp', 'isInTune'));
     } else {
-      // 針の位置: cent を -50〜+50 の範囲で 0〜100% にマッピング
-      const clampedCent = Math.max(-50, Math.min(50, cent));
-      const leftPercent = 50 + clampedCent; // 50% が中央（in tune）
-      needleEl.style.left = `${leftPercent}%`;
-
-      // 色クラス
-      needleEl.classList.remove('isFlat', 'isSharp', 'isInTune');
-      if (cent < -IN_TUNE_THRESHOLD_CENT) {
-        needleEl.classList.add('isFlat');    // 低い → 青
-      } else if (cent > IN_TUNE_THRESHOLD_CENT) {
-        needleEl.classList.add('isSharp');   // 高い → 赤
-      } else {
-        needleEl.classList.add('isInTune');  // OK  → 緑
-      }
+      const activeIndex = centToDotIndex(cent);
+      dotEls.forEach((dot, i) => {
+        dot.classList.remove('isFlat', 'isSharp', 'isInTune');
+        if (i === activeIndex) {
+          // 点灯: 位置によって色を決める
+          if (i < 4) {
+            dot.classList.add('isFlat');    // 左側 → 青（低い）
+          } else if (i > 4) {
+            dot.classList.add('isSharp');   // 右側 → 赤（高い）
+          } else {
+            dot.classList.add('isInTune'); // 中央 → 緑（OK）
+          }
+        }
+      });
     }
   }
 }
 
 /**
  * チューナーをリセット（初期表示）に戻す。
+ * Stop 時にのみ呼ぶ。
  */
 function resetTunerUI() {
   updateTunerUI('—', null, null);
@@ -174,15 +211,13 @@ async function startTuner() {
         // 検出成功: 音名・周波数・セントを更新
         const { noteName, octave, cent } = hzToNoteInfo(hz);
         updateTunerUI(`${noteName}${octave}`, hz, cent);
-      } else {
-        // 無音 or 不明瞭: 表示をリセット
-        resetTunerUI();
       }
+      // 無音・不明瞭の場合は何もしない（最後の表示を保持する）
     });
 
     micSource.connect(scriptProcessor);
     // ScriptProcessor は出力先に接続しないと動作しないブラウザがあるため、
-    // destination に接続（音は出ない: gainが0のノードを挟む）
+    // destination に接続（音は出ない: gain=0 のノードを挟む）
     const silentGain = audioContext.createGain();
     silentGain.gain.value = 0;
     scriptProcessor.connect(silentGain);
@@ -199,7 +234,7 @@ async function startTuner() {
 }
 
 /**
- * チューナーを停止する。AudioContext とマイクストリームを解放する。
+ * チューナーを停止する。AudioContext とマイクストリームを解放し、UIをリセットする。
  */
 function stopTuner() {
   if (scriptProcessor) {
@@ -220,6 +255,7 @@ function stopTuner() {
   }
   pitchDetector = null;
   isRunning = false;
+  // Stop 時にのみ表示をリセット
   resetTunerUI();
 }
 
