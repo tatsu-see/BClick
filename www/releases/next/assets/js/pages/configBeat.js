@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!Number.isNaN(countdownNumber)) { draft.countIn = countdownNumber; }
           saveEditScoreDraft(draft);
         }
-        sessionStorage.setItem("bclick.needsScoreRefresh", "1");
+        // needsScoreRefresh フラグは不要（editScore.js が pageshow で常にリフレッシュするため）
       } else {
         // 本番データ（localStorage）に保存
         if (Number.isFinite(tempoValue)) { store.setTempo(tempoValue); }

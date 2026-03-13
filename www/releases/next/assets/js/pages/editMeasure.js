@@ -939,15 +939,8 @@ document.addEventListener("DOMContentLoaded", () => {
     measuresUpButton.addEventListener("click", () => bumpSelectValue(measuresInput, 1));
   }
 
-  /**
-   * editScoreへ戻るときに再描画が必要なことを通知する。
-   */
-  const markNeedsScoreRefresh = () => {
-    sessionStorage.setItem("bclick.needsScoreRefresh", "1");
-  };
-
   const goBack = () => {
-    markNeedsScoreRefresh();
+    // needsScoreRefresh フラグは不要（editScore.js が pageshow で常にリフレッシュするため）
     goBackWithFallback();
   };
 

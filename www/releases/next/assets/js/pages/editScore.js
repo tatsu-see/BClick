@@ -628,38 +628,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 150);
   };
 
-  /**
-   * editMeasure から戻った時だけ再描画するためのフラグを消費する。
-   * @returns {boolean}
-   */
-  const consumeEditMeasureRefreshFlag = () => {
-    const flag = sessionStorage.getItem("bclick.needsScoreRefresh");
-    if (!flag) return false;
-    sessionStorage.removeItem("bclick.needsScoreRefresh");
-    return true;
-  };
-
   // モバイルの履歴復帰やタブ復帰で再描画されないケースに備えて再適用する。
   window.addEventListener("pageshow", () => {
-    if (consumeEditMeasureRefreshFlag()) {
-      requestApplyLoadedScore();
-    }
+    requestApplyLoadedScore();
     applyLastEditedHighlight();
   });
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
-      if (consumeEditMeasureRefreshFlag()) {
-        requestApplyLoadedScore();
-      }
+      requestApplyLoadedScore();
       applyLastEditedHighlight();
     }
   });
 
   window.addEventListener("focus", () => {
-    if (consumeEditMeasureRefreshFlag()) {
-      requestApplyLoadedScore();
-    }
+    requestApplyLoadedScore();
     applyLastEditedHighlight();
   });
 
