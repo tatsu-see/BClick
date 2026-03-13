@@ -1,0 +1,13 @@
+/*
+  言語判定が終わるまでは翻訳テキストを表示しない
+  Language.js が html[data-lang] を設定する前提
+*/
+
+.lang {
+  display: none;
+}
+
+html[data-lang="ja"] .lang[data-lang="ja"],
+html[data-lang="en"] .lang[data-lang="en"] {
+  display: inline;
+}
