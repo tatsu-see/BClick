@@ -78,7 +78,7 @@
   font-weight: 700;
   font-size: 1.125em;
   cursor: grab;
-  touch-action: none;
+  touch-action: manipulation; /* ダブルタップズームを無効化（iPhoneのタップテンポ誤動作防止） */
   transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
 }
 
