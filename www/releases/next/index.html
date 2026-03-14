@@ -470,22 +470,13 @@
     </div>
   </dialog>
 
-  <dialog id="indexTempoTipsDialog" class="tipsDialog" aria-labelledby="indexTempoTipsTitle">
+  <dialog id="indexTempoTipsDialog" class="tipsDialog" aria-labelledby="indexTempoTipsTitle" data-tip-key="tempoTipMain">
     <div class="tipsDialogTitle" id="indexTempoTipsTitle">
       <span class="lang" data-lang="en">Tips</span>
       <span class="lang" data-lang="ja">ヒント</span>
     </div>
     <div class="tipsDialogBody">
-      <span class="lang" data-lang="en">
-        ・Set the tempo by turning the dial from 30 to 240 BPM.<br>
-        ・Use the dial and the step buttons to change the value.<br>
-        ・Details for clicks and count-in can be adjusted from the tune button below.<br>
-      </span>
-      <span class="lang" data-lang="ja">
-        ・テンポはダイアルを回して、30〜240 BPMの範囲で設定します。<br>
-        ・ダイヤルや刻み幅ボタンで値を変更できます。<br>
-        ・クリック数やカウントインの詳細は、下の調節ボタンから設定できます。<br>
-      </span>
+      <!--Spec tips.js が messages.js から動的に本文を生成する -->
     </div>
     <div class="tipsDialogActions">
       <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>

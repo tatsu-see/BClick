@@ -1,7 +1,13 @@
 /**
  * tips.js
  * Tips ボタンと dialog を関連付け、画面内で補足説明を開閉する。
+ *
+ * 静的Tips:  HTML の dialog に直接テキストを書く方式（data-tip-target）
+ * 動的Tips:  messages.js からテキストを取得して dialog 本文を生成する方式（data-tip-key）
+ *            dialog 要素に data-tip-key="メッセージキー" を付与すると動的生成が有効になる。
  */
+import { messages } from "../data/messages.js";
+import { isLanguage } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const tipButtons = document.querySelectorAll("[data-tip-target]");
@@ -74,6 +80,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   };
+
+  // data-tip-key を持つ dialog の本文を messages.js から動的に生成する
+  document.querySelectorAll("dialog[data-tip-key]").forEach((dialog) => {
+    const key = dialog.getAttribute("data-tip-key");
+    const msgObj = messages[key];
+    if (!msgObj) return;
+    const lang = isLanguage("ja") ? "ja" : "en";
+    const items = msgObj[lang] ?? msgObj["en"] ?? [];
+    const body = dialog.querySelector(".tipsDialogBody");
+    if (!body) return;
+    // 箇条書きとして HTML を生成
+    body.innerHTML = items.map((item) => `・${item}<br>`).join("");
+  });
 
   tipButtons.forEach((button) => {
     const targetId = button.getAttribute("data-tip-target");
