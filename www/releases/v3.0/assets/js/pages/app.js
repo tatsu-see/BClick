@@ -268,7 +268,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  window.addEventListener("pageshow", () => {
+  const refreshFromStoreOnReturn = () => {
+    refreshFromStore();
+  };
+
+  window.addEventListener("pageshow", refreshFromStoreOnReturn);
+  window.addEventListener("focus", refreshFromStoreOnReturn);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
     refreshFromStore();
   });
 
@@ -401,6 +408,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   initReleaseNotice();
 });
-
 
 

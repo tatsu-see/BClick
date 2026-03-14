@@ -5,7 +5,7 @@ import { TempoDialController } from "../components/tempoDial.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
 import { getLangMsg } from "../../lib/Language.js";
 import { buildCenteredSelectWrap } from "../utils/centeredSelect.js";
-import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
+import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!ensureInAppNavigation()) return;
@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!Number.isNaN(countdownNumber)) { draft.countIn = countdownNumber; }
           saveEditScoreDraft(draft);
         }
-        sessionStorage.setItem("bclick.needsScoreRefresh", "1");
+        // needsScoreRefresh フラグは不要（editScore.js が pageshow で常にリフレッシュするため）
       } else {
         // 本番データ（localStorage）に保存
         if (Number.isFinite(tempoValue)) { store.setTempo(tempoValue); }

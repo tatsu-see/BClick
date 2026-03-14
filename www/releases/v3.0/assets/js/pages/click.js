@@ -10,7 +10,7 @@
 
 import { clickSound, getMaxVolume, restoreAudioContext, getAudioCurrentTime } from "../../lib/Sound.js";
 import { ConfigStore } from "../utils/store.js";
-import { loadEditScoreDraft } from "../utils/editScoreDraft.js";
+import { loadEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 import { getLangMsg } from "../../lib/Language.js";
 
 document.addEventListener("DOMContentLoaded", () => {

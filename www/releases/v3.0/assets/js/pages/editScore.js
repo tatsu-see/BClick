@@ -15,7 +15,7 @@ import {
   clearEditScoreDraft,
   loadEditScoreDraft,
   saveEditScoreDraft,
-} from "../utils/editScoreDraft.js";
+} from "../utils/editScoreDraft.js?v=20260314";
 import { RecordingManager } from "../utils/recordingManager.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -131,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreArea = document.getElementById("scoreArea");
   const saveButton = document.getElementById("saveShowScore");
   const backButton = document.getElementById("backShowScore");
-  const closePageButton = document.getElementById("closePage");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
   const tempoInput = document.getElementById("tempoInput");
   const tempoDialEl = document.getElementById("tempoDial");
@@ -628,38 +627,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 150);
   };
 
-  /**
-   * editMeasure から戻った時だけ再描画するためのフラグを消費する。
-   * @returns {boolean}
-   */
-  const consumeEditMeasureRefreshFlag = () => {
-    const flag = sessionStorage.getItem("bclick.needsScoreRefresh");
-    if (!flag) return false;
-    sessionStorage.removeItem("bclick.needsScoreRefresh");
-    return true;
-  };
-
   // モバイルの履歴復帰やタブ復帰で再描画されないケースに備えて再適用する。
   window.addEventListener("pageshow", () => {
-    if (consumeEditMeasureRefreshFlag()) {
-      requestApplyLoadedScore();
-    }
+    requestApplyLoadedScore();
     applyLastEditedHighlight();
   });
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
-      if (consumeEditMeasureRefreshFlag()) {
-        requestApplyLoadedScore();
-      }
+      requestApplyLoadedScore();
       applyLastEditedHighlight();
     }
   });
 
   window.addEventListener("focus", () => {
-    if (consumeEditMeasureRefreshFlag()) {
-      requestApplyLoadedScore();
-    }
+    requestApplyLoadedScore();
     applyLastEditedHighlight();
   });
 
@@ -684,9 +666,6 @@ document.addEventListener("DOMContentLoaded", () => {
     backButton.addEventListener("click", handleBack);
   }
 
-  if (closePageButton) {
-    closePageButton.addEventListener("click", closePage);
-  }
 
   // ─── 再生モード制御（プルダウン + 録音連携） ─────────────────
 

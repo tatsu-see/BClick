@@ -3,6 +3,8 @@
  * editScore / editMeasure 間で共有する一時編集データを管理する。
  */
 
+// iOS Safari の bfcache 復元時に sessionStorage が古い状態で返る問題を避けるため、
+// localStorage を使用する。bfcache に関係なく常に最新値が読める。
 const DRAFT_KEY = "bclick.editScore.draft";
 
 /**
@@ -11,7 +13,7 @@ const DRAFT_KEY = "bclick.editScore.draft";
  */
 export const loadEditScoreDraft = () => {
   try {
-    const raw = sessionStorage.getItem(DRAFT_KEY);
+    const raw = localStorage.getItem(DRAFT_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === "object" ? parsed : null;
@@ -27,7 +29,7 @@ export const loadEditScoreDraft = () => {
 export const saveEditScoreDraft = (draft) => {
   if (!draft || typeof draft !== "object") return;
   try {
-    sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
   } catch (error) {
     ;
   }
@@ -38,7 +40,7 @@ export const saveEditScoreDraft = (draft) => {
  */
 export const clearEditScoreDraft = () => {
   try {
-    sessionStorage.removeItem(DRAFT_KEY);
+    localStorage.removeItem(DRAFT_KEY);
   } catch (error) {
     ;
   }

@@ -7,7 +7,7 @@ import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGu
 import { cMajorDiatonicPool } from "../../lib/guiterCode.js";
 import { getLangMsg } from "../../lib/Language.js";
 import { APP_LIMITS } from "../constants/appConstraints.js";
-import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js";
+import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 import { buildCenteredSelectWrap, syncCenteredSelectLabel } from "../utils/centeredSelect.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -939,15 +939,8 @@ document.addEventListener("DOMContentLoaded", () => {
     measuresUpButton.addEventListener("click", () => bumpSelectValue(measuresInput, 1));
   }
 
-  /**
-   * editScoreへ戻るときに再描画が必要なことを通知する。
-   */
-  const markNeedsScoreRefresh = () => {
-    sessionStorage.setItem("bclick.needsScoreRefresh", "1");
-  };
-
   const goBack = () => {
-    markNeedsScoreRefresh();
+    // needsScoreRefresh フラグは不要（editScore.js が pageshow で常にリフレッシュするため）
     goBackWithFallback();
   };
 

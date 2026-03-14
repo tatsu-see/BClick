@@ -2,7 +2,7 @@
  * PDF保存ボタンの処理を担当する。
  */
 import ScoreData from "../models/ScoreModel.js";
-import { loadEditScoreDraft } from "../utils/editScoreDraft.js";
+import { loadEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 import { ConfigStore } from "../utils/store.js";
 import { buildScoreDataFromStore } from "../utils/scoreButtonUtils.js";
 import { buildScorePdfBlob } from "../utils/scorePdf.js";
