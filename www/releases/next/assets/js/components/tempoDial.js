@@ -5,12 +5,17 @@ export class TempoDialController {
     defaultValue = 0,
     onValueChange = null,
     onValueCommit = null,
+    onTap = null,
+    tapThreshold = 10,
   }) {
     this.inputEl = inputEl;
     this.dialEls = dialEls.filter(Boolean);
     this.defaultValue = defaultValue;
     this.onValueChange = typeof onValueChange === "function" ? onValueChange : null;
     this.onValueCommit = typeof onValueCommit === "function" ? onValueCommit : null;
+    // タップテンポ用: ポインタ移動量が tapThreshold(px)未満ならタップとみなす
+    this.onTap = typeof onTap === "function" ? onTap : null;
+    this.tapThreshold = tapThreshold;
   }
 
   getNumberAttribute(attrName, fallback) {
@@ -100,6 +105,9 @@ export class TempoDialController {
     let isActive = false;
     let lastAngle = 0;
     let carry = 0;
+    // タップ判定用: pointerdown 時の座標を記録
+    let startX = 0;
+    let startY = 0;
 
     dialEl.addEventListener("pointerdown", (event) => {
       event.preventDefault();
@@ -107,6 +115,9 @@ export class TempoDialController {
       isActive = true;
       lastAngle = this.getAngle(dialEl, event);
       carry = 0;
+      // タップ判定用に開始座標を保存
+      startX = event.clientX;
+      startY = event.clientY;
     });
 
     dialEl.addEventListener("pointermove", (event) => {
@@ -131,16 +142,28 @@ export class TempoDialController {
       lastAngle = currentAngle;
     });
 
-    const releaseDial = () => {
+    // commit=false のとき notifyCommit を呼ばない（タップ時に再描画させないため）
+    // isActive でない場合は lostpointercapture などの二重呼び出しをスキップ
+    const releaseDial = (commit = true) => {
+      if (!isActive) return;
       isActive = false;
       carry = 0;
       dialEl.classList.remove("isTurningPositive", "isTurningNegative");
       const clamped = this.clamp(this.getInputValue());
       this.setValue(clamped, { notify: false });
-      this.notifyCommit(clamped);
+      if (commit) this.notifyCommit(clamped);
     };
 
-    dialEl.addEventListener("pointerup", releaseDial);
+    dialEl.addEventListener("pointerup", (event) => {
+      // 移動量が tapThreshold 未満ならタップとみなす
+      const dist = Math.hypot(event.clientX - startX, event.clientY - startY);
+      if (dist < this.tapThreshold && this.onTap) {
+        this.onTap();
+        releaseDial(false);  // タップ時は notifyCommit を呼ばない
+        return;
+      }
+      releaseDial();
+    });
     dialEl.addEventListener("pointercancel", releaseDial);
     dialEl.addEventListener("lostpointercapture", releaseDial);
   }

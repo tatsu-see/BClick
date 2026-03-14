@@ -1,7 +1,10 @@
 
 import { ConfigStore } from "../utils/store.js";
 import { TempoDialController } from "../components/tempoDial.js";
-import { getLangMsg } from "../../lib/Language.js";
+import { TapTempoController } from "../components/tapTempo.js";
+import { showMessageByKey } from "../../lib/ShowMessageBox.js";
+import { getLangMsg, LANG_PRE_FIX } from "../../lib/Language.js";
+import { messages as tapTempoMessages } from "../data/messages.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const store = new ConfigStore();
@@ -199,6 +202,9 @@ document.addEventListener("DOMContentLoaded", () => {
     updateBeatSummary();
   };
 
+  // タップテンポ: tempoDial の onTap から呼ばれる（tapTempo は後で初期化するため let で宣言）
+  let tapTempo = null;
+
   const tempoDial = tempoInput
     ? new TempoDialController({
         inputEl: tempoInput,
@@ -209,8 +215,24 @@ document.addEventListener("DOMContentLoaded", () => {
           notifyTempoChange(value);
           updateBeatSummary();
         },
+        onTap: () => tapTempo?.recordTap(),
       })
     : null;
+
+  // タップテンポコントローラーの初期化
+  tapTempo = new TapTempoController({
+    tapCount: 4,
+    resetMs: 2000,
+    minBpm: 30,
+    maxBpm: 240,
+    onTempoDetected: (bpm) => {
+      if (!tempoDial) return;
+      // テンポを設定し、onValueChange 経由でストアへ保存・通知
+      tempoDial.setValue(tempoDial.clamp(bpm), { notify: true });
+    },
+    onFirstTap: () => showMessageByKey(tapTempoMessages, "tapTempoDetecting", LANG_PRE_FIX, 1000),
+    onReset: () => showMessageByKey(tapTempoMessages, "tapTempoReset", LANG_PRE_FIX),
+  });
 
   if (tempoDial) {
     const tempoStepButtons = [tempoStepCoarse, tempoStepFine].filter(Boolean);

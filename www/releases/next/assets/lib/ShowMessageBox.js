@@ -1,4 +1,4 @@
-// Ver. 1.0.0
+// Ver. 1.1.0
 
 /**
  * メッセージBoxを数秒表示する。
@@ -12,6 +12,52 @@ export function showMessage( messageBoxID, showTime = 800 ) {
     setTimeout(() => {
         messageBox.style.display = "none";
     }, showTime); // 指定秒後に消える
+}
+
+/**
+ * メッセージオブジェクトからキーと言語を指定してメッセージを動的に表示する。
+ * HTML側にdiv要素を用意する必要がなく、呼び出し側がメッセージ内容と言語を管理する。
+ * @param {Object} messages  - メッセージオブジェクト例: { key: { ja: "...", en: "..." } }
+ * @param {string} key       - メッセージのキー
+ * @param {string} lang      - 言語コード ('ja' または 'en')
+ * @param {number} showTime  - 表示時間(ms)。未設定の場合は0.8秒
+ *
+ * 【呼び出し側のメッセージファイル例 (messages.js)】
+ *
+ *   // messages.js
+ *   export const messages = {
+ *     sampleMessage: {
+ *       ja: "サンプルメッセージ",
+ *       en: "Sample message",
+ *     },
+ *   };
+ *
+ * 【呼び出し例】
+ *
+ *   import { messages } from "./messages.js";
+ *   import { showMessageByKey } from "./ShowMessageBox.js";
+ *   import { LANG_PRE_FIX } from "./Language.js";  // 言語判定は呼び出し側で行う
+ *
+ *   showMessageByKey(messages, "sampleMessage", LANG_PRE_FIX, 1000);
+ */
+export function showMessageByKey( messages, key, lang, showTime = 800 ) {
+    const msgObj = messages?.[key];
+    if ( !msgObj ) return;
+
+    // 指定言語のメッセージを取得。なければ英語にフォールバック
+    const text = msgObj[lang] ?? msgObj['en'] ?? '';
+    if ( !text ) return;
+
+    // div を動的生成して表示
+    const div = document.createElement('div');
+    div.className = 'messageBox';
+    div.textContent = text;
+    document.body.appendChild(div);
+    div.style.display = 'block';
+
+    setTimeout(() => {
+        div.remove();
+    }, showTime);
 }
 
 /**

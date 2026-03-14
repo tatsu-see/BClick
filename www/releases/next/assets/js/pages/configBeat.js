@@ -2,8 +2,11 @@
 // テンポ/拍数/カウントイン/音色の設定UIを同期する。
 import { ConfigStore } from "../utils/store.js";
 import { TempoDialController } from "../components/tempoDial.js";
+import { TapTempoController } from "../components/tapTempo.js";
+import { showMessageByKey } from "../../lib/ShowMessageBox.js";
+import { getLangMsg, LANG_PRE_FIX } from "../../lib/Language.js";
+import { messages as tapTempoMessages } from "../data/messages.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
-import { getLangMsg } from "../../lib/Language.js";
 import { buildCenteredSelectWrap } from "../utils/centeredSelect.js";
 import { loadEditScoreDraft, saveEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 
@@ -29,12 +32,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveButton = document.getElementById("saveConfigBeat");
   const closePageButton = document.getElementById("closePage");
 
+  // タップテンポ: tempoDial の onTap から呼ばれる（tapTempo は後で初期化するため let で宣言）
+  let tapTempo = null;
+
   const tempoDial = new TempoDialController({
     inputEl: tempoInput,
     dialEls: [tempoDialEl],
     defaultValue: 60,
+    onTap: () => tapTempo?.recordTap(),
   });
   tempoDial.attach();
+
+  // タップテンポコントローラーの初期化
+  tapTempo = new TapTempoController({
+    tapCount: 4,
+    resetMs: 2000,
+    minBpm: 30,
+    maxBpm: 240,
+    onTempoDetected: (bpm) => {
+      // テンポ入力欄に設定する（Done ボタン押下時に保存される）
+      tempoDial.setValue(tempoDial.clamp(bpm), { notify: true });
+    },
+    onFirstTap: () => showMessageByKey(tapTempoMessages, "tapTempoDetecting", LANG_PRE_FIX, 1000),
+    onReset: () => showMessageByKey(tapTempoMessages, "tapTempoReset", LANG_PRE_FIX),
+  });
 
   const tempoStepButtons = [tempoStepCoarse, tempoStepFine].filter(Boolean);
   const dialLabelEl = tempoDialEl ? tempoDialEl.querySelector(".tempoDialLabel") : null;

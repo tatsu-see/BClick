@@ -7,10 +7,12 @@ import { ConfigStore } from "../utils/store.js";
 import RhythmScore from "../components/RhythmScore.js";
 import ScoreData from "../models/ScoreModel.js";
 import { TempoDialController } from "../components/tempoDial.js";
+import { TapTempoController } from "../components/tapTempo.js";
+import { messages as tapTempoMessages } from "../data/messages.js";
 import { preloadAlphaTabFonts } from "../utils/scorePdf.js";
 import { ensureInAppNavigation, goBackWithFallback } from "../utils/navigationGuard.js";
-import { showMessage } from "../../lib/ShowMessageBox.js";
-import { getLangMsg } from "../../lib/Language.js";
+import { showMessage, showMessageByKey } from "../../lib/ShowMessageBox.js";
+import { getLangMsg, LANG_PRE_FIX } from "../../lib/Language.js";
 import {
   clearEditScoreDraft,
   loadEditScoreDraft,
@@ -359,6 +361,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // タップテンポ: tempoDial の onTap から呼ばれる（tapTempo は後で初期化するため let で宣言）
+  let tapTempo = null;
+
   // テンポ入力・ダイヤルの初期化
   const tempoDial = tempoInput
     ? new TempoDialController({
@@ -377,8 +382,26 @@ document.addEventListener("DOMContentLoaded", () => {
             rhythmScore.setTempo(value);
           }
         },
+        onTap: () => tapTempo?.recordTap(),
       })
     : null;
+
+  // タップテンポコントローラーの初期化
+  tapTempo = new TapTempoController({
+    tapCount: 4,
+    resetMs: 2000,
+    minBpm: 30,
+    maxBpm: 240,
+    onTempoDetected: (bpm) => {
+      if (!tempoDial) return;
+      // テンポを設定し、onValueChange 経由でスコアデータ更新・通知
+      tempoDial.setValue(tempoDial.clamp(bpm), { notify: true });
+      // onValueCommit 相当の処理（楽譜へのテンポ反映）
+      tempoDial.notifyCommit(bpm);
+    },
+    onFirstTap: () => showMessageByKey(tapTempoMessages, "tapTempoDetecting", LANG_PRE_FIX, 1000),
+    onReset: () => showMessageByKey(tapTempoMessages, "tapTempoReset", LANG_PRE_FIX),
+  });
 
   if (tempoDial) {
     const tempoStepButtons = [tempoStepCoarse, tempoStepFine].filter(Boolean);
