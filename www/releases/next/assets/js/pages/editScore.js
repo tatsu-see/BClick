@@ -131,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreArea = document.getElementById("scoreArea");
   const saveButton = document.getElementById("saveShowScore");
   const backButton = document.getElementById("backShowScore");
-  const closePageButton = document.getElementById("closePage");
   const showCodeDiagramButton = document.getElementById("showCodeDiagram");
   const tempoInput = document.getElementById("tempoInput");
   const tempoDialEl = document.getElementById("tempoDial");
@@ -667,9 +666,6 @@ document.addEventListener("DOMContentLoaded", () => {
     backButton.addEventListener("click", handleBack);
   }
 
-  if (closePageButton) {
-    closePageButton.addEventListener("click", closePage);
-  }
 
   // ─── 再生モード制御（プルダウン + 録音連携） ─────────────────
 
