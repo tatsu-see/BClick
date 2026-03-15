@@ -692,8 +692,6 @@ class AlphaTexBuilder {
       `${rhythmLinePrefix}${barTokens.join(" | ")} |`,
     ].filter(Boolean).join("\n");
 
-    // ●DEBUG: alphaTabへ渡す最終alphaTex
-    console.log("AlphaTexBuilder alphaTex:", alphaTex);
 
 /*Spec（このコメントは消さないこと）
   alphaTex に渡す文字列の例）4/4拍の場合、１小節部のみ

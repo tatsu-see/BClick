@@ -46,7 +46,11 @@ export const SCORE_JSON_VERSION = 0;
 //     "clickTonePattern": ["A5", "A4", "A4", "A4"],   ← 省略可能。旧PDFには存在しない場合がある（後述）
 //     "rhythmPattern": ["4", "4", "4", "4"],
 //     "bars": [
-//       { "chord": [["G", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]], "rhythm": ["4", "4", "4", "4"] }
+//       {
+//         "chord":  [["G", "", "", ""], ["", "", "", ""], ["", "", "", ""], ["", "", "", ""]],
+//         "rhythm": ["4", "4", "4", "4"],
+//         "lyrics": [["あ", "", "", ""], ["な", "", "", ""], ["", "", "", ""], ["", "", "", ""]]  ← 省略可能。旧PDFには存在しない場合がある（後述）
+//       }
 //     ]
 //   }
 // }
@@ -66,7 +70,11 @@ export const SCORE_JSON_VERSION = 0;
 //                       省略可能フィールド。読み込み時に存在しない/無効な場合は
 //                       旧アプリの動作に合わせ「1拍目=A5、それ以外=A4」を既定値とする。
 //   - rhythmPattern: 小節内の音価トークン配列
-//   - bars: 小節配列（chord: 拍内分割ごとのコード配列, rhythm: 音符トークン配列）
+//   - bars: 小節配列
+//     - chord:  拍内分割ごとのコード配列（string[][]、拍数 × MAX_SUBDIV）
+//     - rhythm: 音符トークン配列
+//     - lyrics: 拍内分割ごとの歌詞配列（string[][]、chord と同構造）
+//               省略可能フィールド。読み込み時に存在しない/無効な場合は空文字で補完する。
 //
 // 楽譜の読込・保存に対応していない設定項目
 // - clickVolume: クリック音量
@@ -237,7 +245,7 @@ const normalizeRhythmPatternStrict = (value, beatCount) => {
  * 小節データ1件を厳格に正規化する。
  * @param {unknown} bar
  * @param {number} beatCount
- * @returns {{ chord: string[][], rhythm: string[] }|null}
+ * @returns {{ chord: string[][], rhythm: string[], lyrics: string[][]|null }|null}
  */
 const normalizeBarStrict = (bar, beatCount) => {
   if (!bar || typeof bar !== "object") return null;
@@ -252,9 +260,26 @@ const normalizeBarStrict = (bar, beatCount) => {
     return null;
   }
   if (!isValidRhythmPattern(bar.rhythm, beatCount)) return null;
+
+  //##Spec lyrics は省略可能フィールド。旧データには存在しない場合がある。
+  // 存在する場合は chord と同じ string[][] 構造（拍数 × MAX_SUBDIV）を検証する。
+  // 存在しない / 構造が不正な場合は null を返し、ScoreModel 側で空文字に補完する。
+  let lyrics = null;
+  if (Array.isArray(bar.lyrics)) {
+    const isValid =
+      bar.lyrics.length === beatCount &&
+      bar.lyrics.every((row) =>
+        Array.isArray(row)
+        && row.length === MAX_SUBDIV
+        && row.every((value) => typeof value === "string"),
+      );
+    lyrics = isValid ? bar.lyrics.map((row) => row.slice()) : null;
+  }
+
   return {
     chord: bar.chord.map((row) => row.slice()),
     rhythm: bar.rhythm.slice(),
+    lyrics,
   };
 };
 

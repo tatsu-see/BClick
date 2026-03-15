@@ -9,7 +9,7 @@ import {
   getBeatCountFromTimeSignature,
   getDefaultSettings,
   readScoreFileAsJson,
-} from "./scoreSerialization.js";
+} from "./scoreSerialization.js?v=20260315";
 
 // configBeat の既定値ルールと揃えて、初期化時の音色パターンを生成する。
 const buildDefaultClickTonePattern = (count) =>
