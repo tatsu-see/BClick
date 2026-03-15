@@ -448,11 +448,16 @@ class AlphaTexBuilder {
                     : token.len === 4 ? 4
                       : 16;
               const tieDotted = token.len === 3;
+              // tieFromPrev（⌒●）にも歌詞を付ける
+              const tieLyricLabel = typeof token.sourceIndex === "number"
+                ? (beatLyricsRow[token.sourceIndex] || "")
+                : "";
               const tieProps = [
                 "slashed",
                 tieDotted ? "d" : null,
                 // 先頭がタイ継続の場合はここでコードを付与する
                 chordLabel ? `ch "${chordLabel}"` : null,
+                tieLyricLabel ? `lyrics "${tieLyricLabel}"` : null,
               ].filter(Boolean).join(" ");
               const tiePrefix = !divisionTokenEmitted && currentBeatDivision !== lastBeatDivision
                 ? `:${tieDuration} `
@@ -544,18 +549,28 @@ class AlphaTexBuilder {
             const divisionToken = currentBeatDivision !== lastBeatDivision
               ? ` :${currentBeatDivision}`
               : "";
-            notes[lastNoteIndex] = `${notes[lastNoteIndex]}${divisionToken} - { slashed }`;
+            // tieNote（⌒●）にも歌詞を付ける
+            const midBarLyricLabel = beatLyricsRow[subIndex] || "";
+            const midBarTieProps = midBarLyricLabel
+              ? `slashed lyrics "${midBarLyricLabel}"`
+              : "slashed";
+            notes[lastNoteIndex] = `${notes[lastNoteIndex]}${divisionToken} - { ${midBarTieProps} }`;
             beatProgress += beatLength;
             handledTie = true;
           } else if (isBarHead && barIndex > 0) {
             const divisionToken = currentBeatDivision !== lastBeatDivision
               ? `:${currentBeatDivision} `
               : "";
+            // tieNote（⌒●）にも歌詞を付ける
+            const barHeadLyricLabel = beatLyricsRow[subIndex] || "";
             const tieProps = [
               "slashed",
               chordLabel ? `ch "${chordLabel}"` : null,
+              barHeadLyricLabel ? `lyrics "${barHeadLyricLabel}"` : null,
             ].filter(Boolean).join(" ");
             notes.push(`${divisionToken}- { ${tieProps} }`);
+            // 後続の ⌒● が連続タイとして繋がれるよう lastNoteIndex を更新する
+            lastNoteIndex = notes.length - 1;
             beatProgress += beatLength;
             handledTie = true;
           }

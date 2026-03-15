@@ -906,10 +906,21 @@ document.addEventListener("DOMContentLoaded", () => {
         lyricsRow.textContent = "";
         lyricsRow.style.gridTemplateColumns = `repeat(${patternLength}, 1fr)`;
         for (let subIndex = 0; subIndex < patternLength; subIndex += 1) {
+          const noteValue = patternItem.pattern[subIndex] || "note";
+          // 音符（note・tieNote）は歌詞を入力可能。休符（rest）・タイ（tie）は alphaTex に歌詞が反映されないため入力不可。
+          const isLyricsEnterable = noteValue === "note" || noteValue === "tieNote";
           const lyricsInput = document.createElement("input");
           lyricsInput.type = "text";
           lyricsInput.className = "rhythmLyricsInput";
-          lyricsInput.value = selectedLyrics[index]?.[subIndex] ?? "";
+          if (!isLyricsEnterable) {
+            lyricsInput.disabled = true;
+            lyricsInput.value = "";
+            // 入力不可スロットの歌詞データを消去する
+            if (!Array.isArray(selectedLyrics[index])) selectedLyrics[index] = [];
+            selectedLyrics[index][subIndex] = "";
+          } else {
+            lyricsInput.value = selectedLyrics[index]?.[subIndex] ?? "";
+          }
           lyricsInput.setAttribute("aria-label", `Lyric for beat ${index + 1} note ${subIndex + 1}`);
           lyricsInput.addEventListener("input", () => {
             if (!Array.isArray(selectedLyrics[index])) selectedLyrics[index] = [];
