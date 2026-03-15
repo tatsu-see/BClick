@@ -32,6 +32,8 @@ export const SCORE_JSON_VERSION = 0;
 
 //##Spec
 // JSON保存形式の仕様（v0）
+// → AI向けの詳細仕様（サンプルJSON・依頼文ひな形含む）は /ScoreFormat.md を参照。
+// → 保存形式を変更したときは ScoreFormat.md も更新すること。
 // {
 //   "schemaVersion": 0,
 //   "score": {
