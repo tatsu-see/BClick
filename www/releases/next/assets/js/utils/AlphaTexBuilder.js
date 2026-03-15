@@ -516,9 +516,12 @@ class AlphaTexBuilder {
         if (duration === "8" && isTie && beatProgress === 0) {
           const nextValue = rhythm[rhythmIndex + 1];
           const isNextTie = typeof nextValue === "string" && nextValue.startsWith("t") && nextValue.endsWith("8");
+          // tie/tieNote（8分先頭）にも歌詞を付ける
+          const tieHeadLyricLabel = beatLyricsRow[subIndex] || "";
           const tieProps = [
             "slashed",
             chordLabel ? `ch "${chordLabel}"` : null,
+            tieHeadLyricLabel ? `lyrics "${tieHeadLyricLabel}"` : null,
           ].filter(Boolean).join(" ");
           if (currentBeatDivision !== lastBeatDivision) {
             notes.push(`:${currentBeatDivision} - { ${tieProps} }`);

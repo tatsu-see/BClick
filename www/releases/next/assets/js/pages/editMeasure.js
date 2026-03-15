@@ -907,8 +907,8 @@ document.addEventListener("DOMContentLoaded", () => {
         lyricsRow.style.gridTemplateColumns = `repeat(${patternLength}, 1fr)`;
         for (let subIndex = 0; subIndex < patternLength; subIndex += 1) {
           const noteValue = patternItem.pattern[subIndex] || "note";
-          // 音符（note・tieNote）は歌詞を入力可能。休符（rest）・タイ（tie）は alphaTex に歌詞が反映されないため入力不可。
-          const isLyricsEnterable = noteValue === "note" || noteValue === "tieNote";
+          // 音符（note・tieNote・tie）は歌詞を入力可能。休符（rest）は alphaTex に歌詞が反映されないため入力不可。
+          const isLyricsEnterable = noteValue === "note" || noteValue === "tieNote" || noteValue === "tie";
           const lyricsInput = document.createElement("input");
           lyricsInput.type = "text";
           lyricsInput.className = "rhythmLyricsInput";
