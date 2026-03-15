@@ -202,6 +202,11 @@ document.addEventListener("DOMContentLoaded", () => {
         ? bar.chord.map((row) => (Array.isArray(row) ? row.slice() : []))
         : [],
       rhythm: Array.isArray(bar?.rhythm) ? bar.rhythm.slice() : [],
+      //##Spec lyrics は省略可能フィールド。旧データには存在しない場合がある。
+      //        chord と同じ string[][] 構造（拍 × 最大分割数）で管理する。
+      lyrics: Array.isArray(bar?.lyrics)
+        ? bar.lyrics.map((row) => (Array.isArray(row) ? row.slice() : []))
+        : [],
     }));
   };
 

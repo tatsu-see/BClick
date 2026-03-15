@@ -25,6 +25,18 @@ class AlphaTexBuilder {
   }
 
   /**
+   * 歌詞テキストから alphaTex の構文を壊す文字を取り除く。
+   * @param {string} value
+   * @returns {string}
+   */
+  sanitizeLyricText(value) {
+    if (typeof value !== "string") return "";
+    const trimmed = value.trim();
+    if (!trimmed) return "";
+    return trimmed.replace(/["\\]/g, "");
+  }
+
+  /**
    * コード進行を配列に正規化する。
    * @param {string[] | string} value
    * @returns {string[]}
@@ -90,6 +102,7 @@ class AlphaTexBuilder {
     const normalizedBars = safeBars.map((bar) => ({
       chord: normalizeBeatChords(bar?.chord),
       rhythm: Array.isArray(bar?.rhythm) ? bar.rhythm : bar?.rhythm || "",
+      lyrics: normalizeBeatChords(bar?.lyrics),
     }));
     return JSON.stringify({
       timeSignature: typeof timeSignature === "string" ? timeSignature : "",
@@ -267,23 +280,27 @@ class AlphaTexBuilder {
      * 16分表示用トークンを alphaTex 文字列へ変換する。
      * @param {object} token
      * @param {string} chordLabel
-     * @param {boolean} attachChord
+     * @param {string} lyricLabel
+     * @param {boolean} addBeamSplit
      * @returns {string}
      */
-    const toSixteenthAlphaTex = (token, chordLabel, addBeamSplit) => {
+    const toSixteenthAlphaTex = (token, chordLabel, lyricLabel, addBeamSplit) => {
       const duration = token.len === 1 ? 16
         : token.len === 2 ? 8
           : token.len === 3 ? 8
             : token.len === 4 ? 4
               : 16;
       const dotted = token.len === 3;
-      const shouldAttachChord = token.type === "note" && chordLabel;
+      const isNote = token.type === "note";
+      const shouldAttachChord = isNote && chordLabel;
+      // 休符にはコード・歌詞を付けない
+      const shouldAttachLyric = isNote && lyricLabel;
       const props = [
         "slashed",
         addBeamSplit ? "beam split" : null,
         dotted ? "d" : null,
-        // 休符にコードを付けない
         shouldAttachChord ? `ch "${chordLabel}"` : null,
+        shouldAttachLyric ? `lyrics "${lyricLabel}"` : null,
       ].filter(Boolean).join(" ");
       return token.type === "rest"
         ? `r.${duration} { ${props} }`
@@ -360,6 +377,20 @@ class AlphaTexBuilder {
       const beatChords = buildBeatChords().map((row) =>
         row.map((value) => this.sanitizeChordLabel(value)),
       );
+      /**
+       * 拍ごとの歌詞配列を構築する。
+       * @returns {string[][]}
+       */
+      const buildBeatLyrics = () => {
+        if (barData && barData.lyrics) {
+          return normalizeBeatChords(barData.lyrics);
+        }
+        return Array.from({ length: beats }, () => buildEmptyChordRow());
+      };
+      // 拍内歌詞配列をサニタイズして利用する
+      const beatLyrics = buildBeatLyrics().map((row) =>
+        row.map((value) => this.sanitizeLyricText(value)),
+      );
       let beatIndex = 0;
       let beatProgress = 0;
       let currentBeatDivision = 4;
@@ -391,6 +422,7 @@ class AlphaTexBuilder {
           currentBeatDivision = Number.parseInt(duration, 10);
         }
         const beatChordRow = beatChords[beatIndex] || [];
+        const beatLyricsRow = beatLyrics[beatIndex] || [];
         const beatLength = getBeatLength(duration);
 
         if (duration === "16" && beatProgress === 0) {
@@ -432,9 +464,14 @@ class AlphaTexBuilder {
               lastNoteIndex = null;
             } else {
               const addBeamSplit = token.type === "note" && nextToken?.type === "rest";
+              // tieFromPrev でない音符にのみ歌詞を付ける
+              const lyricLabel = typeof token.sourceIndex === "number"
+                ? (beatLyricsRow[token.sourceIndex] || "")
+                : "";
               const noteText = toSixteenthAlphaTex(
                 token,
                 chordLabel,
+                lyricLabel,
                 addBeamSplit,
               );
               if (!divisionTokenEmitted && currentBeatDivision !== lastBeatDivision) {
@@ -587,9 +624,14 @@ class AlphaTexBuilder {
           } else if (duration === "1") {
             noteValue = "C4.1";
         }
+          const lyricLabel = beatLyricsRow[subIndex] || "";
           let props = "slashed";
           if (chordLabel) {
             props += ` ch "${chordLabel}"`;
+          }
+          // 音符（rest・tie でない）にのみ歌詞を付ける
+          if (lyricLabel) {
+            props += ` lyrics "${lyricLabel}"`;
           }
           const noteText = `${noteValue} { ${props} }`;
           notes.push(noteText);

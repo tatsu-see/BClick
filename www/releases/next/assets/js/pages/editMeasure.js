@@ -62,6 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const currentRhythm = Array.isArray(bars[safeBarIndex]?.rhythm)
     ? bars[safeBarIndex].rhythm
     : [];
+  // 拍ごと・音符ごとの歌詞配列をロード（旧データには存在しない場合がある）
+  const currentLyrics = Array.isArray(bars[safeBarIndex]?.lyrics)
+    ? bars[safeBarIndex].lyrics
+    : [];
+  let selectedLyrics = [];
   let selectedBeatChords = [];
   let selectedBeatPatterns = [];
   // 拍内の最大分割数（16分まで）
@@ -126,6 +131,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 拍ごとのコード配列をロード（拍内4分割の配列へ正規化）
   selectedBeatChords = normalizeBeatChords(currentBarChords);
+
+  //##Spec lyrics は chord と同じ string[][] 構造（拍 × 最大分割数）で管理する。
+  //        UI では各拍行に音符数ぶんの入力欄を表示し（4分=1、8分=2、16分=4）、
+  //        プレビュー列にスペース区切りの編集可能テキストを表示する。
+  //        ・個別入力欄 → プレビューテキスト：各欄をスペース結合して反映。
+  //        ・プレビューテキスト → 個別入力欄：半角・全角スペース区切りで分配。
+  //          スロット数より多いトークンは最後のスロットにスペース結合してまとめる。
+  //        ・旧データに lyrics が存在しない場合は空文字で補完する。
+  selectedLyrics = normalizeBeatChords(currentLyrics);
 
   /**
    * 音価トークンから分割値を取得する。
@@ -718,20 +732,48 @@ document.addEventListener("DOMContentLoaded", () => {
       symbolRow.className = "rhythmPatternSymbolRow";
       const chordRow = document.createElement("div");
       chordRow.className = "rhythmPatternChordRow";
+      const lyricsRow = document.createElement("div");
+      lyricsRow.className = "rhythmPatternLyricsRow";
       patternStack.appendChild(symbolRow);
       patternStack.appendChild(chordRow);
+      patternStack.appendChild(lyricsRow);
       patternCell.appendChild(patternStack);
 
       const previewCell = document.createElement("div");
       previewCell.className = "rhythmPatternCell rhythmPatternPreview";
       const preview = document.createElement("div");
       preview.className = "rhythmPreview";
+      const lyricsPreviewInput = document.createElement("input");
+      lyricsPreviewInput.type = "text";
+      lyricsPreviewInput.className = "rhythmLyricsPreviewInput";
+      lyricsPreviewInput.setAttribute("aria-label", `Lyrics preview for beat ${index + 1}`);
       previewCell.appendChild(preview);
+      previewCell.appendChild(lyricsPreviewInput);
       const previewRenderer = new RhythmPreviewRenderer(
         preview,
         () => scoreData.timeSignature,
         buildAbcTokens,
       );
+
+      // プレビューテキスト編集 → 個別入力欄に反映（半角・全角スペース区切り）
+      lyricsPreviewInput.addEventListener("input", () => {
+        const currentPatternLength = getPatternLengthFromDivision(patternItem.division);
+        const tokens = lyricsPreviewInput.value.trim().split(/[\s　]+/);
+        if (!Array.isArray(selectedLyrics[index])) selectedLyrics[index] = [];
+        for (let si = 0; si < currentPatternLength; si += 1) {
+          if (si < currentPatternLength - 1) {
+            // 最後以外のスロット: トークンをそのまま割り当てる
+            selectedLyrics[index][si] = tokens[si] ?? "";
+          } else {
+            // 最後のスロット: 余ったトークンをまとめてスペース結合する
+            selectedLyrics[index][si] = tokens.slice(si).join(" ");
+          }
+        }
+        const inputs = lyricsRow.querySelectorAll(".rhythmLyricsInput");
+        inputs.forEach((inp, si) => {
+          inp.value = selectedLyrics[index]?.[si] ?? "";
+        });
+      });
 
       /**
        * 拍内コード選択セレクトを生成する。
@@ -768,9 +810,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (coveredBeats[index]) {
           symbolRow.textContent = "";
           chordRow.textContent = "";
+          lyricsRow.textContent = "";
+          lyricsPreviewInput.value = "";
+          lyricsPreviewInput.disabled = true;
           previewRenderer.render({ division: 4, pattern: ["note"] });
           return;
         }
+        lyricsPreviewInput.disabled = false;
         symbolRow.textContent = "";
         while (patternItem.pattern.length < patternLength) {
           patternItem.pattern.push("note");
@@ -855,6 +901,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         previewRenderer.render(patternItem);
+
+        // 音符数ぶんの歌詞入力欄を並べる（分割変更時も selectedLyrics の値を維持する）
+        lyricsRow.textContent = "";
+        lyricsRow.style.gridTemplateColumns = `repeat(${patternLength}, 1fr)`;
+        for (let subIndex = 0; subIndex < patternLength; subIndex += 1) {
+          const lyricsInput = document.createElement("input");
+          lyricsInput.type = "text";
+          lyricsInput.className = "rhythmLyricsInput";
+          lyricsInput.value = selectedLyrics[index]?.[subIndex] ?? "";
+          lyricsInput.setAttribute("aria-label", `Lyric for beat ${index + 1} note ${subIndex + 1}`);
+          lyricsInput.addEventListener("input", () => {
+            if (!Array.isArray(selectedLyrics[index])) selectedLyrics[index] = [];
+            selectedLyrics[index][subIndex] = lyricsInput.value;
+            // プレビューテキストを更新（先頭・末尾の余分なスペースを除去する）
+            lyricsPreviewInput.value = Array.from(
+              { length: patternLength },
+              (_, si) => selectedLyrics[index]?.[si] ?? "",
+            ).join(" ").trim();
+          });
+          lyricsRow.appendChild(lyricsInput);
+        }
+        // プレビューテキストを初期表示（先頭・末尾の余分なスペースを除去する）
+        lyricsPreviewInput.value = Array.from(
+          { length: patternLength },
+          (_, si) => selectedLyrics[index]?.[si] ?? "",
+        ).join(" ").trim();
       };
 
       rebuildPatternSelectors();
@@ -910,6 +982,7 @@ document.addEventListener("DOMContentLoaded", () => {
     rhythm: Array.isArray(bar?.rhythm) && bar.rhythm.length > 0
       ? bar.rhythm.slice()
       : scoreData.buildDefaultRhythm(),
+    lyrics: normalizeBeatChords(bar?.lyrics).map((row) => row.slice()),
   });
 
   const getSelectedCopyValue = () => {
@@ -956,6 +1029,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const nextRhythm = buildRhythmFromBeatPatterns(selectedBeatPatterns);
         targetBar.rhythm = nextRhythm;
       }
+      if (targetBar) {
+        targetBar.lyrics = normalizeBeatChords(selectedLyrics).map((row) => row.slice());
+      }
 
         const copyValue = getSelectedCopyValue();
         if (copyValue === "del") {
@@ -968,6 +1044,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (targetBar) {
           targetBar.chord = normalizeBeatChords("");
           targetBar.rhythm = scoreData.buildDefaultRhythm();
+          targetBar.lyrics = Array.from({ length: beatCount }, () => "");
         }
         if (draft && typeof draft === "object") {
           saveEditScoreDraft({

@@ -88,6 +88,9 @@ class ScoreData {
       bars.push({
         chord: beatChords,
         rhythm: defaultRhythm.slice(),
+        //##Spec lyrics は省略可能フィールド。旧データには存在しない場合がある。
+        //        chord と同じ string[][] 構造（拍 × 最大分割数）で管理する。
+        lyrics: Array.from({ length: beats }, () => buildEmptyChordRow()),
       });
     }
     return bars;
@@ -143,6 +146,13 @@ class ScoreData {
       }
       return normalized.slice(0, expectedBeats);
     };
+    /**
+     * 歌詞配列を正規化する。chord と同じ string[][] 構造に揃える。
+     * @param {unknown} value
+     * @returns {string[][]}
+     */
+    const normalizeLyrics = (value) => normalizeBeatChords(value);
+
     const normalized = defaults.map((fallback, index) => {
       const source = bars[index];
       if (!source || typeof source !== "object") return fallback;
@@ -161,6 +171,7 @@ class ScoreData {
       return {
         chord,
         rhythm: rhythm.length > 0 && duration === expectedBeats ? rhythm : fallback.rhythm,
+        lyrics: normalizeLyrics(source.lyrics),
       };
     });
     return normalized;

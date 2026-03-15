@@ -112,7 +112,7 @@ class RhythmScoreUI {
       edit: { ja: "編集", en: "Edit" },
       copy: { ja: "コピー", en: "Copy" },
       duplicate: { ja: "複製", en: "Duplicate" },
-      paste: { ja: "貼り付け", en: "Paste" },
+      paste: { ja: "貼付", en: "Paste" },
       delete: { ja: "削除", en: "Delete" },
     };
     return labels[key] ? labels[key][isJa ? "ja" : "en"] : key;

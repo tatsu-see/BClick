@@ -200,9 +200,27 @@
 }
 
 .rhythmPatternPreview {
-  justify-content: center;
-  /* Spec ABCJSプレビューは操作しないのでクリックを無効化する */
+  /* ABCJSと歌詞プレビューテキストを縦に並べる */
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  /* lyricsRow との底部位置を揃えるため padding は持たない */
+  padding: 0;
+  gap: 2px;
+}
+
+.rhythmReview {
+  /* ABCJSプレビューは操作しないのでクリックを無効化する */
   pointer-events: none;
+  /* パターン行+コード行の高さに合わせて伸縮する */
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* ABCJSまわりに左右の余白を付ける */
+  padding: 0 4px;
 }
 
 .rhythmChordSelect {
@@ -214,7 +232,8 @@
 
 .rhythmPatternPreview .abcjs-inline-svg {
   max-width: 100%;
-  height: 32px;
+  /* rhythmReview（flex: 1 1 0）の高さに追従する */
+  height: 100%;
 }
 
 .codeProgressionGroup {
@@ -227,4 +246,45 @@
   font-size: 0.9em;
   width: 100%;
   box-sizing: border-box;
+}
+
+/* リズム行内の歌詞入力欄（パターン・コードの下に縦積み）*/
+.rhythmPatternLyricsRow {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  /* padding を持たせず lyricsPreviewInput と高さを揃える */
+}
+
+/* 音符ごとの歌詞入力欄 */
+.rhythmLyricsInput {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-size: 0.7em;
+  text-align: center;
+  padding: 2px 2px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  background: #fff;
+  color: #222;
+}
+
+/* プレビュー列下部の歌詞プレビューテキスト（スペース区切りで双方向同期） */
+.rhythmLyricsPreviewInput {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-size: 0.7em;
+  text-align: center;
+  padding: 2px 4px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  background: #fff;
+  color: #222;
+}
+
+.rhythmLyricsPreviewInput:disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }

@@ -98,7 +98,10 @@ class ScoreBarEditor {
     const rhythm = Array.isArray(bar.rhythm)
       ? bar.rhythm.map((value) => (typeof value === "string" ? value : ""))
       : [];
-    return { chord, rhythm };
+    //##Spec lyrics は省略可能フィールド。旧データには存在しない場合がある。
+    //        chord と同じ string[][] 構造（拍 × 最大分割数）で管理する。
+    const lyrics = normalizeBeatChords(bar.lyrics);
+    return { chord, rhythm, lyrics };
   }
 
   /**

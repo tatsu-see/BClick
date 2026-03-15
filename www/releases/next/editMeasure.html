@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/css/app.css?v=20260308">
   <link rel="stylesheet" href="assets/css/tips.css?v=20260307">
-  <link rel="stylesheet" href="assets/css/editMeasure.css?v=20260307">
+  <link rel="stylesheet" href="assets/css/editMeasure.css?v=20260315b">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
@@ -36,6 +36,7 @@
   <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
   <link rel="modulepreload" href="assets/lib/consentManager.js">
   <link rel="modulepreload" href="assets/lib/consentTracking.js">
+  <link rel="modulepreload" href="assets/lib/ShowMessageBox.js">
   <link rel="modulepreload" href="assets/js/actions/tips.js?v=20260307">
 
   <script src="assets/lib/abcjs/abcjs-basic-min.js"></script>
@@ -43,7 +44,7 @@
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
   <script type="module" src="assets/js/actions/tips.js?v=20260307"></script>
-  <script type="module" src="assets/js/pages/editMeasure.js?v=20260314"></script>
+  <script type="module" src="assets/js/pages/editMeasure.js?v=20260315"></script>
 </head>
 
 <!--Spec 作成した楽譜の１小節単位の編集画面
@@ -191,7 +192,7 @@
         </div>
       </div>
 
-      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Select rhythm">
+      <div class="preferenceValue preferenceValueCentered rhythmBeatValue" role="group" aria-label="Set rhythm">
       <!--Spec 楽譜の１小節内のリズムパターン
         （configScoreに書いてあるリズムパターンと同じ）
       -->
@@ -230,7 +231,21 @@
               <span class="lang" data-lang="ja">パターンとコード</span>
             </div>
 
-            <!--Spec 選んだ音符や休符による楽譜上での音符を描画する列 -->
+            <!--Spec 歌詞入力列（パターン・コードの下に縦積み）
+            ・各拍行の「パターンとコード」列の最下段に、音符数ぶんの歌詞入力欄を横並びで表示する。
+            ・4分音符=1欄、8分音符=2欄、16分音符=4欄。
+            ・歌詞データは chord と同じ string[][] 構造（拍 × 最大分割数）で bar.lyrics に保存する。
+            ・旧データに lyrics が存在しない場合は空文字で補完する。
+            -->
+
+            <!--Spec プレビュー列
+            ・上段：ABCJS による音符プレビュー（クリック無効）。
+            ・下段：歌詞プレビューテキスト（編集可能）。
+              - 個別歌詞入力欄のテキストをスペース区切りで結合して表示する。
+              - スペース（半角・全角）区切りで入力すると個別欄に分配される。
+              - スロット数より多いトークンは、最後のスロットにまとめてスペース結合する。
+              - 個別欄の変更とプレビューテキストの変更は双方向に同期する。
+            -->
             <div class="rhythmPatternCell rhythmPatternPreview" role="columnheader">
               <span class="lang" data-lang="en">Preview</span>
               <span class="lang" data-lang="ja">プレビュー</span>
@@ -330,11 +345,13 @@
       <span class="lang" data-lang="en">
         ・Set the note and rest pattern for this measure here.<br>
         ・You can also choose which chord appears on each note position.<br>
+        ・Enter a lyric syllable in the text box below each beat row.<br>
         ・The preview updates to match the selected rhythm pattern.<br>
       </span>
       <span class="lang" data-lang="ja">
         ・この小節の音符や休符のパターンをここで設定します。<br>
         ・各音符位置に表示するコードも選択できます。<br>
+        ・各拍の行の下のテキスト欄に歌詞の音節を入力できます。<br>
         ・選んだリズムに合わせてプレビューも更新されます。<br>
       </span>
     </div>
