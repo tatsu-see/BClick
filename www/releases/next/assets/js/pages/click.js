@@ -249,6 +249,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const box = document.createElement("div");
       box.className = "clickBox";
       box.textContent = (i + 1).toString();
+      // H/L/ーに応じたトーン状態をdata属性で設定する（背景グラデーションとグレー表示に使用）
+      const fallbackTone = i % 4 === 0 ? "A5" : "A4";
+      const toneValue = currentClickTonePattern?.[i] ?? fallbackTone;
+      if (toneValue === "A5") {
+        box.dataset.tone = "high";
+      } else if (toneValue === "A4") {
+        box.dataset.tone = "low";
+      } else {
+        box.dataset.tone = "mute";
+      }
       showClick.appendChild(box);
     }
   };
@@ -529,8 +539,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const setClickBoxes = () => {
     const clickCount = getClickCount();
+    refreshClickTonePattern(clickCount); // renderより先にトーンパターンを更新する
     renderClickBoxes(clickCount);
-    refreshClickTonePattern(clickCount);
     stopScheduler();
     isRunning = false;
     isPaused = false;

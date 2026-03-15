@@ -77,6 +77,31 @@
   background: white;
 }
 
+/* H（High）：上から濃い緑→白のグラデーション（通常時） */
+.clickBox[data-tone="high"] {
+  background: linear-gradient(to bottom, #1e7a4f 5%, white 25%, white 100%);
+}
+
+/* L（Low）：下から濃い緑→白のグラデーション（通常時） */
+.clickBox[data-tone="low"] {
+  background: linear-gradient(to top, #1e7a4f 5%, white 25%, white 100%);
+}
+
+/* ー（Mute）：グレー表示（控えめに見せる） */
+.clickBox[data-tone="mute"] {
+  color: #aaa;
+}
+
+/* active時：濃い緑→lightgreenのグラデーション */
 .clickBox.active {
+  background: lightgreen;
+}
+.clickBox[data-tone="high"].active {
+  background: linear-gradient(to bottom, #1e7a4f 5%, lightgreen 25%, lightgreen 100%);
+}
+.clickBox[data-tone="low"].active {
+  background: linear-gradient(to top, #1e7a4f 5%, lightgreen 25%, lightgreen 100%);
+}
+.clickBox[data-tone="mute"].active {
   background: lightgreen;
 }
