@@ -122,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
             bars: scoreData.bars,
             measures: scoreData.measures,
             barsPerRow: scoreData.barsPerRow,
-            scoreEnabled: scoreData.scoreEnabled,
             clickTonePattern: Array.isArray(scoreData.clickTonePattern)
               ? scoreData.clickTonePattern.slice()
               : null,

@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreElement = document.getElementById("score");
   if (!scoreElement) return;
   const setClickButton = document.getElementById("setClick");
-  const scoreToggle = document.getElementById("scoreToggle");
   const scoreDataOutput = document.getElementById("scoreData");
   const store = new ConfigStore();
 
@@ -66,11 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (setClickButton) {
     setClickButton.addEventListener("click", () => {
-      if (scoreToggle) {
-        if (!scoreToggle.checked) return;
-      } else if (store.getScoreEnabled() === false) {
-        return;
-      }
       const nextSettings = loadSettings(true);
       store.setScoreBars(nextSettings.bars);
       renderScoreData(nextSettings);

@@ -32,8 +32,6 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
   const timeSignature = store.getScoreTimeSignature() || defaults.timeSignature;
   const measures = store.getScoreMeasures() || defaults.measures;
   const barsPerRow = store.getScoreBarsPerRow ? (store.getScoreBarsPerRow() || defaults.barsPerRow) : defaults.barsPerRow;
-  const storedScoreEnabled = store.getScoreEnabled ? store.getScoreEnabled() : null;
-  const scoreEnabled = typeof storedScoreEnabled === "boolean" ? storedScoreEnabled : defaults.scoreEnabled;
   const progression = typeof store.getScoreProgression() === "string"
     ? store.getScoreProgression()
     : defaults.progression;
@@ -58,7 +56,6 @@ export const buildScoreDataFromStore = (store, { resetBars = false } = {}) => {
     timeSignature,
     measures,
     barsPerRow,
-    scoreEnabled,
     progression,
     rhythmPattern,
     bars,
@@ -86,9 +83,6 @@ export const saveScoreDataToStore = (store, scoreData) => {
   store.setScoreMeasures(scoreData.measures);
   if (typeof store.setScoreBarsPerRow === "function") {
     store.setScoreBarsPerRow(scoreData.barsPerRow);
-  }
-  if (typeof store.setScoreEnabled === "function") {
-    store.setScoreEnabled(scoreData.scoreEnabled);
   }
   if (Array.isArray(scoreData.rhythmPattern)) {
     store.setScoreRhythmPattern(scoreData.rhythmPattern);
@@ -121,7 +115,6 @@ export const resetScoreSettings = (store) => {
   if (typeof store.setScoreBarsPerRow === "function") {
     store.setScoreBarsPerRow(defaults.barsPerRow);
   }
-  store.setScoreEnabled(defaults.scoreEnabled);
   if (typeof store.setEditScoreSettingsEnabled === "function") {
     // editScore の調節トグルは初期値(OFF)へ戻す
     store.setEditScoreSettingsEnabled(false);

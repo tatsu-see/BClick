@@ -19,7 +19,6 @@ const DEFAULT_SETTINGS = {
   progression: "",
   measures: 8,
   barsPerRow: 2,
-  scoreEnabled: true,
 };
 
 //##Spec
@@ -44,7 +43,6 @@ export const SCORE_JSON_VERSION = 0;
 //     "measures": 8,
 //     "progression": "G C Em",
 //     "barsPerRow": 2,
-//     "scoreEnabled": true,
 //     "clickTonePattern": ["A5", "A4", "A4", "A4"],   ← 省略可能。旧PDFには存在しない場合がある（後述）
 //     "rhythmPattern": ["4", "4", "4", "4"],
 //     "bars": [
@@ -67,7 +65,6 @@ export const SCORE_JSON_VERSION = 0;
 //   - measures: 小節数
 //   - progression: コード進行（スペース区切り）
 //   - barsPerRow: 1段あたりの小節数
-//   - scoreEnabled: リズム表示のON/OFF
 //   - clickTonePattern: 拍ごとのクリック音色配列（"A5"=High / "A4"=Low / ""=無音）
 //                       省略可能フィールド。読み込み時に存在しない/無効な場合は
 //                       旧アプリの動作に合わせ「1拍目=A5、それ以外=A4」を既定値とする。
@@ -302,7 +299,6 @@ export const buildScoreDataFromObject = (source) => {
   const timeSignature = typeof normalized.timeSignature === "string" ? normalized.timeSignature : null;
   const measures = parseIntegerInRange(normalized.measures, APP_LIMITS.scoreMeasures.min, APP_LIMITS.scoreMeasures.max);
   const barsPerRow = parseIntegerInRange(normalized.barsPerRow, APP_LIMITS.barsPerRow.min, APP_LIMITS.barsPerRow.max);
-  const scoreEnabled = parseBooleanStrict(normalized.scoreEnabled);
   const progression = normalizeProgressionStrict(normalized.progression);
 
   if (
@@ -313,7 +309,6 @@ export const buildScoreDataFromObject = (source) => {
     !ALLOWED_TIME_SIGNATURES.includes(timeSignature) ||
     measures === null ||
     barsPerRow === null ||
-    scoreEnabled === null ||
     progression === null
   ) {
     throw buildInvalidJsonError();
@@ -347,7 +342,6 @@ export const buildScoreDataFromObject = (source) => {
     timeSignature,
     measures,
     barsPerRow,
-    scoreEnabled,
     progression,
     rhythmPattern,
     bars,

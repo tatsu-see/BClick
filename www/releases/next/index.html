@@ -309,24 +309,6 @@
         <span class="material-symbols-rounded" aria-hidden="true">queue_music</span>
         <span class="lang" data-lang="en">Rhythm &amp; Stroke</span>
         <span class="lang" data-lang="ja">リズム＆ストローク</span>
-        <label class="scoreToggle">
-          <input type="checkbox" id="scoreToggle" aria-label="Toggle rhythm display">
-          <script>
-            (function() {
-              try {
-                const saved = localStorage.getItem("bclick.score.enabled");
-                if (saved === null) return;
-                const parsed = JSON.parse(saved);
-                const toggle = document.getElementById("scoreToggle");
-                if (toggle) {
-                  toggle.checked = parsed === true;
-                }
-              } catch (e) {
-                ;
-              }
-            })();
-          </script>
-        </label>
       </div>
     </div>
 

@@ -16,10 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const beatSummary = document.getElementById("configBeat");
   const scoreSummary = document.getElementById("configScore");
   const scoreSetting = document.getElementById("scoreSetting");
-  const scoreToggle = document.getElementById("scoreToggle");
-  const scoreExec = document.querySelector("#preferenceRythm .preferenceExec");
-  const scoreSectionTitle = document.querySelector("#preferenceRythm .preferenceTitle");
-  const scoreExecButtons = scoreExec ? scoreExec.querySelectorAll("button") : [];
   const tempoDown10Button = document.getElementById("tempoDown10");
   const tempoDownButton = document.getElementById("tempoDown");
   const tempoUpButton = document.getElementById("tempoUp");
@@ -103,35 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   };
 
-  if (scoreToggle) {
-    const savedScoreEnabled = store.getScoreEnabled();
-    if (savedScoreEnabled !== null) {
-      scoreToggle.checked = savedScoreEnabled;
-    } else {
-      scoreToggle.checked = false;
-    }
-  }
-
-  const updateScoreToggle = () => {
-    if (!scoreToggle || !scoreSetting) return;
-    const enabled = scoreToggle.checked;
-    scoreSetting.classList.toggle("isDisabled", !enabled);
-    scoreSetting.setAttribute("aria-disabled", String(!enabled));
-    if (configScoreButton) {
-      configScoreButton.disabled = !enabled;
-    }
-    if (scoreExec) {
-      scoreExec.classList.toggle("isDisabled", !enabled);
-      scoreExec.setAttribute("aria-disabled", String(!enabled));
-    }
-    if (scoreSectionTitle) {
-      scoreSectionTitle.classList.toggle("isDisabled", !enabled);
-      scoreSectionTitle.setAttribute("aria-disabled", String(!enabled));
-    }
-    scoreExecButtons.forEach((button) => {
-      button.disabled = !enabled;
-    });
-  };
 
   const refreshFromStore = () => {
     const savedTempo = store.getTempo();
@@ -152,12 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedCountdown = store.getCountInSec();
     if (countdownSelect && savedCountdown !== null) {
       countdownSelect.value = savedCountdown.toString();
-    }
-
-    const savedScoreEnabled = store.getScoreEnabled();
-    if (scoreToggle && savedScoreEnabled !== null) {
-      scoreToggle.checked = savedScoreEnabled;
-      updateScoreToggle();
     }
 
     updateBeatSummary();
@@ -281,14 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateBeatSummary();
   updateScoreSummary();
-  updateScoreToggle();
-
-  if (scoreToggle) {
-    scoreToggle.addEventListener("change", () => {
-      updateScoreToggle();
-      store.setScoreEnabled(scoreToggle.checked);
-    });
-  }
 
   const refreshFromStoreOnReturn = () => {
     refreshFromStore();

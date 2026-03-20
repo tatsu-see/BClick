@@ -57,9 +57,6 @@ export class ConfigStore extends LocalStore {
       this.keys = {
         // index / configBeat / editScore: テンポ
         Tempo: 'bclick.tempo',
-        // index: 楽譜表示ON/OFF
-        ScoreEnabled: 'bclick.score.enabled',
-
         // configBeat: クリック拍数
         ClickCount: 'bclick.clickCount',
         // configBeat: カウントイン
@@ -317,15 +314,6 @@ export class ConfigStore extends LocalStore {
     this.saveSettings(this.keys.ScoreBars, value);
   }
 
-  getScoreEnabled() {
-    const saved = this.getSettings(this.keys.ScoreEnabled);
-    return typeof saved === 'boolean' ? saved : null;
-  }
-
-  setScoreEnabled(value) {
-    if (typeof value !== 'boolean') return;
-    this.saveSettings(this.keys.ScoreEnabled, value);
-  }
 
   /**
    * アプリ設定をリセットする。

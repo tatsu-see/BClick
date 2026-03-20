@@ -6,7 +6,7 @@ import { APP_LIMITS } from "../constants/appConstraints.js";
  * - この形式が、小節の編集にもデータ形式として使えるから、小節編集時にも使っているが、こちらはサブ目的。
  */
 class ScoreData {
-  constructor({ tempo, clickCount, countIn, timeSignature, measures, progression, bars, rhythmPattern, barsPerRow, scoreEnabled, clickTonePattern } = {}) {
+  constructor({ tempo, clickCount, countIn, timeSignature, measures, progression, bars, rhythmPattern, barsPerRow, clickTonePattern } = {}) {
     this.tempo = Number.isNaN(Number.parseInt(tempo, 10)) ? 60 : Number.parseInt(tempo, 10);
     this.clickCount = Number.isNaN(Number.parseInt(clickCount, 10)) ? 4 : Number.parseInt(clickCount, 10);
     this.countIn = Number.isNaN(Number.parseInt(countIn, 10)) ? 4 : Number.parseInt(countIn, 10);
@@ -19,7 +19,6 @@ class ScoreData {
     this.barsPerRow = Number.isNaN(parsedBarsPerRow)
       ? 2
       : Math.max(1, Math.min(4, parsedBarsPerRow));
-    this.scoreEnabled = typeof scoreEnabled === "boolean" ? scoreEnabled : true;
     this.rhythmPattern = Array.isArray(rhythmPattern) ? rhythmPattern : null;
     //##Spec clickTonePattern は省略可能フィールド。旧データには存在しない場合がある。
     // null の場合は scoreSerialization / scoreButtonUtils 側で既定値を補完する。

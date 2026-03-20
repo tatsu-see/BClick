@@ -173,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedRhythmPattern = store.getScoreRhythmPattern();
     const savedBarsPerRow = store.getScoreBarsPerRow();
     const savedBars = resetBars ? null : store.getScoreBars();
-    const savedScoreEnabled = store.getScoreEnabled();
     const savedClickTonePattern = store.getClickTonePattern(savedClickCount);
     return new ScoreData({
       tempo: savedTempo,
@@ -185,7 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
       rhythmPattern: savedRhythmPattern || null,
       bars: savedBars || null,
       barsPerRow: savedBarsPerRow || 2,
-      scoreEnabled: typeof savedScoreEnabled === "boolean" ? savedScoreEnabled : true,
       clickTonePattern: savedClickTonePattern,
     });
   };
@@ -227,7 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
         : null,
       bars: cloneBars(currentScoreData.bars),
       barsPerRow: currentScoreData.barsPerRow || 2,
-      scoreEnabled: currentScoreData.scoreEnabled,
       clickTonePattern: Array.isArray(currentScoreData.clickTonePattern)
         ? currentScoreData.clickTonePattern.slice()
         : null,
@@ -284,7 +281,6 @@ document.addEventListener("DOMContentLoaded", () => {
     store.setScoreBarsPerRow(currentScoreData.barsPerRow || 2);
     store.setScoreBars(barsToSave);
     store.setScoreMeasures(measuresToSave);
-    store.setScoreEnabled(currentScoreData.scoreEnabled);
     if (Array.isArray(currentScoreData.clickTonePattern)) {
       store.setClickTonePattern(currentScoreData.clickTonePattern, currentScoreData.clickCount);
     }
@@ -316,7 +312,6 @@ document.addEventListener("DOMContentLoaded", () => {
       rhythmPattern: Array.isArray(loadedDraft.rhythmPattern) ? loadedDraft.rhythmPattern : null,
       bars: Array.isArray(loadedDraft.bars) ? loadedDraft.bars : null,
       barsPerRow: loadedDraft.barsPerRow || 2,
-      scoreEnabled: loadedDraft.scoreEnabled,
       clickTonePattern: Array.isArray(loadedDraft.clickTonePattern) ? loadedDraft.clickTonePattern : null,
     });
   } else {
@@ -324,13 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentScoreData = loadSettings(!hasSavedBars);
     syncDraftFromCurrent();
   }
-  if (currentScoreData.scoreEnabled === false) {
-    // 仕様: リズム表示がOFFならクリックUIのみ表示し、楽譜エリアは隠す。
-    if (scoreArea) {
-      scoreArea.hidden = true;
-    }
-    console.log("楽譜表示がOFFです");
-  } else if (scoreElement && window.alphaTab) {
+  if (scoreElement && window.alphaTab) {
     console.log("alphaTab ロード完了。楽譜を生成します...");
     window.bclickActiveChordIndex = -1;
     rhythmScore = new RhythmScore("score", {
@@ -362,7 +351,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("楽譜生成条件エラー:", {
       scoreElementExists: !!scoreElement,
       alphaTabLoaded: !!window.alphaTab,
-      scoreEnabled: currentScoreData.scoreEnabled,
     });
   }
 
@@ -538,7 +526,6 @@ document.addEventListener("DOMContentLoaded", () => {
       measures: data?.measures,
       progression: data?.progression,
       barsPerRow: data?.barsPerRow,
-      scoreEnabled: data?.scoreEnabled,
       rhythmPattern: safeRhythm,
       bars: safeBars,
       clickTonePattern: Array.isArray(data?.clickTonePattern) ? data.clickTonePattern : [],
@@ -561,7 +548,6 @@ document.addEventListener("DOMContentLoaded", () => {
           rhythmPattern: Array.isArray(nextDraft.rhythmPattern) ? nextDraft.rhythmPattern : null,
           bars: Array.isArray(nextDraft.bars) ? nextDraft.bars : null,
           barsPerRow: nextDraft.barsPerRow || 2,
-          scoreEnabled: nextDraft.scoreEnabled,
           clickTonePattern: Array.isArray(nextDraft.clickTonePattern) ? nextDraft.clickTonePattern : null,
         })
       : loadSettings(false);
@@ -571,12 +557,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     lastAppliedKey = nextApplyKey;
     currentScoreData = nextScoreData;
-    if (nextScoreData.scoreEnabled === false) {
-      if (scoreArea) {
-        scoreArea.hidden = true;
-      }
-      return;
-    }
     if (scoreArea) {
       scoreArea.hidden = false;
     }
