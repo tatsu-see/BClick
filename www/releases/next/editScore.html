@@ -62,6 +62,7 @@
   <script type="module" src="assets/js/pages/editScore.js?v=20260315"></script>
   <script type="module" src="assets/js/actions/saveScoreButton.js?v=20260307"></script>
   <script type="module" src="assets/js/actions/loadScoreButton.js?v=20260315"></script>
+  <script type="module" src="assets/js/actions/sampleScoreButton.js?v=20260320"></script>
 </head>
 
 <!--Spec 作成した楽譜を編集やクリック音の再生をする画面
@@ -225,6 +226,18 @@
         </div>
       </div>
 
+      <div class="preferenceSubTitle">
+        <span class="lang" data-lang="en">Bacis Strokes</span>
+        <span class="lang" data-lang="ja">基本ストローク</span>
+        <hr>
+      </div>
+
+      <div class="preferenceSubTitle">
+        <span class="lang" data-lang="en">Strokes & Code Changes</span>
+        <span class="lang" data-lang="ja">ストローク＆コード変更</span>
+        <hr>
+      </div>
+
       <div class="preferenceExecCenter sampleScoreLinks">
         <div class="sampleScoreLinkRow">
           <a
@@ -234,12 +247,12 @@
             class="sampleScoreFileLink"
             aria-label="Open sample score PDF 70 BPM 4/4 G Em 4 bars"
           >70BPM_4-4_G-Em_4bars.pdf</a>
-          <a
-            href="assets/score/70BPM_4-4_G-Em_4bars.pdf"
-            download
-            class="sampleScoreDownloadButton"
-            aria-label="Download sample score PDF 70 BPM 4/4 G Em 4 bars"
-          >DL</a>
+          <button
+            type="button"
+            class="chipButton sampleScoreTryButton"
+            data-sample-url="assets/score/70BPM_4-4_G-Em_4bars.pdf"
+            aria-label="Try sample score 70 BPM 4/4 G Em 4 bars"
+          ><span class="lang" data-lang="en">Try</span><span class="lang" data-lang="ja">試す</span></button>
         </div>
         <div class="sampleScoreLinkRow">
           <a
@@ -249,12 +262,12 @@
             class="sampleScoreFileLink"
             aria-label="Open sample score PDF 75 BPM 3/4 C D 6 bars"
           >75BPM_3-4_C-D_6bars.pdf</a>
-          <a
-            href="assets/score/75BPM_3-4_C-D_6bars.pdf"
-            download
-            class="sampleScoreDownloadButton"
-            aria-label="Download sample score PDF 75 BPM 3/4 C D 6 bars"
-          >DL</a>
+          <button
+            type="button"
+            class="chipButton sampleScoreTryButton"
+            data-sample-url="assets/score/75BPM_3-4_C-D_6bars.pdf"
+            aria-label="Try sample score 75 BPM 3/4 C D 6 bars"
+          ><span class="lang" data-lang="en">Try</span><span class="lang" data-lang="ja">試す</span></button>
         </div>
         <div class="sampleScoreLinkRow">
           <a
@@ -264,13 +277,20 @@
             class="sampleScoreFileLink"
             aria-label="Open sample score PDF 112 BPM 4/4 G Em A F 8 bars"
           >112BPM_4-4_G-Em-A-F_8bars.pdf</a>
-          <a
-            href="assets/score/112BPM_4-4_G-Em-A-F_8bars.pdf"
-            download
-            class="sampleScoreDownloadButton"
-            aria-label="Download sample score PDF 112 BPM 4/4 G Em A F 8 bars"
-          >DL</a>
+          <button
+            type="button"
+            class="chipButton sampleScoreTryButton"
+            data-sample-url="assets/score/112BPM_4-4_G-Em-A-F_8bars.pdf"
+            aria-label="Try sample score 112 BPM 4/4 G Em A F 8 bars"
+          ><span class="lang" data-lang="en">Try</span><span class="lang" data-lang="ja">試す</span></button>
         </div>
+
+      <div class="preferenceSubTitle">
+        <span class="lang" data-lang="en">Songs</span>
+        <span class="lang" data-lang="ja">歌付き</span>
+        <hr>
+      </div>
+
         <div class="sampleScoreLinkRow">
           <a
             href="assets/score/Happy_Birthday_To_You.pdf"
@@ -279,12 +299,12 @@
             class="sampleScoreFileLink"
             aria-label="Open sample score PDF Happy Birthday To You"
           >Happy_Birthday_To_You.pdf</a>
-          <a
-            href="assets/score/Happy_Birthday_To_You.pdf"
-            download
-            class="sampleScoreDownloadButton"
-            aria-label="Download sample score PDF Happy Birthday To You"
-          >DL</a>
+          <button
+            type="button"
+            class="chipButton sampleScoreTryButton"
+            data-sample-url="assets/score/Happy_Birthday_To_You.pdf"
+            aria-label="Try sample score Happy Birthday To You"
+          ><span class="lang" data-lang="en">Try</span><span class="lang" data-lang="ja">試す</span></button>
         </div>
       </div>
     </div>
