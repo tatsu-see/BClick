@@ -79,7 +79,7 @@ export class ConfigStore extends LocalStore {
         CodeDiagramChord: 'bclick.codeDiagram.chord',
 
         // editScore: 調節トグル（テンポ設定の表示ON/OFF）
-        EditScoreSettingsEnabled: 'bclick.editScore.settings.enabled',
+        EditScoreMode: 'bclick.editScore.mode',
         // editScore: 1段当たり表示小節数
         ScoreBarsPerRow: 'bclick.score.barsPerRow',
         // editScore: 小節配列
@@ -194,16 +194,18 @@ export class ConfigStore extends LocalStore {
   }
 
   /**
-   * editScore の調節トグルのI/O
+   * editScore の表示モード（"tempo" / "bars" / "sample" / "off"）のI/O
    */
-  getEditScoreSettingsEnabled() {
-    const saved = this.getSettings(this.keys.EditScoreSettingsEnabled);
-    return typeof saved === 'boolean' ? saved : null;
+  getEditScoreMode() {
+    const saved = this.getSettings(this.keys.EditScoreMode);
+    const VALID = ["tempo", "bars", "sample", "off"];
+    return VALID.includes(saved) ? saved : null;
   }
 
-  setEditScoreSettingsEnabled(value) {
-    if (typeof value !== 'boolean') return;
-    this.saveSettings(this.keys.EditScoreSettingsEnabled, value);
+  setEditScoreMode(value) {
+    const VALID = ["tempo", "bars", "sample", "off"];
+    if (!VALID.includes(value)) return;
+    this.saveSettings(this.keys.EditScoreMode, value);
   }
 
   /**

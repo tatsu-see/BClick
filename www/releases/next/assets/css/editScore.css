@@ -60,6 +60,46 @@
   outline-offset: 2px;
 }
 
+/* 表示モード選択ラジオボタン群（セグメントコントロール風） */
+.editScoreModeSelector {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 3px;
+}
+
+.editScoreModeOption {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ラジオボタン本体は非表示にしてラベル全体をボタン化 */
+.editScoreModeOption input[type="radio"] {
+  display: none;
+}
+
+.editScoreModeLabel {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 4px 2px;
+  font-size: 10pt;
+  border: 1px solid mediumseagreen;
+  border-radius: 3px;
+  color: mediumseagreen;
+  background-color: #fff;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+/* 選択中のボタン */
+.editScoreModeOption input[type="radio"]:checked ~ .editScoreModeLabel {
+  background-color: mediumseagreen;
+  color: #fff;
+  font-weight: bold;
+}
+
 /* editScore は Tips ボタンを先頭に置くため、row-reverse を打ち消す */
 .preferenceTitleWithTip.tipButtonLeft {
   flex-direction: row;
@@ -330,17 +370,6 @@ main.pageFrame.isFileDragOver {
   right: 6px;
 }
 
-.tempoDialToggleLabel {
-  font-size: 0.7em;
-}
-
-.tempoDialToggleControl {
-  flex-direction: column;
-  gap: 2px;
-  align-items: flex-start;
-  justify-content: center;
-  background-color: transparent;
-}
 
 #editScorePreference .preferenceTitle {
   width: 100%;
@@ -384,19 +413,6 @@ main.pageFrame > .preferenceTitle {
   grid-column: 2;
 }
 
-.tempoTitle .tempoDialToggleControl {
-  justify-self: end;
-}
-
-.scoreToggle input#tempoDialToggle::after {
-  content: "OFF";
-}
-
-.scoreToggle input#tempoDialToggle:checked::after {
-  content: "ON";
-  right: 18px;
-  color: #0f6a3d;
-}
 
 /* editScore の BPM サマリーは index と同じく内容高さで見せる */
 #editScorePreferenceSummery .preferenceNow,

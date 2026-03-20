@@ -138,8 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoDialEl = document.getElementById("tempoDial");
   const tempoStepCoarse = document.getElementById("tempoStepCoarse");
   const tempoStepFine = document.getElementById("tempoStepFine");
-    const tempoDialToggle = document.getElementById("tempoDialToggle");
-    const beatPreference = document.getElementById("editScorePreference");
+  const editScoreModeRadios = document.querySelectorAll('input[name="editScoreMode"]');
+  const beatPreference = document.getElementById("editScorePreference");
   const barsPerRowRange = document.getElementById("barsPerRowRange");
   const barsPerRowValue = document.getElementById("barsPerRowValue");
   const editScoreConfigBeat = document.getElementById("editScoreConfigBeat");
@@ -284,9 +284,6 @@ document.addEventListener("DOMContentLoaded", () => {
     store.setScoreMeasures(measuresToSave);
     if (Array.isArray(currentScoreData.clickTonePattern)) {
       store.setClickTonePattern(currentScoreData.clickTonePattern, currentScoreData.clickCount);
-    }
-    if (tempoDialToggle) {
-      store.setEditScoreSettingsEnabled(Boolean(tempoDialToggle.checked));
     }
     // 保存後も編集継続できるよう、ドラフトは現在値で同期して残す。
     syncDraftFromCurrent();
@@ -442,38 +439,56 @@ document.addEventListener("DOMContentLoaded", () => {
     tempoDial.attach();
   }
 
-  // 調節（再生設定）ブロックの表示トグル
-  if (tempoDialToggle && beatPreference) {
-    const savedTempoDialEnabled = store.getEditScoreSettingsEnabled();
-    if (savedTempoDialEnabled !== null) {
-      tempoDialToggle.checked = savedTempoDialEnabled;
-    }
-    const applyPreferenceVisibility = () => {
-      const shouldShow = tempoDialToggle.checked;
-      beatPreference.hidden = !shouldShow;
-      beatPreference.style.display = shouldShow ? "" : "none";
-      beatPreference.setAttribute("aria-hidden", String(!shouldShow));
-      if (editScorePreferenceSummery) {
-        editScorePreferenceSummery.hidden = !shouldShow;
-        editScorePreferenceSummery.style.display = shouldShow ? "" : "none";
-        editScorePreferenceSummery.setAttribute("aria-hidden", String(!shouldShow));
+  // 表示モード選択（Tempo / Bars / Sample / OFF）
+  if (editScoreModeRadios.length > 0) {
+    // 保存済みモードを復元する
+    const savedMode = store.getEditScoreMode() ?? "off";
+    editScoreModeRadios.forEach((radio) => {
+      if (radio.value === savedMode) {
+        radio.checked = true;
       }
+    });
+
+    /**
+     * 選択モードに応じて各セクションの表示を切り替える。
+     * @param {string} mode - "tempo" / "bars" / "sample" / "off"
+     */
+    const applyModeVisibility = (mode) => {
+      // テンポダイアル＋Beatサマリー
+      [beatPreference, editScorePreferenceSummery].forEach((el) => {
+        if (!el) return;
+        const show = mode === "tempo";
+        el.hidden = !show;
+        el.style.display = show ? "" : "none";
+        el.setAttribute("aria-hidden", String(!show));
+      });
+      // 一段当たり小節数
       if (editScoreBarsPerRow) {
-        editScoreBarsPerRow.hidden = !shouldShow;
-        editScoreBarsPerRow.style.display = shouldShow ? "" : "none";
-        editScoreBarsPerRow.setAttribute("aria-hidden", String(!shouldShow));
+        const show = mode === "bars";
+        editScoreBarsPerRow.hidden = !show;
+        editScoreBarsPerRow.style.display = show ? "" : "none";
+        editScoreBarsPerRow.setAttribute("aria-hidden", String(!show));
       }
+      // サンプル楽譜
       if (editScoreSampleScore) {
-        editScoreSampleScore.hidden = !shouldShow;
-        editScoreSampleScore.style.display = shouldShow ? "" : "none";
-        editScoreSampleScore.setAttribute("aria-hidden", String(!shouldShow));
+        const show = mode === "sample";
+        editScoreSampleScore.hidden = !show;
+        editScoreSampleScore.style.display = show ? "" : "none";
+        editScoreSampleScore.setAttribute("aria-hidden", String(!show));
       }
-      store.setEditScoreSettingsEnabled(shouldShow);
+      store.setEditScoreMode(mode);
       syncDraftFromCurrent();
     };
-    applyPreferenceVisibility();
-    tempoDialToggle.addEventListener("change", applyPreferenceVisibility);
-    tempoDialToggle.addEventListener("input", applyPreferenceVisibility);
+
+    applyModeVisibility(savedMode);
+
+    editScoreModeRadios.forEach((radio) => {
+      radio.addEventListener("change", () => {
+        if (radio.checked) {
+          applyModeVisibility(radio.value);
+        }
+      });
+    });
   }
 
   // 楽譜エリアのスクロールでオーバーレイを更新する

@@ -115,9 +115,9 @@ export const resetScoreSettings = (store) => {
   if (typeof store.setScoreBarsPerRow === "function") {
     store.setScoreBarsPerRow(defaults.barsPerRow);
   }
-  if (typeof store.setEditScoreSettingsEnabled === "function") {
-    // editScore の調節トグルは初期値(OFF)へ戻す
-    store.setEditScoreSettingsEnabled(false);
+  if (typeof store.setEditScoreMode === "function") {
+    // editScore の表示モードを初期値(OFF)へ戻す
+    store.setEditScoreMode("off");
   }
   store.setScoreRhythmPattern(
     buildDefaultRhythmPattern(getBeatCountFromTimeSignature(defaults.timeSignature)),
