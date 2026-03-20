@@ -322,6 +322,12 @@ footer,
   background-color: mintcream;
 }
 
+/* footerNav内のリンク・言語スパンは単語途中で折り返さない（/ の前後では折り返し可） */
+.footerNav a,
+.footerNav .lang {
+  white-space: nowrap;
+}
+
 /* Ver.リンクを通常文字の見た目にしておく（リンク機能は維持） */
 footer .footerPlainLink,
 .footerNav .footerPlainLink {
