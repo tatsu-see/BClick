@@ -23,6 +23,7 @@
   <!--Spec 画面遷移の仕様（ preconnect / preload / modulepreload / prefetch 用）
   index.html → configApp.html
   index.html → howto.html
+  index.html → about.html
   index.html → configBeat.html
   index.html → configScore.html
   index.html → editScore.html → configBeat.html, editMeasure.html, codeDiagram.html
@@ -55,6 +56,10 @@
   <link rel="prefetch" href="howto.html" as="document">
   <link rel="prefetch" href="assets/css/howto.css?v=20260307" as="style">
   <link rel="prefetch" href="assets/js/pages/howto.js?v=20260307" as="script">
+
+  <link rel="prefetch" href="about.html" as="document">
+  <link rel="prefetch" href="assets/css/about.css?v=20260320" as="style">
+  <link rel="prefetch" href="assets/js/pages/about.js?v=20260320" as="script">
 
   <link rel="prefetch" href="configBeat.html" as="document">
   <link rel="prefetch" href="assets/css/configBeat.css?v=20260308" as="style">
@@ -156,8 +161,8 @@
 
   <!-- アプリ説明文：Google AdSense 審査のためのコンテンツとして追加 -->
   <section class="appDesc">
-    <span class="lang" data-lang="en">Free app for guitar practice with click & tuner. Set BPM and toggle each beat ON/OFF.<br> Create and save chord rhythm scores to practice along with.</span>
-    <span class="lang" data-lang="ja">クリック＆チューナ付き、ギター練習用の無料アプリ。BPMと各拍のON/OFF設定が可能。<br> コード付きリズム譜を作成・保存して、見ながら練習できます。</span>
+    <span class="lang" data-lang="en">A free guitar practice app with metronome, tuner, rhythm score, and more — all in one. → <a href="about.html">About</a></span>
+    <span class="lang" data-lang="ja">メトロノーム・チューナー・リズム譜などを、ひとつにまとめたギター練習アプリです。→ <a href="about.html">About</a></span>
   </section>
 
   <main class="pageFrame">
@@ -368,6 +373,32 @@
     </div>
   </main>
 
+  <footer>
+  	<!--Spec このVer.リンクだけはサーバーの絶対参照となる。 -->
+    <a href="/releases/index.html" class="footerPlainLink">Ver. 4.0</a> /
+
+      <!-- 利用規約 -->
+      <a href="terms.html">
+        <span class="lang" data-lang="en">Terms of Service</span>
+        <span class="lang" data-lang="ja">利用規約</span>
+      </a> /
+
+      <!-- Contact -->
+      <span class="lang" data-lang="en">
+        <a href="https://forms.gle/QMNE5WTUfHvq1cRk8" target="_blank">Contact</a>
+      </span>
+      <span class="lang" data-lang="ja">
+        <a href="https://forms.gle/jDhYvo9E8UPvZM3D9" target="_blank">コンタクト</a>
+      </span>
+
+    <a href="https://tatsu-see.github.io/" target="_blank">
+      <img src="https://tatsu-see.github.io/assets/icons/Tww.ico"
+       alt="Think while walking icon" width="16" height="16" style="transform: translateY(2px)">
+    </a> /
+      
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
   <!-- Google AdSense: ディスプレイ広告（BClickBasic） -->
   <!-- BClickBasic -->
   <ins class="adsbygoogle"
@@ -379,32 +410,6 @@
   <script>
        (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
-
-  <footer>
-  	<!--Spec このVer.リンクだけはサーバーの絶対参照となる。 -->
-    <a href="/releases/index.html" class="footerPlainLink">Ver. 4.0</a> /
-
-      <!-- 利用規約 -->
-      <a href="terms.html">
-        <span class="lang" data-lang="en">Terms of Service</span>
-        <span class="lang" data-lang="ja">利用規約</span>
-      </a> /
-
-      <!-- Message -->
-      <span class="lang" data-lang="en">
-        <a href="https://forms.gle/QMNE5WTUfHvq1cRk8" target="_blank">Message</a>
-      </span>
-      <span class="lang" data-lang="ja">
-        <a href="https://forms.gle/jDhYvo9E8UPvZM3D9" target="_blank">メッセージ</a>
-      </span>
-
-    <a href="https://tatsu-see.github.io/" target="_blank">
-      <img src="https://tatsu-see.github.io/assets/icons/Tww.ico"
-       alt="Think while walking icon" width="16" height="16" style="transform: translateY(2px)">
-    </a> /
-      
-    <small>&copy; 2025 tatsu. All rights reserved.</small>
-  </footer>
 
   <!-- 音声停止バナー：AudioContext がサスペンド状態になったときに表示する -->
   <div id="audioResumeBanner" role="alert" hidden>

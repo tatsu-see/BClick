@@ -40,7 +40,8 @@
 ## ソースコード(*.html)
 - 画面遷移の仕様に従って（ preconnect / preload / modulepreload / prefetch ） を入れる。
 
-- index.html 以外の画面は noindex を入れて、検索サイトに「そのページを検索結果に出さないで」と伝える
+- index.html 以外の画面は、基本的に noindex を入れて、検索サイトに「そのページを検索結果に出さないで」と伝える。
+  ただし、about や how to のページは、検索から来たユーザがどんなアプリのページなのか理解できるので、index 対応とする。
 
 - iPhone のキャッシュ対策に "js / css" が更新されたら、更新された "js, css" を参照しているパスの後ろに、"?v=更新日" を入れる。
 

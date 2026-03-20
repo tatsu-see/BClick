@@ -1,0 +1,263 @@
+<!doctype html>
+<html translate="no">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="description" content="B.Click はメトロノーム・ギターチューナー・リズム譜をひとつにまとめたギター練習用の無料 Web アプリです。アプリの概要と制作者について紹介します。 B.Click is a free guitar practice web app with a metronome, guitar tuner, and rhythm score. Learn about the app and its developer.">
+  <meta name="keywords" content="B.Click,ギター練習,メトロノーム,チューナー,リズム譜,guitar practice,metronome,tuner,rhythm score">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="B.Click">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>B.Click - About / このアプリについて</title>
+  <link rel="icon" type="image/png" sizes="16x16"   href="assets/icons/BClick-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32"   href="assets/icons/BClick-32x32.png">
+  <link rel="icon" type="image/png" sizes="64x64"   href="assets/icons/BClick-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="assets/icons/BClick-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="assets/icons/BClick-256x256.png">
+
+  <link rel="stylesheet" href="assets/lib/Language.css">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260308">
+  <link rel="stylesheet" href="assets/css/about.css?v=20260320">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+  <link rel="modulepreload" href="assets/js/utils/navigationGuard.js">
+  <link rel="modulepreload" href="assets/js/pages/about.js?v=20260320">
+
+  <script type="module" src="assets/lib/Language.js"></script>
+  <script type="module" src="assets/js/pages/about.js?v=20260320"></script>
+</head>
+
+  <!--Spec
+    ・about.html では、アプリの特徴を説明する。機能を説明するページではないので注意。
+    ・特徴を文章で説明する。画像はあくまで補足的なものとする。
+    ・画像は、基本的に日本語と英語とで別々に用意する。
+    ・画像は 70% のサイズで表示する。最大でも、元画像の 80% のサイズとする。
+  -->
+
+<body>
+  <header>
+    <button type="button" id="closePage" class="okConfig headerBack" aria-label="Back">
+      <span class="navChevron" aria-hidden="true">&lsaquo;</span>
+      <span class="navLabel">Back</span>
+    </button>
+    <div id="title" class="titleStack">
+      <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
+      <span class="titleSubtitle">— play daily, play better —</span>
+    </div>
+  </header>
+
+  <main class="pageFrame">
+    <div id="aboutContent">
+      <div style="text-align:left; padding:6px;">
+
+        <h3>
+          <span class="lang" data-lang="en">About B.Click</span>
+          <span class="lang" data-lang="ja">B.Click について</span>
+        </h3>
+        <span class="lang" data-lang="en">
+          <p>B.Click is a free web app for guitar practice.</p>
+          <ul>
+            <li>Metronome</li>
+            <li>Guitar Tuner</li>
+            <li>Rhythm Score</li>
+            <li>Chord Diagram</li>
+          </ul>
+          <p>All in one place.</p>
+        </span>
+        <span class="lang" data-lang="ja">
+          <p>B.Click はギター練習のための無料 Web アプリです。</p>
+          <ul>
+            <li>メトロノーム</li>
+            <li>ギターチューナー</li>
+            <li>リズム譜</li>
+            <li>コード表示</li>
+          </ul>
+          <p>をひとつにまとめています。</p>
+        </span>
+
+        <hr>
+
+        <h3>
+          <span class="lang" data-lang="en">Metronome(Click)</span>
+          <span class="lang" data-lang="ja">メトロノーム（クリック）</span>
+        </h3>
+        <!-- 画像: メトロノーム画面のスクリーンショット（日本語・英語別） -->
+        <div class="aboutImgWrap">
+          <img src="assets/img/about_metronome_J.png" alt="メトロノーム画面" class="lang aboutImg" data-lang="ja">
+          <img src="assets/img/about_metronome_E.png" alt="Metronome screen" class="lang aboutImg" data-lang="en">
+        </div>
+        <p>
+          <span class="lang" data-lang="en">
+            Turn the tempo dial left or right to adjust the BPM intuitively.
+            You can also tap the dial a few times to set the tempo with tap tempo.<br>
+            Customize the click by turning off beats you want to skip, or changing the sound of beats you want to emphasize.
+            The count-in before you start playing is also adjustable.
+          </span>
+          <span class="lang" data-lang="ja">
+            テンポダイアルを左右に回す操作で、アップダウンを直感的に操作できます。
+            タップテンポ機能があり、テンポダイアルを数回タップしてBPMを設定することもできます。<br>
+            練習中にリズムがズレがちな拍だけ強調したり、拍をOFFや音を変えるなど、クリックをカスタマイズできます。
+            弾き始める時の「1、2、3、4」も変更できます。<br>
+          </span>
+        </p>
+
+        <hr>
+
+        <h3>
+          <span class="lang" data-lang="en">Guitar Tuner</span>
+          <span class="lang" data-lang="ja">ギターチューナー</span>
+        </h3>
+        <!-- 画像: チューナー画面のスクリーンショット（日本語・英語別） -->
+        <div class="aboutImgWrap">
+          <img src="assets/img/about_tuner_J.png" alt="ギターチューナー画面" class="lang aboutImg" data-lang="ja">
+          <img src="assets/img/about_tuner_E.png" alt="Guitar tuner screen" class="lang aboutImg" data-lang="en">
+        </div>
+        <p>
+          <span class="lang" data-lang="en">
+            A basic tuner is built right in.<br>
+            Your smartphone or PC mic is all you need — no separate tuner required.<br>
+            Get in tune quickly and get straight to practice.
+          </span>
+          <span class="lang" data-lang="ja">
+            基本的なチューナー機能があります。
+            スマホやPCがあれば、マイクから音を拾ってチューニング可能です。
+            練習の準備をスムーズに始められます。
+          </span>
+        </p>
+
+        <hr>
+
+        <h3>
+          <span class="lang" data-lang="en">Metronome + Rhythm Score: Stroke Practice</span>
+          <span class="lang" data-lang="ja">メトロノームとリズム譜とストローク練習</span>
+        </h3>
+        <!-- 画像: リズム譜画面のスクリーンショット（日本語・英語別） -->
+        <div class="aboutImgWrap">
+          <img src="assets/img/about_score_J.png" alt="リズム譜画面" class="lang aboutImg" data-lang="ja">
+          <img src="assets/img/about_score_E.png" alt="Rhythm score screen" class="lang aboutImg" data-lang="en">
+        </div>
+        <p>
+          <span class="lang" data-lang="en">
+            Listen to the metronome click at your set tempo while reading the rhythm score and practicing your strumming.<br>
+            The highlighted bar number changes with each beat — if you lose your place, just pick it back up from the start of that bar.<br>
+            Save your rhythm scores as PDF files — great for storing practice sessions, printing to share, or opening on another device.
+          </span>
+          <span class="lang" data-lang="ja">
+            設定したテンポのメトロノーム・クリックを聞きながら、リズム譜を見てストローク練習が可能です。
+            テンポの切り替わりと共に、強調される小節番号が変化します。リズムを見失ったときは、小節の先頭からリズムを取り直してみましょう。<br>
+            リズム譜はPDFで保存できるので、練習ごとに保存したり、印刷して誰かに渡したり、スマホからPCへ別のデバイスで表示したり、などで使えます。
+          </span>
+        </p>
+
+        <div class="aboutImgWrap">
+          <img src="assets/img/about_score2_J.png" alt="リズム譜画面" class="lang aboutImg" data-lang="ja">
+          <img src="assets/img/about_score2_E.png" alt="Rhythm score screen" class="lang aboutImg" data-lang="en">
+        </div>
+        <p>
+          <span class="lang" data-lang="en">
+            Each bar supports individual operations: edit, copy, duplicate, paste, and delete.<br>
+            In the bar editor, you can choose chords, set notes and ties, and add lyrics or text to individual notes.<br>
+          </span>
+          <span class="lang" data-lang="ja">
+            リズム譜は、小節ごとの操作（編集・コピー・複製・貼付・削除）ができます。
+            小節の「編集」では、コードの選択や音符やタイの設定、音符ごとの文字・歌詞の入力などができます。<br>
+          </span>
+        </p>
+
+        <hr>
+
+        <h3>
+          <span class="lang" data-lang="en">Chord Diagram</span>
+          <span class="lang" data-lang="ja">コード表示</span>
+        </h3>
+        <!-- 画像: コード表示画面のスクリーンショット（日本語・英語別） -->
+        <div class="aboutImgWrap">
+          <img src="assets/img/about_chord_J.png" alt="コード表示画面" class="lang aboutImg" data-lang="ja">
+          <img src="assets/img/about_chord_E.png" alt="Chord diagram screen" class="lang aboutImg" data-lang="en">
+        </div>
+        <p>
+          <span class="lang" data-lang="en">
+            Check how to finger basic guitar chords.
+          </span>
+          <span class="lang" data-lang="ja">
+            基本的なコードの抑え方を確認できます。
+          </span>
+        </p>
+
+        <hr>
+
+        <h3>
+          <span class="lang" data-lang="en">Guide</span>
+          <span class="lang" data-lang="ja">ガイド</span>
+        </h3>
+        <!-- 画像: ガイド（Tips）表示のスクリーンショット（日本語・英語別） -->
+        <div class="aboutImgWrap">
+          <img src="assets/img/about_guide_J.png" alt="ガイド表示画面" class="lang aboutImg" data-lang="ja">
+          <img src="assets/img/about_guide_E.png" alt="Guide screen" class="lang aboutImg" data-lang="en">
+        </div>
+        <p>
+          <span class="lang" data-lang="en">
+            Tap the guide button (
+            <span class="material-symbols-rounded aboutInlineIcon" aria-hidden="true">web_asset</span>
+            ) whenever you need help — a quick explanation will appear for that section.
+          </span>
+          <span class="lang" data-lang="ja">
+            操作に困ったときはガイドボタン（
+            <span class="material-symbols-rounded aboutInlineIcon" aria-hidden="true">web_asset</span>
+            ）を選択すると、操作説明が出てきます。
+          </span>
+        </p>
+
+        <hr>
+
+        <h3>
+          <span class="lang" data-lang="en">About the developer</span>
+          <span class="lang" data-lang="ja">作者について</span>
+        </h3>
+        <p>
+          <span class="lang" data-lang="en">
+            Tatsu / Living in Japan, past the guitar beginner stage.<br>
+            While practicing guitar, I started wishing I had a metronome, a tuner, and a score all in one place.<br>
+            That's what led me to build B.Click. (That said, a paper score filled with your own notes is still something special.)<br>
+            Hope this app helps someone's practice.
+          </span>
+          <span class="lang" data-lang="ja">
+            タツ / 日本在住、脱ギター初心者。<br>
+            ギターを練習しているうちに、メトロノーム・チューナー・譜面が、まとまっていればいいのにと思うようになりました。<br>
+            練習に必要なものを一つに、と思い B.Click を作りました。（とはいえ好きに書き込んだ紙の譜面も大切なものです。）<br>
+            このアプリが誰かの練習に役立てば嬉しい。<br>
+          </span>
+        </p>
+        <p>
+          <a href="https://forms.gle/QMNE5WTUfHvq1cRk8" target="_blank" rel="noopener" class="lang" data-lang="en">Contact</a>
+          <a href="https://forms.gle/jDhYvo9E8UPvZM3D9" target="_blank" rel="noopener" class="lang" data-lang="ja">コンタクト</a>
+        </p>
+
+        <hr>
+
+        <!-- コンテンツ末尾のCTA：アプリへ誘導するボタン -->
+        <div class="aboutCta">
+          <a href="index.html" class="makeScoreButton navButton aboutCtaButton">
+            <span class="lang" data-lang="en">Try the App</span>
+            <span class="lang" data-lang="ja">アプリを使ってみる</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
+
+</body>
+</html>
