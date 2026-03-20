@@ -61,16 +61,18 @@
   text-align: center;
   padding: 4px 2px;
   font-size: 10pt;
-  border: 1px solid mediumseagreen;
+  border: 1px solid #222;
   border-radius: 3px;
-  color: mediumseagreen;
-  background-color: #fff;
-  transition: background-color 0.15s, color 0.15s;
+  color: #222;
+  background-color: #f7f7f7;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
 
-/* 選択中のボタン */
+/* 選択中のボタン（chipButton.isActive に合わせる） */
 .editScoreModeOption input[type="radio"]:checked ~ .editScoreModeLabel {
-  background-color: mediumseagreen;
+  background-color: #1e7a4f;
+  border-color: #1e7a4f;
   color: #fff;
   font-weight: bold;
 }
