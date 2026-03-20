@@ -177,6 +177,68 @@ class RhythmScoreUI {
   }
 
   /**
+   * SVG内の五線譜ラインのY範囲（topY / bottomY）を取得する。
+   * 五線譜の線は height が 2px 未満の細い rect として識別する。
+   * @param {SVGElement} svg
+   * @returns {{ topY: number, bottomY: number } | null}
+   */
+  getStaffRange(svg) {
+    const staffRects = Array.from(svg.querySelectorAll("rect")).filter((r) => {
+      const h = parseFloat(r.getAttribute("height") || "0");
+      return h > 0 && h < 2;
+    });
+    if (staffRects.length === 0) return null;
+    const tops = staffRects.map((r) => parseFloat(r.getAttribute("y") || "0"));
+    const bottoms = staffRects.map((r) =>
+      parseFloat(r.getAttribute("y") || "0") + parseFloat(r.getAttribute("height") || "0"),
+    );
+    return { topY: Math.min(...tops), bottomY: Math.max(...bottoms) };
+  }
+
+  /**
+   * SVG内の歌詞テキスト（五線譜より下に位置する text 要素）を拡大する。
+   * コード文字（data-base-font-size あり）は対象外とする。
+   * @param {SVGElement[]} svgs
+   * @param {number} scalePercent
+   */
+  scaleSvgLyricsText(svgs, scalePercent = 150) {
+    const svgList = Array.isArray(svgs) ? svgs : [];
+    if (svgList.length === 0) return;
+    const multiplier = scalePercent / 100;
+    svgList.forEach((svg) => {
+      const staffRange = this.getStaffRange(svg);
+      if (!staffRange) return;
+      const { bottomY } = staffRange;
+      svg.querySelectorAll("text").forEach((node) => {
+        // コード拡大処理済みのノードは除外する
+        if (node.dataset.baseFontSize) return;
+        const y = parseFloat(node.getAttribute("y") || "0");
+        // 五線譜より下にある text のみ対象とする
+        if (y <= bottomY) return;
+        const raw = node.textContent?.trim();
+        if (!raw) return;
+        let baseSize = node.dataset.baseLyricsFontSize;
+        if (!baseSize) {
+          const currentSize = node.style.fontSize
+            || (window.getComputedStyle ? window.getComputedStyle(node).fontSize : "");
+          const match = String(currentSize).trim().match(/^([\d.]+)([a-z%]+)$/i);
+          if (!match) return;
+          baseSize = `${match[1]}${match[2]}`;
+          node.dataset.baseLyricsFontSize = baseSize;
+        }
+        const baseMatch = String(baseSize).trim().match(/^([\d.]+)([a-z%]+)$/i);
+        if (!baseMatch) return;
+        const value = Number.parseFloat(baseMatch[1]);
+        const unit = baseMatch[2];
+        if (!Number.isFinite(value) || !unit) return;
+        node.style.fontSize = `${value * multiplier}${unit}`;
+        // 歌詞テキストの斜体を解除する
+        node.style.fontStyle = "normal";
+      });
+    });
+  }
+
+  /**
    * contextMenu を生成する。
    */
   ensureContextMenu() {
@@ -407,6 +469,7 @@ class RhythmScoreUI {
     if (!Array.isArray(svgs) || svgs.length === 0) return false;
     this.container.querySelectorAll(".scoreChordOverlayLayer").forEach((layer) => layer.remove());
     this.scaleSvgChordText(svgs, 150);
+    this.scaleSvgLyricsText(svgs, 150);
     const overlay = document.createElement("div");
     overlay.className = "scoreChordOverlayLayer";
 
