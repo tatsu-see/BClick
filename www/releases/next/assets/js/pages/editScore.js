@@ -146,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const editScoreConfigBeatButton = document.getElementById("editScoreConfigBeatButton");
   const editScorePreferenceSummery = document.getElementById("editScorePreferenceSummery");
   const editScoreBarsPerRow = document.getElementById("editScoreBarsPerRow");
+  const editScoreSampleScore = document.getElementById("editScoreSampleScore");
   let currentScoreData = null;
   let rhythmScore = null;
   let editDraft = null;
@@ -461,6 +462,11 @@ document.addEventListener("DOMContentLoaded", () => {
         editScoreBarsPerRow.hidden = !shouldShow;
         editScoreBarsPerRow.style.display = shouldShow ? "" : "none";
         editScoreBarsPerRow.setAttribute("aria-hidden", String(!shouldShow));
+      }
+      if (editScoreSampleScore) {
+        editScoreSampleScore.hidden = !shouldShow;
+        editScoreSampleScore.style.display = shouldShow ? "" : "none";
+        editScoreSampleScore.setAttribute("aria-hidden", String(!shouldShow));
       }
       store.setEditScoreSettingsEnabled(shouldShow);
       syncDraftFromCurrent();

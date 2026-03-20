@@ -101,12 +101,4 @@ Tap "⋯" → Share → Files → Save to Files.`
     });
   });
 
-  // 「演奏画面へ」ボタン: 演奏画面へ遷移する
-  // location.replace を使い configApp を履歴から置き換えることで、演奏画面の Back が index へ戻る
-  const goPlayButton = document.getElementById("sampleScoreGoPlay");
-  if (goPlayButton) {
-    goPlayButton.addEventListener("click", () => {
-      location.replace("editScore.html");
-    });
-  }
 });
