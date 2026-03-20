@@ -93,6 +93,10 @@
     /* index画面はアプリUIが1画面に収まる設計のため縦スクロールバーも非表示にする */
     /* AdSenseタグ挿入でページ高さが増加してもスクロールバーを出さない           */
     html, body { overflow-y: hidden; }
+
+    /* ヘッダー左右ボタンの幅を揃える（「チューナ他」側に合わせる）              */
+    /* Back/Done など他画面の okConfig ボタンへの影響を避けるため ID で指定する  */
+    #openHowTo, #openConfigApp { min-width: fit-content; width: 5.5em; }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
@@ -152,7 +156,9 @@
   <header>
     <!--Spec アプリ使い方画面へのナビゲーションボタン（ヘッダー左端） -->
     <button id="openHowTo" type="button" class="okConfig" aria-label="How to use">
-      How to
+      <span class="material-symbols-rounded" aria-hidden="true">menu_book</span>
+      <span class="lang" data-lang="en">How to</span>
+      <span class="lang" data-lang="ja">使い方</span>
     </button>
     <div id="title" class="titleStack">
       <span class="titleMain"><img src="assets/icons/B.png" alt="B" class="titleIcon">.Click</span>
@@ -161,6 +167,8 @@
     <!--Spec アプリ設定画面へのナビゲーションボタン（ヘッダー右端） -->
     <button id="openConfigApp" type="button" class="okConfig" aria-label="App settings">
       <span class="material-symbols-rounded" aria-hidden="true">settings</span>
+      <span class="lang" data-lang="en">Tuner+</span>
+      <span class="lang" data-lang="ja">チューナ他</span>
     </button>
   </header>
 

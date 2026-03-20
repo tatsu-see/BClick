@@ -295,6 +295,17 @@ header {
   line-height: 1;
 }
 
+/* okConfigボタン内のMaterial Symbolsアイコン：テキストと高さを揃える */
+.okConfig .material-symbols-rounded {
+  font-size: 1em;  /* テキストと同じサイズにして高さを抑える */
+  line-height: 1;  /* アイコンの行高による余分な高さを除去 */
+}
+
+/* okConfigボタン内の日本語テキスト：ラテン文字より視覚的に大きく見えるため縮小 */
+.okConfig .lang[data-lang="ja"] {
+  font-size: 0.88em; /* 日本語フォントはem枠を広く使うためラテン文字より大きく見える */
+}
+
 footer,
 .footerNav {
   margin-bottom:3px;
