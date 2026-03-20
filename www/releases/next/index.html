@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link rel="preload" href="assets/css/app.css?v=20260309" as="style">
+  <link rel="preload" href="assets/css/app.css?v=20260320" as="style">
   <link rel="preload" href="assets/css/tempoDial.css?v=20260315" as="style">
   <link rel="preload" href="assets/css/click.css?v=20260315" as="style">
 
@@ -85,10 +85,15 @@
   <link rel="stylesheet" href="assets/lib/Language.css">
   <link rel="stylesheet" href="assets/lib/ShowMessageBox.css">
   <link rel="stylesheet" href="assets/lib/consentManager.css">
-  <link rel="stylesheet" href="assets/css/app.css?v=20260308">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260320">
   <link rel="stylesheet" href="assets/css/tips.css?v=20260307">
   <link rel="stylesheet" href="assets/css/tempoDial.css?v=20260315">
   <link rel="stylesheet" href="assets/css/click.css?v=20260315">
+  <style>
+    /* index画面はアプリUIが1画面に収まる設計のため縦スクロールバーも非表示にする */
+    /* AdSenseタグ挿入でページ高さが増加してもスクロールバーを出さない           */
+    html, body { overflow-y: hidden; }
+  </style>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
@@ -373,31 +378,24 @@
     </div>
   </main>
 
-  <footer>
-  	<!--Spec このVer.リンクだけはサーバーの絶対参照となる。 -->
+  <nav class="footerNav" aria-label="Site navigation">
+    <!--Spec このVer.リンクだけはサーバーの絶対参照となる。 -->
     <a href="/releases/index.html" class="footerPlainLink">Ver. 4.0</a> /
 
-      <!-- 利用規約 -->
-      <a href="terms.html">
-        <span class="lang" data-lang="en">Terms of Service</span>
-        <span class="lang" data-lang="ja">利用規約</span>
-      </a> /
-
-      <!-- Contact -->
-      <span class="lang" data-lang="en">
-        <a href="https://forms.gle/QMNE5WTUfHvq1cRk8" target="_blank">Contact</a>
-      </span>
-      <span class="lang" data-lang="ja">
-        <a href="https://forms.gle/jDhYvo9E8UPvZM3D9" target="_blank">コンタクト</a>
-      </span>
-
-    <a href="https://tatsu-see.github.io/" target="_blank">
-      <img src="https://tatsu-see.github.io/assets/icons/Tww.ico"
-       alt="Think while walking icon" width="16" height="16" style="transform: translateY(2px)">
+    <!-- 利用規約 -->
+    <a href="terms.html">
+      <span class="lang" data-lang="en">Terms of Service</span>
+      <span class="lang" data-lang="ja">利用規約</span>
     </a> /
-      
-    <small>&copy; 2025 tatsu. All rights reserved.</small>
-  </footer>
+
+    <!-- Contact -->
+    <span class="lang" data-lang="en">
+      <a href="https://forms.gle/QMNE5WTUfHvq1cRk8" target="_blank">Contact</a>
+    </span>
+    <span class="lang" data-lang="ja">
+      <a href="https://forms.gle/jDhYvo9E8UPvZM3D9" target="_blank">コンタクト</a>
+    </span>
+  </nav>
 
   <!-- Google AdSense: ディスプレイ広告（BClickBasic） -->
   <!-- BClickBasic -->
@@ -410,6 +408,10 @@
   <script>
        (adsbygoogle = window.adsbygoogle || []).push({});
   </script>
+
+  <footer>
+    <small>&copy; 2025 tatsu. All rights reserved.</small>
+  </footer>
 
   <!-- 音声停止バナー：AudioContext がサスペンド状態になったときに表示する -->
   <div id="audioResumeBanner" role="alert" hidden>
