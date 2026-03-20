@@ -373,6 +373,24 @@ footer .footerPlainLink:hover,
   pointer-events: none;
 }
 
+.preferenceSubTitle {
+  display: flex;                /* テキストとhrを横並びにする */
+  align-items: center;
+  gap: 6px;
+  font-size: 10pt;              /* ラベル（preferenceTitle）の80%サイズ */
+  color: mediumseagreen;        /* ラベルの背景色と同じ色 */
+  margin-bottom: 2px;
+}
+
+/* サブタイトルの右側に伸びる区切り線 */
+.preferenceSubTitle hr {
+  flex: 1;                      /* 残りの幅を全て使う */
+  border: none;
+  border-top: 1px solid mediumseagreen;
+  opacity: 0.4;                 /* 控え目な表示 */
+  margin: 0;
+}
+
 .preferenceExec {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

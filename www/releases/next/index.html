@@ -199,16 +199,22 @@
         type="button"
         class="chipButton tipButton"
         aria-label="Open tips"
-        data-tip-target="indexTempoTipsDialog"
+        data-tip-target="indexMetronomeClickTipsDialog"
       >
         <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
       </button>
       <div class="preferenceTitle">
         <span class="material-symbols-rounded" aria-hidden="true">speed</span>
-        <span class="lang" data-lang="en">Tempo (30–240)</span>
-        <span class="lang" data-lang="ja">テンポ（30～240）</span>
+        <span class="lang" data-lang="en">Metronome / Click</span>
+        <span class="lang" data-lang="ja">メトロノーム・クリック</span>
       </div>
     </div>
+
+      <div class="preferenceSubTitle">
+        <span class="lang" data-lang="en">Tempo (30–240)</span>
+        <span class="lang" data-lang="ja">テンポ（30～240）</span>
+        <hr>
+      </div>
 
     <div id="beatPreference" class="tempoControl tempoControlStack">
       <div class="tempoValueGroup tempoValueTop">
@@ -251,22 +257,11 @@
     </div>
 
     <!--Spec クリック再生エリア-開始 -->
-    <div class="preferenceTitleWithTip tipButtonLeft">
-      <button
-        type="button"
-        class="chipButton tipButton"
-        aria-label="Open tips"
-        data-tip-target="indexPlayTipsDialog"
-      >
-        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
-      </button>
-      <div class="preferenceTitle">
-        <span class="material-symbols-rounded" aria-hidden="true">play_circle</span>
+      <div class="preferenceSubTitle">
         <span class="lang" data-lang="en">Play</span>
         <span class="lang" data-lang="ja">再生</span>
+        <hr>
       </div>
-    </div>
-
     <div id="playClicking">
       <button id="startClick" type="button" class="chipButton" aria-label="Play">
         <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span>
@@ -514,34 +509,30 @@
     </div>
   </dialog>
 
-  <dialog id="indexTempoTipsDialog" class="tipsDialog" aria-labelledby="indexTempoTipsTitle" data-tip-key="tempoTipMain">
-    <div class="tipsDialogTitle" id="indexTempoTipsTitle">
-      <span class="lang" data-lang="en">Tips</span>
-      <span class="lang" data-lang="ja">ヒント</span>
-    </div>
-    <div class="tipsDialogBody">
-      <!--Spec tips.js が messages.js から動的に本文を生成する -->
-    </div>
-    <div class="tipsDialogActions">
-      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
-        <span class="lang" data-lang="en">Close</span>
-        <span class="lang" data-lang="ja">閉じる</span>
-      </button>
-    </div>
-  </dialog>
-
-  <dialog id="indexPlayTipsDialog" class="tipsDialog" aria-labelledby="indexPlayTipsTitle">
-    <div class="tipsDialogTitle" id="indexPlayTipsTitle">
+  <dialog id="indexMetronomeClickTipsDialog" class="tipsDialog" aria-labelledby="indexMetronomeClickTipsTitle">
+    <div class="tipsDialogTitle" id="indexMetronomeClickTipsTitle">
       <span class="lang" data-lang="en">Tips</span>
       <span class="lang" data-lang="ja">ヒント</span>
     </div>
     <div class="tipsDialogBody">
       <span class="lang" data-lang="en">
+        ・Set the tempo by turning the dial from 30 to 240 BPM.<br>
+        ・Use the dial and the step buttons to change the value.<br>
+        ・Details for clicks and count-in can be adjusted from the tune button below.<br>
+        ・Tap the dial 4 times to automatically set the tempo from your tap interval.<br>
+        ・Resets if no tap for 2 seconds.<br>
+        <hr>
         ・Use Start to begin playback, Pause to stop, and Reset to return to the beginning.<br>
         ・"Chords" opens the chord diagram list in a separate screen.<br>
         ・The countdown appears before playback if count-in is set.<br>
       </span>
       <span class="lang" data-lang="ja">
+        ・テンポはダイアルを回して、30〜240 BPMの範囲で設定します。<br>
+        ・ダイヤルや刻み幅ボタンで値を変更できます。<br>
+        ・クリック数やカウントインの詳細は、下の調節ボタンから設定できます。<br>
+        ・ダイアルを4回タップすると、タップ間隔からテンポを自動設定します。<br>
+        ・タップが2秒以上空くとリセットされます。<br>
+        <hr>
         ・Startで再生開始、Pauseで停止、Resetで先頭に戻ります。<br>
         ・「コード」はコードダイアグラム画面を開きます。<br>
         ・カウントインが設定されている場合は、再生前にカウントが表示されます。<br>
