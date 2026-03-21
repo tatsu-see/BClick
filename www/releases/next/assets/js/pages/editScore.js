@@ -247,9 +247,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const tempo = currentScoreData?.tempo ?? store.getTempo() ?? 60;
     const clickCount = currentScoreData?.clickCount ?? store.getClickCount() ?? 4;
     const countIn = currentScoreData?.countIn ?? store.getCountInSec() ?? 4;
+    const tempoMode = currentScoreData?.tempoMode ?? store.getTempoMode() ?? "quarter";
+    const tempoModeLabel = tempoMode === "eighth" ? "♪ ×2" : tempoMode === "sixteenth" ? "♬ ×4" : "♩ ×1";
     editScoreConfigBeat.textContent = getLangMsg(
-      `BPM ${tempo}、クリック数 ${clickCount}、カウントイン ${countIn}`,
-      `BPM ${tempo}, Clicks ${clickCount}, Count-in ${countIn}`,
+      `BPM ${tempo}、クリック数 ${clickCount}、${tempoModeLabel}、カウントイン ${countIn}`,
+      `BPM ${tempo}, Clicks ${clickCount}, ${tempoModeLabel}, Count-in ${countIn}`,
     );
   };
 

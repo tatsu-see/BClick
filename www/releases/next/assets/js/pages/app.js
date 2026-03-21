@@ -66,6 +66,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.dispatchEvent(new CustomEvent("bclick:tempochange", { detail: { tempo: value } }));
   };
 
+  // テンポモードの表示ラベルを返す
+  const getTempoModeLabel = () => {
+    const mode = store.getTempoMode();
+    if (mode === "eighth") return "♪ ×2";
+    if (mode === "sixteenth") return "♬ ×4";
+    return "♩ ×1";
+  };
+
   const updateBeatSummary = () => {
     if (!beatSummary) return;
     const tempoValue = tempoInput
@@ -79,9 +87,10 @@ document.addEventListener("DOMContentLoaded", () => {
       : store.getCountInSec();
     const safeClickCount = Number.isFinite(clickCountValue) ? clickCountValue : 4;
     const safeCountdown = Number.isFinite(countdownValue) ? countdownValue : 4;
+    const tempoModeLabel = getTempoModeLabel();
     beatSummary.textContent = getLangMsg(
-      `BPM ${tempoValue}、クリック数 ${safeClickCount}、カウントイン ${safeCountdown}`,
-      `BPM ${tempoValue}, Clicks ${safeClickCount}, Count-in ${safeCountdown}`,
+      `BPM ${tempoValue}、クリック数 ${safeClickCount}、${tempoModeLabel}、カウントイン ${safeCountdown}`,
+      `BPM ${tempoValue}, Clicks ${safeClickCount}, ${tempoModeLabel}, Count-in ${safeCountdown}`,
     );
   };
 
