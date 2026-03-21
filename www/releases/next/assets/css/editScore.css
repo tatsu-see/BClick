@@ -103,7 +103,9 @@ body {
   flex-direction: column;
   box-sizing: border-box;
   /* padding-bottom を削除：footer は flex:1 した main の下に配置するため不要 */
-  /* Spec editScoreは画面内スクロールに統一するため、ページスクロールを無効化する */
+  /*##Spec editScoreは画面内スクロールに統一するため、ページスクロールを無効化する。
+    これによりスマホの pull-to-refresh も無効になるが、意図的な仕様。
+    楽譜スクロール中に誤って pull-to-refresh が発動すると編集内容が失われるリスクがあるため。 */
   overflow: hidden;
   /* Spec alphaTabの再描画でページ全体がスクロールされる現象を抑制する */
   overflow-anchor: none;
