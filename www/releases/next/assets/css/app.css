@@ -10,9 +10,7 @@ html, body {
   font-size: 16pt;
   font-family: "Baloo 2", "M PLUS Rounded 1c", "Segoe UI", sans-serif;
   zoom: 1;
-  /* AdSense の挿入要素が viewport 幅を超えて横スクロールバーが出るのを防ぐ */
-  /* hidden はスクロールコンテナを生成して pull-to-refresh を妨げるため clip を使用 */
-  overflow-x: clip;
+  /* AdSense 配信開始時に横スクロールバーが出る場合は overflow-x 対応を検討する */
 }
 
 button,
