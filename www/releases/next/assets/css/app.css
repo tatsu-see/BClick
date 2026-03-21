@@ -377,9 +377,9 @@ footer .footerPlainLink:hover,
   display: flex;                /* テキストとhrを横並びにする */
   align-items: center;
   gap: 6px;
-  font-size: 10pt;              /* ラベル（preferenceTitle）の80%サイズ */
+  font-size: 7pt;               /* ラベル（preferenceTitle）の約55%サイズ（元10ptの2/3） */
   color: mediumseagreen;        /* ラベルの背景色と同じ色 */
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 /* サブタイトルの右側に伸びる区切り線 */
@@ -526,6 +526,7 @@ footer .footerPlainLink:hover,
 
 .preferenceTitle .material-symbols-rounded {
   line-height: 1;
+  font-size: 1em;               /* アイコンをテキストと同じサイズに揃えて帯の高さを抑える */
 }
 
 .preference {
