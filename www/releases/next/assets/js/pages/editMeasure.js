@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const buildChord = (rootButton, qualityButton) => {
     const root = rootButton?.dataset.root || rootButton?.textContent.trim() || "";
     const quality = qualityButton?.dataset.quality || "maj";
-    const suffix = quality === "min" ? "m" : quality === "dim" ? "dim" : "";
+    const suffix = quality === "min" ? "m" : quality === "dim" ? "dim" : quality === "sus4" ? "sus4" : "";
     return `${root}${suffix}`;
   };
 
@@ -382,9 +382,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (chordQualityButtons.length > 0) {
     const matchedQuality = initialChord.endsWith("dim")
       ? chordQualityButtons.find((button) => button.dataset.quality === "dim")
-      : initialChord.endsWith("m")
-        ? chordQualityButtons.find((button) => button.dataset.quality === "min")
-        : chordQualityButtons.find((button) => button.dataset.quality === "maj");
+      : initialChord.endsWith("sus4")
+        ? chordQualityButtons.find((button) => button.dataset.quality === "sus4")
+        : initialChord.endsWith("m")
+          ? chordQualityButtons.find((button) => button.dataset.quality === "min")
+          : chordQualityButtons.find((button) => button.dataset.quality === "maj");
     const activeQuality = matchedQuality || chordQualityButtons[0];
     if (activeQuality) {
       setActiveQuality(activeQuality);
@@ -394,9 +396,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (chordRootButtons.length > 0) {
     const normalizedRoot = initialChord.endsWith("dim")
       ? initialChord.slice(0, -3)
-      : initialChord.endsWith("m")
-        ? initialChord.slice(0, -1)
-        : initialChord;
+      : initialChord.endsWith("sus4")
+        ? initialChord.slice(0, -4)
+        : initialChord.endsWith("m")
+          ? initialChord.slice(0, -1)
+          : initialChord;
     const matchedRoot = chordRootButtons.find(
       (button) => (button.dataset.root || button.textContent.trim()) === normalizedRoot,
     );
@@ -933,8 +937,11 @@ document.addEventListener("DOMContentLoaded", () => {
           });
           lyricsRow.appendChild(lyricsInput);
         }
+        // すべての音符が休符の場合、プレビュー入力も無効にする
+        const allRests = patternItem.pattern.slice(0, patternLength).every((p) => p === "rest");
+        lyricsPreviewInput.disabled = allRests;
         // プレビューテキストを初期表示（先頭・末尾の余分なスペースを除去する）
-        lyricsPreviewInput.value = Array.from(
+        lyricsPreviewInput.value = allRests ? "" : Array.from(
           { length: patternLength },
           (_, si) => selectedLyrics[index]?.[si] ?? "",
         ).join(" ").trim();

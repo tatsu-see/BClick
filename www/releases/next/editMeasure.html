@@ -91,6 +91,7 @@
             <button type="button" class="chipButton chordQuality isActive" data-quality="maj" aria-pressed="true">maj</button>
             <button type="button" class="chipButton chordQuality" data-quality="min" aria-pressed="false">min</button>
             <button type="button" class="chipButton chordQuality" data-quality="dim" aria-pressed="false">dim</button>
+            <button type="button" class="chipButton chordQuality" data-quality="sus4" aria-pressed="false">sus4</button>
           </div>
         </div>
       </div>
@@ -342,19 +343,52 @@
       <span class="lang" data-lang="ja">ヒント</span>
     </div>
     <div class="tipsDialogBody">
+      <div class="preferenceSubTitle">
+        <span class="lang" data-lang="en">♪ (Division)</span>
+        <span class="lang" data-lang="ja">♪（分割）</span>
+        <hr>
+      </div>
       <span class="lang" data-lang="en">
-        ・Set the note and rest pattern for this measure here.<br>
-        ・You can also choose which chord appears on each note position.<br>
-        ・Enter a lyric syllable in the text box below each beat row.<br>
-        ・Lyrics can be entered for notes (● / ⌒● / ⌒). Rest (○) positions are not supported.<br>
-        ・The preview updates to match the selected rhythm pattern.<br>
+        ・Select the note length for each beat: whole, half, quarter, 8th, or 16th.<br>
+        ・Whole and half notes require enough remaining beats to fit.<br>
+        ・In 2/4 and 3/4 time, whole notes are not available.<br>
       </span>
       <span class="lang" data-lang="ja">
-        ・この小節の音符や休符のパターンをここで設定します。<br>
-        ・各音符位置に表示するコードも選択できます。<br>
-        ・各拍の行の下のテキスト欄に歌詞の音節を入力できます。<br>
-        ・歌詞は音符（● / ⌒● / ⌒）に入力できます。休符（○）には対応していません。<br>
-        ・選んだリズムに合わせてプレビューも更新されます。<br>
+        ・各拍の音価（全・2・4・8・16分音符）を選びます。<br>
+        ・全音符・2分音符は残り拍数が足りないと選べません。<br>
+        ・2/4・3/4拍子では全音符は選べません。<br>
+      </span>
+      <div class="preferenceSubTitle">
+        <span class="lang" data-lang="en">Pattern and Chord</span>
+        <span class="lang" data-lang="ja">パターンとコード</span>
+        <hr>
+      </div>
+      <span class="lang" data-lang="en">
+        ・● = note　○ = rest　⌒● = tie-start note　⌒ = tie (extends previous note)<br>
+        ・Chord selection is enabled for notes (● / ⌒●). You can choose from the chords entered in the Progression field.<br>
+        ・Lyrics can be entered for notes (● / ⌒● / ⌒).<br>
+        ・Rests (○) cannot have a chord or lyrics.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・● = 音符　○ = 休符　⌒● = タイ付き先頭音符　⌒ = タイ（前の音を伸ばす）<br>
+        ・コード選択は音符（● / ⌒●）のときに有効になります。「進行」欄に入力したコードから選択できます。<br>
+        ・歌詞は音符（● / ⌒● / ⌒）に入力できます。<br>
+        ・休符（○）にはコードと歌詞をつけられません。<br>
+      </span>
+      <div class="preferenceSubTitle">
+        <span class="lang" data-lang="en">Preview</span>
+        <span class="lang" data-lang="ja">プレビュー</span>
+        <hr>
+      </div>
+      <span class="lang" data-lang="en">
+        ・The upper area shows a notation preview of the selected pattern.<br>
+        ・The lower text box is for lyrics. Enter syllables separated by spaces to distribute them across each note.<br>
+        ・If there are more words than notes, the extras are merged into the last slot.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        ・上段に選んだパターンの音符プレビューを表示します。<br>
+        ・下段のテキスト欄に歌詞を入力できます。スペース区切りで各音符の欄に入ります。<br>
+        ・音符数より多い語は、最後の欄にまとめて入ります。<br>
       </span>
     </div>
     <div class="tipsDialogActions">
