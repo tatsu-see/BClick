@@ -12,6 +12,7 @@ import { clickSound, getMaxVolume, restoreAudioContext, getAudioCurrentTime } fr
 import { ConfigStore } from "../utils/store.js";
 import { loadEditScoreDraft } from "../utils/editScoreDraft.js?v=20260314";
 import { getLangMsg } from "../../lib/Language.js";
+import { TEMPO_MODE_MULTIPLIERS } from "../constants/appConstraints.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // DOM要素の取得
@@ -79,6 +80,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const storedValue = store.getTempo();
     return typeof storedValue === "number" && storedValue > 0 ? storedValue : 60;
+  };
+
+  /**
+   * テンポモードを取得する。
+   * ドラフト → localStorage の順で参照し、不正値は "quarter" にフォールバック。
+   *
+   * ##Spec tempoMode の保存先は２か所ある：
+   *   1. editScoreDraft（sessionStorage）: editScore で楽譜を編集中の「その楽譜専用」の値。
+   *      configBeat から Done で戻ると editDraft.tempoMode に保存され、editScore.js の
+   *      syncDraftFromCurrent() 経由で currentScoreData.tempoMode として引き継がれる。
+   *   2. ConfigStore（localStorage）: index 画面から直接 configBeat を開いたときの「デフォルト」値。
+   *
+   * ドラフトを優先する理由：楽譜ごとに異なるテンポモードを設定できるようにするため。
+   * ただし index → configBeat（fromEditScore=false）で設定を変えた場合、ドラフトが古い値を
+   * 持っていると store の変更が無視される。この問題は configBeat.js の saveAndGoBack() で
+   * ドラフトも同期することで対処している。
+   *
+   * @returns {string}
+   */
+  const getTempoMode = () => {
+    const draftValue = getEditScoreDraft()?.tempoMode;
+    if (typeof draftValue === "string" && TEMPO_MODE_MULTIPLIERS[draftValue] !== undefined) {
+      return draftValue;
+    }
+    return store.getTempoMode();
+  };
+
+  /**
+   * テンポモードを加味した実際のクリック速度（BPM）を返す。
+   * 表示BPMは常に ♩= だが、モードに応じて内部速度を倍率で増やす。
+   * @returns {number}
+   */
+  const getEffectiveTempo = () => {
+    const baseTempo = getTempo();
+    const mode = getTempoMode();
+    const multiplier = TEMPO_MODE_MULTIPLIERS[mode] ?? 1;
+    return baseTempo * multiplier;
   };
 
   const getClickCount = () => {
@@ -502,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.bclickActiveChordIndex = -1;
     syncScoreBarCount();
 
-    const tempo = getTempo();
+    const tempo = getEffectiveTempo();
     const beatMs = 60000 / tempo;
     currentBeatMs = beatMs;
     const clickCount = getClickCount();
@@ -616,8 +654,10 @@ document.addEventListener("DOMContentLoaded", () => {
   setClickBoxes();
 
   document.addEventListener("bclick:tempochange", (event) => {
-    const nextTempo = getNumberValue(event?.detail?.tempo, getTempo());
-    updateTempo(nextTempo);
+    // event.detail.tempo は ♩= の表示BPM。テンポモード倍率を加味して実クリック速度を計算する。
+    const baseTempo = getNumberValue(event?.detail?.tempo, getTempo());
+    const multiplier = TEMPO_MODE_MULTIPLIERS[getTempoMode()] ?? 1;
+    updateTempo(baseTempo * multiplier);
   });
 
   document.addEventListener("bclick:scoreloaded", () => {

@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tempoStepFine = document.getElementById("tempoStepFine");
   const clickCountRange = document.getElementById("clickCountRange");
   const clickCountValue = document.getElementById("clickCountValue");
+  const tempoModeButtons = Array.from(document.querySelectorAll(".tempoModeButton"));
   const countdownRange = document.getElementById("countdownRange");
   const countdownValue = document.getElementById("countdownValue");
   const clickToneSelectors = document.getElementById("clickToneSelectors");
@@ -182,6 +183,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  /**
+   * テンポモードボタンのアクティブ状態を切り替える。
+   * @param {string} mode
+   */
+  const setActiveTempoMode = (mode) => {
+    tempoModeButtons.forEach((button) => {
+      const isActive = button.dataset.mode === mode;
+      button.classList.toggle("isActive", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+  };
+
+  // テンポモードの初期値をロード
+  const savedTempoMode = fromEditScore && typeof editScoreDraft?.tempoMode === "string"
+    ? editScoreDraft.tempoMode
+    : store.getTempoMode();
+  setActiveTempoMode(savedTempoMode);
+
+  tempoModeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setActiveTempoMode(button.dataset.mode);
+    });
+  });
+
   if (clickCountRange) {
     const savedClickCount = fromEditScore && Number.isFinite(editScoreDraft?.clickCount)
       ? editScoreDraft.clickCount
@@ -231,6 +256,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const tempoValue = tempoInput ? tempoDial.clamp(tempoDial.getInputValue()) : null;
       const clickCountNumber = clickCountRange ? Number.parseInt(clickCountRange.value, 10) : NaN;
       const countdownNumber = countdownRange ? Number.parseInt(countdownRange.value, 10) : NaN;
+      // アクティブなテンポモードボタンから値を取得
+      const activeTempoModeButton = tempoModeButtons.find((button) => button.classList.contains("isActive"));
+      const tempoModeValue = activeTempoModeButton?.dataset.mode ?? "quarter";
 
       if (fromEditScore) {
         // ドラフトを更新して editScore に反映させる
@@ -242,6 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
             draft.clickTonePattern = selectedClickTones.slice();
           }
           if (!Number.isNaN(countdownNumber)) { draft.countIn = countdownNumber; }
+          draft.tempoMode = tempoModeValue;
           saveEditScoreDraft(draft);
         }
         // needsScoreRefresh フラグは不要（editScore.js が pageshow で常にリフレッシュするため）
@@ -253,6 +282,16 @@ document.addEventListener("DOMContentLoaded", () => {
           store.setClickTonePattern(selectedClickTones, clickCountNumber);
         }
         if (!Number.isNaN(countdownNumber)) { store.setCountInSec(countdownNumber); }
+        store.setTempoMode(tempoModeValue);
+        //##Spec click.js の getTempoMode() はドラフトを優先して参照する。
+        // index → configBeat（fromEditScore=false）で設定を変えた場合でも、
+        // sessionStorage にドラフトが残っていると store の変更が無視されてしまう。
+        // そのため、ドラフトが存在するときは tempoMode をドラフトにも同期する。
+        const existingDraft = loadEditScoreDraft();
+        if (existingDraft) {
+          existingDraft.tempoMode = tempoModeValue;
+          saveEditScoreDraft(existingDraft);
+        }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

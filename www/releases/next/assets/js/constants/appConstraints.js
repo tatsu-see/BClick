@@ -17,4 +17,8 @@ export const APP_LIMITS = {
 export const ALLOWED_TIME_SIGNATURES = ["2/4", "3/4", "4/4"];
 export const ALLOWED_CLICK_TONES = ["A5", "A4", ""];
 
+// テンポモード：♩(quarter)=×1、♪(eighth)=×2、♬(sixteenth)=×4
+export const ALLOWED_TEMPO_MODES = ["quarter", "eighth", "sixteenth"];
+export const TEMPO_MODE_MULTIPLIERS = { quarter: 1, eighth: 2, sixteenth: 4 };
+
 export const RHYTHM_TOKEN_REGEX = /^(?:[rt])?(?:1|2|4|8|16)$/;

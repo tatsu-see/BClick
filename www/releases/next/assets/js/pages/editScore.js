@@ -186,6 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
       bars: savedBars || null,
       barsPerRow: savedBarsPerRow || 2,
       clickTonePattern: savedClickTonePattern,
+      //##Spec tempoMode はストアから復元する。省略時は ScoreData 側で "quarter" にフォールバックする。
+      tempoMode: store.getTempoMode(),
     });
   };
 
@@ -229,6 +231,9 @@ document.addEventListener("DOMContentLoaded", () => {
       clickTonePattern: Array.isArray(currentScoreData.clickTonePattern)
         ? currentScoreData.clickTonePattern.slice()
         : null,
+      //##Spec tempoMode は currentScoreData 経由で保持する。
+      // （configBeat から戻ったとき editDraft に保存され、次回 new ScoreData() 時に復元される流れ）
+      tempoMode: currentScoreData.tempoMode ?? "quarter",
     };
     saveEditScoreDraft(editDraft);
     updateBeatSummary();
@@ -285,6 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (Array.isArray(currentScoreData.clickTonePattern)) {
       store.setClickTonePattern(currentScoreData.clickTonePattern, currentScoreData.clickCount);
     }
+    store.setTempoMode(currentScoreData.tempoMode);
     // 保存後も編集継続できるよう、ドラフトは現在値で同期して残す。
     syncDraftFromCurrent();
     return true;
@@ -311,6 +317,8 @@ document.addEventListener("DOMContentLoaded", () => {
       bars: Array.isArray(loadedDraft.bars) ? loadedDraft.bars : null,
       barsPerRow: loadedDraft.barsPerRow || 2,
       clickTonePattern: Array.isArray(loadedDraft.clickTonePattern) ? loadedDraft.clickTonePattern : null,
+      //##Spec tempoMode はドラフトから復元する。省略時は ScoreData 側で "quarter" にフォールバックする。
+      tempoMode: loadedDraft.tempoMode,
     });
   } else {
     const hasSavedBars = Array.isArray(store.getScoreBars());
@@ -570,6 +578,8 @@ document.addEventListener("DOMContentLoaded", () => {
           bars: Array.isArray(nextDraft.bars) ? nextDraft.bars : null,
           barsPerRow: nextDraft.barsPerRow || 2,
           clickTonePattern: Array.isArray(nextDraft.clickTonePattern) ? nextDraft.clickTonePattern : null,
+          //##Spec tempoMode はドラフトから復元する。省略時は ScoreData 側で "quarter" にフォールバックする。
+          tempoMode: nextDraft.tempoMode,
         })
       : loadSettings(false);
     const nextApplyKey = buildApplyKey(nextScoreData);

@@ -7,6 +7,7 @@ import {
   APP_LIMITS,
   ALLOWED_TIME_SIGNATURES,
   ALLOWED_CLICK_TONES,
+  ALLOWED_TEMPO_MODES,
   RHYTHM_TOKEN_REGEX,
 } from "../constants/appConstraints.js";
 import { isIntegerInRange } from "./validators.js";
@@ -15,6 +16,7 @@ const DEFAULT_SETTINGS = {
   tempo: 60,
   clickCount: 4,
   countIn: 4,
+  tempoMode: "quarter",
   timeSignature: "4/4",
   progression: "",
   measures: 8,
@@ -39,6 +41,7 @@ export const SCORE_JSON_VERSION = 0;
 //     "tempo": 60,
 //     "clickCount": 4,
 //     "countIn": 4,
+//     "tempoMode": "quarter",
 //     "timeSignature": "4/4",
 //     "measures": 8,
 //     "progression": "G C Em",
@@ -61,6 +64,8 @@ export const SCORE_JSON_VERSION = 0;
 //   - tempo: BPMテンポ
 //   - clickCount: クリック数（拍数）
 //   - countIn: カウントイン（拍数）
+//   - tempoMode: テンポモード（"quarter"=×1 / "eighth"=×2 / "sixteenth"=×4）
+//               省略可能フィールド。旧データに存在しない場合は "quarter" をデフォルトとする。
 //   - timeSignature: 拍子（例 "4/4"）
 //   - measures: 小節数
 //   - progression: コード進行（スペース区切り）
@@ -335,10 +340,14 @@ export const buildScoreDataFromObject = (source) => {
   // 旧データにはキーが存在しない場合があるため、normalizeClickTonePatternFromJson が既定値を補完する。
   const clickTonePattern = normalizeClickTonePatternFromJson(normalized.clickTonePattern, clickCount);
 
+  //##Spec tempoMode は省略可能フィールド。旧データに存在しない場合は "quarter" をデフォルトとする。
+  const tempoMode = ALLOWED_TEMPO_MODES.includes(normalized.tempoMode) ? normalized.tempoMode : "quarter";
+
   return new ScoreData({
     tempo,
     clickCount,
     countIn,
+    tempoMode,
     timeSignature,
     measures,
     barsPerRow,

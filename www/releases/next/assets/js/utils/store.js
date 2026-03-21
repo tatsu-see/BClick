@@ -1,6 +1,6 @@
 
 import { LocalStore } from '../../lib/LocalStore.js';
-import { APP_LIMITS, ALLOWED_TIME_SIGNATURES, ALLOWED_CLICK_TONES } from "../constants/appConstraints.js";
+import { APP_LIMITS, ALLOWED_TIME_SIGNATURES, ALLOWED_CLICK_TONES, ALLOWED_TEMPO_MODES } from "../constants/appConstraints.js";
 import { isIntegerInRange, isNumberInRange } from "./validators.js";
 
 const getProgressionChordCount = (value) => {
@@ -65,6 +65,8 @@ export class ConfigStore extends LocalStore {
         ClickVolume: 'bclick.clickVolume',
         // configBeat: クリック音の音色パターン
         ClickTonePattern: 'bclick.clickTonePattern',
+        // configBeat: テンポモード（quarter/eighth/sixteenth）
+        TempoMode: 'bclick.tempoMode',
 
         // configScore: 拍子
         ScoreTimeSignature: 'bclick.score.timeSignature',
@@ -147,6 +149,20 @@ export class ConfigStore extends LocalStore {
     const value = parseInt(inputEl.value, 10);
     if (Number.isNaN(value) || value < 0) return;
     this.setClickCount(value);
+  }
+
+  /**
+   * テンポモードのI/O（"quarter" / "eighth" / "sixteenth"）
+   * 未設定・不正値の場合は "quarter" を返す。
+   */
+  getTempoMode() {
+    const saved = this.getSettings(this.keys.TempoMode);
+    return ALLOWED_TEMPO_MODES.includes(saved) ? saved : "quarter";
+  }
+
+  setTempoMode(value) {
+    if (!ALLOWED_TEMPO_MODES.includes(value)) return;
+    this.saveSettings(this.keys.TempoMode, value);
   }
 
   /**

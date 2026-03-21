@@ -15,7 +15,7 @@ export const messages = {
     en: "Detecting tap tempo...",
   },
   tapTempoReset: {
-    ja: "タップリセット。",
+    ja: "タップリセット",
     en: "Tap reset.",
   },
 

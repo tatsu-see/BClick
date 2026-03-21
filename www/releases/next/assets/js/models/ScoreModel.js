@@ -1,4 +1,4 @@
-import { APP_LIMITS } from "../constants/appConstraints.js";
+import { APP_LIMITS, ALLOWED_TEMPO_MODES } from "../constants/appConstraints.js";
 
 /**
  * オリジナルの簡易楽譜データオブジェクト
@@ -6,7 +6,7 @@ import { APP_LIMITS } from "../constants/appConstraints.js";
  * - この形式が、小節の編集にもデータ形式として使えるから、小節編集時にも使っているが、こちらはサブ目的。
  */
 class ScoreData {
-  constructor({ tempo, clickCount, countIn, timeSignature, measures, progression, bars, rhythmPattern, barsPerRow, clickTonePattern } = {}) {
+  constructor({ tempo, clickCount, countIn, timeSignature, measures, progression, bars, rhythmPattern, barsPerRow, clickTonePattern, tempoMode } = {}) {
     this.tempo = Number.isNaN(Number.parseInt(tempo, 10)) ? 60 : Number.parseInt(tempo, 10);
     this.clickCount = Number.isNaN(Number.parseInt(clickCount, 10)) ? 4 : Number.parseInt(clickCount, 10);
     this.countIn = Number.isNaN(Number.parseInt(countIn, 10)) ? 4 : Number.parseInt(countIn, 10);
@@ -23,6 +23,9 @@ class ScoreData {
     //##Spec clickTonePattern は省略可能フィールド。旧データには存在しない場合がある。
     // null の場合は scoreSerialization / scoreButtonUtils 側で既定値を補完する。
     this.clickTonePattern = Array.isArray(clickTonePattern) ? clickTonePattern : null;
+    //##Spec tempoMode は省略可能フィールド。旧データには存在しない場合がある。
+    // 不正値・未設定の場合は "quarter"（×1）をデフォルトとする。
+    this.tempoMode = ALLOWED_TEMPO_MODES.includes(tempoMode) ? tempoMode : "quarter";
     const normalizedBars = this.normalizeBars(bars);
     this.bars = normalizedBars || this.buildBars();
   }

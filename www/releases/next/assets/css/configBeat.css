@@ -178,3 +178,8 @@
   flex-direction: row;
 }
 
+/* テンポモードの3ボタンを同じ幅に揃える */
+.tempoModeButton {
+  min-width: 60px;
+}
+

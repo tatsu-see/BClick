@@ -32,7 +32,7 @@
   <link rel="stylesheet" href="assets/css/app.css?v=20260320">
   <link rel="stylesheet" href="assets/css/tips.css?v=20260307">
   <link rel="stylesheet" href="assets/css/tempoDial.css?v=20260315">
-  <link rel="stylesheet" href="assets/css/configBeat.css?v=20260308">
+  <link rel="stylesheet" href="assets/css/configBeat.css?v=20260321">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
@@ -48,7 +48,7 @@
   <script type="module" src="assets/lib/consentTracking.js"></script>
 
   <script type="module" src="assets/js/actions/tips.js?v=20260307"></script>
-  <script type="module" src="assets/js/pages/configBeat.js?v=20260314"></script>
+  <script type="module" src="assets/js/pages/configBeat.js?v=20260321"></script>
 </head>
 
 <!--Spec クリック音に関する設定画面
@@ -121,14 +121,39 @@
         <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
       </button>
       <div class="preferenceTitle">
-        <span class="lang" data-lang="en">Beats (1–16)</span>
-        <span class="lang" data-lang="ja">拍数（1〜16）</span>
+        <span class="lang" data-lang="en">Click Beats (1–16)</span>
+        <span class="lang" data-lang="ja">クリック拍数（1〜16）</span>
       </div>
     </div>
 
     <div class="preferenceValue preferenceValueCentered">
       <input type="range" id="clickCountRange" min="1" max="16" step="1" value="4">
       <output id="clickCountValue" for="clickCountRange">4</output>
+    </div>
+
+    <div class="preferenceTitleWithTip tipButtonLeft">
+      <button
+        type="button"
+        class="chipButton tipButton"
+        aria-label="Open tips for tempo mode"
+        data-tip-target="tempoModeTipsDialog"
+      >
+        <span class="material-symbols-rounded" aria-hidden="true">web_asset</span>
+      </button>
+      <div class="preferenceTitle">
+        <span class="lang" data-lang="en">Tempo Mode</span>
+        <span class="lang" data-lang="ja">テンポモード</span>
+      </div>
+    </div>
+
+    <div class="preferenceValue preferenceValueCentered">
+      <div class="chipGroupSectionRow" role="group" aria-label="Select tempo mode">
+        <div class="chipGroup">
+          <button type="button" class="chipButton tempoModeButton isActive" data-mode="quarter" aria-pressed="true">♩ ×1</button>
+          <button type="button" class="chipButton tempoModeButton" data-mode="eighth" aria-pressed="false">♪ ×2</button>
+          <button type="button" class="chipButton tempoModeButton" data-mode="sixteenth" aria-pressed="false">♬ ×4</button>
+        </div>
+      </div>
     </div>
 
     <div class="preferenceTitleWithTip tipButtonLeft">
@@ -211,6 +236,47 @@
         ・拍数は1〜16の範囲で設定します。<br>
         ・拍数を変えると、下の音色選択もそれに合わせて更新されます。<br>
         ・設定は「Done」を押したときに保存されます。<br>
+      </span>
+    </div>
+    <div class="tipsDialogActions">
+      <button type="button" class="chipButton tipsDialogCloseButton" data-tip-close>
+        <span class="lang" data-lang="en">Close</span>
+        <span class="lang" data-lang="ja">閉じる</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="tempoModeTipsDialog" class="tipsDialog" aria-labelledby="tempoModeTipsTitle">
+    <div class="tipsDialogTitle" id="tempoModeTipsTitle">
+      <span class="lang" data-lang="en">Tips</span>
+      <span class="lang" data-lang="ja">ヒント</span>
+    </div>
+    <div class="tipsDialogBody">
+      <span class="lang" data-lang="en">
+        Example: practicing a 4/4 piece:<br>
+        ・When Click Beats = 4<br>
+        ・♩ ×1 → one click per beat (normal practice)<br>
+        <br>
+        ・When Click Beats = 8<br>
+        ・♪ ×2 → divides each beat into 2 (8th note practice)<br>
+        <br>
+        ・When Click Beats = 16<br>
+        ・♬ ×4 → divides each beat into 4 (16th note practice)<br>
+        <br>
+        Tempo Mode multiplies the BPM internally by ×2 or ×4.<br>
+      </span>
+      <span class="lang" data-lang="ja">
+        例）4/4拍子の曲を練習するとき：<br>
+        ・クリック拍数を 4 に設定した場合<br>
+        ・♩ ×1 → 1拍を分割しない（通常の練習）<br>
+        <br>
+        ・クリック拍数を 8 に設定した場合<br>
+        ・♪ ×2 → 1拍を2分割する（8分音符単位での練習）<br>
+        <br>
+        ・クリック拍数を 16 に設定した場合<br>
+        ・♬ ×4 → 1拍を4分割する（16分音符単位での練習）<br>
+        <br>
+        テンポモードはテンポ数を ×2 や ×4 した動作となります。<br>
       </span>
     </div>
     <div class="tipsDialogActions">

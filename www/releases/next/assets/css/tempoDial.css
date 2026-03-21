@@ -163,9 +163,10 @@
 }
 
 .tempoInputLarge {
-  font-size: 1.8em;
+  font-size: 1.4em;
   font-weight: 700;
   color: darkgreen;
+  line-height: 1;               /* ブラウザデフォルトの行間を抑えてテキストボックスの高さを縮める */
 }
 
 .tempoHint {
