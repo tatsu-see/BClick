@@ -10,7 +10,12 @@ html, body {
   font-size: 16pt;
   font-family: "Baloo 2", "M PLUS Rounded 1c", "Segoe UI", sans-serif;
   zoom: 1;
-  /* AdSense 配信開始時に横スクロールバーが出る場合は overflow-x 対応を検討する */
+  /*##Spec overflow-x: hidden を html/body に設定するとスクロールコンテナが変わり
+    スマホの pull-to-refresh が動作しなくなるため設定禁止。
+    AdSense 配信開始後に横スクロールバーが出る場合は、html/body ではなく
+    wrapper div に overflow-x: hidden を設定して対応すること。 */
+  /* Android Chrome で pull-to-refresh を有効にするため明示的に auto を指定 */
+  overscroll-behavior-y: auto;
 }
 
 button,
